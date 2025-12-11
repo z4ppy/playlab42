@@ -1,0 +1,25 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: playlab42-dev
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/node_modules
+    working_dir: /workspace
+    ports:
+      - "5242:5242"      # Application
+      - "9229:9229"      # Debugger Node.js
+    environment:
+      - NODE_ENV=development
+    command: tail -f /dev/null
+    networks:
+      - playlab42-network
+
+networks:
+  playlab42-network:
+    driver: bridge
+
+volumes:
+  node_modules:
