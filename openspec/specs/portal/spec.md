@@ -61,6 +61,27 @@ The system SHALL track recently played games.
 - **WHEN** a game is launched
 - **THEN** it is added to the "recent games" section
 
+### Requirement: Tab Navigation
+
+The system SHALL provide tab-based navigation to separate games and tools.
+
+#### Scenario: Default tab
+- **WHEN** the portal loads for the first time
+- **THEN** the "Tools" tab is active by default
+
+#### Scenario: Tab switching
+- **WHEN** a user clicks on a tab
+- **THEN** the corresponding content is displayed
+- **AND** the other tab content is hidden
+
+#### Scenario: Tab persistence
+- **WHEN** a user switches tabs and reloads the page
+- **THEN** the previously selected tab is restored
+
+#### Scenario: Tab-specific filters
+- **WHEN** a user applies tag filters
+- **THEN** filters apply only to the active tab content
+
 ## Interface
 
 ### Application State
@@ -69,6 +90,9 @@ The system SHALL track recently played games.
 interface PortalState {
   /** Current view */
   currentView: "catalog" | "game" | "settings";
+
+  /** Active catalog tab */
+  activeTab: "tools" | "games";
 
   /** Currently loaded game (if any) */
   currentGame: string | null;
@@ -93,6 +117,7 @@ interface UserPreferences {
 
 | Key | Content | Description |
 |-----|---------|-------------|
+| `playlab42.activeTab` | `"tools"` ou `"games"` | Onglet actif |
 | `player` | `{ name }` | User profile |
 | `preferences` | `{ sound }` | User preferences |
 | `recent_games` | `["snake", ...]` | Recent game slugs |
@@ -103,39 +128,43 @@ interface UserPreferences {
 
 ### Catalog (Home)
 
+Le catalogue utilise un système d'onglets pour séparer Tools et Games.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  PLAYLAB42                                      [⚙ Settings] │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
+│  ┌──────────────┬──────────────┐                            │
+│  │   🔧 Outils  │    🎮 Jeux   │  ← Onglets                 │
+│  └──────────────┴──────────────┘                            │
+│                                                              │
 │  [Recherche: ___________]                                    │
 │                                                              │
-│  Filtres: [Tous] [Arcade] [Puzzle] [Strategy] [Tools]       │
+│  Filtres: [Tous] [Tag1] [Tag2] [Tag3]  ← Tags de l'onglet   │
 │                                                              │
-│  ── Jeux ──                                                  │
 │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐           │
 │  │  thumb  │ │  thumb  │ │  thumb  │ │  thumb  │           │
 │  │─────────│ │─────────│ │─────────│ │─────────│           │
-│  │ Snake   │ │ Tetris  │ │ Morpion │ │ Pong    │           │
-│  │ Arcade  │ │ Puzzle  │ │ Strategy│ │ Arcade  │           │
+│  │ Item 1  │ │ Item 2  │ │ Item 3  │ │ Item 4  │           │
 │  └─────────┘ └─────────┘ └─────────┘ └─────────┘           │
 │                                                              │
-│  ── Outils ──                                                │
+│  ── Joué récemment ── (onglet Jeux uniquement)              │
 │  ┌─────────┐ ┌─────────┐                                    │
-│  │ 🧮      │ │ 📋      │                                    │
-│  │─────────│ │─────────│                                    │
-│  │ Calcul  │ │ JSON    │                                    │
-│  │ Math    │ │ Dev     │                                    │
-│  └─────────┘ └─────────┘                                    │
-│                                                              │
-│  ── Joué récemment ──                                        │
-│  ┌─────────┐ ┌─────────┐                                    │
-│  │ Snake   │ │ Tetris  │                                    │
+│  │ Recent1 │ │ Recent2 │                                    │
 │  └─────────┘ └─────────┘                                    │
 │                                                              │
 │  [Pseudo: Player1]                                           │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+#### Tab States
+
+| State | Display |
+|-------|---------|
+| Tab active | Highlighted, bold text, accent color |
+| Tab inactive | Muted text, clickable |
+| Tab hover | Slight highlight |
 
 ### Game View
 
@@ -360,6 +389,8 @@ function renderCard(entry, type) {
 | `F` | Game view | Toggle fullscreen |
 | `M` | Game view | Toggle mute |
 | `/` | Catalog | Focus search |
+| `1` | Catalog | Switch to Tools tab |
+| `2` | Catalog | Switch to Games tab |
 
 ## Responsive Design
 
@@ -434,6 +465,27 @@ const loadPromise = new Promise((resolve, reject) => {
 - Focus trap in settings modal
 - Return focus to game card after closing game
 - Visible focus indicators on all interactive elements
+
+### Tab Accessibility
+
+```html
+<div role="tablist" aria-label="Catalog sections">
+  <button role="tab" aria-selected="true" aria-controls="tools-panel" id="tools-tab">
+    🔧 Outils
+  </button>
+  <button role="tab" aria-selected="false" aria-controls="games-panel" id="games-tab">
+    🎮 Jeux
+  </button>
+</div>
+
+<div id="tools-panel" role="tabpanel" aria-labelledby="tools-tab">
+  <!-- Tools content -->
+</div>
+
+<div id="games-panel" role="tabpanel" aria-labelledby="games-tab" hidden>
+  <!-- Games content -->
+</div>
+```
 
 ### Screen Reader
 

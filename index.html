@@ -17,6 +17,16 @@
   <main id="main">
     <!-- Vue Catalogue -->
     <section id="view-catalogue" class="view active">
+      <!-- Onglets -->
+      <div class="tabs" role="tablist" aria-label="Sections du catalogue">
+        <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-tools" id="tab-tools" data-tab="tools">
+          🔧 Outils
+        </button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-games" id="tab-games" data-tab="games">
+          🎮 Jeux
+        </button>
+      </div>
+
       <div class="search-bar">
         <input type="text" id="search" placeholder="Rechercher..." aria-label="Rechercher">
       </div>
@@ -25,22 +35,22 @@
         <button class="filter active" data-tag="">Tous</button>
       </div>
 
-      <section class="category" id="section-games">
-        <h2>Jeux</h2>
-        <div class="cards" id="cards-games"></div>
-        <p class="empty-message" id="empty-games">Aucun jeu disponible</p>
-      </section>
-
-      <section class="category" id="section-tools">
-        <h2>Outils</h2>
+      <!-- Panel Outils -->
+      <div id="panel-tools" class="tab-panel active" role="tabpanel" aria-labelledby="tab-tools">
         <div class="cards" id="cards-tools"></div>
         <p class="empty-message" id="empty-tools">Aucun outil disponible</p>
-      </section>
+      </div>
 
-      <section class="category" id="section-recent">
-        <h2>Joué récemment</h2>
-        <div class="cards" id="cards-recent"></div>
-      </section>
+      <!-- Panel Jeux -->
+      <div id="panel-games" class="tab-panel" role="tabpanel" aria-labelledby="tab-games">
+        <div class="cards" id="cards-games"></div>
+        <p class="empty-message" id="empty-games">Aucun jeu disponible</p>
+
+        <section class="category" id="section-recent">
+          <h2>Joué récemment</h2>
+          <div class="cards" id="cards-recent"></div>
+        </section>
+      </div>
     </section>
 
     <!-- Vue Jeu/Outil (iframe) -->

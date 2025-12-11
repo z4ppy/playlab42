@@ -6,6 +6,7 @@
 // === État de l'application ===
 const state = {
   currentView: 'catalogue',
+  activeTab: 'tools', // Onglet par défaut
   currentGame: null,
   catalogue: null,
   preferences: {
@@ -20,7 +21,8 @@ const state = {
 const STORAGE_KEYS = {
   PLAYER: 'player',
   PREFERENCES: 'preferences',
-  RECENT: 'recent_games'
+  RECENT: 'recent_games',
+  ACTIVE_TAB: 'playlab42.activeTab'
 };
 const MAX_RECENT = 5;
 
@@ -37,11 +39,15 @@ const elements = {
   cardsGames: document.getElementById('cards-games'),
   cardsTools: document.getElementById('cards-tools'),
   cardsRecent: document.getElementById('cards-recent'),
-  sectionGames: document.getElementById('section-games'),
-  sectionTools: document.getElementById('section-tools'),
   sectionRecent: document.getElementById('section-recent'),
   emptyGames: document.getElementById('empty-games'),
   emptyTools: document.getElementById('empty-tools'),
+
+  // Tabs
+  tabTools: document.getElementById('tab-tools'),
+  tabGames: document.getElementById('tab-games'),
+  panelTools: document.getElementById('panel-tools'),
+  panelGames: document.getElementById('panel-games'),
 
   // Game
   gameTitle: document.getElementById('game-title'),
@@ -83,6 +89,11 @@ function loadPreferences() {
     if (recent) {
       state.recentGames = JSON.parse(recent);
     }
+
+    const activeTab = localStorage.getItem(STORAGE_KEYS.ACTIVE_TAB);
+    if (activeTab === 'tools' || activeTab === 'games') {
+      state.activeTab = activeTab;
+    }
   } catch (e) {
     console.warn('Failed to load preferences:', e);
   }
@@ -96,6 +107,7 @@ function savePreferences() {
     localStorage.setItem(STORAGE_KEYS.PLAYER, JSON.stringify({ name: state.preferences.pseudo }));
     localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify({ sound: state.preferences.sound }));
     localStorage.setItem(STORAGE_KEYS.RECENT, JSON.stringify(state.recentGames));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_TAB, state.activeTab);
   } catch (e) {
     console.warn('Failed to save preferences:', e);
   }
@@ -112,6 +124,38 @@ function addToRecent(id, type) {
   // Limiter
   state.recentGames = state.recentGames.slice(0, MAX_RECENT);
   savePreferences();
+}
+
+// === Tabs ===
+
+/**
+ * Change l'onglet actif
+ * @param {string} tab - 'tools' ou 'games'
+ */
+function switchTab(tab) {
+  if (tab !== 'tools' && tab !== 'games') return;
+  if (state.activeTab === tab) return;
+
+  state.activeTab = tab;
+  state.activeFilter = ''; // Reset filter on tab change
+  savePreferences();
+  updateTabUI();
+  renderCatalogue();
+}
+
+/**
+ * Met à jour l'UI des onglets
+ */
+function updateTabUI() {
+  // Tabs
+  elements.tabTools.classList.toggle('active', state.activeTab === 'tools');
+  elements.tabTools.setAttribute('aria-selected', state.activeTab === 'tools');
+  elements.tabGames.classList.toggle('active', state.activeTab === 'games');
+  elements.tabGames.setAttribute('aria-selected', state.activeTab === 'games');
+
+  // Panels
+  elements.panelTools.classList.toggle('active', state.activeTab === 'tools');
+  elements.panelGames.classList.toggle('active', state.activeTab === 'games');
 }
 
 // === Catalogue ===
@@ -133,22 +177,23 @@ async function loadCatalogue() {
 }
 
 /**
- * Extrait tous les tags uniques du catalogue
+ * Extrait tous les tags uniques de l'onglet actif
  */
-function getAllTags() {
+function getTagsForCurrentTab() {
   if (!state.catalogue) return [];
+  const items = state.activeTab === 'games' ? state.catalogue.games : state.catalogue.tools;
   const tags = new Set();
-  [...state.catalogue.games, ...state.catalogue.tools].forEach(item => {
+  items.forEach(item => {
     item.tags?.forEach(tag => tags.add(tag));
   });
   return Array.from(tags).sort();
 }
 
 /**
- * Rend les filtres de tags
+ * Rend les filtres de tags pour l'onglet actif
  */
 function renderFilters() {
-  const tags = getAllTags();
+  const tags = getTagsForCurrentTab();
   elements.filters.innerHTML = `
     <button class="filter ${state.activeFilter === '' ? 'active' : ''}" data-tag="">Tous</button>
     ${tags.map(tag => `
@@ -208,27 +253,28 @@ function filterItems(items) {
 }
 
 /**
- * Rend le catalogue complet
+ * Rend le catalogue (onglet actif uniquement)
  */
 function renderCatalogue() {
   if (!state.catalogue) return;
 
   renderFilters();
 
-  // Games
-  const filteredGames = filterItems(state.catalogue.games);
-  elements.cardsGames.innerHTML = filteredGames.map(g => createCard(g, 'game')).join('');
-  elements.emptyGames.classList.toggle('visible', filteredGames.length === 0 && state.catalogue.games.length > 0);
-  elements.sectionGames.classList.toggle('hidden', state.catalogue.games.length === 0);
+  // Tools (si onglet actif)
+  if (state.activeTab === 'tools') {
+    const filteredTools = filterItems(state.catalogue.tools);
+    elements.cardsTools.innerHTML = filteredTools.map(t => createCard(t, 'tool')).join('');
+    elements.emptyTools.classList.toggle('visible', filteredTools.length === 0 && state.catalogue.tools.length > 0);
+  }
 
-  // Tools
-  const filteredTools = filterItems(state.catalogue.tools);
-  elements.cardsTools.innerHTML = filteredTools.map(t => createCard(t, 'tool')).join('');
-  elements.emptyTools.classList.toggle('visible', filteredTools.length === 0 && state.catalogue.tools.length > 0);
-  elements.sectionTools.classList.toggle('hidden', state.catalogue.tools.length === 0);
-
-  // Recent
-  renderRecent();
+  // Games (si onglet actif)
+  if (state.activeTab === 'games') {
+    const filteredGames = filterItems(state.catalogue.games);
+    elements.cardsGames.innerHTML = filteredGames.map(g => createCard(g, 'game')).join('');
+    elements.emptyGames.classList.toggle('visible', filteredGames.length === 0 && state.catalogue.games.length > 0);
+    // Recent games (uniquement dans l'onglet games)
+    renderRecent();
+  }
 }
 
 /**
@@ -430,6 +476,10 @@ function setupEventListeners() {
     }
   });
 
+  // Catalogue - onglets
+  elements.tabTools.addEventListener('click', () => switchTab('tools'));
+  elements.tabGames.addEventListener('click', () => switchTab('games'));
+
   // Catalogue - filtres
   elements.filters.addEventListener('click', (e) => {
     const btn = e.target.closest('.filter');
@@ -488,6 +538,16 @@ function setupEventListeners() {
       e.preventDefault();
       elements.search.focus();
     }
+
+    // 1 - onglet Outils (au catalogue)
+    if (e.key === '1' && state.currentView === 'catalogue' && document.activeElement.tagName !== 'INPUT') {
+      switchTab('tools');
+    }
+
+    // 2 - onglet Jeux (au catalogue)
+    if (e.key === '2' && state.currentView === 'catalogue' && document.activeElement.tagName !== 'INPUT') {
+      switchTab('games');
+    }
   });
 
   // Messages du jeu
@@ -520,6 +580,7 @@ function setupEventListeners() {
 async function init() {
   loadPreferences();
   updateSoundButton();
+  updateTabUI();
   setupEventListeners();
   await loadCatalogue();
 }
