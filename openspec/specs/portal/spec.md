@@ -53,13 +53,14 @@ The system SHALL persist user preferences in localStorage.
 - **WHEN** a user changes their pseudo
 - **THEN** it is saved and used for scores
 
-### Requirement: Recent Games
+### Requirement: Recent Games (désactivé)
 
-The system SHALL track recently played games.
+The system SHALL track recently played games in localStorage for future use, but the UI display is disabled.
 
 #### Scenario: Play a game
 - **WHEN** a game is launched
-- **THEN** it is added to the "recent games" section
+- **THEN** it is added to the `recent_games` localStorage entry
+- **AND** no UI section is displayed (désactivé temporairement)
 
 ### Requirement: Tab Navigation
 
@@ -149,14 +150,11 @@ Le catalogue utilise un système d'onglets pour séparer Tools et Games.
 │  │ Item 1  │ │ Item 2  │ │ Item 3  │ │ Item 4  │           │
 │  └─────────┘ └─────────┘ └─────────┘ └─────────┘           │
 │                                                              │
-│  ── Joué récemment ── (onglet Jeux uniquement)              │
-│  ┌─────────┐ ┌─────────┐                                    │
-│  │ Recent1 │ │ Recent2 │                                    │
-│  └─────────┘ └─────────┘                                    │
-│                                                              │
 │  [Pseudo: Player1]                                           │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+Note: La section "Joué récemment" a été retirée de l'interface (tracking localStorage conservé).
 
 #### Tab States
 

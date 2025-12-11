@@ -38,8 +38,6 @@ const elements = {
   filters: document.getElementById('filters'),
   cardsGames: document.getElementById('cards-games'),
   cardsTools: document.getElementById('cards-tools'),
-  cardsRecent: document.getElementById('cards-recent'),
-  sectionRecent: document.getElementById('section-recent'),
   emptyGames: document.getElementById('empty-games'),
   emptyTools: document.getElementById('empty-tools'),
 
@@ -272,36 +270,7 @@ function renderCatalogue() {
     const filteredGames = filterItems(state.catalogue.games);
     elements.cardsGames.innerHTML = filteredGames.map(g => createCard(g, 'game')).join('');
     elements.emptyGames.classList.toggle('visible', filteredGames.length === 0 && state.catalogue.games.length > 0);
-    // Recent games (uniquement dans l'onglet games)
-    renderRecent();
   }
-}
-
-/**
- * Rend la section "Joué récemment"
- */
-function renderRecent() {
-  if (!state.catalogue || state.recentGames.length === 0) {
-    elements.sectionRecent.classList.add('hidden');
-    return;
-  }
-
-  const recentItems = state.recentGames
-    .map(r => {
-      const list = r.type === 'game' ? state.catalogue.games : state.catalogue.tools;
-      return { item: list.find(i => i.id === r.id), type: r.type };
-    })
-    .filter(r => r.item);
-
-  if (recentItems.length === 0) {
-    elements.sectionRecent.classList.add('hidden');
-    return;
-  }
-
-  elements.sectionRecent.classList.remove('hidden');
-  elements.cardsRecent.innerHTML = recentItems
-    .map(r => createCard(r.item, r.type))
-    .join('');
 }
 
 // === Game Loader ===
@@ -361,9 +330,6 @@ function unloadGame() {
     elements.viewSettings.classList.remove('active');
     elements.viewCatalogue.classList.add('active');
     document.body.classList.remove('fullscreen');
-
-    // Re-render pour mettre à jour les récents
-    renderRecent();
   }, 100);
 }
 
@@ -456,7 +422,6 @@ function clearAllData() {
   // Update UI
   elements.inputPseudo.value = 'Anonyme';
   updateSoundToggles();
-  renderRecent();
 
   alert('Données effacées');
 }
