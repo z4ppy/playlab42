@@ -17,10 +17,13 @@ help:
 	@echo "  make shell    - Shell dans le container dev"
 	@echo ""
 	@echo "Développement:"
-	@echo "  make install  - Installer les dépendances npm"
-	@echo "  make test     - Lancer les tests"
-	@echo "  make lint     - Vérifier le code"
-	@echo "  make build-ts - Compiler TypeScript"
+	@echo "  make install      - Installer les dépendances npm"
+	@echo "  make npm CMD=...  - Commande npm (ex: make npm CMD=\"install lodash\")"
+	@echo "  make dev          - Serveur de développement"
+	@echo "  make serve        - Serveur statique (pour tools/games)"
+	@echo "  make test         - Lancer les tests"
+	@echo "  make lint         - Vérifier le code"
+	@echo "  make build-ts     - Compiler TypeScript"
 	@echo ""
 	@echo "Claude Code:"
 	@echo "  make claude   - Lancer Claude Code"
@@ -56,6 +59,14 @@ shell:
 install:
 	docker compose exec dev npm install
 
+# Commande npm générique (usage: make npm CMD="install lodash")
+npm:
+	docker compose exec dev npm $(CMD)
+
+# Serveur de développement
+dev:
+	docker compose exec dev npm run dev
+
 test:
 	docker compose exec dev npm test
 
@@ -70,6 +81,10 @@ lint-fix:
 
 build-ts:
 	docker compose exec dev npm run build
+
+# Serveur statique pour tester tools/games
+serve:
+	docker compose exec dev npx serve . -p 5242
 
 # === Claude Code ===
 

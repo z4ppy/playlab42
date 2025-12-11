@@ -71,6 +71,12 @@ make shell
 make npm CMD="install lodash"
 make npm CMD="run test"
 
+# Serveur de dev (TypeScript)
+make dev
+
+# Serveur statique (pour tester tools/games)
+make serve
+
 # Ne JAMAIS faire directement sur le host :
 # npm install  ❌
 # node xxx.js  ❌

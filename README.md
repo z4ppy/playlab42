@@ -89,8 +89,11 @@ make shell
 make npm CMD="install lodash"
 make npm CMD="run build"
 
-# Serveur de dev
+# Serveur de dev (TypeScript)
 make dev
+
+# Serveur statique (pour tester tools/games)
+make serve
 ```
 
 ## Démarrage rapide
