@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-11T22:15:14.824Z",
+  "generatedAt": "2025-12-11T22:26:49.887Z",
   "tools": [
     {
       "id": "json-formatter",
@@ -16,5 +16,24 @@
       "icon": "📋"
     }
   ],
-  "games": []
+  "games": [
+    {
+      "id": "tictactoe",
+      "name": "Tic-Tac-Toe",
+      "description": "Le classique morpion - alignez 3 symboles pour gagner",
+      "path": "games/tictactoe/index.html",
+      "players": {
+        "min": 2,
+        "max": 2
+      },
+      "tags": [
+        "strategy",
+        "classic",
+        "2-players"
+      ],
+      "type": "turn-based",
+      "author": "Cyrille",
+      "icon": "⭕"
+    }
+  ]
 }

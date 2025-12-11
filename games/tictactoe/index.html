@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-Tac-Toe - Playlab42</title>
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --bg-secondary: #16213e;
+      --text: #eee;
+      --text-muted: #888;
+      --accent: #e94560;
+      --accent-hover: #ff6b6b;
+      --cell-bg: #0f3460;
+      --cell-hover: #1a4a7a;
+      --x-color: #e94560;
+      --o-color: #4fc3f7;
+      --win-color: #4ade80;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    /* Écran de configuration */
+    .config-screen {
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .config-screen.hidden {
+      display: none;
+    }
+
+    .config-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .config-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .config-group select {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--bg);
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .config-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Écran de jeu */
+    .game-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .game-screen.active {
+      display: flex;
+    }
+
+    .status {
+      font-size: 1.25rem;
+      text-align: center;
+      min-height: 2rem;
+    }
+
+    .status .turn {
+      color: var(--accent);
+    }
+
+    .status.win {
+      color: var(--win-color);
+    }
+
+    .status.draw {
+      color: var(--text-muted);
+    }
+
+    /* Grille */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--bg-secondary);
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: var(--cell-bg);
+      border: none;
+      border-radius: 8px;
+      font-size: 3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cell:hover:not(.taken):not(.game-over) {
+      background: var(--cell-hover);
+    }
+
+    .cell.taken {
+      cursor: default;
+    }
+
+    .cell.X {
+      color: var(--x-color);
+    }
+
+    .cell.O {
+      color: var(--o-color);
+    }
+
+    .cell.winning {
+      background: rgba(74, 222, 128, 0.2);
+      animation: pulse 0.5s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Contrôles */
+    .controls {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-secondary {
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      color: var(--accent);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Scores */
+    .scores {
+      display: flex;
+      gap: 2rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .score {
+      text-align: center;
+    }
+
+    .score-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .cell {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Écran de configuration -->
+  <div class="config-screen" id="config-screen">
+    <h1>⭕ Tic-Tac-Toe</h1>
+
+    <div class="config-group">
+      <label for="opponent">Adversaire</label>
+      <select id="opponent">
+        <option value="random">🤖 Bot Random (Facile)</option>
+        <option value="blocker" selected>🤖 Bot Blocker (Moyen)</option>
+        <option value="perfect">🤖 Bot Perfect (Expert)</option>
+        <option value="human">👤 Joueur 2 (Hot-seat)</option>
+      </select>
+    </div>
+
+    <div class="config-group">
+      <label for="first-player">Qui commence ?</label>
+      <select id="first-player">
+        <option value="human">Moi (X)</option>
+        <option value="opponent">Adversaire (O)</option>
+        <option value="random">Aléatoire</option>
+      </select>
+    </div>
+
+    <button class="btn" id="btn-start">Jouer</button>
+  </div>
+
+  <!-- Écran de jeu -->
+  <div class="game-screen" id="game-screen">
+    <div class="status" id="status">À vous de jouer</div>
+
+    <div class="board" id="board">
+      <button class="cell" data-index="0"></button>
+      <button class="cell" data-index="1"></button>
+      <button class="cell" data-index="2"></button>
+      <button class="cell" data-index="3"></button>
+      <button class="cell" data-index="4"></button>
+      <button class="cell" data-index="5"></button>
+      <button class="cell" data-index="6"></button>
+      <button class="cell" data-index="7"></button>
+      <button class="cell" data-index="8"></button>
+    </div>
+
+    <div class="scores">
+      <div class="score">
+        <div>Vous (X)</div>
+        <div class="score-value" id="score-human">0</div>
+      </div>
+      <div class="score">
+        <div>Nuls</div>
+        <div class="score-value" id="score-draw">0</div>
+      </div>
+      <div class="score">
+        <div>Adversaire (O)</div>
+        <div class="score-value" id="score-opponent">0</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-secondary" id="btn-restart">Rejouer</button>
+      <button class="btn-secondary" id="btn-menu">Menu</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { TicTacToeEngine } from './engine.js';
+    import { SeededRandom } from '/lib/seeded-random.js';
+    import { RandomBot } from './bots/random.js';
+    import { BlockerBot } from './bots/blocker.js';
+    import { PerfectBot } from './bots/perfect.js';
+
+    // === État ===
+    let engine = new TicTacToeEngine();
+    let state = null;
+    let rng = null;
+    let bot = null;
+    let isVsBot = true;
+    let humanId = 'human';
+    let opponentId = 'opponent';
+    let scores = { human: 0, opponent: 0, draw: 0 };
+
+    // === Éléments DOM ===
+    const configScreen = document.getElementById('config-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const cells = document.querySelectorAll('.cell');
+    const opponentSelect = document.getElementById('opponent');
+    const firstPlayerSelect = document.getElementById('first-player');
+
+    // === Fonctions ===
+
+    function createBot(type) {
+      switch (type) {
+        case 'random': return new RandomBot();
+        case 'blocker': return new BlockerBot();
+        case 'perfect': return new PerfectBot();
+        default: return null;
+      }
+    }
+
+    function startGame() {
+      const opponentType = opponentSelect.value;
+      isVsBot = opponentType !== 'human';
+      bot = isVsBot ? createBot(opponentType) : null;
+
+      // Seed aléatoire
+      rng = new SeededRandom(Date.now());
+
+      // Déterminer qui commence
+      let firstPlayer = firstPlayerSelect.value;
+      if (firstPlayer === 'random') {
+        firstPlayer = rng.chance(0.5) ? 'human' : 'opponent';
+      }
+
+      const playerIds = firstPlayer === 'human'
+        ? [humanId, opponentId]
+        : [opponentId, humanId];
+
+      // Initialiser la partie
+      state = engine.init({
+        seed: rng.getState(),
+        playerIds,
+      });
+
+      // Notifier le bot
+      if (bot && bot.onGameStart) {
+        bot.onGameStart(opponentId, state);
+      }
+
+      // Afficher le jeu
+      configScreen.classList.add('hidden');
+      gameScreen.classList.add('active');
+
+      render();
+
+      // Si le bot commence, le faire jouer
+      if (state.currentPlayerId === opponentId && isVsBot) {
+        setTimeout(playBot, 500);
+      }
+    }
+
+    function render() {
+      // Mettre à jour les cellules
+      cells.forEach((cell, i) => {
+        const value = state.board[i];
+        cell.textContent = value || '';
+        cell.className = 'cell';
+
+        if (value) {
+          cell.classList.add('taken', value);
+        }
+
+        if (state.gameOver) {
+          cell.classList.add('game-over');
+        }
+      });
+
+      // Ligne gagnante
+      if (state.gameOver && state.winners) {
+        const winLine = engine.getWinningLine(state.board);
+        if (winLine) {
+          winLine.forEach((i) => {
+            cells[i].classList.add('winning');
+          });
+        }
+      }
+
+      // Statut
+      updateStatus();
+    }
+
+    function updateStatus() {
+      if (state.gameOver) {
+        if (state.winners) {
+          const winnerId = state.winners[0];
+          if (winnerId === humanId) {
+            statusEl.textContent = '🎉 Vous avez gagné !';
+            statusEl.className = 'status win';
+          } else {
+            statusEl.textContent = '😔 Vous avez perdu';
+            statusEl.className = 'status';
+          }
+        } else {
+          statusEl.textContent = '🤝 Match nul';
+          statusEl.className = 'status draw';
+        }
+      } else {
+        const isMyTurn = state.currentPlayerId === humanId;
+        if (isVsBot) {
+          statusEl.textContent = isMyTurn ? 'À vous de jouer' : 'Le bot réfléchit...';
+        } else {
+          const symbol = state.symbols[state.currentPlayerId];
+          statusEl.textContent = `Au tour de ${symbol}`;
+        }
+        statusEl.className = 'status';
+      }
+    }
+
+    function handleCellClick(index) {
+      // Vérifier si c'est notre tour
+      if (state.gameOver) return;
+
+      const currentPlayer = state.currentPlayerId;
+
+      // En mode vs bot, seul l'humain peut jouer avec les clics
+      if (isVsBot && currentPlayer !== humanId) return;
+
+      const action = { type: 'place', position: index };
+
+      if (!engine.isValidAction(state, action, currentPlayer)) return;
+
+      // Appliquer l'action
+      state = engine.applyAction(state, action, currentPlayer);
+      render();
+
+      // Vérifier fin de partie
+      if (state.gameOver) {
+        updateScores();
+        return;
+      }
+
+      // Tour du bot
+      if (isVsBot && state.currentPlayerId === opponentId) {
+        setTimeout(playBot, 500);
+      }
+    }
+
+    function playBot() {
+      if (state.gameOver || state.currentPlayerId !== opponentId) return;
+
+      const view = engine.getPlayerView(state, opponentId);
+      const validActions = engine.getValidActions(state, opponentId);
+
+      if (validActions.length === 0) return;
+
+      const action = bot.chooseAction(view, validActions, rng);
+      state = engine.applyAction(state, action, opponentId);
+      render();
+
+      if (state.gameOver) {
+        updateScores();
+      }
+    }
+
+    function updateScores() {
+      if (state.winners) {
+        if (state.winners.includes(humanId)) {
+          scores.human++;
+        } else {
+          scores.opponent++;
+        }
+      } else {
+        scores.draw++;
+      }
+
+      document.getElementById('score-human').textContent = scores.human;
+      document.getElementById('score-opponent').textContent = scores.opponent;
+      document.getElementById('score-draw').textContent = scores.draw;
+    }
+
+    function restart() {
+      // Nouvelle partie avec mêmes paramètres
+      rng = new SeededRandom(Date.now());
+
+      // Alterner qui commence
+      const previousFirst = state.playerIds[0];
+      const playerIds = previousFirst === humanId
+        ? [opponentId, humanId]
+        : [humanId, opponentId];
+
+      state = engine.init({
+        seed: rng.getState(),
+        playerIds,
+      });
+
+      if (bot && bot.onGameStart) {
+        bot.onGameStart(opponentId, state);
+      }
+
+      render();
+
+      if (state.currentPlayerId === opponentId && isVsBot) {
+        setTimeout(playBot, 500);
+      }
+    }
+
+    function backToMenu() {
+      gameScreen.classList.remove('active');
+      configScreen.classList.remove('hidden');
+      scores = { human: 0, opponent: 0, draw: 0 };
+      document.getElementById('score-human').textContent = '0';
+      document.getElementById('score-opponent').textContent = '0';
+      document.getElementById('score-draw').textContent = '0';
+    }
+
+    // === Event Listeners ===
+    document.getElementById('btn-start').addEventListener('click', startGame);
+    document.getElementById('btn-restart').addEventListener('click', restart);
+    document.getElementById('btn-menu').addEventListener('click', backToMenu);
+
+    cells.forEach((cell) => {
+      cell.addEventListener('click', () => {
+        handleCellClick(parseInt(cell.dataset.index));
+      });
+    });
+
+    // Raccourcis clavier
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (gameScreen.classList.contains('active')) {
+          backToMenu();
+        }
+      }
+      if (e.key === 'r' && gameScreen.classList.contains('active')) {
+        restart();
+      }
+    });
+  </script>
+</body>
+</html>

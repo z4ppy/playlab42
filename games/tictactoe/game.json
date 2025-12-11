@@ -1,0 +1,26 @@
+{
+  "id": "tictactoe",
+  "name": "Tic-Tac-Toe",
+  "description": "Le classique morpion - alignez 3 symboles pour gagner",
+  "players": {
+    "min": 2,
+    "max": 2
+  },
+  "type": "turn-based",
+  "tags": ["strategy", "classic", "2-players"],
+  "author": "Cyrille",
+  "icon": "⭕",
+  "version": "1.0.0",
+  "controls": "mouse",
+  "orientation": "any",
+  "minWidth": 320,
+  "minHeight": 480,
+  "bots": {
+    "default": "Blocker",
+    "available": [
+      { "name": "Random", "file": "bots/random.js", "difficulty": "easy" },
+      { "name": "Blocker", "file": "bots/blocker.js", "difficulty": "medium" },
+      { "name": "Perfect", "file": "bots/perfect.js", "difficulty": "expert" }
+    ]
+  }
+}
