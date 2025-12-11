@@ -2,28 +2,29 @@
 
 ## À propos du projet
 
-**Playlab42** est une plateforme pédagogique de mini-jeux collaboratifs pour la formation dev assistée par IA.
+**Playlab42** est une plateforme pédagogique de mini-jeux et outils collaboratifs pour la formation dev assistée par IA.
 
 ### Architecture
 
 | Composant | Description |
 |-----------|-------------|
-| **Games** | Jeux autonomes (standalone, jouables sans plateforme) |
+| **Tools** | Outils HTML standalone (un fichier, pas de backend) |
+| **Games** | Jeux autonomes (moteur isomorphe, multi-joueur possible) |
 | **Core** | Types partagés, SDK optionnel, utilitaires (SeededRandom) |
-| **Platform** | Shell, catalogue, lobby (charge les jeux en iframe) |
+| **Platform** | Catalogue unifié tools + games (charge en iframe) |
 | **Server** | Backend multi-joueur (virtualisable en localStorage) |
 
 ### Concepts clés
 
-- **Jeu autonome** : Mini-app standalone (index.html jouable directement)
-- **Game Engine** : Moteur de règles isomorphe, TypeScript pur, déterministe, seedé
-- **Game Manifest** : Fichier `game.json` (métadonnées, config, options)
-- **SDK (optionnel)** : `window.playlab` injecté par la plateforme pour le multi-joueur
+- **Tool** : Outil HTML standalone (un fichier, ouvrable directement)
+- **Game** : Mini-app standalone avec moteur de règles
+- **Game Engine** : Moteur isomorphe, TypeScript pur, déterministe, seedé
+- **SDK (optionnel)** : `window.playlab` injecté pour le multi-joueur
 - **Backend virtualisable** : Mode localStorage (solo) ou serveur (multi)
 
 ### Objectif pédagogique
 
-Support de formation où les participants créent des mini-jeux avec assistance IA.
+Support de formation où les participants créent des outils et jeux avec assistance IA.
 Le projet s'enrichit des contributions de chaque session.
 
 **Qualité code** : Ce projet étant un support de cours, le code doit être exemplaire :
@@ -31,6 +32,27 @@ Le projet s'enrichit des contributions de chaque session.
 - Nommage explicite (pas d'abréviations obscures)
 - Tests unitaires systématiques
 - Types TypeScript exhaustifs
+
+## Environnement Docker-first
+
+**IMPORTANT** : Tout tourne dans Docker, rien sur le host.
+
+```bash
+# Initialiser l'environnement
+make init
+
+# Shell de développement
+make shell
+
+# Commandes npm (dans le container)
+make npm CMD="install lodash"
+make npm CMD="run test"
+
+# Serveur de dev
+make dev
+```
+
+**Ne jamais exécuter npm, node, ou autres outils directement sur le host.**
 
 ## Workflow OpenSpec
 
@@ -59,12 +81,13 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 - **Nommage** : camelCase (variables), PascalCase (types), kebab-case (fichiers)
 - **Simplicité** : Préférer solutions simples, éviter over-engineering
 - **Isomorphisme** : Les moteurs de jeux doivent tourner client ET serveur
+- **Docker-first** : Tout dans le container, rien sur le host
 
 ## Stack technique
 
 - TypeScript strict + Node.js 20+
 - Jest pour les tests
-- Docker pour l'environnement
+- Docker pour **tout** l'environnement
 - WebSocket pour le temps réel
 - OpenSpec pour le workflow
 
@@ -72,7 +95,9 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 
 ```
 playlab42/
-├── games/                   # Jeux autonomes (priorité)
+├── tools/                   # Outils HTML standalone
+│   └── [tool-name].html     # Un fichier = un outil
+├── games/                   # Jeux autonomes
 │   └── [game-id]/
 │       ├── index.html       # Point d'entrée standalone
 │       ├── engine.ts        # Moteur isomorphe (optionnel si inline)
@@ -82,10 +107,8 @@ playlab42/
 │   │   ├── types/           # Interfaces communes
 │   │   ├── sdk/             # PlayLabSDK (optionnel)
 │   │   └── utils/           # SeededRandom, helpers
-│   ├── platform/            # Shell (optionnel)
-│   │   ├── catalog/         # Liste des jeux
-│   │   ├── lobby/           # Création/join parties
-│   │   └── profile/         # Profil utilisateur
+│   ├── platform/            # Catalogue (optionnel)
+│   │   └── index.html       # Liste tools + games
 │   └── server/              # Backend (optionnel)
 │       ├── api/             # Routes REST
 │       ├── ws/              # WebSocket
@@ -97,8 +120,8 @@ playlab42/
 
 - `docs/FEATURES.md` - Liste complète des features MVP
 - `docs/CONCEPTS.md` - Définitions et glossaire
-- `docs/reference/game-engine.md` - Interface GameEngine
-- `docs/reference/sdk.md` - API SDK client
+- `docs/guides/create-tool.md` - Guide création d'outil
+- `docs/guides/create-game.md` - Guide création de jeu
 
 ## Contexte utilisateur
 

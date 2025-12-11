@@ -1,15 +1,16 @@
 # Playlab42
 
-Plateforme pédagogique de mini-jeux collaboratifs pour la formation dev assistée par IA.
+Plateforme pédagogique de mini-jeux et outils collaboratifs pour la formation dev assistée par IA.
 
 ## Vision
 
-**Playlab42** est une vitrine collaborative de mini-jeux créés pendant des formations. Les participants développent des jeux, des interfaces et des bots avec l'assistance de l'IA. Le projet s'enrichit au fil des sessions.
+**Playlab42** est une vitrine collaborative de mini-jeux et outils créés pendant des formations. Les participants développent des jeux, des outils et des bots avec l'assistance de l'IA. Le projet s'enrichit au fil des sessions.
 
 ### Cas d'usage
 
-- **Jouer** : Catalogue de mini-jeux accessibles via navigateur
-- **Créer** : Développer son propre jeu pendant une formation
+- **Utiliser** : Catalogue d'outils et jeux accessibles via navigateur
+- **Jouer** : Mini-jeux standalone ou multi-joueur
+- **Créer** : Développer ses propres outils/jeux pendant une formation
 - **Apprendre** : Support pédagogique pour TypeScript, WebSocket, IA/ML
 - **Expérimenter** : Entraîner des bots et réseaux de neurones
 
@@ -17,43 +18,52 @@ Plateforme pédagogique de mini-jeux collaboratifs pour la formation dev assist�
 
 | Feature | Description |
 |---------|-------------|
-| **Catalogue** | Liste des jeux disponibles avec recherche/filtres |
-| **Lobby** | Créer ou rejoindre des parties, spectateurs |
-| **Multijoueur** | WebSocket temps réel et tour par tour |
+| **Catalogue** | Liste des outils et jeux avec recherche/filtres |
+| **Tools** | Outils HTML standalone (JSON formatter, encodeurs, etc.) |
+| **Games** | Mini-jeux avec moteur isomorphe |
+| **Lobby** | Créer ou rejoindre des parties (multi-joueur) |
 | **Profils** | Authentification, avatars, scores |
 | **Bots** | Interface pour créer des IA joueurs |
-| **Entraînement ML** | Mode accéléré pour entraîner des modèles |
 
 ## Architecture
 
-### Jeux autonomes
+### Tools (outils standalone)
 
-Chaque jeu est une **mini-application autonome** jouable directement :
+Outils simples, un fichier HTML, pas de backend :
+
+```
+tools/json-formatter.html    # Tout-en-un, ouvrable directement
+```
+
+### Games (jeux autonomes)
+
+Mini-applications avec moteur de règles :
 
 ```
 games/tic-tac-toe/
-├── index.html      # Double-clic = ça marche !
-├── engine.ts       # Moteur de règles (pur, isomorphe)
-└── game.json       # Manifest pour la plateforme
+├── index.html      # Jouable directement
+├── engine.ts       # Moteur isomorphe (pur, déterministe)
+└── game.json       # Manifest
 ```
 
-### Plateforme (optionnelle)
+### Plateforme
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      PLATEFORME                              │
-│  Catalogue │ Lobby │ Profils │ Scores │ Multi-joueur        │
+│                    PLAYLAB42 (statique)                      │
+│  Catalogue unifié : Tools + Games                            │
+│  [🔧 Outils]  [🎮 Jeux]  [Recherche...]                     │
 └─────────────────────────────────────────────────────────────┘
                               │
-                         iframe + SDK
+                         iframe / lien
                               │
 ┌─────────────────────────────────────────────────────────────┐
-│                    JEUX AUTONOMES                            │
-│  Tic-Tac-Toe │ Snake │ Poker │ ... (standalone ou connecté) │
+│              TOOLS & GAMES AUTONOMES                         │
+│  JSON Formatter │ Base64 │ Tic-Tac-Toe │ Snake │ ...        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Backend (multi-joueur)
+### Backend (optionnel, multi-joueur)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -62,17 +72,26 @@ games/tic-tac-toe/
 └─────────────────────────────────────────────────────────────┘
 ```
 
-Le backend est **virtualisable** : mode localStorage pour jouer sans serveur.
+Le backend est **virtualisable** : mode localStorage pour fonctionner sans serveur.
 
-## Méthodologie
+## Environnement Docker-first
 
-Le développement suit le workflow **OpenSpec** :
+**Tout tourne dans Docker**, rien sur le host :
 
-1. **Proposal** : Décrire le changement avant de coder
-2. **Apply** : Implémenter selon le plan validé
-3. **Archive** : Documenter après déploiement
+```bash
+# Initialiser (build + up + install)
+make init
 
-Voir `openspec/AGENTS.md` pour les détails.
+# Lancer le shell de développement
+make shell
+
+# Commandes npm (dans le container)
+make npm CMD="install lodash"
+make npm CMD="run build"
+
+# Serveur de dev
+make dev
+```
 
 ## Démarrage rapide
 
@@ -80,7 +99,7 @@ Voir `openspec/AGENTS.md` pour les détails.
 # Cloner et se positionner
 cd playlab42
 
-# Initialiser l'environnement
+# Initialiser l'environnement Docker
 make init
 
 # Lancer Claude Code
@@ -94,15 +113,18 @@ make claude
 
 ```
 playlab42/
-├── games/              # Jeux autonomes (jouables directement)
+├── tools/              # Outils HTML standalone
+│   ├── json-formatter.html
+│   └── base64-encoder.html
+├── games/              # Jeux autonomes
 │   ├── tic-tac-toe/
-│   │   ├── index.html  # Point d'entrée standalone
-│   │   ├── engine.ts   # Moteur isomorphe
-│   │   └── game.json   # Manifest
+│   │   ├── index.html
+│   │   ├── engine.ts
+│   │   └── game.json
 │   └── snake/
 ├── src/
 │   ├── core/           # Types partagés, SDK, utilitaires
-│   ├── platform/       # Shell, catalogue, lobby (optionnel)
+│   ├── platform/       # Catalogue, lobby (optionnel)
 │   └── server/         # Backend multi-joueur (optionnel)
 ├── docs/               # Documentation
 ├── openspec/           # Spécifications et changes
@@ -113,9 +135,8 @@ playlab42/
 
 - [Features MVP](./docs/FEATURES.md) - Liste complète des fonctionnalités
 - [Concepts](./docs/CONCEPTS.md) - Définitions et glossaire
-- [Guide création de jeu](./docs/guides/create-game.md) - Tutoriel pas à pas
-- [Référence SDK](./docs/reference/sdk.md) - API client
-- [Référence Game Engine](./docs/reference/game-engine.md) - Interface moteur
+- [Guide création d'outil](./docs/guides/create-tool.md) - Créer un tool
+- [Guide création de jeu](./docs/guides/create-game.md) - Créer un game
 
 ## Le "42"
 

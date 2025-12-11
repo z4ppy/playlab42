@@ -6,6 +6,38 @@ Définitions des termes et concepts utilisés dans le projet.
 
 ## Entités principales
 
+### Tool (Outil)
+
+Un outil HTML standalone, inspiré des "HTML Tools" de Simon Willison :
+
+- **Un fichier** : HTML + CSS + JS dans un seul fichier
+- **Autonome** : Ouvrable directement (double-clic)
+- **Sans backend** : Tout tourne dans le navigateur
+- **Simple** : Quelques centaines de lignes max
+
+```
+tools/json-formatter.html    # Double-clic = ça marche !
+```
+
+**Exemples** : JSON formatter, Base64 encoder, Color picker, Regex tester...
+
+#### Tool Manifest (optionnel)
+
+Si le tool est dans un dossier :
+
+```typescript
+interface ToolManifest {
+  id: string;           // "json-formatter"
+  name: string;         // "JSON Formatter"
+  description: string;
+  author: string;
+  tags: string[];       // ["json", "dev-tools"]
+  icon?: string;        // Emoji ou URL
+}
+```
+
+---
+
 ### Game (Jeu)
 
 Un jeu est un module complet comprenant :

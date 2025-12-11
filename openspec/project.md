@@ -2,9 +2,10 @@
 
 ## Vision
 
-**Playlab42** est une plateforme pédagogique de mini-jeux collaboratifs destinée à :
+**Playlab42** est une plateforme pédagogique de mini-jeux et outils collaboratifs destinée à :
 
-- **Formation dev assistée par IA** : Les participants créent des jeux pendant les sessions
+- **Formation dev assistée par IA** : Les participants créent des outils et jeux pendant les sessions
+- **Outils standalone** : HTML tools simples et utiles (style Simon Willison)
 - **Entraînement de bots** : Interface pour développer et tester des IA joueuses
 - **Expérimentation ML** : Mode accéléré pour entraîner des réseaux de neurones
 - **Vitrine collaborative** : Le projet s'enrichit des contributions de chaque formation
@@ -52,6 +53,29 @@ Ce projet est un **support de cours**, le code doit être exemplaire :
 - Chaque contribution suit le workflow OpenSpec
 - Documentation au fil de l'eau
 
+### Docker-first
+
+**Tout tourne dans Docker**, rien sur le host :
+- npm, node, et tous les outils sont containerisés
+- Le développement se fait via `make shell` ou `make dev`
+- Garantit un environnement reproductible pour tous
+
+```bash
+# Initialiser l'environnement
+make init
+
+# Shell de développement
+make shell
+
+# Commandes npm (dans le container)
+make npm CMD="install lodash"
+make npm CMD="run test"
+
+# Ne JAMAIS faire directement sur le host :
+# npm install  ❌
+# node xxx.js  ❌
+```
+
 ## Stack technique
 
 | Aspect | Choix |
@@ -84,29 +108,29 @@ Ce projet est un **support de cours**, le code doit être exemplaire :
 
 ```
 playlab42/
-├── games/                   # Jeux autonomes (priorité)
+├── tools/                   # Outils HTML standalone
+│   └── [tool-name].html     # Un fichier = un outil
+├── games/                   # Jeux autonomes
 │   └── [game-id]/
-│       ├── index.html       # Point d'entrée standalone (jouable seul)
+│       ├── index.html       # Point d'entrée standalone
 │       ├── engine.ts        # Moteur isomorphe (optionnel si inline)
 │       ├── bot.ts           # Bot exemple (optionnel)
-│       └── game.json        # Manifest pour la plateforme
+│       └── game.json        # Manifest
 ├── src/
 │   ├── core/                # Partagé
 │   │   ├── types/           # Interfaces communes
-│   │   ├── sdk/             # PlayLabSDK (optionnel, pour multi)
+│   │   ├── sdk/             # PlayLabSDK (optionnel)
 │   │   └── utils/           # SeededRandom, helpers
-│   ├── platform/            # Shell (optionnel)
-│   │   ├── catalog/         # Liste des jeux
-│   │   ├── lobby/           # Création/join parties
-│   │   └── profile/         # Profil utilisateur
-│   └── server/              # Backend (optionnel, pour multi)
+│   ├── platform/            # Catalogue (optionnel)
+│   │   └── index.html       # Liste tools + games
+│   └── server/              # Backend (optionnel)
 │       ├── api/             # Routes REST
 │       ├── ws/              # WebSocket
 │       └── sessions/        # Gestion parties
 └── docs/                    # Documentation
 ```
 
-**Note** : Les jeux sont en dehors de `src/` car ce sont des apps autonomes.
+**Note** : Les tools et games sont en dehors de `src/` car ce sont des apps autonomes.
 
 ## Types de jeux supportés
 
@@ -141,6 +165,11 @@ Chaque module doit avoir :
 - Types bien documentés (JSDoc)
 - Tests unitaires
 - Exemples d'utilisation
+
+Chaque tool doit avoir :
+- Titre et description dans le HTML
+- Commentaires explicatifs
+- Optionnel : `tool.json` pour le catalogue
 
 Chaque jeu doit avoir :
 - `game.json` (manifest complet)
