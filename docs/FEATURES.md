@@ -150,11 +150,11 @@ Liste complète des fonctionnalités à implémenter, organisées par phase.
 
 ### Guides
 
-- [ ] Architecture générale
-- [ ] Créer un outil (HTML tool)
-- [ ] Créer un moteur de jeu
-- [ ] Créer un client de jeu
-- [ ] Créer un bot
+- [x] Architecture générale
+- [x] Créer un outil (HTML tool)
+- [x] Créer un moteur de jeu
+- [x] Créer un client de jeu
+- [x] Créer un bot
 
 ### Templates
 
