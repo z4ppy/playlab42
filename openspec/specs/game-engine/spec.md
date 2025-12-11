@@ -9,6 +9,8 @@ Le GameEngine est l'interface abstraite que tous les moteurs de jeu doivent impl
 - **Pureté** : Pas d'effets de bord, pas d'I/O
 - **Sérialisation** : État 100% JSON
 
+**Voir aussi** : [Bot Specification](../bot/spec.md) pour l'intégration des IA.
+
 ## Requirements
 
 ### Requirement: Isomorphism
@@ -62,6 +64,20 @@ The system SHALL support partial information games.
 #### Scenario: Hidden information
 - **WHEN** a player requests their view
 - **THEN** they only see information they should know
+
+### Requirement: Bot Integration
+
+The system SHALL support pluggable bots for non-human players.
+
+#### Scenario: Solo game
+- **WHEN** a multiplayer game is started with only one human
+- **THEN** bots fill the remaining player slots
+
+#### Scenario: Bot selection
+- **WHEN** configuring a game
+- **THEN** each slot can be set to human, bot (with choice), or disabled
+
+See [Bot Specification](../bot/spec.md) for full details.
 
 ## Interface
 

@@ -58,6 +58,14 @@ Créer les spécifications techniques fondamentales dans `openspec/specs/` :
 - Algorithme (reproductibilité)
 - Utilisation dans les moteurs
 
+### 6. `bot.spec.md` - Interface Bot (IA)
+
+- Interface Bot abstraite (isomorphe)
+- Configuration des slots joueurs (humain/bot/disabled)
+- Types de bots (Random, Greedy, Minimax)
+- Game Runner pour orchestrer humains et bots
+- Bots par défaut en mode solo
+
 ### Specs reportées (version future avec backend)
 
 Les specs suivantes seront créées quand le backend sera implémenté :
@@ -76,6 +84,7 @@ Les specs suivantes seront créées quand le backend sera implémenté :
 | `game-engine.spec.md` | Interface moteur de jeu |
 | `manifests.spec.md` | Formats game.json, tool.json |
 | `seeded-random.spec.md` | Générateur aléatoire |
+| `bot.spec.md` | Interface Bot (IA) et configuration slots |
 
 ### Specs reportées
 

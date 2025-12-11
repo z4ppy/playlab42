@@ -14,6 +14,7 @@ Cette proposal crée les spécifications techniques fondamentales du projet (ver
 | Catalogue | `openspec/specs/catalogue/spec.md` | Base de données JSON des tools/games |
 | SeededRandom | `openspec/specs/seeded-random/spec.md` | Générateur aléatoire |
 | GameEngine | `openspec/specs/game-engine/spec.md` | Interface moteur de jeu |
+| Bot | `openspec/specs/bot/spec.md` | Interface Bot (IA) et configuration slots |
 | Manifests | `openspec/specs/manifests/spec.md` | Formats tool.json, game.json |
 
 ## Specs reportées (version avec backend)

@@ -32,6 +32,13 @@
   - Gestion des ticks (temps réel)
   - Méthodes obligatoires vs optionnelles
 
+- [ ] Créer `openspec/specs/bot/spec.md`
+  - Interface Bot abstraite (isomorphe client/serveur)
+  - Configuration slots joueurs (humain/bot/disabled)
+  - Types de bots (Random, Greedy, Minimax)
+  - Game Runner pour orchestrer la partie
+  - Bots par défaut en mode solo
+
 - [ ] Créer `openspec/specs/manifests/spec.md`
   - Interface ToolManifest
   - Interface GameManifest
