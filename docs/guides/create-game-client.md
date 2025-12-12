@@ -38,9 +38,20 @@ games/mon-jeu/
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon Jeu - Playlab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
   <style>
-    /* Styles */
+    /* Vos styles - utilisez les variables CSS */
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
+      transition: background-color var(--transition-normal);
+    }
   </style>
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
 </head>
 <body>
   <!-- Écran de configuration -->
@@ -61,31 +72,35 @@ games/mon-jeu/
   </div>
 
   <script type="module">
+    import { $, $$, on } from '/lib/dom.js';
     // Code du client
   </script>
 </body>
 </html>
 ```
 
-### 2. Variables CSS Playlab42
+### 2. Utiliser le système de thèmes
+
+Importez `lib/theme.css` pour avoir accès aux variables de design. Les thèmes dark/light sont gérés automatiquement.
 
 ```css
-:root {
-  --bg: #1a1a2e;
-  --bg-secondary: #16213e;
-  --text: #eee;
-  --text-muted: #888;
-  --accent: #e94560;
-  --accent-hover: #ff6b6b;
-  --success: #4ade80;
-  --error: #ef4444;
-  --border: #333;
-}
+/* Variables principales disponibles */
+--color-bg              /* Fond principal */
+--color-bg-secondary    /* Fond secondaire */
+--color-bg-card         /* Fond des cartes */
+--color-text            /* Texte principal */
+--color-accent          /* Couleur d'accent */
+--color-success         /* Succès (victoire) */
+--color-error           /* Erreur (défaite) */
+--color-player-x        /* Couleur joueur X */
+--color-player-o        /* Couleur joueur O */
+--color-win             /* Couleur ligne gagnante */
 ```
 
 ### 3. Importer les dépendances
 
 ```javascript
+import { $, $$, on } from '/lib/dom.js';
 import { MonJeuEngine } from './engine.js';
 import { SeededRandom } from '/lib/seeded-random.js';
 import { RandomBot } from './bots/random.js';

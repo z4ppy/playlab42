@@ -3,18 +3,21 @@
  * @see openspec/specs/portal/spec.md
  */
 
+import { $, on, delegate, escapeHtml, cloneTemplate, debounce } from './lib/dom.js';
+import { getTheme, setTheme, THEMES } from './lib/theme.js';
+
 // === État de l'application ===
 const state = {
   currentView: 'catalogue',
-  activeTab: 'tools', // Onglet par défaut
+  activeTab: 'tools',
   currentGame: null,
   catalogue: null,
   preferences: {
     sound: true,
-    pseudo: 'Anonyme'
+    pseudo: 'Anonyme',
   },
   recentGames: [],
-  activeFilter: ''
+  activeFilter: '',
 };
 
 // === Constantes ===
@@ -22,49 +25,59 @@ const STORAGE_KEYS = {
   PLAYER: 'player',
   PREFERENCES: 'preferences',
   RECENT: 'recent_games',
-  ACTIVE_TAB: 'playlab42.activeTab'
+  ACTIVE_TAB: 'playlab42.activeTab',
 };
 const MAX_RECENT = 5;
 
-// === Éléments DOM ===
-const elements = {
+// === Éléments DOM (cache) ===
+const el = {
   // Views
-  viewCatalogue: document.getElementById('view-catalogue'),
-  viewGame: document.getElementById('view-game'),
-  viewSettings: document.getElementById('view-settings'),
+  viewCatalogue: $('#view-catalogue'),
+  viewGame: $('#view-game'),
+  viewSettings: $('#view-settings'),
 
   // Catalogue
-  search: document.getElementById('search'),
-  filters: document.getElementById('filters'),
-  cardsGames: document.getElementById('cards-games'),
-  cardsTools: document.getElementById('cards-tools'),
-  emptyGames: document.getElementById('empty-games'),
-  emptyTools: document.getElementById('empty-tools'),
+  search: $('#search'),
+  filters: $('#filters'),
+  cardsGames: $('#cards-games'),
+  cardsTools: $('#cards-tools'),
+  emptyGames: $('#empty-games'),
+  emptyTools: $('#empty-tools'),
 
   // Tabs
-  tabTools: document.getElementById('tab-tools'),
-  tabGames: document.getElementById('tab-games'),
-  panelTools: document.getElementById('panel-tools'),
-  panelGames: document.getElementById('panel-games'),
+  tabTools: $('#tab-tools'),
+  tabGames: $('#tab-games'),
+  panelTools: $('#panel-tools'),
+  panelGames: $('#panel-games'),
 
   // Game
-  gameTitle: document.getElementById('game-title'),
-  gameIframe: document.getElementById('game-iframe'),
-  loading: document.getElementById('loading'),
-  btnBack: document.getElementById('btn-back'),
-  btnFullscreen: document.getElementById('btn-fullscreen'),
-  btnSound: document.getElementById('btn-sound'),
+  gameTitle: $('#game-title'),
+  gameIframe: $('#game-iframe'),
+  loading: $('#loading'),
+  btnBack: $('#btn-back'),
+  btnFullscreen: $('#btn-fullscreen'),
+  btnSound: $('#btn-sound'),
 
   // Settings
-  btnSettings: document.getElementById('btn-settings'),
-  btnCloseSettings: document.getElementById('btn-close-settings'),
-  inputPseudo: document.getElementById('input-pseudo'),
-  soundOn: document.getElementById('sound-on'),
-  soundOff: document.getElementById('sound-off'),
-  btnClearData: document.getElementById('btn-clear-data')
+  btnSettings: $('#btn-settings'),
+  btnCloseSettings: $('#btn-close-settings'),
+  inputPseudo: $('#input-pseudo'),
+  soundOn: $('#sound-on'),
+  soundOff: $('#sound-off'),
+  themeSystem: $('#theme-system'),
+  themeDark: $('#theme-dark'),
+  themeLight: $('#theme-light'),
+  btnClearData: $('#btn-clear-data'),
 };
 
 // === Utilitaires ===
+
+/**
+ * Met à jour l'état et déclenche un re-render si nécessaire
+ */
+function setState(updates) {
+  Object.assign(state, updates);
+}
 
 /**
  * Charge les préférences depuis localStorage
@@ -93,7 +106,7 @@ function loadPreferences() {
       state.activeTab = activeTab;
     }
   } catch (e) {
-    console.warn('Failed to load preferences:', e);
+    console.warn('Erreur chargement préférences:', e);
   }
 }
 
@@ -107,7 +120,7 @@ function savePreferences() {
     localStorage.setItem(STORAGE_KEYS.RECENT, JSON.stringify(state.recentGames));
     localStorage.setItem(STORAGE_KEYS.ACTIVE_TAB, state.activeTab);
   } catch (e) {
-    console.warn('Failed to save preferences:', e);
+    console.warn('Erreur sauvegarde préférences:', e);
   }
 }
 
@@ -115,11 +128,8 @@ function savePreferences() {
  * Ajoute un jeu/outil aux récents
  */
 function addToRecent(id, type) {
-  // Retirer si déjà présent
   state.recentGames = state.recentGames.filter(r => r.id !== id);
-  // Ajouter en premier
   state.recentGames.unshift({ id, type, timestamp: Date.now() });
-  // Limiter
   state.recentGames = state.recentGames.slice(0, MAX_RECENT);
   savePreferences();
 }
@@ -128,14 +138,12 @@ function addToRecent(id, type) {
 
 /**
  * Change l'onglet actif
- * @param {string} tab - 'tools' ou 'games'
  */
 function switchTab(tab) {
-  if (tab !== 'tools' && tab !== 'games') return;
-  if (state.activeTab === tab) return;
+  if (tab !== 'tools' && tab !== 'games') {return;}
+  if (state.activeTab === tab) {return;}
 
-  state.activeTab = tab;
-  state.activeFilter = ''; // Reset filter on tab change
+  setState({ activeTab: tab, activeFilter: '' });
   savePreferences();
   updateTabUI();
   renderCatalogue();
@@ -145,15 +153,13 @@ function switchTab(tab) {
  * Met à jour l'UI des onglets
  */
 function updateTabUI() {
-  // Tabs
-  elements.tabTools.classList.toggle('active', state.activeTab === 'tools');
-  elements.tabTools.setAttribute('aria-selected', state.activeTab === 'tools');
-  elements.tabGames.classList.toggle('active', state.activeTab === 'games');
-  elements.tabGames.setAttribute('aria-selected', state.activeTab === 'games');
+  el.tabTools.classList.toggle('active', state.activeTab === 'tools');
+  el.tabTools.setAttribute('aria-selected', state.activeTab === 'tools');
+  el.tabGames.classList.toggle('active', state.activeTab === 'games');
+  el.tabGames.setAttribute('aria-selected', state.activeTab === 'games');
 
-  // Panels
-  elements.panelTools.classList.toggle('active', state.activeTab === 'tools');
-  elements.panelGames.classList.toggle('active', state.activeTab === 'games');
+  el.panelTools.classList.toggle('active', state.activeTab === 'tools');
+  el.panelGames.classList.toggle('active', state.activeTab === 'games');
 }
 
 // === Catalogue ===
@@ -164,13 +170,17 @@ function updateTabUI() {
 async function loadCatalogue() {
   try {
     const response = await fetch('/data/catalogue.json');
-    if (!response.ok) throw new Error('Catalogue not found');
-    state.catalogue = await response.json();
+    if (!response.ok) {throw new Error('Catalogue introuvable');}
+    setState({ catalogue: await response.json() });
     renderCatalogue();
   } catch (e) {
-    console.error('Failed to load catalogue:', e);
-    elements.cardsGames.innerHTML = '<p class="error">Erreur de chargement du catalogue</p>';
-    elements.cardsTools.innerHTML = '';
+    console.error('Erreur chargement catalogue:', e);
+    el.cardsGames.textContent = '';
+    el.cardsTools.textContent = '';
+    const errorEl = document.createElement('p');
+    errorEl.className = 'error';
+    errorEl.textContent = 'Erreur de chargement du catalogue';
+    el.cardsGames.appendChild(errorEl);
   }
 }
 
@@ -178,7 +188,7 @@ async function loadCatalogue() {
  * Extrait tous les tags uniques de l'onglet actif
  */
 function getTagsForCurrentTab() {
-  if (!state.catalogue) return [];
+  if (!state.catalogue) {return [];}
   const items = state.activeTab === 'games' ? state.catalogue.games : state.catalogue.tools;
   const tags = new Set();
   items.forEach(item => {
@@ -188,58 +198,90 @@ function getTagsForCurrentTab() {
 }
 
 /**
+ * Crée un élément filtre
+ */
+function createFilterElement(tag, isActive) {
+  const fragment = cloneTemplate('filter-template');
+  const btn = fragment.querySelector('.filter');
+  btn.textContent = tag || 'Tous';
+  btn.dataset.tag = tag;
+  if (isActive) {btn.classList.add('active');}
+  return fragment;
+}
+
+/**
  * Rend les filtres de tags pour l'onglet actif
  */
 function renderFilters() {
   const tags = getTagsForCurrentTab();
-  elements.filters.innerHTML = `
-    <button class="filter ${state.activeFilter === '' ? 'active' : ''}" data-tag="">Tous</button>
-    ${tags.map(tag => `
-      <button class="filter ${state.activeFilter === tag ? 'active' : ''}" data-tag="${tag}">${tag}</button>
-    `).join('')}
-  `;
+  el.filters.textContent = '';
+
+  // Filtre "Tous"
+  el.filters.appendChild(createFilterElement('', state.activeFilter === ''));
+
+  // Filtres par tag
+  for (const tag of tags) {
+    el.filters.appendChild(createFilterElement(tag, state.activeFilter === tag));
+  }
 }
 
 /**
- * Crée le HTML d'une carte
+ * Crée un élément carte
  */
-function createCard(item, type) {
-  const thumbSrc = type === 'game'
-    ? item.path.replace('index.html', 'thumb.png')
-    : null;
+function createCardElement(item, type) {
+  const fragment = cloneTemplate('card-template');
+  const card = fragment.querySelector('.card');
+  const thumb = fragment.querySelector('.card-thumb');
+  const title = fragment.querySelector('h3');
+  const desc = fragment.querySelector('p');
+  const tagsContainer = fragment.querySelector('.card-tags');
 
-  return `
-    <div class="card" data-id="${item.id}" data-type="${type}" data-path="${item.path}">
-      <div class="card-thumb">
-        ${thumbSrc
-          ? `<img src="${thumbSrc}" alt="${item.name}" loading="lazy" onerror="this.parentElement.textContent='${item.icon || '🎮'}'">`
-          : (item.icon || '🔧')
-        }
-      </div>
-      <div class="card-info">
-        <h3>${item.icon ? item.icon + ' ' : ''}${item.name}</h3>
-        <p>${item.description}</p>
-        ${item.tags?.length ? `
-          <div class="card-tags">
-            ${item.tags.slice(0, 3).map(t => `<span class="card-tag">${t}</span>`).join('')}
-          </div>
-        ` : ''}
-      </div>
-    </div>
-  `;
+  // Data attributes
+  card.dataset.id = item.id;
+  card.dataset.type = type;
+  card.dataset.path = item.path;
+
+  // Thumbnail
+  if (type === 'game') {
+    const thumbSrc = item.path.replace('index.html', 'thumb.png');
+    const img = document.createElement('img');
+    img.src = thumbSrc;
+    img.alt = escapeHtml(item.name);
+    img.loading = 'lazy';
+    img.onerror = () => {
+      thumb.textContent = item.icon || '🎮';
+    };
+    thumb.appendChild(img);
+  } else {
+    thumb.textContent = item.icon || '🔧';
+  }
+
+  // Info
+  title.textContent = (item.icon ? `${item.icon  } ` : '') + escapeHtml(item.name);
+  desc.textContent = escapeHtml(item.description);
+
+  // Tags
+  if (item.tags?.length) {
+    for (const tag of item.tags.slice(0, 3)) {
+      const tagFragment = cloneTemplate('tag-template');
+      const tagEl = tagFragment.querySelector('.card-tag');
+      tagEl.textContent = escapeHtml(tag);
+      tagsContainer.appendChild(tagFragment);
+    }
+  }
+
+  return fragment;
 }
 
 /**
  * Filtre les items selon la recherche et le tag actif
  */
 function filterItems(items) {
-  const search = elements.search.value.toLowerCase().trim();
+  const search = el.search.value.toLowerCase().trim();
   return items.filter(item => {
-    // Filtre par tag
     if (state.activeFilter && !item.tags?.includes(state.activeFilter)) {
       return false;
     }
-    // Filtre par recherche
     if (search) {
       const searchable = `${item.name} ${item.description}`.toLowerCase();
       if (!searchable.includes(search)) {
@@ -254,22 +296,26 @@ function filterItems(items) {
  * Rend le catalogue (onglet actif uniquement)
  */
 function renderCatalogue() {
-  if (!state.catalogue) return;
+  if (!state.catalogue) {return;}
 
   renderFilters();
 
-  // Tools (si onglet actif)
   if (state.activeTab === 'tools') {
     const filteredTools = filterItems(state.catalogue.tools);
-    elements.cardsTools.innerHTML = filteredTools.map(t => createCard(t, 'tool')).join('');
-    elements.emptyTools.classList.toggle('visible', filteredTools.length === 0 && state.catalogue.tools.length > 0);
+    el.cardsTools.textContent = '';
+    for (const tool of filteredTools) {
+      el.cardsTools.appendChild(createCardElement(tool, 'tool'));
+    }
+    el.emptyTools.classList.toggle('visible', filteredTools.length === 0 && state.catalogue.tools.length > 0);
   }
 
-  // Games (si onglet actif)
   if (state.activeTab === 'games') {
     const filteredGames = filterItems(state.catalogue.games);
-    elements.cardsGames.innerHTML = filteredGames.map(g => createCard(g, 'game')).join('');
-    elements.emptyGames.classList.toggle('visible', filteredGames.length === 0 && state.catalogue.games.length > 0);
+    el.cardsGames.textContent = '';
+    for (const game of filteredGames) {
+      el.cardsGames.appendChild(createCardElement(game, 'game'));
+    }
+    el.emptyGames.classList.toggle('visible', filteredGames.length === 0 && state.catalogue.games.length > 0);
   }
 }
 
@@ -279,35 +325,32 @@ function renderCatalogue() {
  * Charge un jeu/outil dans l'iframe
  */
 function loadGame(path, name, type, id) {
-  state.currentGame = { path, name, type, id };
-  state.currentView = 'game';
+  setState({
+    currentGame: { path, name, type, id },
+    currentView: 'game',
+  });
 
-  // UI
-  elements.viewCatalogue.classList.remove('active');
-  elements.viewSettings.classList.remove('active');
-  elements.viewGame.classList.add('active');
-  elements.gameTitle.textContent = name;
-  elements.loading.classList.remove('hidden');
+  el.viewCatalogue.classList.remove('active');
+  el.viewSettings.classList.remove('active');
+  el.viewGame.classList.add('active');
+  el.gameTitle.textContent = escapeHtml(name);
+  el.loading.classList.remove('hidden');
 
-  // Charger l'iframe
-  elements.gameIframe.src = path;
-
-  // Ajouter aux récents
+  el.gameIframe.src = path;
   addToRecent(id, type);
 
-  // Timeout de chargement
   const timeout = setTimeout(() => {
-    elements.loading.innerHTML = '<p>Chargement lent...</p>';
+    el.loading.textContent = 'Chargement lent...';
   }, 5000);
 
-  elements.gameIframe.onload = () => {
+  el.gameIframe.onload = () => {
     clearTimeout(timeout);
-    elements.loading.classList.add('hidden');
+    el.loading.classList.add('hidden');
   };
 
-  elements.gameIframe.onerror = () => {
+  el.gameIframe.onerror = () => {
     clearTimeout(timeout);
-    elements.loading.innerHTML = '<p>Erreur de chargement</p>';
+    el.loading.textContent = 'Erreur de chargement';
   };
 }
 
@@ -315,20 +358,20 @@ function loadGame(path, name, type, id) {
  * Décharge le jeu et retourne au catalogue
  */
 function unloadGame() {
-  // Notifier le jeu
-  if (elements.gameIframe.contentWindow) {
-    elements.gameIframe.contentWindow.postMessage({ type: 'unload' }, '*');
+  if (el.gameIframe.contentWindow) {
+    el.gameIframe.contentWindow.postMessage({ type: 'unload' }, '*');
   }
 
-  // Attendre un peu puis décharger
   setTimeout(() => {
-    elements.gameIframe.src = 'about:blank';
-    state.currentGame = null;
-    state.currentView = 'catalogue';
+    el.gameIframe.src = 'about:blank';
+    setState({
+      currentGame: null,
+      currentView: 'catalogue',
+    });
 
-    elements.viewGame.classList.remove('active');
-    elements.viewSettings.classList.remove('active');
-    elements.viewCatalogue.classList.add('active');
+    el.viewGame.classList.remove('active');
+    el.viewSettings.classList.remove('active');
+    el.viewCatalogue.classList.add('active');
     document.body.classList.remove('fullscreen');
   }, 100);
 }
@@ -348,47 +391,52 @@ function toggleSound() {
   updateSoundButton();
   savePreferences();
 
-  // Notifier le jeu
-  if (elements.gameIframe.contentWindow) {
-    elements.gameIframe.contentWindow.postMessage({
+  if (el.gameIframe.contentWindow) {
+    el.gameIframe.contentWindow.postMessage({
       type: 'preference',
       key: 'sound',
-      value: state.preferences.sound
+      value: state.preferences.sound,
     }, '*');
   }
 }
 
 function updateSoundButton() {
-  elements.btnSound.textContent = state.preferences.sound ? '🔊' : '🔇';
+  el.btnSound.textContent = state.preferences.sound ? '🔊' : '🔇';
 }
 
 // === Settings ===
 
 function showSettings() {
-  state.currentView = 'settings';
-  elements.viewCatalogue.classList.remove('active');
-  elements.viewGame.classList.remove('active');
-  elements.viewSettings.classList.add('active');
+  setState({ currentView: 'settings' });
+  el.viewCatalogue.classList.remove('active');
+  el.viewGame.classList.remove('active');
+  el.viewSettings.classList.add('active');
 
-  // Remplir les valeurs
-  elements.inputPseudo.value = state.preferences.pseudo;
+  el.inputPseudo.value = state.preferences.pseudo;
   updateSoundToggles();
+  updateThemeToggles();
 }
 
 function hideSettings() {
-  // Sauvegarder le pseudo
-  const newPseudo = elements.inputPseudo.value.trim() || 'Anonyme';
+  const newPseudo = el.inputPseudo.value.trim() || 'Anonyme';
   state.preferences.pseudo = newPseudo;
   savePreferences();
 
-  state.currentView = 'catalogue';
-  elements.viewSettings.classList.remove('active');
-  elements.viewCatalogue.classList.add('active');
+  setState({ currentView: 'catalogue' });
+  el.viewSettings.classList.remove('active');
+  el.viewCatalogue.classList.add('active');
 }
 
 function updateSoundToggles() {
-  elements.soundOn.classList.toggle('active', state.preferences.sound);
-  elements.soundOff.classList.toggle('active', !state.preferences.sound);
+  el.soundOn.classList.toggle('active', state.preferences.sound);
+  el.soundOff.classList.toggle('active', !state.preferences.sound);
+}
+
+function updateThemeToggles() {
+  const theme = getTheme();
+  el.themeSystem.classList.toggle('active', theme === THEMES.SYSTEM);
+  el.themeDark.classList.toggle('active', theme === THEMES.DARK);
+  el.themeLight.classList.toggle('active', theme === THEMES.LIGHT);
 }
 
 function setSoundPreference(enabled) {
@@ -398,12 +446,16 @@ function setSoundPreference(enabled) {
   savePreferences();
 }
 
+function setThemePreference(theme) {
+  setTheme(theme);
+  updateThemeToggles();
+}
+
 function clearAllData() {
   if (!confirm('Effacer toutes les données (scores, progression, préférences) ?')) {
     return;
   }
 
-  // Effacer tout le localStorage lié à Playlab42
   const keysToRemove = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
@@ -415,12 +467,10 @@ function clearAllData() {
   }
   keysToRemove.forEach(key => localStorage.removeItem(key));
 
-  // Reset state
   state.preferences = { sound: true, pseudo: 'Anonyme' };
   state.recentGames = [];
 
-  // Update UI
-  elements.inputPseudo.value = 'Anonyme';
+  el.inputPseudo.value = 'Anonyme';
   updateSoundToggles();
 
   alert('Données effacées');
@@ -429,57 +479,43 @@ function clearAllData() {
 // === Event Listeners ===
 
 function setupEventListeners() {
-  // Catalogue - click sur carte
-  document.addEventListener('click', (e) => {
-    const card = e.target.closest('.card');
-    if (card) {
-      const path = card.dataset.path;
-      const id = card.dataset.id;
-      const type = card.dataset.type;
-      const name = card.querySelector('h3').textContent;
-      loadGame(path, name, type, id);
-    }
+  // Catalogue - click sur carte (délégation)
+  delegate(document, 'click', '.card', (card) => {
+    const { path, id, type } = card.dataset;
+    const name = card.querySelector('h3').textContent;
+    loadGame(path, name, type, id);
   });
 
   // Catalogue - onglets
-  elements.tabTools.addEventListener('click', () => switchTab('tools'));
-  elements.tabGames.addEventListener('click', () => switchTab('games'));
+  on(el.tabTools, 'click', () => switchTab('tools'));
+  on(el.tabGames, 'click', () => switchTab('games'));
 
-  // Catalogue - filtres
-  elements.filters.addEventListener('click', (e) => {
-    const btn = e.target.closest('.filter');
-    if (btn) {
-      state.activeFilter = btn.dataset.tag;
-      renderCatalogue();
-    }
+  // Catalogue - filtres (délégation)
+  delegate(el.filters, 'click', '.filter', (btn) => {
+    setState({ activeFilter: btn.dataset.tag });
+    renderCatalogue();
   });
 
   // Catalogue - recherche
-  let searchDebounce;
-  elements.search.addEventListener('input', () => {
-    clearTimeout(searchDebounce);
-    searchDebounce = setTimeout(renderCatalogue, 200);
-  });
+  on(el.search, 'input', debounce(renderCatalogue, 200));
 
-  // Game - retour
-  elements.btnBack.addEventListener('click', unloadGame);
-
-  // Game - fullscreen
-  elements.btnFullscreen.addEventListener('click', toggleFullscreen);
-
-  // Game - son
-  elements.btnSound.addEventListener('click', toggleSound);
+  // Game - contrôles
+  on(el.btnBack, 'click', unloadGame);
+  on(el.btnFullscreen, 'click', toggleFullscreen);
+  on(el.btnSound, 'click', toggleSound);
 
   // Settings
-  elements.btnSettings.addEventListener('click', showSettings);
-  elements.btnCloseSettings.addEventListener('click', hideSettings);
-  elements.soundOn.addEventListener('click', () => setSoundPreference(true));
-  elements.soundOff.addEventListener('click', () => setSoundPreference(false));
-  elements.btnClearData.addEventListener('click', clearAllData);
+  on(el.btnSettings, 'click', showSettings);
+  on(el.btnCloseSettings, 'click', hideSettings);
+  on(el.soundOn, 'click', () => setSoundPreference(true));
+  on(el.soundOff, 'click', () => setSoundPreference(false));
+  on(el.themeSystem, 'click', () => setThemePreference(THEMES.SYSTEM));
+  on(el.themeDark, 'click', () => setThemePreference(THEMES.DARK));
+  on(el.themeLight, 'click', () => setThemePreference(THEMES.LIGHT));
+  on(el.btnClearData, 'click', clearAllData);
 
-  // Keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
-    // Escape - fermer jeu ou settings
+  // Raccourcis clavier
+  on(document, 'keydown', (e) => {
     if (e.key === 'Escape') {
       if (state.currentView === 'game') {
         unloadGame();
@@ -488,53 +524,44 @@ function setupEventListeners() {
       }
     }
 
-    // F - fullscreen (en jeu)
     if (e.key === 'f' && state.currentView === 'game') {
       toggleFullscreen();
     }
 
-    // M - mute (en jeu)
     if (e.key === 'm' && state.currentView === 'game') {
       toggleSound();
     }
 
-    // / - focus recherche (au catalogue)
     if (e.key === '/' && state.currentView === 'catalogue') {
       e.preventDefault();
-      elements.search.focus();
+      el.search.focus();
     }
 
-    // 1 - onglet Outils (au catalogue)
     if (e.key === '1' && state.currentView === 'catalogue' && document.activeElement.tagName !== 'INPUT') {
       switchTab('tools');
     }
 
-    // 2 - onglet Jeux (au catalogue)
     if (e.key === '2' && state.currentView === 'catalogue' && document.activeElement.tagName !== 'INPUT') {
       switchTab('games');
     }
   });
 
   // Messages du jeu
-  window.addEventListener('message', (e) => {
-    if (!e.data || !e.data.type) return;
+  on(window, 'message', (e) => {
+    if (!e.data || !e.data.type) {return;}
 
     switch (e.data.type) {
       case 'ready':
-        console.log(`[Portal] Game ready: ${e.data.game}`);
+        console.log(`[Portal] Jeu prêt: ${e.data.game}`);
         break;
-
       case 'score':
         console.log(`[Portal] Score: ${e.data.score}`);
-        // Optionnel: afficher un toast
         break;
-
       case 'quit':
         unloadGame();
         break;
-
       case 'error':
-        console.error(`[Portal] Game error:`, e.data.error);
+        console.error('[Portal] Erreur jeu:', e.data.error);
         break;
     }
   });
@@ -550,5 +577,4 @@ async function init() {
   await loadCatalogue();
 }
 
-// Lancer
 init();

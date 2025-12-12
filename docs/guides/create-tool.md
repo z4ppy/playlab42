@@ -8,9 +8,10 @@ Créer un outil simple et autonome qui sera intégré au catalogue du portail.
 
 **Caractéristiques d'un outil :**
 - Un seul fichier HTML (tout inclus : CSS + JS)
-- Aucune dépendance externe
+- Utilise `lib/theme.css` pour les styles et thèmes
+- Utilise `lib/dom.js` pour les utilitaires DOM
 - Utile et pratique
-- Style cohérent avec la plateforme
+- Style cohérent avec la plateforme (dark/light)
 
 ## Prérequis
 
@@ -40,36 +41,49 @@ Créez un fichier `tools/mon-outil.html` avec la structure suivante :
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon Outil - Playlab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
   <style>
-    /* Styles ici */
+    /* Vos styles ici - utilisez les variables CSS */
   </style>
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
 </head>
 <body>
   <!-- Interface ici -->
-  <script>
+  <script type="module">
+    import { $, on, escapeHtml, debounce } from '/lib/dom.js';
     // Logique ici
   </script>
 </body>
 </html>
 ```
 
-### 2. Utiliser les variables CSS de la plateforme
+### 2. Utiliser les variables CSS du thème
 
-Pour un style cohérent, utilisez ces variables :
+Importez `lib/theme.css` pour avoir accès aux variables de design :
 
 ```css
-:root {
-  --bg: #1a1a2e;           /* Fond principal */
-  --bg-secondary: #16213e;  /* Fond secondaire */
-  --text: #eee;             /* Texte principal */
-  --text-muted: #888;       /* Texte secondaire */
-  --accent: #e94560;        /* Couleur d'accent */
-  --accent-hover: #ff6b6b;  /* Accent au survol */
-  --success: #4ade80;       /* Succès */
-  --error: #ef4444;         /* Erreur */
-  --border: #333;           /* Bordures */
-}
+/* Variables disponibles */
+--color-bg           /* Fond principal */
+--color-bg-secondary /* Fond secondaire */
+--color-bg-card      /* Fond des cartes */
+--color-text         /* Texte principal */
+--color-text-muted   /* Texte secondaire */
+--color-accent       /* Couleur d'accent */
+--color-accent-hover /* Accent au survol */
+--color-success      /* Succès */
+--color-error        /* Erreur */
+--color-border       /* Bordures */
+--space-sm/md/lg/xl  /* Espacements */
+--radius-sm/md/lg    /* Rayons de bordure */
+--transition-normal  /* Transitions */
+--font-family        /* Police système */
+--font-mono          /* Police monospace */
 ```
+
+Le thème (dark/light) est géré automatiquement via `lib/theme.js`.
 
 ### 3. Créer le manifest (optionnel mais recommandé)
 
@@ -329,20 +343,23 @@ Voici un outil simple qui compte les mots et caractères d'un texte.
 ### Structure du code
 
 1. **Un seul fichier** : Tout le CSS et JS dans le HTML
-2. **Pas de dépendances** : Vanilla JS uniquement
+2. **Imports** : Utilisez `lib/theme.css`, `lib/dom.js`, `lib/theme.js`
 3. **Responsive** : Fonctionne sur mobile et desktop
 
 ### Style
 
-1. **Variables CSS** : Utilisez les couleurs de la plateforme
-2. **Cohérence** : Header avec titre, main, footer
-3. **Accessibilité** : Labels, placeholders, contraste
+1. **Variables CSS** : Utilisez `var(--color-bg)`, etc. depuis theme.css
+2. **Support thèmes** : Les variables s'adaptent automatiquement dark/light
+3. **Transitions** : Ajoutez `transition: background-color var(--transition-normal)` pour une transition fluide
+4. **Cohérence** : Header avec titre, main, footer
+5. **Accessibilité** : Labels, placeholders, contraste
 
 ### JavaScript
 
-1. **Commentaires** : En français
-2. **Fonctions pures** : Faciles à tester
-3. **Événements** : `addEventListener` plutôt que `onclick`
+1. **Utilitaires DOM** : Utilisez `$()`, `on()`, `escapeHtml()` depuis lib/dom.js
+2. **Sécurité XSS** : Toujours `escapeHtml()` sur les entrées utilisateur
+3. **Commentaires** : En français
+4. **Fonctions pures** : Faciles à tester
 
 ### Performance
 

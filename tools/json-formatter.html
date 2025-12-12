@@ -4,19 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JSON Formatter - Playlab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
   <style>
-    :root {
-      --bg: #1a1a2e;
-      --bg-secondary: #16213e;
-      --text: #eee;
-      --text-muted: #888;
-      --accent: #e94560;
-      --accent-hover: #ff6b6b;
-      --success: #4ade80;
-      --error: #ef4444;
-      --border: #333;
-    }
-
     * {
       margin: 0;
       padding: 0;
@@ -24,64 +13,66 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      transition: background-color var(--transition-normal), color var(--transition-normal);
     }
 
     header {
-      padding: 1rem;
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border);
+      padding: var(--space-md);
+      background: var(--color-bg-secondary);
+      border-bottom: 1px solid var(--color-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: background-color var(--transition-normal), border-color var(--transition-normal);
     }
 
     header h1 {
-      font-size: 1.25rem;
+      font-size: var(--font-size-lg);
       font-weight: 600;
     }
 
     header h1 span {
-      color: var(--accent);
+      color: var(--color-accent);
     }
 
     .actions {
       display: flex;
-      gap: 0.5rem;
+      gap: var(--space-sm);
     }
 
     button {
-      padding: 0.5rem 1rem;
+      padding: var(--space-sm) var(--space-md);
       border: none;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      font-size: 0.875rem;
+      font-size: var(--font-size-sm);
       font-weight: 500;
-      transition: all 0.2s;
+      transition: all var(--transition-normal);
     }
 
     button.primary {
-      background: var(--accent);
+      background: var(--color-accent);
       color: white;
     }
 
     button.primary:hover {
-      background: var(--accent-hover);
+      background: var(--color-accent-hover);
     }
 
     button.secondary {
-      background: var(--bg);
-      color: var(--text);
-      border: 1px solid var(--border);
+      background: var(--color-bg);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
     }
 
     button.secondary:hover {
-      background: var(--border);
+      background: var(--color-border);
     }
 
     main {
@@ -89,7 +80,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: var(--border);
+      background: var(--color-border);
     }
 
     @media (max-width: 768px) {
@@ -100,101 +91,110 @@
     }
 
     .panel {
-      background: var(--bg);
+      background: var(--color-bg);
       display: flex;
       flex-direction: column;
+      transition: background-color var(--transition-normal);
     }
 
     .panel-header {
-      padding: 0.75rem 1rem;
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border);
+      padding: 0.75rem var(--space-md);
+      background: var(--color-bg-secondary);
+      border-bottom: 1px solid var(--color-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: background-color var(--transition-normal), border-color var(--transition-normal);
     }
 
     .panel-header h2 {
-      font-size: 0.875rem;
+      font-size: var(--font-size-sm);
       font-weight: 500;
-      color: var(--text-muted);
+      color: var(--color-text-muted);
     }
 
     .status {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
+      font-size: var(--font-size-xs);
+      padding: var(--space-xs) var(--space-sm);
       border-radius: 3px;
     }
 
     .status.valid {
-      background: rgba(74, 222, 128, 0.1);
-      color: var(--success);
+      background: var(--color-success-light);
+      color: var(--color-success);
     }
 
     .status.invalid {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--error);
+      background: var(--color-error-light);
+      color: var(--color-error);
     }
 
     textarea {
       flex: 1;
-      padding: 1rem;
-      background: var(--bg);
+      padding: var(--space-md);
+      background: var(--color-bg);
       border: none;
-      color: var(--text);
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      font-size: 0.875rem;
+      color: var(--color-text);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-sm);
       line-height: 1.5;
       resize: none;
       outline: none;
+      transition: background-color var(--transition-normal), color var(--transition-normal);
     }
 
     textarea::placeholder {
-      color: var(--text-muted);
+      color: var(--color-text-muted);
     }
 
     .output {
       flex: 1;
-      padding: 1rem;
+      padding: var(--space-md);
       overflow: auto;
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      font-size: 0.875rem;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-sm);
       line-height: 1.5;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
     .output.error {
-      color: var(--error);
+      color: var(--color-error);
     }
 
-    /* Syntaxe highlighting basique */
-    .string { color: #a8db8f; }
-    .number { color: #f4b752; }
-    .boolean { color: #da70d6; }
-    .null { color: #888; }
-    .key { color: #88c8ff; }
+    /* Coloration syntaxique */
+    .string { color: var(--color-syntax-string); }
+    .number { color: var(--color-syntax-number); }
+    .boolean { color: var(--color-syntax-boolean); }
+    .null { color: var(--color-syntax-null); }
+    .key { color: var(--color-syntax-key); }
 
     footer {
-      padding: 0.5rem 1rem;
-      background: var(--bg-secondary);
-      border-top: 1px solid var(--border);
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-bg-secondary);
+      border-top: 1px solid var(--color-border);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
       display: flex;
       justify-content: space-between;
+      transition: background-color var(--transition-normal), border-color var(--transition-normal);
     }
 
     .kbd {
       display: inline-block;
       padding: 0.1rem 0.4rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
       border-radius: 3px;
-      font-family: monospace;
-      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      transition: background-color var(--transition-normal), border-color var(--transition-normal);
     }
   </style>
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
 </head>
 <body>
   <header>
@@ -233,28 +233,30 @@
     <span><span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> pour formater</span>
   </footer>
 
-  <script>
+  <script type="module">
+    import { $, on, debounce, escapeHtml } from '/lib/dom.js';
+
     // Éléments DOM
-    const inputEl = document.getElementById('input');
-    const outputEl = document.getElementById('output');
-    const statusEl = document.getElementById('status');
-    const sizeEl = document.getElementById('size');
-    const btnFormat = document.getElementById('btn-format');
-    const btnMinify = document.getElementById('btn-minify');
-    const btnCopy = document.getElementById('btn-copy');
+    const inputEl = $('#input');
+    const outputEl = $('#output');
+    const statusEl = $('#status');
+    const sizeEl = $('#size');
+    const btnFormat = $('#btn-format');
+    const btnMinify = $('#btn-minify');
+    const btnCopy = $('#btn-copy');
 
     // État
     let lastValidJSON = null;
-    let indentSize = 2;
+    const indentSize = 2;
 
     /**
-     * Applique la coloration syntaxique au JSON
+     * Applique la coloration syntaxique au JSON (sans innerHTML dangereux)
      */
     function highlightJSON(json) {
-      return json
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+      // Échapper le HTML d'abord
+      const escaped = escapeHtml(json);
+      // Puis appliquer les classes de coloration
+      return escaped
         .replace(/"([^"\\]*(\\.[^"\\]*)*)"\s*:/g, '<span class="key">"$1"</span>:')
         .replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, '<span class="string">"$1"</span>')
         .replace(/\b(-?\d+\.?\d*)\b/g, '<span class="number">$1</span>')
@@ -304,7 +306,7 @@
      */
     function minifyJSON() {
       if (!lastValidJSON) {
-        formatJSON(); // Essayer de parser d'abord
+        formatJSON();
         if (!lastValidJSON) return;
       }
 
@@ -331,7 +333,7 @@
           btnCopy.textContent = originalText;
         }, 1500);
       } catch (e) {
-        console.error('Copy failed:', e);
+        console.error('Erreur copie:', e);
       }
     }
 
@@ -345,19 +347,15 @@
     }
 
     // Event listeners
-    btnFormat.addEventListener('click', formatJSON);
-    btnMinify.addEventListener('click', minifyJSON);
-    btnCopy.addEventListener('click', copyOutput);
+    on(btnFormat, 'click', formatJSON);
+    on(btnMinify, 'click', minifyJSON);
+    on(btnCopy, 'click', copyOutput);
 
     // Auto-format au fur et à mesure (débounce)
-    let debounceTimer;
-    inputEl.addEventListener('input', () => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(formatJSON, 300);
-    });
+    on(inputEl, 'input', debounce(formatJSON, 300));
 
     // Raccourci clavier Ctrl+Enter
-    inputEl.addEventListener('keydown', (e) => {
+    on(inputEl, 'keydown', (e) => {
       if (e.ctrlKey && e.key === 'Enter') {
         e.preventDefault();
         formatJSON();
@@ -372,7 +370,7 @@
         inputEl.value = decodeURIComponent(jsonParam);
         formatJSON();
       } catch (e) {
-        console.error('Failed to load JSON from URL:', e);
+        console.error('Erreur chargement JSON depuis URL:', e);
       }
     }
 

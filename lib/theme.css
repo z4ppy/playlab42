@@ -1,0 +1,138 @@
+/**
+ * Playlab42 - Système de thèmes
+ * Design tokens et variables CSS centralisées
+ */
+
+/* === Thème Dark (défaut) === */
+:root {
+  /* Couleurs de fond */
+  --color-bg: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-bg-card: #0f3460;
+  --color-bg-hover: #1a4a7a;
+
+  /* Couleurs de texte */
+  --color-text: #eee;
+  --color-text-muted: #888;
+  --color-text-inverse: #1a1a2e;
+
+  /* Couleurs d'accent */
+  --color-accent: #e94560;
+  --color-accent-hover: #ff6b6b;
+  --color-accent-light: rgba(233, 69, 96, 0.1);
+
+  /* Couleurs sémantiques */
+  --color-success: #4ade80;
+  --color-success-light: rgba(74, 222, 128, 0.1);
+  --color-error: #ef4444;
+  --color-error-light: rgba(239, 68, 68, 0.1);
+  --color-warning: #f4b752;
+  --color-info: #4fc3f7;
+
+  /* Bordures et ombres */
+  --color-border: #333;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Jeux - couleurs spécifiques */
+  --color-player-x: #e94560;
+  --color-player-o: #4fc3f7;
+  --color-win: #4ade80;
+
+  /* Syntaxe JSON */
+  --color-syntax-string: #a8db8f;
+  --color-syntax-number: #f4b752;
+  --color-syntax-boolean: #da70d6;
+  --color-syntax-null: #888;
+  --color-syntax-key: #88c8ff;
+
+  /* Espacements */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Rayons de bordure */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Typographie */
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Monaco', 'Menlo', 'Consolas', monospace;
+  --font-size-xs: 0.7rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-fullscreen: 1000;
+}
+
+/* === Thème Light === */
+[data-theme="light"] {
+  /* Couleurs de fond */
+  --color-bg: #f5f5f5;
+  --color-bg-secondary: #ffffff;
+  --color-bg-card: #e8e8e8;
+  --color-bg-hover: #d0d0d0;
+
+  /* Couleurs de texte */
+  --color-text: #1a1a2e;
+  --color-text-muted: #666;
+  --color-text-inverse: #eee;
+
+  /* Bordures et ombres */
+  --color-border: #ccc;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Syntaxe JSON (ajustée pour fond clair) */
+  --color-syntax-string: #2e7d32;
+  --color-syntax-number: #d84315;
+  --color-syntax-boolean: #7b1fa2;
+  --color-syntax-null: #666;
+  --color-syntax-key: #1565c0;
+}
+
+/* === Respect des préférences système === */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    /* Couleurs de fond */
+    --color-bg: #f5f5f5;
+    --color-bg-secondary: #ffffff;
+    --color-bg-card: #e8e8e8;
+    --color-bg-hover: #d0d0d0;
+
+    /* Couleurs de texte */
+    --color-text: #1a1a2e;
+    --color-text-muted: #666;
+    --color-text-inverse: #eee;
+
+    /* Bordures et ombres */
+    --color-border: #ccc;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+
+    /* Syntaxe JSON */
+    --color-syntax-string: #2e7d32;
+    --color-syntax-number: #d84315;
+    --color-syntax-boolean: #7b1fa2;
+    --color-syntax-null: #666;
+    --color-syntax-key: #1565c0;
+  }
+}
+
+/* === Transition de thème === */
+[data-theme-transition] {
+  transition: background-color var(--transition-normal),
+              color var(--transition-normal),
+              border-color var(--transition-normal);
+}

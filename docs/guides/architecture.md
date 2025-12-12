@@ -68,15 +68,58 @@ games/
 
 ### 4. Bibliothèques partagées (`lib/`)
 
-Code réutilisable entre les jeux :
+Code réutilisable entre les jeux et le portail :
 
 ```
 lib/
+├── dom.js            # Utilitaires DOM ($, $$, on, escapeHtml, cloneTemplate)
+├── theme.css         # Système de thèmes (variables CSS, dark/light)
+├── theme.js          # Gestion des thèmes (getTheme, setTheme, initTheme)
 ├── seeded-random.js  # Générateur aléatoire déterministe
 ├── game-engine.js    # Interface commune des moteurs
 ├── bot.js            # Interface commune des bots
 └── gamekit.js        # SDK pour la communication portail/jeu
 ```
+
+#### Utilitaires DOM (`lib/dom.js`)
+
+Helpers légers pour manipuler le DOM sans framework :
+
+```javascript
+import { $, $$, on, delegate, escapeHtml, cloneTemplate, debounce } from '/lib/dom.js';
+
+// Sélecteurs courts
+const btn = $('#btn-start');
+const cells = $$('.cell');
+
+// Gestion d'événements
+on(btn, 'click', handler);
+delegate(document, 'click', '.card', (card) => { ... });
+
+// Sécurité XSS
+element.textContent = escapeHtml(userInput);
+
+// Templates HTML natifs
+const fragment = cloneTemplate('card-template');
+```
+
+#### Système de thèmes (`lib/theme.css` + `lib/theme.js`)
+
+Support de thèmes dark/light avec respect des préférences système :
+
+```javascript
+import { initTheme, setTheme, getTheme, THEMES } from '/lib/theme.js';
+
+// Initialiser au chargement (évite le flash)
+initTheme();
+
+// Changer de thème
+setTheme(THEMES.DARK);   // Force dark
+setTheme(THEMES.LIGHT);  // Force light
+setTheme(THEMES.SYSTEM); // Suit prefers-color-scheme
+```
+
+Variables CSS disponibles : `--color-bg`, `--color-text`, `--color-accent`, etc.
 
 ### 5. Données (`data/`)
 
