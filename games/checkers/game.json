@@ -1,0 +1,42 @@
+{
+  "id": "checkers",
+  "name": "Dames",
+  "description": "Jeu de dames françaises (10×10) - Capturez toutes les pièces adverses pour gagner",
+  "players": {
+    "min": 2,
+    "max": 2
+  },
+  "type": "turn-based",
+  "tags": ["strategy", "classic", "2-players", "board-game"],
+  "author": "Playlab42",
+  "icon": "⚫",
+  "version": "1.0.0",
+  "controls": "mouse",
+  "orientation": "any",
+  "minWidth": 500,
+  "minHeight": 600,
+  "bots": {
+    "default": "Smart",
+    "available": [
+      {
+        "name": "Random",
+        "file": "bots/random.js",
+        "difficulty": "easy",
+        "description": "Joue des coups aléatoires"
+      },
+      {
+        "name": "Smart",
+        "file": "bots/smart.js",
+        "difficulty": "medium",
+        "description": "Utilise l'algorithme Minimax pour jouer de manière stratégique"
+      }
+    ]
+  },
+  "rules": {
+    "boardSize": "10x10",
+    "piecesPerPlayer": 20,
+    "promotion": "Dame en atteignant la dernière rangée",
+    "captureRules": "Prise obligatoire, prises multiples possibles",
+    "winCondition": "Éliminer toutes les pièces adverses ou les bloquer"
+  }
+}

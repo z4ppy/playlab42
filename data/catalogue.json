@@ -34,6 +34,25 @@
       "type": "turn-based",
       "author": "Cyrille",
       "icon": "⭕"
+    },
+    {
+      "id": "checkers",
+      "name": "Dames",
+      "description": "Jeu de dames françaises (10×10) - Capturez toutes les pièces adverses pour gagner",
+      "path": "games/checkers/index.html",
+      "players": {
+        "min": 2,
+        "max": 2
+      },
+      "tags": [
+        "strategy",
+        "classic",
+        "2-players",
+        "board-game"
+      ],
+      "type": "turn-based",
+      "author": "Playlab42",
+      "icon": "⚫"
     }
   ]
 }

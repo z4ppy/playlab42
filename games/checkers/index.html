@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeu de Dames - Playlab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-md);
+      transition: background-color var(--transition-normal), color var(--transition-normal);
+    }
+
+    h1 {
+      font-size: var(--font-size-xl);
+      margin-bottom: var(--space-md);
+      text-align: center;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+
+    .info-panel {
+      text-align: center;
+      padding: var(--space-md);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+      min-width: 300px;
+    }
+
+    .status {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+    }
+
+    .player-turn {
+      color: var(--color-accent);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(10, 50px);
+      grid-template-rows: repeat(10, 50px);
+      gap: 0;
+      border: 2px solid var(--color-border);
+      background: #F5DEB3;
+    }
+
+    .square {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.2s;
+    }
+
+    .square.dark {
+      background: #8B4513;
+    }
+
+    .square.light {
+      background: #F5DEB3;
+      cursor: default;
+    }
+
+    .square.selected {
+      outline: 3px solid #FFD700;
+      outline-offset: -3px;
+    }
+
+    .square.possible-move {
+      background-image: radial-gradient(circle, #90EE90 30%, transparent 30%);
+    }
+
+    .square.possible-move.dark {
+      background-color: #8B4513;
+      background-image: radial-gradient(circle, #90EE90 30%, transparent 30%);
+    }
+
+    .piece {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: transform 0.2s;
+    }
+
+    .piece:hover {
+      transform: scale(1.1);
+    }
+
+    .piece.white {
+      background: linear-gradient(145deg, #ffffff, #e0e0e0);
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    .piece.black {
+      background: linear-gradient(145deg, #333, #111);
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .piece.king::after {
+      content: '♛';
+      color: #FFD700;
+      font-size: 28px;
+    }
+
+    .controls {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    .btn {
+      padding: var(--space-md) var(--space-lg);
+      background: var(--color-accent);
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-size: var(--font-size-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition-normal);
+    }
+
+    .btn:hover {
+      background: var(--color-accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--color-bg-secondary);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-border);
+    }
+
+    @media (max-width: 600px) {
+      .board {
+        grid-template-columns: repeat(10, 35px);
+        grid-template-rows: repeat(10, 35px);
+      }
+
+      .square {
+        width: 35px;
+        height: 35px;
+      }
+
+      .piece {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+      }
+
+      .piece.king::after {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎲 Jeu de Dames</h1>
+  
+  <div class="game-container">
+    <div class="info-panel">
+      <div class="status" id="status">Tour du joueur Blanc</div>
+      <div id="captures-info"></div>
+      
+      <div style="margin-top: 1rem;">
+        <label>Joueur Blanc: 
+          <select id="white-player">
+            <option value="human">Humain</option>
+            <option value="random">Bot Random</option>
+            <option value="smart">Bot Smart</option>
+          </select>
+        </label>
+      </div>
+      
+      <div style="margin-top: 0.5rem;">
+        <label>Joueur Noir: 
+          <select id="black-player">
+            <option value="human">Humain</option>
+            <option value="random">Bot Random</option>
+            <option value="smart" selected>Bot Smart</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="controls">
+      <button class="btn" id="new-game">Nouvelle Partie</button>
+      <button class="btn btn-primary" id="start-game" style="display:none;">Démarrer</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { CheckersEngine } from './engine.js';
+
+    const engine = new CheckersEngine();
+    let state = null;
+    let selectedSquare = null;
+    let possibleMoves = [];
+    let bots = { random: null, smart: null };
+    let playerTypes = { 0: 'human', 1: 'smart' }; // Par défaut: Humain vs Bot
+    let gameStarted = false; // Pour gérer le démarrage
+
+    const statusEl = document.getElementById('status');
+    const boardEl = document.getElementById('board');
+    const newGameBtn = document.getElementById('new-game');
+    const startGameBtn = document.getElementById('start-game');
+    const whitePlayerSelect = document.getElementById('white-player');
+    const blackPlayerSelect = document.getElementById('black-player');
+
+    // Charger les bots
+    async function loadBots() {
+      try {
+        const [RandomBot, SmartBot] = await Promise.all([
+          import('./bots/random.js'),
+          import('./bots/smart.js')
+        ]);
+        bots.random = new RandomBot.default();
+        bots.smart = new SmartBot.default();
+      } catch (error) {
+        console.error('Erreur chargement bots:', error);
+        // Fallback: initialiser sans bots
+        bots.random = null;
+        bots.smart = null;
+      }
+    }
+
+    // Initialiser une nouvelle partie
+    function newGame() {
+      console.log('Nouvelle partie...');
+      try {
+        state = engine.init({
+          seed: Date.now(),
+          playerIds: ['player1', 'player2']
+        });
+        console.log('État initial:', state);
+        selectedSquare = null;
+        possibleMoves = [];
+        playerTypes[0] = whitePlayerSelect.value;
+        playerTypes[1] = blackPlayerSelect.value;
+        console.log('Types de joueurs:', playerTypes);
+        gameStarted = false;
+        
+        // Afficher le bouton Start si les blancs ne sont pas humains
+        if (playerTypes[0] !== 'human') {
+          startGameBtn.style.display = 'inline-block';
+        } else {
+          startGameBtn.style.display = 'none';
+          gameStarted = true;
+        }
+        
+        render();
+        
+        // Démarrer automatiquement si les blancs sont humains
+        if (gameStarted) {
+          checkBotTurn();
+        }
+      } catch (error) {
+        console.error('Erreur lors de l\'initialisation:', error);
+        alert('Erreur: ' + error.message);
+      }
+    }
+    
+    // Démarrer le jeu (pour bot vs bot ou bot vs humain quand bot commence)
+    function startGame() {
+      gameStarted = true;
+      startGameBtn.style.display = 'none';
+      checkBotTurn();
+    }
+
+    // Vérifier si c'est au tour d'un bot
+    async function checkBotTurn() {
+      if (state.status !== 'playing' || !gameStarted) return;
+      
+      const currentPlayerType = playerTypes[state.currentPlayer];
+      if (currentPlayerType !== 'human') {
+        // Attendre que les bots soient chargés
+        if (!bots[currentPlayerType]) {
+          console.log('En attente du chargement des bots...');
+          await new Promise(resolve => setTimeout(resolve, 100));
+          checkBotTurn(); // Réessayer
+          return;
+        }
+        
+        // Attendre un peu pour que le joueur voit le plateau
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const bot = bots[currentPlayerType];
+        try {
+          const playerId = state.playerIds[state.currentPlayer];
+          const validActions = engine.getValidActions(state, playerId);
+          
+          if (validActions.length > 0) {
+            // Créer un RNG simple pour le bot
+            const rng = {
+              pick: (arr) => arr[Math.floor(Math.random() * arr.length)]
+            };
+            
+            const move = bot.chooseAction(state, validActions, rng);
+            if (move) {
+              state = engine.applyAction(state, move, playerId);
+              render();
+              // Continuer si c'est toujours un bot
+              checkBotTurn();
+            }
+          }
+        } catch (error) {
+          console.error('Erreur bot:', error);
+        }
+      }
+    }
+
+    // Rendu du plateau
+    function render() {
+      boardEl.innerHTML = '';
+
+      for (let row = 0; row < 10; row++) {
+        for (let col = 0; col < 10; col++) {
+          const square = document.createElement('div');
+          square.className = 'square';
+          square.dataset.row = row;
+          square.dataset.col = col;
+
+          // Damier : cases noires si (row + col) est impair
+          if ((row + col) % 2 === 1) {
+            square.classList.add('dark');
+          } else {
+            square.classList.add('light');
+          }
+
+          // Pièce
+          const piece = state.board[row][col];
+          if (piece) {
+            const pieceEl = document.createElement('div');
+            pieceEl.className = `piece ${piece.player === 0 ? 'white' : 'black'}`;
+            if (piece.type === 'king') {
+              pieceEl.classList.add('king');
+            }
+            square.appendChild(pieceEl);
+          }
+
+          // Cases sélectionnées et coups possibles
+          if (selectedSquare && selectedSquare.row === row && selectedSquare.col === col) {
+            square.classList.add('selected');
+          }
+
+          if (possibleMoves.some(m => m.to.row === row && m.to.col === col)) {
+            square.classList.add('possible-move');
+          }
+
+          square.addEventListener('click', () => handleSquareClick(row, col));
+          boardEl.appendChild(square);
+        }
+      }
+
+      updateStatus();
+    }
+
+    // Gérer le clic sur une case
+    function handleSquareClick(row, col) {
+      if (state.status !== 'playing') return;
+      
+      // Bloquer si c'est le tour d'un bot
+      const currentPlayerType = playerTypes[state.currentPlayer];
+      if (currentPlayerType !== 'human') return;
+
+      const piece = state.board[row][col];
+      const currentPlayer = state.currentPlayer;
+
+      // Si on clique sur une de nos pièces, la sélectionner
+      if (piece && piece.player === currentPlayer) {
+        selectedSquare = { row, col };
+        const playerId = state.playerIds[currentPlayer];
+        const allMoves = engine.getValidActions(state, playerId);
+        possibleMoves = allMoves.filter(m => m.from.row === row && m.from.col === col);
+        render();
+        return;
+      }
+
+      // Si on a une pièce sélectionnée et qu'on clique sur un coup possible
+      if (selectedSquare) {
+        const move = possibleMoves.find(m => m.to.row === row && m.to.col === col);
+        if (move) {
+          try {
+            const playerId = state.playerIds[currentPlayer];
+            state = engine.applyAction(state, move, playerId);
+            selectedSquare = null;
+            possibleMoves = [];
+            render();
+            checkBotTurn(); // Vérifier si c'est au tour d'un bot après
+          } catch (error) {
+            console.error('Erreur:', error);
+            alert('Mouvement invalide!');
+          }
+        }
+      }
+    }
+
+    // Mettre à jour le statut
+    function updateStatus() {
+      if (state.status === 'won') {
+        const winnerName = state.winner === 0 ? 'Blanc' : 'Noir';
+        statusEl.textContent = `🏆 Victoire du joueur ${winnerName}!`;
+        statusEl.style.color = 'var(--color-success, green)';
+      } else if (state.status === 'draw') {
+        statusEl.textContent = 'Match nul';
+        statusEl.style.color = 'var(--color-warning, orange)';
+      } else {
+        const playerName = state.currentPlayer === 0 ? 'Blanc' : 'Noir';
+        statusEl.textContent = `Tour du joueur ${playerName}`;
+        statusEl.style.color = 'var(--color-text)';
+      }
+    }
+
+    // Events
+    newGameBtn.addEventListener('click', newGame);
+    startGameBtn.addEventListener('click', startGame);
+
+    // Initialisation
+    loadBots().then(() => {
+      newGame();
+    });
+  </script>
+</body>
+</html>

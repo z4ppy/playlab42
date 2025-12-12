@@ -1,11 +1,13 @@
 # Catalogue Specification
 
+## Purpose
+
+The catalogue provides a centralized registry of all available tools and games in the Playlab42 platform. It is generated at build time by scanning manifest files and serves as the data source for the portal interface.
+
 ## Overview
 
 Le catalogue est une base de données JSON statique qui référence tous les tools et games disponibles. Il est généré au moment du build en scannant les manifests (`tool.json`, `game.json`).
-
 ## Requirements
-
 ### Requirement: Build-time Generation
 
 The system SHALL generate the catalogue at build time.
@@ -37,6 +39,34 @@ The system SHALL provide the catalogue for frontend consumption.
 #### Scenario: Fetch catalogue
 - **WHEN** the catalogue HTML page loads
 - **THEN** it fetches `catalogue.json` and displays tools/games
+
+### Requirement: Checkers Game Entry
+
+The system SHALL include a checkers game in the game catalogue.
+
+#### Scenario: Game metadata
+- **GIVEN** the catalogue is loaded
+- **WHEN** the checkers game entry is retrieved
+- **THEN** it has id "checkers"
+- **AND** it has name "Dames" or "Checkers"
+- **AND** it has a French description
+- **AND** it specifies 2 players (min and max)
+- **AND** it is tagged as "strategy" and "classic"
+
+#### Scenario: Bot configuration
+- **GIVEN** the checkers game entry
+- **WHEN** bot configuration is accessed
+- **THEN** it lists at least 2 available bots
+- **AND** it includes a "Random" bot (easy difficulty)
+- **AND** it includes a "Smart" bot (medium or hard difficulty)
+- **AND** each bot specifies its file path
+
+#### Scenario: Game asset paths
+- **GIVEN** the checkers game entry
+- **WHEN** the game is loaded
+- **THEN** it points to "games/checkers/index.html"
+- **AND** it points to "games/checkers/engine.js"
+- **AND** all referenced files exist
 
 ## Interface
 
