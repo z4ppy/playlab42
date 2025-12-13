@@ -177,4 +177,5 @@ Créer `.github/PULL_REQUEST_TEMPLATE.md` :
 
 ## Statut
 
-- [ ] En attente de validation
+- [x] Implémenté et déployé le 2025-12-13
+- Commit: 8f58b82 - "Ajout du guide de contribution et template PR"

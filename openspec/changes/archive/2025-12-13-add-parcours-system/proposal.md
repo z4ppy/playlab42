@@ -318,4 +318,5 @@ Script `build:parcours` qui :
 
 ## Statut
 
-- [ ] En attente de validation
+- [x] Implémenté et déployé le 2025-12-13
+- Commit: eb741a1 - "Ajout du système de parcours pédagogiques (MVP)"
