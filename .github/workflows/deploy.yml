@@ -1,0 +1,64 @@
+# Workflow de déploiement GitHub Pages
+# Build le catalogue et les parcours, puis déploie sur GitHub Pages
+
+name: Deploy to GitHub Pages
+
+on:
+  # Déclenché sur push vers main
+  push:
+    branches: [main]
+
+  # Permet le déclenchement manuel depuis l'onglet Actions
+  workflow_dispatch:
+
+# Permissions nécessaires pour GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un seul déploiement à la fois
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Job de build
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Build des données (catalogue, parcours, bookmarks)
+        run: npm run build
+
+      - name: Configuration de GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload de l'artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Déploie tout le répertoire racine
+          path: '.'
+
+  # Job de déploiement
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Déploiement sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
