@@ -18,9 +18,10 @@ Plateforme pédagogique de mini-jeux et outils collaboratifs pour la formation d
 
 | Feature | Description |
 |---------|-------------|
-| **Catalogue** | Liste des outils et jeux avec recherche/filtres |
+| **Catalogue** | Liste des outils, jeux et parcours avec recherche/filtres |
 | **Tools** | Outils HTML standalone (JSON formatter, encodeurs, etc.) |
 | **Games** | Mini-jeux avec moteur isomorphe |
+| **Parcours** | Contenus pédagogiques en slides HTML (Epics) |
 | **Lobby** | Créer ou rejoindre des parties (multi-joueur) |
 | **Profils** | Authentification, avatars, scores |
 | **Bots** | Interface pour créer des IA joueurs |
@@ -117,18 +118,21 @@ make claude
 ```
 playlab42/
 ├── tools/              # Outils HTML standalone
-│   ├── json-formatter.html
-│   └── base64-encoder.html
+│   └── mon-outil/
+│       ├── index.html
+│       └── tool.json
 ├── games/              # Jeux autonomes
-│   ├── tic-tac-toe/
-│   │   ├── index.html
-│   │   ├── engine.ts
-│   │   └── game.json
-│   └── snake/
-├── src/
-│   ├── core/           # Types partagés, SDK, utilitaires
-│   ├── platform/       # Catalogue, lobby (optionnel)
-│   └── server/         # Backend multi-joueur (optionnel)
+│   └── mon-jeu/
+│       ├── index.html
+│       ├── engine.js
+│       ├── bots.js
+│       └── game.json
+├── parcours/           # Contenus pédagogiques
+│   └── epics/
+│       └── mon-epic/
+│           ├── epic.json
+│           └── slides/
+├── lib/                # Bibliothèques partagées (thème, utilitaires)
 ├── docs/               # Documentation
 ├── openspec/           # Spécifications et changes
 └── .claude/            # Configuration Claude Code
@@ -140,6 +144,24 @@ playlab42/
 - [Concepts](./docs/CONCEPTS.md) - Définitions et glossaire
 - [Guide création d'outil](./docs/guides/create-tool.md) - Créer un tool
 - [Guide création de jeu](./docs/guides/create-game.md) - Créer un game
+- [Guide de contribution](./docs/guides/contributing.md) - Contribuer au projet
+
+## Contribuer
+
+PlayLab42 s'enrichit des contributions de chaque session de formation. Vous pouvez contribuer :
+
+- **Tools** : Outils HTML standalone (JSON formatter, encodeurs, etc.)
+- **Games** : Mini-jeux avec moteur isomorphe et bots
+- **Epics** : Parcours pédagogiques en slides HTML
+
+### Workflow
+
+1. Fork le projet sur GitHub
+2. Créez votre contenu selon le type (voir [guide de contribution](./docs/guides/contributing.md))
+3. Testez en local avec `make serve`
+4. Ouvrez une Pull Request
+
+Consultez le [guide complet de contribution](./docs/guides/contributing.md) pour les détails.
 
 ## Le "42"
 
