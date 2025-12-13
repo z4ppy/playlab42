@@ -18,11 +18,11 @@
 
 - [x] **3.1** Populer avec 10+ bookmarks de démo (12 bookmarks)
 - [x] **3.2** Mettre à jour specs
-- [ ] **3.3** Tests manuels (build + lint)
+- [x] **3.3** Tests manuels (build + lint)
 
 ## Validation
 
-- [ ] Build OK (`make build-bookmarks`)
-- [ ] Lint OK
-- [ ] Onglet fonctionnel avec preview
-- [ ] 10+ bookmarks affichés
+- [x] Build OK (`make build-bookmarks`)
+- [x] Lint OK
+- [x] Onglet fonctionnel avec preview
+- [x] 10+ bookmarks affichés
