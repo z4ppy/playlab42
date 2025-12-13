@@ -35,6 +35,9 @@
         <button class="tab" role="tab" aria-selected="false" aria-controls="panel-games" id="tab-games" data-tab="games">
           🎮 Jeux
         </button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-bookmarks" id="tab-bookmarks" data-tab="bookmarks">
+          🔗 Liens
+        </button>
       </div>
 
       <div class="search-bar">
@@ -68,6 +71,13 @@
       <div id="panel-games" class="tab-panel" role="tabpanel" aria-labelledby="tab-games">
         <div class="cards" id="cards-games"></div>
         <p class="empty-message" id="empty-games">Aucun jeu disponible</p>
+      </div>
+
+      <!-- Panel Bookmarks -->
+      <div id="panel-bookmarks" class="tab-panel" role="tabpanel" aria-labelledby="tab-bookmarks">
+        <div class="bookmark-filters" id="bookmark-filters"></div>
+        <div class="bookmark-tree" id="bookmark-tree"></div>
+        <p class="empty-message" id="empty-bookmarks">Aucun lien disponible</p>
       </div>
     </section>
 
@@ -175,6 +185,41 @@
       <div class="epic-cards category-epics"></div>
     </section>
   </template>
+
+  <!-- Templates Bookmarks -->
+  <template id="bookmark-category-template">
+    <div class="bookmark-category">
+      <h3 class="bookmark-category-title">
+        <span class="bookmark-category-icon"></span>
+        <span class="bookmark-category-label"></span>
+        <span class="bookmark-category-count"></span>
+      </h3>
+      <ul class="bookmark-list"></ul>
+    </div>
+  </template>
+
+  <template id="bookmark-item-template">
+    <li class="bookmark-item">
+      <a href="#" target="_blank" rel="noopener">
+        <span class="bookmark-icon"></span>
+        <span class="bookmark-content">
+          <span class="bookmark-title"></span>
+          <span class="bookmark-description"></span>
+        </span>
+        <span class="bookmark-domain"></span>
+      </a>
+    </li>
+  </template>
+
+  <!-- Preview Bookmark (singleton) -->
+  <div id="bookmark-preview" class="bookmark-preview" role="tooltip" aria-hidden="true">
+    <div class="bookmark-preview-image"></div>
+    <div class="bookmark-preview-content">
+      <h4 class="bookmark-preview-title"></h4>
+      <p class="bookmark-preview-description"></p>
+      <span class="bookmark-preview-domain"></span>
+    </div>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>

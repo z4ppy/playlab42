@@ -16,6 +16,8 @@ const state = {
   parcoursCatalogue: null,
   parcoursCategory: null, // Catégorie sélectionnée pour filtrer
   parcoursViewer: null, // Instance du viewer de parcours
+  bookmarksCatalogue: null, // Catalogue des bookmarks
+  bookmarkTagFilter: null, // Tag actif pour filtrer les bookmarks
   preferences: {
     sound: true,
     pseudo: 'Anonyme',
@@ -53,9 +55,17 @@ const el = {
   tabParcours: $('#tab-parcours'),
   tabTools: $('#tab-tools'),
   tabGames: $('#tab-games'),
+  tabBookmarks: $('#tab-bookmarks'),
   panelParcours: $('#panel-parcours'),
   panelTools: $('#panel-tools'),
   panelGames: $('#panel-games'),
+  panelBookmarks: $('#panel-bookmarks'),
+
+  // Bookmarks
+  bookmarkFilters: $('#bookmark-filters'),
+  bookmarkTree: $('#bookmark-tree'),
+  emptyBookmarks: $('#empty-bookmarks'),
+  bookmarkPreview: $('#bookmark-preview'),
 
   // Parcours
   parcoursCategoryFilters: $('#parcours-category-filters'),
@@ -116,7 +126,7 @@ function loadPreferences() {
     }
 
     const activeTab = localStorage.getItem(STORAGE_KEYS.ACTIVE_TAB);
-    if (activeTab === 'tools' || activeTab === 'games' || activeTab === 'parcours') {
+    if (activeTab === 'tools' || activeTab === 'games' || activeTab === 'parcours' || activeTab === 'bookmarks') {
       state.activeTab = activeTab;
     }
   } catch (e) {
@@ -154,15 +164,17 @@ function addToRecent(id, type) {
  * Change l'onglet actif
  */
 function switchTab(tab) {
-  if (tab !== 'tools' && tab !== 'games' && tab !== 'parcours') {return;}
+  if (tab !== 'tools' && tab !== 'games' && tab !== 'parcours' && tab !== 'bookmarks') {return;}
   if (state.activeTab === tab) {return;}
 
-  setState({ activeTab: tab, activeFilter: '', parcoursCategory: null });
+  setState({ activeTab: tab, activeFilter: '', parcoursCategory: null, bookmarkTagFilter: null });
   savePreferences();
   updateTabUI();
 
   if (tab === 'parcours') {
     renderParcours();
+  } else if (tab === 'bookmarks') {
+    renderBookmarks();
   } else {
     renderCatalogue();
   }
@@ -178,13 +190,17 @@ function updateTabUI() {
   el.tabTools.setAttribute('aria-selected', state.activeTab === 'tools');
   el.tabGames.classList.toggle('active', state.activeTab === 'games');
   el.tabGames.setAttribute('aria-selected', state.activeTab === 'games');
+  el.tabBookmarks.classList.toggle('active', state.activeTab === 'bookmarks');
+  el.tabBookmarks.setAttribute('aria-selected', state.activeTab === 'bookmarks');
 
   el.panelParcours.classList.toggle('active', state.activeTab === 'parcours');
   el.panelTools.classList.toggle('active', state.activeTab === 'tools');
   el.panelGames.classList.toggle('active', state.activeTab === 'games');
+  el.panelBookmarks.classList.toggle('active', state.activeTab === 'bookmarks');
 
-  // Masquer les filtres globaux sur l'onglet Parcours (il a ses propres filtres)
-  el.filters.style.display = state.activeTab === 'parcours' ? 'none' : 'flex';
+  // Masquer les filtres globaux sur Parcours et Bookmarks (ils ont leurs propres filtres)
+  const hideFilters = state.activeTab === 'parcours' || state.activeTab === 'bookmarks';
+  el.filters.style.display = hideFilters ? 'none' : 'flex';
 }
 
 // === Catalogue ===
@@ -718,6 +734,242 @@ function selectParcoursCategory(categoryId) {
   renderParcours();
 }
 
+// === Bookmarks ===
+
+/**
+ * Charge le catalogue bookmarks depuis le serveur
+ */
+async function loadBookmarksCatalogue() {
+  try {
+    const response = await fetch('/data/bookmarks.json');
+    if (!response.ok) {throw new Error('Catalogue bookmarks introuvable');}
+    setState({ bookmarksCatalogue: await response.json() });
+  } catch (e) {
+    console.warn('Catalogue bookmarks non disponible:', e.message);
+    setState({ bookmarksCatalogue: null });
+  }
+}
+
+/**
+ * Récupère les tags uniques des bookmarks
+ */
+function getBookmarkTags() {
+  if (!state.bookmarksCatalogue?.tags) {return [];}
+  return state.bookmarksCatalogue.tags;
+}
+
+/**
+ * Rend les filtres de tags pour les bookmarks
+ */
+function renderBookmarkFilters() {
+  const tags = getBookmarkTags();
+  el.bookmarkFilters.textContent = '';
+
+  // Bouton "Tous"
+  const allBtn = document.createElement('button');
+  allBtn.className = `filter${!state.bookmarkTagFilter ? ' active' : ''}`;
+  allBtn.dataset.tag = '';
+  allBtn.textContent = 'Tous';
+  el.bookmarkFilters.appendChild(allBtn);
+
+  // Boutons par tag (top 10)
+  for (const tag of tags.slice(0, 10)) {
+    const btn = document.createElement('button');
+    btn.className = `filter${state.bookmarkTagFilter === tag.id ? ' active' : ''}`;
+    btn.dataset.tag = tag.id;
+    btn.textContent = `${tag.id} (${tag.count})`;
+    el.bookmarkFilters.appendChild(btn);
+  }
+}
+
+/**
+ * Filtre les bookmarks d'une catégorie
+ */
+function filterBookmarks(bookmarks) {
+  const search = el.search.value.toLowerCase().trim();
+
+  return bookmarks.filter(bookmark => {
+    // Filtre par tag
+    if (state.bookmarkTagFilter && !bookmark.tags?.includes(state.bookmarkTagFilter)) {
+      return false;
+    }
+    // Filtre par recherche
+    if (search) {
+      const searchable = `${bookmark.displayTitle || bookmark.title} ${bookmark.displayDescription || bookmark.description || ''} ${bookmark.tags?.join(' ') || ''}`.toLowerCase();
+      if (!searchable.includes(search)) {
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+/**
+ * Crée un élément catégorie de bookmarks
+ */
+function createBookmarkCategoryElement(category) {
+  const fragment = cloneTemplate('bookmark-category-template');
+  const container = fragment.querySelector('.bookmark-category');
+  const icon = fragment.querySelector('.bookmark-category-icon');
+  const label = fragment.querySelector('.bookmark-category-label');
+  const count = fragment.querySelector('.bookmark-category-count');
+  const list = fragment.querySelector('.bookmark-list');
+
+  icon.textContent = category.icon || '📁';
+  label.textContent = category.label;
+
+  const filteredBookmarks = filterBookmarks(category.bookmarks);
+  count.textContent = `(${filteredBookmarks.length})`;
+
+  // Ajouter les bookmarks
+  for (const bookmark of filteredBookmarks) {
+    list.appendChild(createBookmarkItemElement(bookmark));
+  }
+
+  // Masquer si aucun bookmark après filtrage
+  if (filteredBookmarks.length === 0) {
+    container.style.display = 'none';
+  }
+
+  return fragment;
+}
+
+/**
+ * Crée un élément bookmark
+ */
+function createBookmarkItemElement(bookmark) {
+  const fragment = cloneTemplate('bookmark-item-template');
+  const link = fragment.querySelector('a');
+  const icon = fragment.querySelector('.bookmark-icon');
+  const title = fragment.querySelector('.bookmark-title');
+  const description = fragment.querySelector('.bookmark-description');
+  const domain = fragment.querySelector('.bookmark-domain');
+
+  link.href = bookmark.url;
+  link.dataset.bookmarkUrl = bookmark.url;
+  icon.textContent = bookmark.icon || '🔗';
+  title.textContent = escapeHtml(bookmark.displayTitle || bookmark.title);
+  description.textContent = escapeHtml(bookmark.displayDescription || bookmark.description || '');
+  domain.textContent = bookmark.domain;
+
+  // Stocker les données pour la preview
+  link.dataset.bookmark = JSON.stringify(bookmark);
+
+  return fragment;
+}
+
+/**
+ * Affiche la preview card d'un bookmark
+ */
+function showBookmarkPreview(bookmarkData, anchorElement) {
+  const preview = el.bookmarkPreview;
+  if (!preview) {
+    return;
+  }
+
+  const imageEl = preview.querySelector('.bookmark-preview-image');
+  const titleEl = preview.querySelector('.bookmark-preview-title');
+  const descEl = preview.querySelector('.bookmark-preview-description');
+  const domainEl = preview.querySelector('.bookmark-preview-domain');
+
+  // Remplir le contenu
+  titleEl.textContent = bookmarkData.displayTitle || bookmarkData.title;
+  descEl.textContent = bookmarkData.displayDescription || bookmarkData.description || '';
+  domainEl.textContent = bookmarkData.domain;
+
+  // Image OG ou fallback
+  if (bookmarkData.ogImage) {
+    imageEl.style.backgroundImage = `url(${bookmarkData.ogImage})`;
+    imageEl.classList.add('has-image');
+  } else {
+    imageEl.style.backgroundImage = '';
+    imageEl.classList.remove('has-image');
+  }
+
+  // Positionner la preview
+  const rect = anchorElement.getBoundingClientRect();
+  const previewWidth = 320;
+  const previewHeight = 200;
+  const margin = 12;
+
+  // Position par défaut : à droite de l'élément
+  let left = rect.right + margin;
+  let top = rect.top;
+
+  // Si déborde à droite, afficher à gauche
+  if (left + previewWidth > window.innerWidth) {
+    left = rect.left - previewWidth - margin;
+  }
+
+  // Si déborde en bas, remonter
+  if (top + previewHeight > window.innerHeight) {
+    top = window.innerHeight - previewHeight - margin;
+  }
+
+  // Si déborde en haut, descendre
+  if (top < margin) {
+    top = margin;
+  }
+
+  preview.style.left = `${left}px`;
+  preview.style.top = `${top}px`;
+  preview.classList.add('visible');
+  preview.setAttribute('aria-hidden', 'false');
+}
+
+/**
+ * Cache la preview card
+ */
+function hideBookmarkPreview() {
+  const preview = el.bookmarkPreview;
+  if (!preview) {
+    return;
+  }
+
+  preview.classList.remove('visible');
+  preview.setAttribute('aria-hidden', 'true');
+}
+
+/**
+ * Rend les bookmarks
+ */
+function renderBookmarks() {
+  if (!state.bookmarksCatalogue) {
+    el.emptyBookmarks.classList.add('visible');
+    return;
+  }
+
+  const { categories } = state.bookmarksCatalogue;
+
+  // Reset
+  el.bookmarkTree.textContent = '';
+  el.emptyBookmarks.classList.remove('visible');
+
+  // Rendre les filtres
+  renderBookmarkFilters();
+
+  // Rendre les catégories
+  let totalVisible = 0;
+  for (const category of categories) {
+    const filteredBookmarks = filterBookmarks(category.bookmarks);
+    if (filteredBookmarks.length > 0) {
+      el.bookmarkTree.appendChild(createBookmarkCategoryElement(category));
+      totalVisible += filteredBookmarks.length;
+    }
+  }
+
+  // Message vide si aucun résultat
+  el.emptyBookmarks.classList.toggle('visible', totalVisible === 0);
+}
+
+/**
+ * Sélectionne un tag pour filtrer les bookmarks
+ */
+function selectBookmarkTag(tagId) {
+  setState({ bookmarkTagFilter: tagId || null });
+  renderBookmarks();
+}
+
 // === Game Loader ===
 
 /**
@@ -891,6 +1143,7 @@ function setupEventListeners() {
   on(el.tabParcours, 'click', () => switchTab('parcours'));
   on(el.tabTools, 'click', () => switchTab('tools'));
   on(el.tabGames, 'click', () => switchTab('games'));
+  on(el.tabBookmarks, 'click', () => switchTab('bookmarks'));
 
   // Parcours - click sur carte epic (délégation)
   delegate(document, 'click', '.epic-card', (card) => {
@@ -914,10 +1167,39 @@ function setupEventListeners() {
     }
   });
 
+  // Bookmarks - filtres (délégation)
+  delegate(el.bookmarkFilters, 'click', '.filter', (btn) => {
+    selectBookmarkTag(btn.dataset.tag || null);
+  });
+
+  // Bookmarks - preview au survol (délégation)
+  if (el.bookmarkTree) {
+    el.bookmarkTree.addEventListener('mouseenter', (e) => {
+      const link = e.target.closest('.bookmark-item a[data-bookmark]');
+      if (link && link.dataset.bookmark) {
+        try {
+          const bookmarkData = JSON.parse(link.dataset.bookmark);
+          showBookmarkPreview(bookmarkData, link);
+        } catch {
+          // Ignorer les erreurs de parsing
+        }
+      }
+    }, true);
+
+    el.bookmarkTree.addEventListener('mouseleave', (e) => {
+      const link = e.target.closest('.bookmark-item a[data-bookmark]');
+      if (link) {
+        hideBookmarkPreview();
+      }
+    }, true);
+  }
+
   // Catalogue - recherche
   on(el.search, 'input', debounce(() => {
     if (state.activeTab === 'parcours') {
       renderParcours();
+    } else if (state.activeTab === 'bookmarks') {
+      renderBookmarks();
     } else {
       renderCatalogue();
     }
@@ -971,6 +1253,10 @@ function setupEventListeners() {
 
     if (e.key === '3' && state.currentView === 'catalogue' && document.activeElement.tagName !== 'INPUT') {
       switchTab('games');
+    }
+
+    if (e.key === '4' && state.currentView === 'catalogue' && document.activeElement.tagName !== 'INPUT') {
+      switchTab('bookmarks');
     }
 
     // Retour à l'accueil parcours (Backspace quand en mode catégorie)
@@ -1035,11 +1321,17 @@ async function init() {
   await Promise.all([
     loadCatalogue(),
     loadParcoursCatalogue(),
+    loadBookmarksCatalogue(),
   ]);
 
   // Si l'onglet actif est parcours, rendre les parcours
   if (state.activeTab === 'parcours') {
     renderParcours();
+  }
+
+  // Si l'onglet actif est bookmarks, rendre les bookmarks
+  if (state.activeTab === 'bookmarks') {
+    renderBookmarks();
   }
 
   // Gérer le hash initial

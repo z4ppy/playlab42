@@ -1,0 +1,68 @@
+{
+  "https://gemini.google.com": {
+    "ogTitle": "‎Google Gemini",
+    "ogDescription": "Voici Gemini, l'assistant IA de Google. Faites-vous aider pour rédiger, planifier, trouver des idées et plus encore. Découvrez la puissance de l'IA générative.",
+    "ogImage": "https://www.gstatic.com/lamda/images/gemini_aurora_thumbnail_4g_e74822ff0ca4259beb718.png",
+    "ogSiteName": "Gemini",
+    "favicon": "https://gemini.google.com/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:26.790Z"
+  },
+  "https://github.com": {
+    "ogTitle": "GitHub · Change is constant. GitHub keeps you ahead.",
+    "ogDescription": "Join the world's most widely adopted, AI-powered developer platform where millions of developers, businesses, and the largest open source community build software that advances humanity.",
+    "ogImage": "https://images.ctfassets.net/8aevphvgewt8/4pe4eOtUJ0ARpZRE4fNekf/f52b1f9c52f059a33170229883731ed0/GH-Homepage-Universe-img.png",
+    "ogSiteName": "GitHub",
+    "favicon": "https://github.com/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:26.894Z"
+  },
+  "https://claude.ai": {
+    "ogTitle": "Claude",
+    "ogDescription": "Talk with Claude, an AI assistant from Anthropic",
+    "ogImage": "https://claude.ai/images/claude_ogimage.png",
+    "favicon": "https://claude.ai/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:27.331Z"
+  },
+  "https://chat.openai.com": {
+    "ogTitle": "ChatGPT",
+    "ogDescription": "ChatGPT vous aide à obtenir des réponses, à trouver de l’inspiration et à gagner en productivité.",
+    "ogImage": "https://cdn.openai.com/chatgpt/share-og.png",
+    "ogSiteName": "ChatGPT",
+    "favicon": "https://chat.openai.com/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:27.333Z"
+  },
+  "https://developer.mozilla.org": {
+    "ogTitle": "MDN Web Docs",
+    "ogDescription": "The MDN Web Docs site provides information about Open Web technologies including HTML, CSS, and APIs for both Web sites and progressive web apps.",
+    "favicon": "https://developer.mozilla.org/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:27.492Z"
+  },
+  "https://www.typescriptlang.org/docs": {
+    "ogTitle": "The starting point for learning TypeScript",
+    "ogDescription": "Find TypeScript starter projects: from Angular to React or Node.js and CLIs.",
+    "favicon": "https://www.typescriptlang.org/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:27.623Z"
+  },
+  "https://stackoverflow.com": {
+    "ogTitle": "Newest Questions",
+    "ogDescription": "Stack Overflow | The World&#x2019;s Largest Online Community for Developers",
+    "ogImage": "https://stackoverflow.com/Content/Sites/stackoverflow/Img/apple-touch-icon@2.png?v=73d79a89bded",
+    "ogSiteName": "Stack Overflow",
+    "favicon": "https://stackoverflow.com/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:27.986Z"
+  },
+  "https://docs.docker.com": {
+    "ogTitle": "Home",
+    "ogDescription": "Docker Documentation is the official Docker library of resources, manuals, and guides to help you containerize applications.",
+    "ogImage": "https://docs.docker.com/images/thumbnail.webp",
+    "ogSiteName": "Docker Documentation",
+    "favicon": "https://docs.docker.com/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:28.059Z"
+  },
+  "https://jestjs.io/docs/getting-started": {
+    "ogTitle": "Getting Started · Jest",
+    "ogDescription": "Install Jest using your favorite package manager:",
+    "ogImage": "https://jestjs.io/img/opengraph.png",
+    "favicon": "https://jestjs.io/favicon.ico",
+    "fetchedAt": "2025-12-13T22:15:28.102Z"
+  }
+}

@@ -1,0 +1,393 @@
+{
+  "version": "1.0",
+  "generatedAt": "2025-12-13T22:15:28.103Z",
+  "categories": [
+    {
+      "id": "llm-ia",
+      "label": "LLM & IA",
+      "icon": "🤖",
+      "order": 1,
+      "bookmarks": [
+        {
+          "url": "https://chat.openai.com",
+          "title": "ChatGPT",
+          "description": "Assistant IA généraliste d'OpenAI",
+          "icon": "💬",
+          "tags": [
+            "ia",
+            "chat",
+            "openai"
+          ],
+          "source": "standalone",
+          "domain": "chat.openai.com",
+          "meta": {
+            "ogTitle": "ChatGPT",
+            "ogDescription": "ChatGPT vous aide à obtenir des réponses, à trouver de l’inspiration et à gagner en productivité.",
+            "ogImage": "https://cdn.openai.com/chatgpt/share-og.png",
+            "ogSiteName": "ChatGPT",
+            "favicon": "https://chat.openai.com/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:27.333Z"
+          },
+          "displayTitle": "ChatGPT",
+          "displayDescription": "ChatGPT vous aide à obtenir des réponses, à trouver de l’inspiration et à gagner en productivité."
+        },
+        {
+          "url": "https://claude.ai",
+          "title": "Claude",
+          "description": "IA conversationnelle Anthropic",
+          "icon": "🟣",
+          "tags": [
+            "ia",
+            "chat",
+            "anthropic"
+          ],
+          "source": "standalone",
+          "domain": "claude.ai",
+          "meta": {
+            "ogTitle": "Claude",
+            "ogDescription": "Talk with Claude, an AI assistant from Anthropic",
+            "ogImage": "https://claude.ai/images/claude_ogimage.png",
+            "favicon": "https://claude.ai/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:27.331Z"
+          },
+          "displayTitle": "Claude",
+          "displayDescription": "Talk with Claude, an AI assistant from Anthropic"
+        },
+        {
+          "url": "https://gemini.google.com",
+          "title": "Gemini",
+          "description": "Modèle multimodal Google",
+          "icon": "✨",
+          "tags": [
+            "ia",
+            "chat",
+            "google"
+          ],
+          "source": "standalone",
+          "domain": "gemini.google.com",
+          "meta": {
+            "ogTitle": "‎Google Gemini",
+            "ogDescription": "Voici Gemini, l'assistant IA de Google. Faites-vous aider pour rédiger, planifier, trouver des idées et plus encore. Découvrez la puissance de l'IA générative.",
+            "ogImage": "https://www.gstatic.com/lamda/images/gemini_aurora_thumbnail_4g_e74822ff0ca4259beb718.png",
+            "ogSiteName": "Gemini",
+            "favicon": "https://gemini.google.com/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:26.790Z"
+          },
+          "displayTitle": "‎Google Gemini",
+          "displayDescription": "Voici Gemini, l'assistant IA de Google. Faites-vous aider pour rédiger, planifier, trouver des idées et plus encore. Découvrez la puissance de l'IA générative."
+        },
+        {
+          "url": "https://chat.mistral.ai",
+          "title": "Le Chat Mistral",
+          "description": "IA française open-weight",
+          "icon": "🌀",
+          "tags": [
+            "ia",
+            "chat",
+            "mistral",
+            "français"
+          ],
+          "source": "standalone",
+          "domain": "chat.mistral.ai",
+          "meta": {},
+          "displayTitle": "Le Chat Mistral",
+          "displayDescription": "IA française open-weight"
+        }
+      ]
+    },
+    {
+      "id": "developpement",
+      "label": "Développement",
+      "icon": "🛠️",
+      "order": 2,
+      "bookmarks": [
+        {
+          "url": "https://github.com",
+          "title": "GitHub",
+          "description": "Hébergement de code source et collaboration",
+          "icon": "🐙",
+          "tags": [
+            "git",
+            "code",
+            "collaboration"
+          ],
+          "source": "standalone",
+          "domain": "github.com",
+          "meta": {
+            "ogTitle": "GitHub · Change is constant. GitHub keeps you ahead.",
+            "ogDescription": "Join the world's most widely adopted, AI-powered developer platform where millions of developers, businesses, and the largest open source community build software that advances humanity.",
+            "ogImage": "https://images.ctfassets.net/8aevphvgewt8/4pe4eOtUJ0ARpZRE4fNekf/f52b1f9c52f059a33170229883731ed0/GH-Homepage-Universe-img.png",
+            "ogSiteName": "GitHub",
+            "favicon": "https://github.com/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:26.894Z"
+          },
+          "displayTitle": "GitHub · Change is constant. GitHub keeps you ahead.",
+          "displayDescription": "Join the world's most widely adopted, AI-powered developer platform where millions of developers, businesses, and the largest open source community build software that advances humanity."
+        },
+        {
+          "url": "https://www.npmjs.com",
+          "title": "npm",
+          "description": "Registry de packages JavaScript",
+          "icon": "📦",
+          "tags": [
+            "javascript",
+            "packages",
+            "node"
+          ],
+          "source": "standalone",
+          "domain": "npmjs.com",
+          "meta": {},
+          "displayTitle": "npm",
+          "displayDescription": "Registry de packages JavaScript"
+        },
+        {
+          "url": "https://stackoverflow.com",
+          "title": "Stack Overflow",
+          "description": "Questions/réponses pour développeurs",
+          "icon": "📝",
+          "tags": [
+            "qa",
+            "communauté"
+          ],
+          "source": "standalone",
+          "domain": "stackoverflow.com",
+          "meta": {
+            "ogTitle": "Newest Questions",
+            "ogDescription": "Stack Overflow | The World&#x2019;s Largest Online Community for Developers",
+            "ogImage": "https://stackoverflow.com/Content/Sites/stackoverflow/Img/apple-touch-icon@2.png?v=73d79a89bded",
+            "ogSiteName": "Stack Overflow",
+            "favicon": "https://stackoverflow.com/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:27.986Z"
+          },
+          "displayTitle": "Newest Questions",
+          "displayDescription": "Stack Overflow | The World&#x2019;s Largest Online Community for Developers"
+        },
+        {
+          "url": "https://codepen.io",
+          "title": "CodePen",
+          "description": "Playground HTML/CSS/JS en ligne",
+          "icon": "✏️",
+          "tags": [
+            "playground",
+            "frontend",
+            "demo"
+          ],
+          "source": "standalone",
+          "domain": "codepen.io",
+          "meta": {},
+          "displayTitle": "CodePen",
+          "displayDescription": "Playground HTML/CSS/JS en ligne"
+        }
+      ]
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation",
+      "icon": "📚",
+      "order": 3,
+      "bookmarks": [
+        {
+          "url": "https://developer.mozilla.org",
+          "title": "MDN Web Docs",
+          "description": "Documentation web de référence",
+          "icon": "📖",
+          "tags": [
+            "mdn",
+            "html",
+            "css",
+            "javascript"
+          ],
+          "source": "standalone",
+          "domain": "developer.mozilla.org",
+          "meta": {
+            "ogTitle": "MDN Web Docs",
+            "ogDescription": "The MDN Web Docs site provides information about Open Web technologies including HTML, CSS, and APIs for both Web sites and progressive web apps.",
+            "favicon": "https://developer.mozilla.org/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:27.492Z"
+          },
+          "displayTitle": "MDN Web Docs",
+          "displayDescription": "The MDN Web Docs site provides information about Open Web technologies including HTML, CSS, and APIs for both Web sites and progressive web apps."
+        },
+        {
+          "url": "https://www.typescriptlang.org/docs",
+          "title": "TypeScript Docs",
+          "description": "Documentation officielle TypeScript",
+          "icon": "🔷",
+          "tags": [
+            "typescript",
+            "types"
+          ],
+          "source": "standalone",
+          "domain": "typescriptlang.org",
+          "meta": {
+            "ogTitle": "The starting point for learning TypeScript",
+            "ogDescription": "Find TypeScript starter projects: from Angular to React or Node.js and CLIs.",
+            "favicon": "https://www.typescriptlang.org/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:27.623Z"
+          },
+          "displayTitle": "The starting point for learning TypeScript",
+          "displayDescription": "Find TypeScript starter projects: from Angular to React or Node.js and CLIs."
+        },
+        {
+          "url": "https://jestjs.io/docs/getting-started",
+          "title": "Jest",
+          "description": "Framework de tests JavaScript",
+          "icon": "🃏",
+          "tags": [
+            "tests",
+            "jest",
+            "javascript"
+          ],
+          "source": "standalone",
+          "domain": "jestjs.io",
+          "meta": {
+            "ogTitle": "Getting Started · Jest",
+            "ogDescription": "Install Jest using your favorite package manager:",
+            "ogImage": "https://jestjs.io/img/opengraph.png",
+            "favicon": "https://jestjs.io/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:28.102Z"
+          },
+          "displayTitle": "Getting Started · Jest",
+          "displayDescription": "Install Jest using your favorite package manager:"
+        },
+        {
+          "url": "https://docs.docker.com",
+          "title": "Docker Docs",
+          "description": "Documentation Docker",
+          "icon": "🐳",
+          "tags": [
+            "docker",
+            "containers",
+            "devops"
+          ],
+          "source": "standalone",
+          "domain": "docs.docker.com",
+          "meta": {
+            "ogTitle": "Home",
+            "ogDescription": "Docker Documentation is the official Docker library of resources, manuals, and guides to help you containerize applications.",
+            "ogImage": "https://docs.docker.com/images/thumbnail.webp",
+            "ogSiteName": "Docker Documentation",
+            "favicon": "https://docs.docker.com/favicon.ico",
+            "fetchedAt": "2025-12-13T22:15:28.059Z"
+          },
+          "displayTitle": "Home",
+          "displayDescription": "Docker Documentation is the official Docker library of resources, manuals, and guides to help you containerize applications."
+        }
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "id": "ia",
+      "count": 4
+    },
+    {
+      "id": "chat",
+      "count": 4
+    },
+    {
+      "id": "javascript",
+      "count": 3
+    },
+    {
+      "id": "openai",
+      "count": 1
+    },
+    {
+      "id": "anthropic",
+      "count": 1
+    },
+    {
+      "id": "google",
+      "count": 1
+    },
+    {
+      "id": "mistral",
+      "count": 1
+    },
+    {
+      "id": "français",
+      "count": 1
+    },
+    {
+      "id": "git",
+      "count": 1
+    },
+    {
+      "id": "code",
+      "count": 1
+    },
+    {
+      "id": "collaboration",
+      "count": 1
+    },
+    {
+      "id": "packages",
+      "count": 1
+    },
+    {
+      "id": "node",
+      "count": 1
+    },
+    {
+      "id": "qa",
+      "count": 1
+    },
+    {
+      "id": "communauté",
+      "count": 1
+    },
+    {
+      "id": "playground",
+      "count": 1
+    },
+    {
+      "id": "frontend",
+      "count": 1
+    },
+    {
+      "id": "demo",
+      "count": 1
+    },
+    {
+      "id": "mdn",
+      "count": 1
+    },
+    {
+      "id": "html",
+      "count": 1
+    },
+    {
+      "id": "css",
+      "count": 1
+    },
+    {
+      "id": "typescript",
+      "count": 1
+    },
+    {
+      "id": "types",
+      "count": 1
+    },
+    {
+      "id": "tests",
+      "count": 1
+    },
+    {
+      "id": "jest",
+      "count": 1
+    },
+    {
+      "id": "docker",
+      "count": 1
+    },
+    {
+      "id": "containers",
+      "count": 1
+    },
+    {
+      "id": "devops",
+      "count": 1
+    }
+  ]
+}

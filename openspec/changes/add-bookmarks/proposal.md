@@ -82,11 +82,12 @@ make build-bookmarks
 
 ## Critères de succès
 
-- [ ] Onglet "Liens" fonctionnel
-- [ ] 10+ bookmarks de démo
-- [ ] Preview au survol avec og:image
-- [ ] Build génère `data/bookmarks.json`
+- [x] Onglet "Liens" fonctionnel
+- [x] 10+ bookmarks de démo (12 bookmarks)
+- [x] Preview au survol avec og:image
+- [x] Build génère `data/bookmarks.json`
 
 ---
 
 *Proposal créé le 2025-12-13*
+*Implémenté le 2025-12-13*
