@@ -92,7 +92,7 @@ mkdir -p parcours/epics/mon-epic/slides/01-intro
 | `metadata.difficulty` | | `"beginner"`, `"intermediate"`, `"advanced"` |
 | `metadata.language` | | Langue (`"fr"`, `"en"`) |
 | `icon` | | Emoji pour l'icône |
-| `thumbnail` | | Chemin vers la vignette (400x300px, < 100KB) |
+| `thumbnail` | | Chemin vers la vignette (380x180px, 19:9, < 50KB) |
 | `content` | ✅ | Liste des slides et sections |
 | `draft` | | `true` pour ne pas publier |
 
@@ -288,7 +288,7 @@ mon-epic/
 | Image | < 500KB |
 | Vidéo | < 10MB |
 | Audio | < 5MB |
-| Vignette | 400x300px, < 100KB |
+| Vignette | 380x180px (19:9), < 50KB |
 | Total Epic | < 50MB |
 
 ### 7. Générer le catalogue
@@ -378,7 +378,7 @@ Avant de publier votre epic, vérifiez :
 - [ ] Chaque slide référencée dans `content` existe dans `slides/`
 - [ ] Chaque slide a un `slide.json` et un `index.html` ou `index.md`
 - [ ] Les médias référencés existent
-- [ ] La vignette fait 400x300px et < 100KB (si spécifiée)
+- [ ] La vignette fait 380x180px (19:9) et < 50KB (si sp\u00e9cifi\u00e9e)
 - [ ] `make build-parcours` ne génère pas d'erreurs
 - [ ] L'epic s'affiche correctement dans le viewer
 

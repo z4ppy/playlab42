@@ -392,7 +392,7 @@ Chaque Epic possède un dossier `assets/` pour les médias partagés entre slide
 ```
 parcours/epics/mon-epic/
 ├── epic.json
-├── thumbnail.png           # Vignette de l'epic (obligatoire si featured)
+├── thumbnail.png           # Vignette 380x180 (19:9), < 50KB, optionnel
 ├── assets/                 # Médias de l'epic
 │   ├── images/
 │   │   ├── schema.png
@@ -452,7 +452,7 @@ parcours/epics/mon-epic/
 | Image | < 500KB | Performance web |
 | Vidéo | < 10MB | GitHub Pages, temps de chargement |
 | Audio | < 5MB | Idem |
-| Vignette (`thumbnail.*`) | 400x300px, < 100KB | Affichage catalogue |
+| Vignette (`thumbnail.*`) | 380x180px (19:9), < 50KB | Affichage catalogue |
 | Total Epic | < 50MB | Taille repo GitHub |
 
 ### Bonnes pratiques
@@ -865,7 +865,7 @@ Préchargé:  [prev] [next]
 
 | Élément | Limite |
 |---------|--------|
-| Vignette | 400x300px, < 100KB |
+| Vignette | 380x180px (19:9), < 50KB |
 | Slide | < 500KB total |
 | Epic | < 5MB total |
 | Catalogue JSON | < 500KB |

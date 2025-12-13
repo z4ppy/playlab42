@@ -233,7 +233,7 @@ main {
 
 .card-thumb {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 19/9;
   object-fit: cover;
   background: var(--color-bg-secondary);
   display: flex;
@@ -588,7 +588,7 @@ footer {
 
 .epic-thumb {
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 19/9;
   background: var(--color-bg-secondary);
   display: flex;
   align-items: center;

@@ -254,7 +254,7 @@ games/
 │   ├── game.js          # Code du jeu
 │   ├── engine.ts        # Moteur de jeu (optionnel)
 │   ├── game.json        # Manifest
-│   ├── thumb.png        # Vignette (200x200, < 50KB)
+│   ├── thumb.png        # Vignette (380x180, 19:9, < 50KB)
 │   ├── bots/            # Bots IA
 │   │   ├── random.js
 │   │   ├── blocker.js
@@ -429,6 +429,42 @@ games/
 ❌ games/snake/game.json: No index.html found in games/snake/
 ⚠️  tools/timer.html: No manifest found, skipping
 ```
+
+## Vignettes
+
+Les vignettes (thumbnails) sont des images d'aperçu affichées dans le catalogue.
+
+### Spécifications communes
+
+| Propriété | Valeur | Description |
+|-----------|--------|-------------|
+| **Dimensions** | 380x180 pixels | Format panoramique 19:9 |
+| **Taille max** | < 50KB | Optimiser pour le web |
+| **Format** | PNG (recommandé) | JPG ou WebP acceptés |
+| **Nom fichier** | `thumb.png` | À la racine du jeu/outil |
+
+### Pourquoi 19:9 ?
+
+- **Uniformité** : Même format pour games et parcours
+- **Poids léger** : 380x180 = 68 400 pixels (vs 160 000 pour 400x400)
+- **Adapté au web** : Format panoramique moderne, affichage optimal en grille
+- **Responsive** : S'adapte bien aux différentes largeurs d'écran
+
+### Génération
+
+Pour créer une vignette optimisée :
+
+```bash
+# Redimensionner et optimiser avec ImageMagick
+convert input.png -resize 380x180^ -gravity center -extent 380x180 -quality 85 thumb.png
+
+# Ou avec ffmpeg (depuis une vidéo/capture)
+ffmpeg -i capture.mp4 -vframes 1 -vf "scale=380:180:force_original_aspect_ratio=increase,crop=380:180" thumb.png
+```
+
+### Fallback
+
+Si la vignette est absente ou ne charge pas, le portail affiche l'emoji `icon` du manifest.
 
 ## Bonnes Pratiques
 

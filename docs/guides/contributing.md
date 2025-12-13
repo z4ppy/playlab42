@@ -114,7 +114,7 @@ games/
     ├── engine.js     # Moteur (logique de jeu)
     ├── bots.js       # Bots (IA)
     ├── game.json     # Métadonnées
-    └── thumb.png     # Vignette (optionnel)
+    └── thumb.png     # Vignette 380x180 (19:9), < 50KB (optionnel)
 ```
 
 ### Checklist Game
@@ -124,7 +124,7 @@ games/
 - [ ] `index.html` point d'entrée
 - [ ] `engine.js` moteur isomorphe (pas de dépendance DOM)
 - [ ] `bots.js` avec au moins un bot
-- [ ] `thumb.png` vignette (200x200px, < 50KB)
+- [ ] `thumb.png` vignette (380x180px, 19:9, < 50KB)
 - [ ] Fonctionne en mode sombre et clair
 - [ ] Tests du moteur (optionnel mais recommandé)
 
@@ -187,7 +187,7 @@ parcours/
 - [ ] Slides utilisent `/lib/theme.css` et `/parcours/_shared/slide-base.css`
 - [ ] Slides utilisent `/lib/theme.js` pour le thème
 - [ ] Assets optimisés (images < 500KB)
-- [ ] `thumbnail.png` vignette (400x300px, < 100KB) - optionnel
+- [ ] `thumbnail.png` vignette (380x180px, 19:9, < 50KB) - optionnel
 
 ### Exemple epic.json
 
@@ -313,7 +313,7 @@ Vérifiez :
 | Image | < 500KB |
 | Vidéo | < 10MB |
 | Audio | < 5MB |
-| Vignette | < 100KB |
+| Vignette | 380x180px (19:9), < 50KB |
 
 ---
 

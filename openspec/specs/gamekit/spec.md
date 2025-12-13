@@ -661,7 +661,7 @@ window.onunhandledrejection = (event) => {
 
 | Constraint | Value |
 |------------|-------|
-| Thumbnail size | 200x200px max, < 50KB |
+| Thumbnail size | 380x180px (19:9), < 50KB |
 | Total assets | < 5MB recommended |
 | Min resolution | 320x480 |
 | Audio format | MP3, OGG |
