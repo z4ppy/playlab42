@@ -1,0 +1,343 @@
+{
+  "version": "1.0",
+  "generatedAt": "2025-12-13T16:59:36.676Z",
+  "epics": [
+    {
+      "id": "exemple-article",
+      "title": "Article exemple",
+      "description": "Un article de démonstration pour tester l'affichage des parcours.",
+      "path": "/parcours/epics/exemple-article",
+      "hierarchy": [
+        "autres"
+      ],
+      "tags": [
+        "exemple",
+        "test"
+      ],
+      "author": "PlayLab42",
+      "created": "2025-10-01",
+      "duration": "2 min",
+      "difficulty": "beginner",
+      "icon": "📝",
+      "thumbnail": null,
+      "slideCount": 1,
+      "optionalSlideCount": 0,
+      "hasIndex": false,
+      "structure": [
+        {
+          "type": "slide",
+          "id": "01-introduction",
+          "title": "Introduction",
+          "icon": "📝"
+        }
+      ]
+    },
+    {
+      "id": "hello-playlab42",
+      "title": "Bienvenue sur PlayLab42",
+      "description": "Découvrez la plateforme, ses objectifs pédagogiques et comment contribuer.",
+      "path": "/parcours/epics/hello-playlab42",
+      "hierarchy": [
+        "playlab42"
+      ],
+      "tags": [
+        "howto",
+        "debutant",
+        "ia",
+        "dev"
+      ],
+      "author": "PlayLab42",
+      "created": "2025-01-15",
+      "updated": "2025-12-13",
+      "duration": "15 min",
+      "difficulty": "beginner",
+      "icon": "👋",
+      "thumbnail": null,
+      "slideCount": 7,
+      "optionalSlideCount": 0,
+      "hasIndex": false,
+      "structure": [
+        {
+          "type": "section",
+          "id": "decouverte",
+          "title": "Découverte",
+          "icon": "🎯",
+          "children": [
+            {
+              "type": "slide",
+              "id": "01-bienvenue",
+              "title": "Bienvenue",
+              "icon": "👋"
+            },
+            {
+              "type": "slide",
+              "id": "02-methodologies",
+              "title": "Les méthodologies",
+              "icon": "🧠"
+            },
+            {
+              "type": "slide",
+              "id": "03-architecture",
+              "title": "L'architecture",
+              "icon": "🏗️"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "id": "contribuer",
+          "title": "Contribuer",
+          "icon": "🛠️",
+          "children": [
+            {
+              "type": "slide",
+              "id": "04-creer-outil",
+              "title": "Créer un outil",
+              "icon": "🔧"
+            },
+            {
+              "type": "slide",
+              "id": "05-creer-jeu",
+              "title": "Créer un jeu",
+              "icon": "🎮"
+            },
+            {
+              "type": "slide",
+              "id": "06-creer-bot",
+              "title": "Créer un bot",
+              "icon": "🤖"
+            }
+          ]
+        },
+        {
+          "type": "slide",
+          "id": "07-aller-plus-loin",
+          "title": "Pour aller plus loin",
+          "icon": "🚀"
+        }
+      ]
+    },
+    {
+      "id": "internet-france-1994",
+      "title": "L'Internet débarque en France",
+      "description": "Dossier spécial : cette technologie américaine qui va révolutionner nos entreprises.",
+      "path": "/parcours/epics/internet-france-1994",
+      "hierarchy": [
+        "autres"
+      ],
+      "tags": [
+        "histoire",
+        "internet",
+        "archive"
+      ],
+      "author": "Jean-Michel Dufour",
+      "created": "1994-11-15",
+      "duration": "8 min",
+      "difficulty": "intermediate",
+      "icon": "🖥️",
+      "thumbnail": null,
+      "slideCount": 3,
+      "optionalSlideCount": 0,
+      "hasIndex": false,
+      "structure": [
+        {
+          "type": "slide",
+          "id": "01-revolution-numerique",
+          "title": "La révolution numérique",
+          "icon": "🌐"
+        },
+        {
+          "type": "slide",
+          "id": "02-premiers-pas",
+          "title": "Comment se connecter",
+          "icon": "📞"
+        },
+        {
+          "type": "slide",
+          "id": "03-perspectives",
+          "title": "Les perspectives",
+          "icon": "🔮"
+        }
+      ]
+    }
+  ],
+  "taxonomy": {
+    "hierarchy": [
+      {
+        "id": "autres",
+        "label": "Autres",
+        "icon": "📚",
+        "count": 3,
+        "thumbnail": null,
+        "visible": true,
+        "children": []
+      }
+    ],
+    "tags": [
+      {
+        "id": "exemple",
+        "label": "Exemple",
+        "count": 1
+      },
+      {
+        "id": "test",
+        "label": "Test",
+        "count": 1
+      },
+      {
+        "id": "howto",
+        "label": "Tutoriels",
+        "count": 1
+      },
+      {
+        "id": "debutant",
+        "label": "Débutant",
+        "count": 1
+      },
+      {
+        "id": "ia",
+        "label": "Intelligence Artificielle",
+        "count": 1
+      },
+      {
+        "id": "dev",
+        "label": "Développement",
+        "count": 1
+      },
+      {
+        "id": "histoire",
+        "label": "Histoire",
+        "count": 1
+      },
+      {
+        "id": "internet",
+        "label": "Internet",
+        "count": 1
+      },
+      {
+        "id": "archive",
+        "label": "Archive",
+        "count": 1
+      }
+    ]
+  },
+  "featured": {
+    "recent": [
+      {
+        "id": "hello-playlab42",
+        "title": "Bienvenue sur PlayLab42",
+        "description": "Découvrez la plateforme, ses objectifs pédagogiques et comment contribuer.",
+        "path": "/parcours/epics/hello-playlab42",
+        "hierarchy": [
+          "playlab42"
+        ],
+        "tags": [
+          "howto",
+          "debutant",
+          "ia",
+          "dev"
+        ],
+        "author": "PlayLab42",
+        "created": "2025-01-15",
+        "updated": "2025-12-13",
+        "duration": "15 min",
+        "difficulty": "beginner",
+        "icon": "👋",
+        "thumbnail": null,
+        "slideCount": 7,
+        "optionalSlideCount": 0,
+        "hasIndex": false,
+        "structure": [
+          {
+            "type": "section",
+            "id": "decouverte",
+            "title": "Découverte",
+            "icon": "🎯",
+            "children": [
+              {
+                "type": "slide",
+                "id": "01-bienvenue",
+                "title": "Bienvenue",
+                "icon": "👋"
+              },
+              {
+                "type": "slide",
+                "id": "02-methodologies",
+                "title": "Les méthodologies",
+                "icon": "🧠"
+              },
+              {
+                "type": "slide",
+                "id": "03-architecture",
+                "title": "L'architecture",
+                "icon": "🏗️"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "id": "contribuer",
+            "title": "Contribuer",
+            "icon": "🛠️",
+            "children": [
+              {
+                "type": "slide",
+                "id": "04-creer-outil",
+                "title": "Créer un outil",
+                "icon": "🔧"
+              },
+              {
+                "type": "slide",
+                "id": "05-creer-jeu",
+                "title": "Créer un jeu",
+                "icon": "🎮"
+              },
+              {
+                "type": "slide",
+                "id": "06-creer-bot",
+                "title": "Créer un bot",
+                "icon": "🤖"
+              }
+            ]
+          },
+          {
+            "type": "slide",
+            "id": "07-aller-plus-loin",
+            "title": "Pour aller plus loin",
+            "icon": "🚀"
+          }
+        ]
+      },
+      {
+        "id": "exemple-article",
+        "title": "Article exemple",
+        "description": "Un article de démonstration pour tester l'affichage des parcours.",
+        "path": "/parcours/epics/exemple-article",
+        "hierarchy": [
+          "autres"
+        ],
+        "tags": [
+          "exemple",
+          "test"
+        ],
+        "author": "PlayLab42",
+        "created": "2025-10-01",
+        "duration": "2 min",
+        "difficulty": "beginner",
+        "icon": "📝",
+        "thumbnail": null,
+        "slideCount": 1,
+        "optionalSlideCount": 0,
+        "hasIndex": false,
+        "structure": [
+          {
+            "type": "slide",
+            "id": "01-introduction",
+            "title": "Introduction",
+            "icon": "📝"
+          }
+        ]
+      }
+    ]
+  }
+}

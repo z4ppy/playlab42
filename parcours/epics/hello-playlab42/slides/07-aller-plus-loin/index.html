@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pour aller plus loin - PlayLab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .congrats {
+      text-align: center;
+      padding: var(--space-xl) 0;
+    }
+    .congrats-emoji {
+      font-size: 4rem;
+      margin-bottom: var(--space-md);
+    }
+    .congrats h1 {
+      border: none;
+      padding: 0;
+    }
+    .resources {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-xl) 0;
+    }
+    .resource {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border-left: 4px solid var(--color-accent);
+    }
+    .resource h4 {
+      margin: 0 0 var(--space-sm) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .resource p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin: 0 0 var(--space-sm) 0;
+    }
+    .resource code {
+      display: block;
+      background: var(--color-bg-card);
+      padding: var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+    }
+    .next-steps {
+      background: linear-gradient(135deg, var(--color-accent), #ff8a80);
+      color: white;
+      padding: var(--space-xl);
+      border-radius: var(--radius-lg);
+      margin: var(--space-xl) 0;
+      text-align: center;
+    }
+    .next-steps h3 {
+      margin: 0 0 var(--space-lg) 0;
+      font-size: var(--font-size-xl);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-md);
+    }
+    .action {
+      background: rgba(255,255,255,0.2);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-lg);
+      font-weight: 500;
+    }
+    .action .icon {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: var(--space-xs);
+    }
+    .contribution-note {
+      background: var(--color-bg-secondary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      margin: var(--space-lg) 0;
+      text-align: center;
+    }
+    .contribution-note h4 {
+      margin: 0 0 var(--space-sm) 0;
+    }
+    .contribution-note p {
+      margin: 0;
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <div class="congrats">
+      <div class="congrats-emoji">🎉</div>
+      <h1>Félicitations !</h1>
+      <p>Vous avez terminé le parcours d'introduction à PlayLab42.</p>
+    </div>
+
+    <h2>Ressources disponibles</h2>
+
+    <div class="resources">
+      <div class="resource">
+        <h4>📚 Documentation</h4>
+        <p>Guides détaillés pour chaque type de contribution</p>
+        <code>docs/guides/</code>
+      </div>
+      <div class="resource">
+        <h4>📋 Spécifications</h4>
+        <p>Specs techniques complètes au format OpenSpec</p>
+        <code>openspec/specs/</code>
+      </div>
+      <div class="resource">
+        <h4>🎮 Exemple Tic-Tac-Toe</h4>
+        <p>Jeu de référence avec moteur, client et 3 bots</p>
+        <code>games/tictactoe/</code>
+      </div>
+      <div class="resource">
+        <h4>🔧 Exemple JSON Formatter</h4>
+        <p>Outil de référence avec thème et persistance</p>
+        <code>tools/json-formatter/</code>
+      </div>
+    </div>
+
+    <div class="next-steps">
+      <h3>Prêt à contribuer ?</h3>
+      <div class="actions">
+        <div class="action">
+          <span class="icon">🔧</span>
+          Créer un outil
+        </div>
+        <div class="action">
+          <span class="icon">🎮</span>
+          Créer un jeu
+        </div>
+        <div class="action">
+          <span class="icon">🤖</span>
+          Créer un bot
+        </div>
+        <div class="action">
+          <span class="icon">📚</span>
+          Créer un parcours
+        </div>
+      </div>
+    </div>
+
+    <div class="contribution-note">
+      <h4>💡 Comment contribuer ?</h4>
+      <p>
+        Toutes les contributions se font via <strong>Pull Request</strong> sur GitHub.<br>
+        Créez une branche, ajoutez votre contenu, et soumettez votre PR pour revue !
+      </p>
+    </div>
+
+    <h2>Commandes utiles</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Commande</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>make serve</code></td>
+          <td>Lancer le serveur de développement</td>
+        </tr>
+        <tr>
+          <td><code>make lint</code></td>
+          <td>Vérifier le code avec ESLint</td>
+        </tr>
+        <tr>
+          <td><code>make test</code></td>
+          <td>Lancer les tests</td>
+        </tr>
+        <tr>
+          <td><code>make build</code></td>
+          <td>Régénérer les catalogues</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <blockquote>
+      "Le voyage de mille lieues commence par un pas." — Lao Tseu<br>
+      <small>Votre premier outil ou jeu vous attend !</small>
+    </blockquote>
+  </article>
+</body>
+</html>

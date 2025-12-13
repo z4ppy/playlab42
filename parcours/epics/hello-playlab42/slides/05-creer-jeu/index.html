@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un jeu - PlayLab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .level-badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      margin-bottom: var(--space-md);
+    }
+    .game-structure {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    @media (max-width: 600px) {
+      .game-structure {
+        grid-template-columns: 1fr;
+      }
+    }
+    .game-component {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      text-align: center;
+      border-top: 3px solid;
+    }
+    .game-component.engine { border-color: #3b82f6; }
+    .game-component.client { border-color: #22c55e; }
+    .game-component.bot { border-color: #f59e0b; }
+    .game-component h4 {
+      margin: var(--space-sm) 0;
+    }
+    .game-component .icon {
+      font-size: 2.5rem;
+    }
+    .game-component p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+    .code-block {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+    .code-block .comment {
+      color: var(--color-text-muted);
+    }
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .principle {
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-accent);
+    }
+    .principle h4 {
+      margin: 0 0 var(--space-xs) 0;
+      font-size: var(--font-size-md);
+    }
+    .principle p {
+      margin: 0;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <span class="level-badge">Niveau : Intermédiaire</span>
+    <h1>Créer un jeu</h1>
+
+    <p>
+      Un jeu PlayLab42 est composé de trois parties distinctes qui communiquent entre elles.
+      Cette séparation permet de tester chaque partie indépendamment et de réutiliser le moteur.
+    </p>
+
+    <h2>Les trois composants</h2>
+
+    <div class="game-structure">
+      <div class="game-component engine">
+        <div class="icon">⚙️</div>
+        <h4>Engine</h4>
+        <p>Logique et règles du jeu. Fonctions pures, sans I/O.</p>
+      </div>
+      <div class="game-component client">
+        <div class="icon">🖥️</div>
+        <h4>Client</h4>
+        <p>Interface utilisateur. Affichage et interactions.</p>
+      </div>
+      <div class="game-component bot">
+        <div class="icon">🤖</div>
+        <h4>Bot</h4>
+        <p>Intelligence artificielle. Joue automatiquement.</p>
+      </div>
+    </div>
+
+    <h2>Structure d'un jeu</h2>
+
+    <div class="code-block">games/mon-jeu/
+├── index.html    <span class="comment"># Client (interface)</span>
+├── engine.js     <span class="comment"># Moteur (logique)</span>
+├── bots.js       <span class="comment"># Bots (IA)</span>
+├── game.json     <span class="comment"># Métadonnées</span>
+└── thumb.png     <span class="comment"># Vignette (optionnel)</span></div>
+
+    <h2>Principes fondamentaux</h2>
+
+    <div class="principles">
+      <div class="principle">
+        <h4>🔄 Isomorphe</h4>
+        <p>Le moteur fonctionne côté client ET serveur (pas de dépendance DOM)</p>
+      </div>
+      <div class="principle">
+        <h4>📦 Sérialisable</h4>
+        <p>L'état du jeu est 100% JSON, permettant sauvegarde et replay</p>
+      </div>
+      <div class="principle">
+        <h4>🎲 Déterministe</h4>
+        <p>Utilise SeededRandom pour un aléatoire reproductible</p>
+      </div>
+      <div class="principle">
+        <h4>✅ Testable</h4>
+        <p>Fonctions pures = tests unitaires faciles</p>
+      </div>
+    </div>
+
+    <h2>Exemple : Tic-Tac-Toe</h2>
+
+    <p>Le jeu Tic-Tac-Toe est fourni comme exemple de référence. Il illustre :</p>
+
+    <ul>
+      <li>Un moteur avec <code>init()</code>, <code>applyAction()</code>, <code>getValidActions()</code></li>
+      <li>Un client avec affichage de grille et gestion des clics</li>
+      <li>Trois bots : Random, Blocker (défensif) et Perfect (minimax)</li>
+    </ul>
+
+    <blockquote>
+      Commencez par étudier l'exemple Tic-Tac-Toe avant de créer votre propre jeu !
+    </blockquote>
+  </article>
+</body>
+</html>

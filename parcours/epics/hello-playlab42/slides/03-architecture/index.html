@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L'architecture - PlayLab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .architecture-diagram {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      overflow-x: auto;
+      white-space: pre;
+      line-height: 1.4;
+    }
+    .folder-tree {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      white-space: pre;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+    .folder-tree .folder {
+      color: var(--color-accent);
+    }
+    .folder-tree .file {
+      color: var(--color-text-muted);
+    }
+    .folder-tree .comment {
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .component {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      border-top: 3px solid var(--color-accent);
+    }
+    .component h4 {
+      margin: 0 0 var(--space-sm) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .component p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Architecture de la plateforme</h1>
+
+    <p>
+      PlayLab42 est conçu avec une architecture simple et modulaire.
+      Tout est statique, sans serveur backend requis.
+    </p>
+
+    <h2>Vue d'ensemble</h2>
+
+    <div class="architecture-diagram">┌─────────────────────────────────────────────────────────────┐
+│                         PORTAIL                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │  📚 Parcours │  │  🔧 Outils  │  │  🎮 Jeux            │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+         │                  │                  │
+         ▼                  ▼                  ▼
+┌─────────────────┐  ┌──────────────┐  ┌──────────────────────┐
+│    PARCOURS     │  │    TOOLS     │  │        GAMES         │
+│  (slides HTML)  │  │ (HTML simple)│  │ Engine + Client + Bot│
+└─────────────────┘  └──────────────┘  └──────────────────────┘</div>
+
+    <h2>Les composants principaux</h2>
+
+    <div class="component-grid">
+      <div class="component">
+        <h4>📚 Parcours</h4>
+        <p>Contenus pédagogiques structurés en "Epics" composés de slides HTML.</p>
+      </div>
+      <div class="component">
+        <h4>🔧 Outils</h4>
+        <p>Fichiers HTML autonomes. Un fichier = un outil complet et fonctionnel.</p>
+      </div>
+      <div class="component">
+        <h4>🎮 Jeux</h4>
+        <p>Moteur (logique) + Client (UI) + Bots (IA). Architecture séparée pour la testabilité.</p>
+      </div>
+      <div class="component">
+        <h4>📦 Lib</h4>
+        <p>Bibliothèques partagées : thèmes, utilitaires DOM, SDK de jeu, random seedé.</p>
+      </div>
+    </div>
+
+    <h2>Structure des fichiers</h2>
+
+    <div class="folder-tree">
+<span class="folder">playlab42/</span>
+├── <span class="file">index.html</span>          <span class="comment"># Portail principal</span>
+├── <span class="file">app.js</span>              <span class="comment"># Logique du portail</span>
+├── <span class="folder">parcours/</span>           <span class="comment"># Contenus pédagogiques</span>
+│   └── <span class="folder">epics/</span>
+│       └── <span class="folder">mon-epic/</span>
+│           ├── <span class="file">epic.json</span>   <span class="comment"># Métadonnées</span>
+│           └── <span class="folder">slides/</span>     <span class="comment"># Contenu HTML</span>
+├── <span class="folder">tools/</span>              <span class="comment"># Outils HTML standalone</span>
+│   └── <span class="folder">mon-outil/</span>
+│       ├── <span class="file">index.html</span>
+│       └── <span class="file">tool.json</span>
+├── <span class="folder">games/</span>              <span class="comment"># Jeux</span>
+│   └── <span class="folder">mon-jeu/</span>
+│       ├── <span class="file">index.html</span>  <span class="comment"># Client UI</span>
+│       ├── <span class="file">engine.js</span>   <span class="comment"># Logique de jeu</span>
+│       ├── <span class="file">bots.js</span>     <span class="comment"># IA</span>
+│       └── <span class="file">game.json</span>
+├── <span class="folder">lib/</span>                <span class="comment"># Bibliothèques partagées</span>
+└── <span class="folder">openspec/</span>           <span class="comment"># Spécifications</span>
+    └── <span class="folder">specs/</span></div>
+
+    <h2>Principes clés</h2>
+
+    <ul>
+      <li><strong>Statique</strong> : Tout fonctionne sans serveur, déployable sur GitHub Pages</li>
+      <li><strong>Modulaire</strong> : Chaque composant est indépendant et réutilisable</li>
+      <li><strong>Isomorphe</strong> : Les moteurs de jeu fonctionnent côté client ET serveur</li>
+      <li><strong>Déterministe</strong> : Random seedé pour des parties rejouables</li>
+    </ul>
+
+    <blockquote>
+      "La simplicité est la sophistication suprême." — Léonard de Vinci
+    </blockquote>
+  </article>
+</body>
+</html>

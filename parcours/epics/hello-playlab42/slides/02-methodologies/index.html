@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Les méthodologies - PlayLab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .method-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      border-left: 4px solid var(--color-accent);
+    }
+    .method-card h3 {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin: 0 0 var(--space-md) 0;
+      color: var(--color-accent);
+    }
+    .method-card h3 .icon {
+      font-size: 1.5rem;
+    }
+    .method-card p {
+      margin: 0 0 var(--space-sm) 0;
+    }
+    .method-card ul {
+      margin: var(--space-sm) 0 0 0;
+    }
+    .workflow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin: var(--space-lg) 0;
+      padding: var(--space-md);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+    }
+    .workflow-step {
+      background: var(--color-bg-card);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      text-align: center;
+    }
+    .workflow-arrow {
+      color: var(--color-accent);
+      font-size: 1.5rem;
+    }
+    .tips {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 4px solid #3b82f6;
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: var(--space-lg) 0;
+    }
+    .tips h4 {
+      margin: 0 0 var(--space-sm) 0;
+      color: #3b82f6;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Les méthodologies de PlayLab42</h1>
+
+    <p>
+      PlayLab42 utilise plusieurs méthodologies modernes pour structurer le développement
+      et maximiser l'apprentissage. Voici les piliers de notre approche.
+    </p>
+
+    <div class="method-card">
+      <h3><span class="icon">🤖</span> Développement assisté par IA</h3>
+      <p>
+        L'IA n'est pas là pour coder à votre place, mais pour vous accompagner.
+        Apprenez à formuler vos besoins, à itérer sur les propositions, et à garder
+        le contrôle de votre code.
+      </p>
+      <ul>
+        <li><strong>Pair programming</strong> : L'IA comme co-pilote qui suggère et explique</li>
+        <li><strong>Revue de code</strong> : Demandez des explications et des alternatives</li>
+        <li><strong>Apprentissage actif</strong> : Comprenez ce qui est généré, ne copiez pas aveuglément</li>
+      </ul>
+    </div>
+
+    <div class="method-card">
+      <h3><span class="icon">📋</span> OpenSpec : Spécifications vivantes</h3>
+      <p>
+        OpenSpec est notre méthodologie pour gérer les spécifications techniques.
+        L'idée : des specs claires <em>avant</em> de coder, avec un workflow de propositions.
+      </p>
+      <div class="workflow">
+        <div class="workflow-step">📝 Proposal</div>
+        <span class="workflow-arrow">→</span>
+        <div class="workflow-step">🔨 Apply</div>
+        <span class="workflow-arrow">→</span>
+        <div class="workflow-step">📦 Archive</div>
+      </div>
+      <ul>
+        <li><strong>Proposal</strong> : Décrivez le changement souhaité avec specs et tâches</li>
+        <li><strong>Apply</strong> : Implémentez en suivant les specs et la checklist</li>
+        <li><strong>Archive</strong> : Fusionnez les specs dans la documentation officielle</li>
+      </ul>
+    </div>
+
+    <div class="method-card">
+      <h3><span class="icon">💬</span> L'art du Prompting</h3>
+      <p>
+        Bien communiquer avec une IA, ça s'apprend ! Quelques principes clés :
+      </p>
+      <ul>
+        <li><strong>Contexte</strong> : Donnez suffisamment d'informations sur votre projet</li>
+        <li><strong>Précision</strong> : Soyez spécifique sur ce que vous attendez</li>
+        <li><strong>Itération</strong> : Affinez progressivement, ne cherchez pas la perfection du premier coup</li>
+        <li><strong>Exemples</strong> : Montrez ce que vous voulez avec des cas concrets</li>
+      </ul>
+    </div>
+
+    <div class="tips">
+      <h4>💡 Astuce : Le fichier AGENTS.md</h4>
+      <p>
+        Chaque projet peut contenir un fichier <code>AGENTS.md</code> à la racine.
+        Ce fichier donne du contexte aux agents IA : conventions du projet, structure,
+        préférences de style... L'IA le lit automatiquement pour mieux vous aider.
+      </p>
+    </div>
+
+    <blockquote>
+      "Un bon prompt, c'est comme une bonne spécification : clair, précis, et avec des exemples."
+    </blockquote>
+  </article>
+</body>
+</html>

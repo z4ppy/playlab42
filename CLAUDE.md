@@ -51,10 +51,19 @@ make npm CMD="install lodash"
 make npm CMD="run test"
 
 # Serveur de dev
-make dev
+make serve
 
-# Build du catalogue
-make build:catalogue
+# Build des catalogues
+make build-catalogue    # Génère data/catalogue.json
+make build-parcours     # Génère data/parcours.json
+
+# Linting
+make lint               # Vérifie lib/, src/, games/
+docker compose exec dev npx eslint app.js  # Lint fichier spécifique
+
+# Tests
+make test               # Lance les tests Jest
+make test-watch         # Mode watch
 ```
 
 **Ne jamais exécuter npm, node, ou autres outils directement sur le host.**

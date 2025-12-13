@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "serve": "npx serve . -p 5242 -C",
-    "build": "npm run build:catalogue",
+    "build": "npm run build:catalogue && npm run build:parcours",
     "build:catalogue": "node src/scripts/build-catalogue.js",
+    "build:parcours": "node scripts/build-parcours.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",

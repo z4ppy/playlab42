@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un bot - PlayLab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .level-badge {
+      display: inline-block;
+      background: #ef4444;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      margin-bottom: var(--space-md);
+    }
+    .bot-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .bot-type {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      text-align: center;
+    }
+    .bot-type .icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-sm);
+    }
+    .bot-type h4 {
+      margin: 0 0 var(--space-sm) 0;
+      color: var(--color-accent);
+    }
+    .bot-type .difficulty {
+      font-size: var(--font-size-xs);
+      background: var(--color-bg-card);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-sm);
+      display: inline-block;
+    }
+    .bot-type p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+    .code-block {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+    .code-block .comment {
+      color: var(--color-text-muted);
+    }
+    .code-block .keyword {
+      color: var(--color-accent);
+    }
+    .callout-ml {
+      background: linear-gradient(135deg, #8b5cf6, #a855f7);
+      color: white;
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      margin: var(--space-xl) 0;
+    }
+    .callout-ml h4 {
+      margin: 0 0 var(--space-sm) 0;
+    }
+    .callout-ml ul {
+      margin: var(--space-sm) 0 0 0;
+      padding-left: var(--space-lg);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <span class="level-badge">Niveau : Avancé</span>
+    <h1>Créer un bot (IA de jeu)</h1>
+
+    <p>
+      Un bot est un joueur automatique qui remplace les humains.
+      C'est l'occasion parfaite de découvrir l'intelligence artificielle appliquée aux jeux !
+    </p>
+
+    <h2>Types de bots</h2>
+
+    <div class="bot-types">
+      <div class="bot-type">
+        <div class="icon">🎲</div>
+        <span class="difficulty">Facile</span>
+        <h4>Random</h4>
+        <p>Choisit une action au hasard parmi les coups valides</p>
+      </div>
+      <div class="bot-type">
+        <div class="icon">🛡️</div>
+        <span class="difficulty">Moyen</span>
+        <h4>Greedy / Blocker</h4>
+        <p>Utilise des heuristiques simples (bloquer, scorer...)</p>
+      </div>
+      <div class="bot-type">
+        <div class="icon">🧠</div>
+        <span class="difficulty">Difficile</span>
+        <h4>Minimax</h4>
+        <p>Explore l'arbre des possibilités pour jouer optimalement</p>
+      </div>
+      <div class="bot-type">
+        <div class="icon">🔮</div>
+        <span class="difficulty">Expert</span>
+        <h4>ML / RL</h4>
+        <p>Apprentissage par renforcement, réseaux de neurones</p>
+      </div>
+    </div>
+
+    <h2>Interface d'un bot</h2>
+
+    <p>Chaque bot doit implémenter la méthode <code>chooseAction()</code> :</p>
+
+    <div class="code-block"><span class="keyword">class</span> MonBot <span class="keyword">extends</span> Bot {
+  <span class="comment">/**
+   * Choisit une action à jouer
+   * @param {GameState} state - État actuel du jeu
+   * @param {SeededRandom} rng - Générateur aléatoire
+   * @returns {Action} L'action choisie
+   */</span>
+  chooseAction(state, rng) {
+    <span class="keyword">const</span> actions = state.engine.getValidActions(state);
+
+    <span class="comment">// Votre logique ici...</span>
+
+    <span class="keyword">return</span> actions[0];
+  }
+}</div>
+
+    <h2>Principes importants</h2>
+
+    <ul>
+      <li><strong>Déterministe</strong> : Utilisez le <code>rng</code> fourni, pas <code>Math.random()</code></li>
+      <li><strong>Isomorphe</strong> : Pas de dépendance au DOM ou aux I/O</li>
+      <li><strong>Performant</strong> : Ne bloquez pas l'interface trop longtemps</li>
+      <li><strong>Déclaré</strong> : Listez vos bots dans le <code>game.json</code></li>
+    </ul>
+
+    <div class="callout-ml">
+      <h4>🚀 Vers le Machine Learning</h4>
+      <p>PlayLab42 est conçu pour aller plus loin avec l'apprentissage automatique :</p>
+      <ul>
+        <li>Parties rejouables grâce au random seedé</li>
+        <li>Export des historiques pour créer des datasets</li>
+        <li>Runner bot vs bot pour générer des milliers de parties</li>
+        <li>Compatible avec les frameworks ML (TensorFlow.js, ONNX...)</li>
+      </ul>
+    </div>
+
+    <blockquote>
+      "Le meilleur enseignant, c'est son propre adversaire." — Principe du self-play en IA
+    </blockquote>
+  </article>
+</body>
+</html>

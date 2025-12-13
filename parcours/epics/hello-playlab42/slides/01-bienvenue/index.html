@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue - PlayLab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .hero {
+      text-align: center;
+      padding: var(--space-xl) 0;
+    }
+    .hero-emoji {
+      font-size: 4rem;
+      margin-bottom: var(--space-md);
+    }
+    .hero h1 {
+      border: none;
+      padding: 0;
+    }
+    .tagline {
+      font-size: var(--font-size-lg);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-xl);
+    }
+    .objectives {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-xl) 0;
+    }
+    .objective {
+      background: var(--color-bg-secondary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      transition: transform var(--transition-normal);
+    }
+    .objective:hover {
+      transform: translateY(-4px);
+    }
+    .objective-icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-sm);
+    }
+    .objective h3 {
+      margin: var(--space-sm) 0;
+      font-size: var(--font-size-md);
+    }
+    .objective p {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+    .callout-highlight {
+      background: linear-gradient(135deg, var(--color-accent), #ff8a80);
+      color: white;
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      margin: var(--space-xl) 0;
+      text-align: center;
+    }
+    .callout-highlight strong {
+      display: block;
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--space-sm);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <div class="hero">
+      <div class="hero-emoji">👋</div>
+      <h1>Bienvenue sur PlayLab42 !</h1>
+      <p class="tagline">La plateforme collaborative pour apprendre à développer avec l'IA</p>
+    </div>
+
+    <h2>Qu'est-ce que PlayLab42 ?</h2>
+
+    <p>
+      <strong>PlayLab42</strong> est une plateforme modulaire de jeux et d'outils,
+      conçue comme support de formation au <strong>développement assisté par Intelligence Artificielle</strong>.
+    </p>
+
+    <p>
+      Le projet a une particularité : il s'enrichit des contributions de chaque session de formation.
+      Chaque participant peut créer et ajouter ses propres outils, jeux ou contenus pédagogiques.
+    </p>
+
+    <h2>Les objectifs pédagogiques</h2>
+
+    <div class="objectives">
+      <div class="objective">
+        <div class="objective-icon">🤖</div>
+        <h3>Développement assisté par IA</h3>
+        <p>Apprendre à collaborer efficacement avec les assistants IA pour coder</p>
+      </div>
+      <div class="objective">
+        <div class="objective-icon">📋</div>
+        <h3>Méthodologie OpenSpec</h3>
+        <p>Découvrir une approche structurée pour spécifier et implémenter</p>
+      </div>
+      <div class="objective">
+        <div class="objective-icon">🎮</div>
+        <h3>Création de jeux</h3>
+        <p>Concevoir des moteurs isomorphes et des IA de jeu</p>
+      </div>
+      <div class="objective">
+        <div class="objective-icon">🔧</div>
+        <h3>Outils pratiques</h3>
+        <p>Créer des utilitaires HTML autonomes et réutilisables</p>
+      </div>
+    </div>
+
+    <div class="callout-highlight">
+      <strong>100% Open Source et statique</strong>
+      Tout fonctionne sans serveur backend. Déployable sur GitHub Pages en un clic !
+    </div>
+
+    <blockquote>
+      "La meilleure façon d'apprendre le développement IA, c'est de pratiquer sur un vrai projet collaboratif."
+    </blockquote>
+  </article>
+</body>
+</html>

@@ -516,6 +516,188 @@ footer {
   }
 }
 
+/* === Parcours === */
+
+/* Filtres par catégorie */
+.parcours-category-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+/* Section de catégorie dépliée */
+.category-section {
+  margin-bottom: var(--space-xl);
+}
+
+.category-section-title {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-md);
+  color: var(--color-text);
+}
+
+/* Section featured (conservé pour compatibilité) */
+.featured-section {
+  margin-bottom: var(--space-lg);
+}
+
+.featured-title {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-md);
+  color: var(--color-text);
+}
+
+.featured-epics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+/* Grilles de cartes */
+.epic-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+
+/* Carte Epic */
+.epic-card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.epic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--color-shadow);
+}
+
+.epic-card.completed {
+  border: 2px solid var(--color-success, #4caf50);
+}
+
+.epic-card.in-progress {
+  border: 2px solid var(--color-accent);
+}
+
+.epic-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--color-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  overflow: hidden;
+}
+
+.epic-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.epic-info {
+  padding: var(--space-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.epic-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  line-height: 1.3;
+}
+
+.epic-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.epic-meta {
+  display: flex;
+  gap: var(--space-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.epic-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.epic-tag {
+  font-size: var(--font-size-xs);
+  padding: 0.15rem 0.4rem;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+}
+
+.epic-progress {
+  height: 4px;
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.epic-progress-bar {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-normal);
+}
+
+/* Liste parcours (mode recherche) */
+.parcours-list {
+  display: none;
+}
+
+/* Responsive parcours */
+@media (max-width: 640px) {
+  .epic-cards,
+  .featured-epics {
+    grid-template-columns: 1fr;
+  }
+
+  .parcours-category-filters {
+    gap: var(--space-xs);
+  }
+
+  .parcours-category-filters .filter {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs) var(--space-sm);
+  }
+}
+
+/* === Game/Tool View - Immersive mode === */
+/* Masquer header et footer quand un jeu/outil est ouvert */
+body.game-active > header,
+body.game-active > footer {
+  display: none;
+}
+
+body.game-active > main {
+  height: 100vh;
+}
+
 /* === Fullscreen === */
 .fullscreen .game-header,
 .fullscreen footer {

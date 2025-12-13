@@ -1,0 +1,36 @@
+{
+  "taxonomy": {
+    "threshold": 3,
+    "hierarchy": [
+      {
+        "id": "playlab42",
+        "label": "PlayLab42",
+        "icon": "🎮",
+        "order": 1
+      },
+      {
+        "id": "autres",
+        "label": "Autres",
+        "icon": "📚",
+        "order": 99
+      }
+    ],
+    "tagLabels": {
+      "howto": "Tutoriels",
+      "debutant": "Débutant",
+      "avance": "Avancé",
+      "ia": "Intelligence Artificielle",
+      "dev": "Développement",
+      "histoire": "Histoire",
+      "internet": "Internet",
+      "archive": "Archive",
+      "exemple": "Exemple",
+      "test": "Test"
+    }
+  },
+  "featured": {
+    "showRecent": true,
+    "recentCount": 5,
+    "recentMonths": 6
+  }
+}

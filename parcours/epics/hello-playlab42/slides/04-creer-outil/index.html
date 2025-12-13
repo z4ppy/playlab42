@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un outil - PlayLab42</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .level-badge {
+      display: inline-block;
+      background: #22c55e;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      margin-bottom: var(--space-md);
+    }
+    .steps {
+      counter-reset: step;
+      margin: var(--space-lg) 0;
+    }
+    .step {
+      position: relative;
+      padding-left: 3rem;
+      margin-bottom: var(--space-lg);
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2rem;
+      height: 2rem;
+      background: var(--color-accent);
+      color: white;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .step h3 {
+      margin: 0 0 var(--space-sm) 0;
+    }
+    .code-block {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-sm) 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+    .code-block .comment {
+      color: var(--color-text-muted);
+    }
+    .code-block .keyword {
+      color: var(--color-accent);
+    }
+    .example-box {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .example-box h4 {
+      margin: 0 0 var(--space-md) 0;
+      color: var(--color-accent);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <span class="level-badge">Niveau : Débutant</span>
+    <h1>Créer un outil HTML</h1>
+
+    <p>
+      Les outils sont des fichiers HTML autonomes et simples.
+      Un fichier = un outil complet. Pas de dépendances, pas de build.
+    </p>
+
+    <h2>Caractéristiques d'un outil</h2>
+
+    <ul>
+      <li><strong>Autonome</strong> : Un seul fichier HTML contenant tout (CSS + JS)</li>
+      <li><strong>Thémable</strong> : Utilise <code>lib/theme.css</code> pour s'adapter au thème</li>
+      <li><strong>Sans backend</strong> : Tout tourne dans le navigateur</li>
+      <li><strong>Pratique</strong> : Résout un problème concret du quotidien</li>
+    </ul>
+
+    <h2>Les étapes de création</h2>
+
+    <div class="steps">
+      <div class="step">
+        <h3>Créer le dossier et fichier HTML</h3>
+        <div class="code-block">
+tools/mon-outil/
+├── index.html    <span class="comment"># L'outil</span>
+└── tool.json     <span class="comment"># Métadonnées</span></div>
+      </div>
+
+      <div class="step">
+        <h3>Utiliser le template de base</h3>
+        <div class="code-block"><span class="keyword">&lt;!DOCTYPE html&gt;</span>
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="<span class="keyword">/lib/theme.css</span>"&gt;
+  &lt;script type="module"&gt;
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  <span class="comment">&lt;!-- Votre interface ici --&gt;</span>
+&lt;/body&gt;
+&lt;/html&gt;</div>
+      </div>
+
+      <div class="step">
+        <h3>Créer le manifest tool.json</h3>
+        <div class="code-block">{
+  "id": "mon-outil",
+  "name": "Mon Outil",
+  "description": "Description courte",
+  "tags": ["utility"],
+  "icon": "🔧"
+}</div>
+      </div>
+
+      <div class="step">
+        <h3>Régénérer le catalogue</h3>
+        <div class="code-block">make npm CMD="run build:catalogue"</div>
+      </div>
+    </div>
+
+    <div class="example-box">
+      <h4>💡 Idées d'outils à créer</h4>
+      <ul>
+        <li><strong>JSON Formatter</strong> : Formatter/valider du JSON</li>
+        <li><strong>Base64 Encoder</strong> : Encoder/décoder en Base64</li>
+        <li><strong>Color Picker</strong> : Convertir des couleurs HEX/RGB/HSL</li>
+        <li><strong>Regex Tester</strong> : Tester des expressions régulières</li>
+        <li><strong>Markdown Preview</strong> : Prévisualiser du Markdown</li>
+        <li><strong>QR Code Generator</strong> : Générer des QR codes</li>
+      </ul>
+    </div>
+
+    <blockquote>
+      Inspiré des "HTML Tools" de Simon Willison : des outils simples et efficaces.
+    </blockquote>
+  </article>
+</body>
+</html>

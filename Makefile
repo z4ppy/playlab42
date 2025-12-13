@@ -23,6 +23,7 @@ help:
 	@echo "  make serve-bg        - Serveur statique (arrière-plan)"
 	@echo "  make serve-stop      - Arrêter le serveur"
 	@echo "  make build-catalogue - Générer data/catalogue.json"
+	@echo "  make build-parcours  - Générer data/parcours.json"
 	@echo "  make test            - Lancer les tests"
 	@echo "  make lint            - Vérifier le code"
 	@echo ""
@@ -92,6 +93,10 @@ serve-stop:
 # Build du catalogue
 build-catalogue:
 	docker compose exec dev npm run build:catalogue
+
+# Build du catalogue parcours
+build-parcours:
+	docker compose exec dev npm run build:parcours
 
 # === Claude Code ===
 

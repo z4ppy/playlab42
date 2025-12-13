@@ -4,10 +4,11 @@
 
 Le portail est l'interface principale de Playlab42. C'est une application 100% frontend (pas de backend) qui permet de :
 
+- Parcourir les parcours pédagogiques (Epics)
 - Parcourir le catalogue des tools et games
-- Lancer des jeux en iframe
+- Lancer des jeux/outils en iframe
+- Consulter les slides de parcours dans le viewer intégré
 - Gérer les préférences utilisateur
-- Afficher les scores et l'historique
 
 **Architecture** : HTML/CSS/JS pur, hébergeable sur GitHub Pages, Netlify, ou S3.
 
@@ -64,11 +65,11 @@ The system SHALL track recently played games in localStorage for future use, but
 
 ### Requirement: Tab Navigation
 
-The system SHALL provide tab-based navigation to separate games and tools.
+The system SHALL provide tab-based navigation with three tabs: Parcours, Outils, Jeux.
 
 #### Scenario: Default tab
 - **WHEN** the portal loads for the first time
-- **THEN** the "Tools" tab is active by default
+- **THEN** the "Parcours" tab is active by default
 
 #### Scenario: Tab switching
 - **WHEN** a user clicks on a tab
@@ -83,6 +84,30 @@ The system SHALL provide tab-based navigation to separate games and tools.
 - **WHEN** a user applies tag filters
 - **THEN** filters apply only to the active tab content
 
+### Requirement: Parcours Display
+
+The system SHALL display pedagogical content (Epics) in the Parcours tab.
+
+#### Scenario: Parcours home
+- **WHEN** the Parcours tab is active
+- **THEN** categories are displayed in order: PlayLab42, Récents, Autres
+- **AND** epics already shown in a section are not repeated below
+- **AND** empty categories are hidden
+
+#### Scenario: Category filters
+- **WHEN** a user clicks on a category filter
+- **THEN** only epics from that category are displayed
+
+#### Scenario: Open epic
+- **WHEN** a user clicks on an epic card
+- **THEN** the parcours viewer opens with the first slide
+- **AND** the header and footer are hidden for immersive experience
+
+#### Scenario: Parcours navigation
+- **WHEN** viewing a slide
+- **THEN** navigation controls (prev/next) are visible
+- **AND** keyboard shortcuts work (arrows, Escape)
+
 ## Interface
 
 ### Application State
@@ -90,19 +115,34 @@ The system SHALL provide tab-based navigation to separate games and tools.
 ```typescript
 interface PortalState {
   /** Current view */
-  currentView: "catalog" | "game" | "settings";
+  currentView: "catalogue" | "game" | "parcours" | "settings";
 
   /** Active catalog tab */
-  activeTab: "tools" | "games";
+  activeTab: "parcours" | "tools" | "games";
 
   /** Currently loaded game (if any) */
   currentGame: string | null;
+
+  /** Catalogue data (games + tools) */
+  catalogue: Catalogue | null;
+
+  /** Parcours catalogue data */
+  parcoursCatalogue: ParcoursCatalogue | null;
+
+  /** Selected parcours category filter */
+  parcoursCategory: string | null;
+
+  /** Parcours viewer instance */
+  parcoursViewer: ParcoursViewer | null;
 
   /** User preferences */
   preferences: UserPreferences;
 
   /** Recently played games (slugs, max 5) */
   recentGames: string[];
+
+  /** Active tag filter */
+  activeFilter: string;
 }
 
 interface UserPreferences {
@@ -118,43 +158,52 @@ interface UserPreferences {
 
 | Key | Content | Description |
 |-----|---------|-------------|
-| `playlab42.activeTab` | `"tools"` ou `"games"` | Onglet actif |
+| `playlab42.activeTab` | `"parcours"`, `"tools"` ou `"games"` | Onglet actif |
 | `player` | `{ name }` | User profile |
 | `preferences` | `{ sound }` | User preferences |
 | `recent_games` | `["snake", ...]` | Recent game slugs |
 | `scores_{game}` | `[{ score, date, player }]` | Scores per game |
 | `progress_{game}` | Game-specific | Save data per game |
+| `parcours-progress` | `{ [epicId]: EpicProgress }` | Progression des parcours |
 
 ## Screens
 
 ### Catalog (Home)
 
-Le catalogue utilise un système d'onglets pour séparer Tools et Games.
+Le catalogue utilise un système d'onglets pour séparer Parcours, Outils et Jeux.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  PLAYLAB42                                      [⚙ Settings] │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│  ┌──────────────┬──────────────┐                            │
-│  │   🔧 Outils  │    🎮 Jeux   │  ← Onglets                 │
-│  └──────────────┴──────────────┘                            │
+│  ┌──────────────┬──────────────┬──────────────┐             │
+│  │  📚 Parcours │   🔧 Outils  │    🎮 Jeux   │  ← Onglets  │
+│  └──────────────┴──────────────┴──────────────┘             │
 │                                                              │
 │  [Recherche: ___________]                                    │
 │                                                              │
-│  Filtres: [Tous] [Tag1] [Tag2] [Tag3]  ← Tags de l'onglet   │
+│  Filtres: [Tous] [PlayLab42] [Autres]  ← Catégories         │
 │                                                              │
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐           │
-│  │  thumb  │ │  thumb  │ │  thumb  │ │  thumb  │           │
-│  │─────────│ │─────────│ │─────────│ │─────────│           │
-│  │ Item 1  │ │ Item 2  │ │ Item 3  │ │ Item 4  │           │
-│  └─────────┘ └─────────┘ └─────────┘ └─────────┘           │
+│  ─── 🎮 PLAYLAB42 ───────────────────────────────────────   │
+│  ┌─────────┐ ┌─────────┐                                    │
+│  │  epic1  │ │  epic2  │                                    │
+│  └─────────┘ └─────────┘                                    │
 │                                                              │
-│  [Pseudo: Player1]                                           │
+│  ─── 🕐 RÉCEMMENT AJOUTÉS ───────────────────────────────   │
+│  ┌─────────┐ ┌─────────┐                                    │
+│  │  epic3  │ │  epic4  │                                    │
+│  └─────────┘ └─────────┘                                    │
+│                                                              │
+│  ─── 📚 AUTRES ──────────────────────────────────────────   │
+│  ┌─────────┐                                                │
+│  │  epic5  │                                                │
+│  └─────────┘                                                │
+│                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-Note: La section "Joué récemment" a été retirée de l'interface (tracking localStorage conservé).
+Note: La section "Joué récemment" des jeux a été retirée de l'interface (tracking localStorage conservé).
 
 #### Tab States
 
@@ -165,6 +214,8 @@ Note: La section "Joué récemment" a été retirée de l'interface (tracking lo
 | Tab hover | Slight highlight |
 
 ### Game View
+
+Vue immersive : le header et footer du portail sont masqués.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -181,6 +232,30 @@ Note: La section "Joué récemment" a été retirée de l'interface (tracking lo
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Parcours View
+
+Vue immersive : le header et footer du portail sont masqués.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  [← Catalogue]  [☰]  Guide Contribution      2/8  ▓▓░░░░░░ │
+├────────────────────┬────────────────────────────────────────┤
+│ 📑 Sommaire        │                                        │
+│                    │  Breadcrumb: Introduction > Prérequis  │
+│ ▼ Introduction     │                                        │
+│   ├─ ✓ Bienvenue   │  ┌────────────────────────────────┐   │
+│   └─ ● Prérequis   │  │                                │   │
+│                    │  │      CONTENU SLIDE (HTML)      │   │
+│ ▶ Créer contenu    │  │                                │   │
+│                    │  └────────────────────────────────┘   │
+│ ──────────────     │                                        │
+│ Progression: 25%   ├────────────────────────────────────────┤
+│                    │ [← Bienvenue]          [Prérequis →]   │
+└────────────────────┴────────────────────────────────────────┘
+```
+
+Le viewer est implémenté dans `lib/parcours-viewer.js`. Voir [Parcours Specification](../parcours/spec.md) pour les détails.
 
 ### Settings
 
@@ -468,7 +543,10 @@ const loadPromise = new Promise((resolve, reject) => {
 
 ```html
 <div role="tablist" aria-label="Catalog sections">
-  <button role="tab" aria-selected="true" aria-controls="tools-panel" id="tools-tab">
+  <button role="tab" aria-selected="true" aria-controls="parcours-panel" id="parcours-tab">
+    📚 Parcours
+  </button>
+  <button role="tab" aria-selected="false" aria-controls="tools-panel" id="tools-tab">
     🔧 Outils
   </button>
   <button role="tab" aria-selected="false" aria-controls="games-panel" id="games-tab">
@@ -476,7 +554,11 @@ const loadPromise = new Promise((resolve, reject) => {
   </button>
 </div>
 
-<div id="tools-panel" role="tabpanel" aria-labelledby="tools-tab">
+<div id="parcours-panel" role="tabpanel" aria-labelledby="parcours-tab">
+  <!-- Parcours content -->
+</div>
+
+<div id="tools-panel" role="tabpanel" aria-labelledby="tools-tab" hidden>
   <!-- Tools content -->
 </div>
 
@@ -493,6 +575,7 @@ const loadPromise = new Promise((resolve, reject) => {
 
 ## See Also
 
+- [Parcours Specification](../parcours/spec.md) - Système de parcours pédagogiques
 - [GameKit Specification](../gamekit/spec.md) - SDK for games
 - [Catalogue Specification](../catalogue/spec.md) - Data format
 - [Manifests Specification](../manifests/spec.md) - Game/tool manifests

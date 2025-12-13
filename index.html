@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Playlab42</title>
   <link rel="stylesheet" href="lib/theme.css">
+  <link rel="stylesheet" href="lib/parcours-viewer.css">
   <link rel="stylesheet" href="style.css">
   <script type="module">
     // Initialiser le thème le plus tôt possible pour éviter le flash
@@ -25,7 +26,10 @@
     <section id="view-catalogue" class="view active">
       <!-- Onglets -->
       <div class="tabs" role="tablist" aria-label="Sections du catalogue">
-        <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-tools" id="tab-tools" data-tab="tools">
+        <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-parcours" id="tab-parcours" data-tab="parcours">
+          📚 Parcours
+        </button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-tools" id="tab-tools" data-tab="tools">
           🔧 Outils
         </button>
         <button class="tab" role="tab" aria-selected="false" aria-controls="panel-games" id="tab-games" data-tab="games">
@@ -41,8 +45,21 @@
         <button class="filter active" data-tag="">Tous</button>
       </div>
 
+      <!-- Panel Parcours -->
+      <div id="panel-parcours" class="tab-panel active" role="tabpanel" aria-labelledby="tab-parcours">
+        <!-- Filtres par catégorie -->
+        <div class="parcours-category-filters" id="parcours-category-filters"></div>
+        <!-- Catégories dépliées (PlayLab42, Récents, Autres) -->
+        <div class="parcours-categories-expanded" id="parcours-categories-expanded"></div>
+        <!-- Liste d'épics (filtrée par recherche) -->
+        <div class="parcours-list" id="parcours-list">
+          <div class="epic-cards" id="cards-parcours"></div>
+        </div>
+        <p class="empty-message" id="empty-parcours">Aucun parcours disponible</p>
+      </div>
+
       <!-- Panel Outils -->
-      <div id="panel-tools" class="tab-panel active" role="tabpanel" aria-labelledby="tab-tools">
+      <div id="panel-tools" class="tab-panel" role="tabpanel" aria-labelledby="tab-tools">
         <div class="cards" id="cards-tools"></div>
         <p class="empty-message" id="empty-tools">Aucun outil disponible</p>
       </div>
@@ -72,6 +89,9 @@
         </div>
       </div>
     </section>
+
+    <!-- Vue Parcours Viewer -->
+    <section id="view-parcours" class="view"></section>
 
     <!-- Vue Settings -->
     <section id="view-settings" class="view">
@@ -128,6 +148,32 @@
 
   <template id="tag-template">
     <span class="card-tag"></span>
+  </template>
+
+  <!-- Templates Parcours -->
+  <template id="epic-card-template">
+    <article class="epic-card">
+      <div class="epic-thumb"></div>
+      <div class="epic-info">
+        <h3 class="epic-title"></h3>
+        <p class="epic-description"></p>
+        <div class="epic-meta">
+          <span class="epic-duration"></span>
+          <span class="epic-slides"></span>
+        </div>
+        <div class="epic-tags"></div>
+        <div class="epic-progress">
+          <div class="epic-progress-bar"></div>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <template id="category-section-template">
+    <section class="category-section">
+      <h2 class="category-section-title"></h2>
+      <div class="epic-cards category-epics"></div>
+    </section>
   </template>
 
   <script type="module" src="app.js"></script>

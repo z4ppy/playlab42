@@ -1,0 +1,437 @@
+/**
+ * Playlab42 - Styles du Viewer de Parcours
+ * @see openspec/changes/add-parcours-system/specs/parcours/spec.md
+ */
+
+/* === Layout principal === */
+.parcours-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal, 1000);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.parcours-viewer.menu-open {
+  grid-template-columns: 300px 1fr;
+}
+
+/* === Header === */
+.pv-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 10;
+}
+
+/* === Sidebar / Menu === */
+.pv-sidebar {
+  grid-row: 2 / 4;
+  display: none;
+  flex-direction: column;
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.parcours-viewer.menu-open .pv-sidebar {
+  display: flex;
+}
+
+.pv-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pv-epic-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pv-menu {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-sm);
+}
+
+.pv-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pv-menu > ul {
+  padding-left: 0;
+}
+
+.pv-menu ul ul {
+  padding-left: var(--space-md);
+}
+
+/* Section du menu */
+.pv-menu-section {
+  margin-bottom: var(--space-xs);
+}
+
+.pv-menu-section[aria-expanded="false"] > ul {
+  display: none;
+}
+
+.pv-menu-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pv-menu-toggle:hover {
+  background: var(--color-border);
+}
+
+/* Item slide du menu */
+.pv-menu-slide {
+  margin-bottom: 2px;
+}
+
+.pv-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  text-align: left;
+}
+
+.pv-menu-item:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.pv-menu-slide.visited .pv-menu-item {
+  color: var(--color-text);
+}
+
+.pv-menu-slide.current .pv-menu-item {
+  background: var(--color-accent);
+  color: white;
+}
+
+.pv-menu-state {
+  font-size: 0.7rem;
+  width: 1em;
+  text-align: center;
+}
+
+.pv-menu-icon {
+  font-size: 1rem;
+}
+
+.pv-menu-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pv-menu-optional {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.pv-menu-slide.optional .pv-menu-item {
+  opacity: 0.8;
+}
+
+/* === Contenu principal === */
+.pv-content {
+  position: relative;
+  overflow: hidden;
+}
+
+.pv-slide-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.pv-slide-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--color-bg);
+}
+
+/* Loading */
+.pv-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  gap: var(--space-md);
+}
+
+.pv-loading.hidden {
+  display: none;
+}
+
+.pv-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: pv-spin 1s linear infinite;
+}
+
+@keyframes pv-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === Footer === */
+.pv-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+}
+
+.parcours-viewer.menu-open .pv-footer {
+  grid-column: 2;
+}
+
+/* === Boutons === */
+.pv-btn {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s);
+}
+
+.pv-btn:hover:not(:disabled) {
+  background: var(--color-border);
+}
+
+.pv-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pv-btn-close,
+.pv-btn-menu,
+.pv-btn-close-menu {
+  padding: var(--space-sm);
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+}
+
+.pv-btn-prev,
+.pv-btn-next {
+  min-width: 120px;
+}
+
+/* === Breadcrumb === */
+.pv-breadcrumb {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.pv-breadcrumb-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pv-breadcrumb-item.current {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.pv-breadcrumb-sep {
+  color: var(--color-border);
+}
+
+/* === Progression === */
+.pv-progress-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 100px;
+}
+
+.pv-progress-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.pv-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.pv-progress-fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-normal, 0.3s);
+}
+
+/* === Erreur === */
+.pv-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pv-error-content {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.pv-error-content p {
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-lg);
+}
+
+/* === Responsive === */
+
+/* Mobile - menu en overlay */
+@media (max-width: 768px) {
+  .parcours-viewer.menu-open {
+    grid-template-columns: 1fr;
+  }
+
+  .pv-sidebar {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    width: 100%;
+    max-width: 300px;
+    transform: translateX(-100%);
+    transition: transform var(--transition-normal, 0.3s);
+  }
+
+  .parcours-viewer.menu-open .pv-sidebar {
+    display: flex;
+    transform: translateX(0);
+  }
+
+  /* Overlay derrière le menu */
+  .parcours-viewer.menu-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+  }
+
+  .pv-footer {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .pv-btn-prev,
+  .pv-btn-next {
+    min-width: auto;
+    flex: 1;
+  }
+
+  .pv-progress-info {
+    order: -1;
+    width: 100%;
+  }
+
+  .pv-breadcrumb {
+    display: none;
+  }
+}
+
+/* Desktop large - menu toujours visible */
+@media (min-width: 1200px) {
+  .parcours-viewer {
+    grid-template-columns: 280px 1fr;
+  }
+
+  .pv-sidebar {
+    display: flex;
+  }
+
+  .pv-btn-menu {
+    display: none;
+  }
+
+  .pv-btn-close-menu {
+    display: none;
+  }
+
+  .pv-footer {
+    grid-column: 2;
+  }
+}
+
+/* === Focus visible === */
+.pv-btn:focus-visible,
+.pv-menu-toggle:focus-visible,
+.pv-menu-item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* === Thème sombre spécifique === */
+[data-theme="dark"] .pv-loading {
+  background: var(--color-bg);
+}
+
+[data-theme="dark"] .parcours-viewer.menu-open::before {
+  background: rgba(0, 0, 0, 0.7);
+}

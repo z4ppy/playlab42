@@ -1,0 +1,39 @@
+{
+  "id": "hello-playlab42",
+  "title": "Bienvenue sur PlayLab42",
+  "description": "Découvrez la plateforme, ses objectifs pédagogiques et comment contribuer.",
+  "hierarchy": ["playlab42"],
+  "tags": ["howto", "debutant", "ia", "dev"],
+  "metadata": {
+    "author": "PlayLab42",
+    "created": "2025-01-15",
+    "updated": "2025-12-13",
+    "duration": "15 min",
+    "difficulty": "beginner",
+    "language": "fr"
+  },
+  "icon": "👋",
+  "content": [
+    {
+      "id": "decouverte",
+      "title": "Découverte",
+      "icon": "🎯",
+      "content": [
+        { "id": "01-bienvenue" },
+        { "id": "02-methodologies" },
+        { "id": "03-architecture" }
+      ]
+    },
+    {
+      "id": "contribuer",
+      "title": "Contribuer",
+      "icon": "🛠️",
+      "content": [
+        { "id": "04-creer-outil" },
+        { "id": "05-creer-jeu" },
+        { "id": "06-creer-bot" }
+      ]
+    },
+    { "id": "07-aller-plus-loin" }
+  ]
+}
