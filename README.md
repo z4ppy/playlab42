@@ -1,8 +1,10 @@
 # Playlab42
 
+[![GitHub release](https://img.shields.io/github/v/release/z4ppy/playlab42)](https://github.com/z4ppy/playlab42/releases)
 [![CI](https://github.com/z4ppy/playlab42/actions/workflows/ci.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/ci.yml)
 [![Deploy](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml)
 [![codecov](https://codecov.io/gh/z4ppy/playlab42/graph/badge.svg)](https://codecov.io/gh/z4ppy/playlab42)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Plateforme pédagogique de mini-jeux et outils collaboratifs pour la formation dev assistée par IA.
 
