@@ -6,7 +6,10 @@ RUN apk add --no-cache \
     git \
     make \
     bash \
-    curl
+    curl \
+    python3 \
+    py3-pip \
+    py3-yaml
 
 # Répertoire de travail
 WORKDIR /workspace
