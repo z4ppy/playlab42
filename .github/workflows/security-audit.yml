@@ -1,0 +1,294 @@
+# Workflow d'audit de sécurité
+# Analyse les vulnérabilités dans le code et les dépendances
+
+name: Security Audit
+
+on:
+  # Exécuté sur chaque push et pull request
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  # Exécuté quotidiennement à 6h UTC pour détecter de nouvelles CVE
+  schedule:
+    - cron: '0 6 * * *'
+
+  # Permet le déclenchement manuel
+  workflow_dispatch:
+
+# Permissions minimales (principe du moindre privilège)
+permissions:
+  contents: read
+  security-events: write  # Pour uploader les résultats SARIF vers Security tab
+
+jobs:
+  # Job 1 : Audit des dépendances npm
+  npm-audit:
+    name: Audit dépendances npm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Audit npm (niveau modéré et au-dessus)
+        run: |
+          npm audit --audit-level=moderate || {
+            echo "⚠️ Vulnérabilités détectées dans les dépendances npm"
+            npm audit --audit-level=moderate --json > npm-audit-results.json
+            exit 1
+          }
+
+      - name: Upload des résultats npm audit
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-results
+          path: npm-audit-results.json
+          retention-days: 30
+
+  # Job 2 : Analyse statique avec ESLint Security
+  eslint-security:
+    name: ESLint Security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Installation plugins ESLint sécurité
+        run: npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized
+
+      - name: Analyse ESLint avec règles de sécurité
+        run: |
+          # Ajouter les règles de sécurité temporairement
+          npx eslint lib/ src/ games/ \
+            --plugin security \
+            --plugin no-unsanitized \
+            --rule 'security/detect-object-injection: warn' \
+            --rule 'security/detect-non-literal-regexp: warn' \
+            --rule 'security/detect-unsafe-regex: error' \
+            --rule 'security/detect-buffer-noassert: error' \
+            --rule 'security/detect-eval-with-expression: error' \
+            --rule 'security/detect-no-csrf-before-method-override: warn' \
+            --rule 'security/detect-possible-timing-attacks: warn' \
+            --rule 'no-unsanitized/method: error' \
+            --rule 'no-unsanitized/property: error' \
+            --format json \
+            --output-file eslint-security-results.json || echo "⚠️ Problèmes de sécurité détectés"
+
+      - name: Upload des résultats ESLint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-security-results
+          path: eslint-security-results.json
+          retention-days: 30
+
+  # Job 3 : Scan avec Trivy (vulnérabilités et secrets)
+  trivy-scan:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Trivy
+        run: |
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+
+      - name: Scan du filesystem
+        run: |
+          trivy fs . \
+            --scanners vuln,secret,misconfig \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format json \
+            --output trivy-results.json
+
+      - name: Afficher les résultats Trivy
+        if: always()
+        run: |
+          trivy fs . \
+            --scanners vuln,secret,misconfig \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format table
+
+      - name: Upload des résultats Trivy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-results
+          path: trivy-results.json
+          retention-days: 30
+
+  # Job 4 : Détection de secrets avec GitLeaks
+  gitleaks:
+    name: Détection de secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Nécessaire pour analyser l'historique git
+
+      - name: Scan GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}  # Optionnel, pour la version pro
+
+  # Job 5 : Vérification des mises à jour de sécurité disponibles
+  outdated-check:
+    name: Vérification packages obsolètes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Vérifier les packages obsolètes
+        run: |
+          echo "📦 Packages obsolètes avec des mises à jour de sécurité disponibles:"
+          npm outdated || true
+
+      - name: Liste des packages avec vulnérabilités connues
+        run: |
+          echo "🔍 Packages avec vulnérabilités connues:"
+          npm audit --parseable | head -20 || true
+
+  # Job 6 : Analyse de la configuration Docker
+  docker-security:
+    name: Sécurité Docker
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Scan du Dockerfile avec Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          format: sarif
+          output-file: hadolint-results.sarif
+          no-fail: true
+
+      - name: Upload des résultats Hadolint vers Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: hadolint-results.sarif
+          category: hadolint
+
+  # Job 7 : Rapport consolidé
+  security-report:
+    name: Rapport consolidé
+    runs-on: ubuntu-latest
+    needs: [npm-audit, eslint-security, trivy-scan, gitleaks, outdated-check, docker-security]
+    if: always()
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Télécharger tous les artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+
+      - name: Générer le rapport consolidé
+        run: |
+          echo "# 🔒 Rapport de Sécurité Consolidé" > security-report.md
+          echo "" >> security-report.md
+          echo "**Date**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> security-report.md
+          echo "**Commit**: ${{ github.sha }}" >> security-report.md
+          echo "**Branch**: ${{ github.ref_name }}" >> security-report.md
+          echo "" >> security-report.md
+
+          echo "## 📊 Résultats par outil" >> security-report.md
+          echo "" >> security-report.md
+
+          # npm audit
+          if [ -f npm-audit-results/npm-audit-results.json ]; then
+            echo "### npm audit" >> security-report.md
+            echo '```json' >> security-report.md
+            cat npm-audit-results/npm-audit-results.json | jq '.metadata' >> security-report.md || echo "Erreur parsing npm-audit" >> security-report.md
+            echo '```' >> security-report.md
+          else
+            echo "### npm audit" >> security-report.md
+            echo "✅ Aucune vulnérabilité détectée" >> security-report.md
+          fi
+          echo "" >> security-report.md
+
+          # ESLint
+          if [ -f eslint-security-results/eslint-security-results.json ]; then
+            echo "### ESLint Security" >> security-report.md
+            ESLINT_ERRORS=$(cat eslint-security-results/eslint-security-results.json | jq '[.[].errorCount] | add' || echo "0")
+            ESLINT_WARNINGS=$(cat eslint-security-results/eslint-security-results.json | jq '[.[].warningCount] | add' || echo "0")
+            echo "- Erreurs: $ESLINT_ERRORS" >> security-report.md
+            echo "- Warnings: $ESLINT_WARNINGS" >> security-report.md
+          else
+            echo "### ESLint Security" >> security-report.md
+            echo "✅ Aucun problème détecté" >> security-report.md
+          fi
+          echo "" >> security-report.md
+
+          # Trivy
+          if [ -f trivy-results/trivy-results.json ]; then
+            echo "### Trivy" >> security-report.md
+            cat trivy-results/trivy-results.json | jq '.Results[].Vulnerabilities | length' >> security-report.md || echo "Voir artifacts" >> security-report.md
+          fi
+          echo "" >> security-report.md
+
+          echo "---" >> security-report.md
+          echo "Pour plus de détails, consultez les artifacts du workflow." >> security-report.md
+
+      - name: Upload du rapport consolidé
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.md
+          retention-days: 90
+
+      - name: Afficher le rapport
+        run: cat security-report.md
+
+      - name: Commenter la PR avec le rapport
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('security-report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
