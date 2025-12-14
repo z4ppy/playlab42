@@ -62,25 +62,27 @@ async function readJSON(path) {
 /**
  * Valide un manifest de tool
  * @param {object} manifest
- * @param {string} filePath
  * @returns {{valid: boolean, errors: string[]}}
  */
-function validateToolManifest(manifest, _filePath) {
+function validateToolManifest(manifest) {
   const errors = [];
   const required = ['id', 'name', 'description', 'tags'];
 
+  // Vérifier que tous les champs requis existent
   for (const field of required) {
     if (!manifest[field]) {
       errors.push(`Missing required field '${field}'`);
     }
   }
 
-  if (manifest.tags && !Array.isArray(manifest.tags)) {
-    errors.push("'tags' must be an array");
-  }
-
+  // Valider le format de l'id (seulement si présent pour éviter erreur double)
   if (manifest.id && !/^[a-z0-9-]+$/.test(manifest.id)) {
     errors.push("'id' must be kebab-case (lowercase letters, numbers, hyphens)");
+  }
+
+  // Valider le type du champ tags
+  if (manifest.tags && !Array.isArray(manifest.tags)) {
+    errors.push("'tags' must be an array");
   }
 
   return { valid: errors.length === 0, errors };
@@ -89,19 +91,25 @@ function validateToolManifest(manifest, _filePath) {
 /**
  * Valide un manifest de game
  * @param {object} manifest
- * @param {string} filePath
  * @returns {{valid: boolean, errors: string[]}}
  */
-function validateGameManifest(manifest, _filePath) {
+function validateGameManifest(manifest) {
   const errors = [];
   const required = ['id', 'name', 'description', 'players', 'type', 'tags'];
 
+  // Vérifier que tous les champs requis existent
   for (const field of required) {
     if (!manifest[field]) {
       errors.push(`Missing required field '${field}'`);
     }
   }
 
+  // Valider le format de l'id (seulement si présent pour éviter erreur double)
+  if (manifest.id && !/^[a-z0-9-]+$/.test(manifest.id)) {
+    errors.push("'id' must be kebab-case (lowercase letters, numbers, hyphens)");
+  }
+
+  // Valider la structure de players
   if (manifest.players) {
     if (typeof manifest.players.min !== 'number') {
       errors.push("'players.min' must be a number");
@@ -114,16 +122,14 @@ function validateGameManifest(manifest, _filePath) {
     }
   }
 
+  // Valider les valeurs de type
   if (manifest.type && !['turn-based', 'real-time'].includes(manifest.type)) {
     errors.push("'type' must be 'turn-based' or 'real-time'");
   }
 
+  // Valider le type du champ tags
   if (manifest.tags && !Array.isArray(manifest.tags)) {
     errors.push("'tags' must be an array");
-  }
-
-  if (manifest.id && !/^[a-z0-9-]+$/.test(manifest.id)) {
-    errors.push("'id' must be kebab-case (lowercase letters, numbers, hyphens)");
   }
 
   return { valid: errors.length === 0, errors };
@@ -154,7 +160,7 @@ async function scanTools() {
       continue;
     }
 
-    const validation = validateToolManifest(manifest, manifestPath);
+    const validation = validateToolManifest(manifest);
     if (!validation.valid) {
       errors.push(`${jsonFile}: ${validation.errors.join(', ')}`);
       continue;
@@ -218,7 +224,7 @@ async function scanGames() {
       continue;
     }
 
-    const validation = validateGameManifest(manifest, manifestPath);
+    const validation = validateGameManifest(manifest);
     if (!validation.valid) {
       errors.push(`${dir.name}/game.json: ${validation.errors.join(', ')}`);
       continue;

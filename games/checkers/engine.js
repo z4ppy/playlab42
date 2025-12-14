@@ -485,7 +485,6 @@ export class CheckersEngine {
       }
     }
 
-    console.log(`Captures pour mouvement ${from.row},${from.col} -> ${to.row},${to.col}:`, captures);
     return captures;
   }
 
@@ -598,7 +597,6 @@ export class CheckersEngine {
         this.#movesEqual(recent[0], recent[2]) &&
         this.#movesEqual(recent[1], recent[3])
       ) {
-        console.log('Match nul détecté : répétition de mouvements');
         state.status = 'draw';
         return;
       }
@@ -613,7 +611,6 @@ export class CheckersEngine {
         this.#movesEqual(recent[1], recent[3]) &&
         this.#movesEqual(recent[3], recent[5])
       ) {
-        console.log('Match nul détecté : triple répétition');
         state.status = 'draw';
       }
     }

@@ -23,7 +23,7 @@ Ce fichier contient les instructions pour les assistants IA (Claude Code, GitHub
 
 - **Tool** : Outil HTML standalone (un fichier, ouvrable directement)
 - **Game** : Mini-app standalone avec moteur de règles et bots
-- **GameEngine** : Moteur isomorphe, TypeScript/JS pur, déterministe
+- **GameEngine** : Moteur isomorphe, JavaScript pur, déterministe
 - **Bot** : IA pluggable pour remplacer les joueurs humains
 - **Epic** : Parcours pédagogique composé de slides HTML
 - **GameKit** : SDK pour communication portail ↔ jeu
@@ -37,7 +37,7 @@ Le projet s'enrichit des contributions de chaque session.
 - Bien commenté en français
 - Nommage explicite
 - Tests unitaires systématiques
-- Types TypeScript exhaustifs
+- Documentation JSDoc exhaustive
 
 ## Environnement Docker-first
 
@@ -96,7 +96,7 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 ## Conventions
 
 - **Langue** : Commentaires et commits en français
-- **Code** : TypeScript/JavaScript, fonctions pures quand possible
+- **Code** : JavaScript (ES modules), fonctions pures quand possible
 - **Nommage** : camelCase (variables), PascalCase (types), kebab-case (fichiers)
 - **Simplicité** : Préférer solutions simples, éviter over-engineering
 - **Isomorphisme** : Les moteurs de jeux doivent tourner client ET serveur
@@ -106,7 +106,7 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 
 | Aspect | Choix |
 |--------|-------|
-| Langage | TypeScript / JavaScript |
+| Langage | JavaScript (ES2024+) |
 | Runtime | Node.js 25+ (Alpine) |
 | Tests | Jest |
 | Linting | ESLint |
