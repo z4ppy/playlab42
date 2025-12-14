@@ -6,6 +6,8 @@
 
 Plateforme pédagogique de mini-jeux et outils collaboratifs pour la formation dev assistée par IA.
 
+**[Voir la démo live](https://z4ppy.github.io/playlab42/)**
+
 ## Vision
 
 **Playlab42** est une vitrine collaborative de mini-jeux et outils créés pendant des formations. Les participants développent des jeux, des outils et des bots avec l'assistance de l'IA. Le projet s'enrichit au fil des sessions.
@@ -50,6 +52,24 @@ games/tic-tac-toe/
 ├── engine.ts       # Moteur isomorphe (pur, déterministe)
 └── game.json       # Manifest
 ```
+
+### Parcours (contenus pédagogiques)
+
+Epics composés de slides HTML pour la formation :
+
+```
+parcours/epics/coding-agents-2025/
+├── epic.json       # Manifest (titre, tags, structure)
+├── thumbnail.svg   # Vignette
+└── slides/
+    ├── 01-introduction/
+    │   ├── slide.json
+    │   └── index.html
+    └── 02-panorama/
+        └── ...
+```
+
+Système de taxonomie avec catégories (PlayLab42, Agentique, Autres) et tags pour le filtrage.
 
 ### Plateforme
 
@@ -132,18 +152,21 @@ playlab42/
 │       ├── bots.js
 │       └── game.json
 ├── parcours/           # Contenus pédagogiques
+│   ├── index.json      # Config taxonomie et featured
 │   └── epics/
 │       └── mon-epic/
 │           ├── epic.json
+│           ├── thumbnail.svg
 │           └── slides/
 ├── lib/                # Bibliothèques partagées (thème, utilitaires)
+├── data/               # Données générées (catalogue.json, parcours.json)
 ├── docs/               # Documentation
-├── openspec/           # Spécifications et changes
-└── .claude/            # Configuration Claude Code
+└── openspec/           # Spécifications et changes
 ```
 
 ## Documentation
 
+- [AGENTS.md](./AGENTS.md) - Instructions pour agents IA (Claude Code, Copilot, Cursor, etc.)
 - [Features MVP](./docs/FEATURES.md) - Liste complète des fonctionnalités
 - [Concepts](./docs/CONCEPTS.md) - Définitions et glossaire
 - [Guide création d'outil](./docs/guides/create-tool.md) - Créer un tool
@@ -156,7 +179,7 @@ PlayLab42 s'enrichit des contributions de chaque session de formation. Vous pouv
 
 - **Tools** : Outils HTML standalone (JSON formatter, encodeurs, etc.)
 - **Games** : Mini-jeux avec moteur isomorphe et bots
-- **Epics** : Parcours pédagogiques en slides HTML
+- **Parcours** : Contenus pédagogiques en slides HTML (Epics)
 
 ### Workflow
 
