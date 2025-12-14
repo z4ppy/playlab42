@@ -21,6 +21,7 @@ on:
 permissions:
   contents: read
   security-events: write  # Pour uploader les résultats SARIF vers Security tab
+  pull-requests: write    # Pour commenter les PRs avec le rapport
 
 jobs:
   # Job 1 : Audit des dépendances npm
