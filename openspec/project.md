@@ -87,7 +87,7 @@ make serve
 | Aspect | Choix |
 |--------|-------|
 | Langage | TypeScript strict |
-| Runtime | Node.js 20+ |
+| Runtime | Node.js 25+ |
 | Tests | Jest |
 | Infra | Docker |
 | Temps réel | WebSocket |
@@ -114,6 +114,13 @@ make serve
 
 ```
 playlab42/
+├── index.html               # Portail principal
+├── style.css                # Styles du portail
+├── app.js                   # Logique du portail
+├── .claude/                 # Configuration Claude Code
+├── lib/                     # Bibliothèques partagées
+│   ├── gamekit.js           # SDK pour les jeux
+│   └── seeded-random.js     # PRNG déterministe
 ├── tools/                   # Outils HTML standalone
 │   └── [tool-name].html     # Un fichier = un outil
 ├── games/                   # Jeux autonomes
@@ -122,17 +129,19 @@ playlab42/
 │       ├── engine.ts        # Moteur isomorphe (optionnel si inline)
 │       ├── bot.ts           # Bot exemple (optionnel)
 │       └── game.json        # Manifest
+├── parcours/                # Parcours pédagogiques
+│   ├── index.json           # Configuration des parcours
+│   └── epics/               # Epics (modules)
+│       └── [epic-id]/
+│           ├── epic.json    # Manifest de l'epic
+│           └── slides/      # Slides de l'epic
+├── data/                    # Données générées
+│   ├── catalogue.json       # DB des tools/games
+│   └── parcours.json        # DB des parcours
 ├── src/
-│   ├── core/                # Partagé
-│   │   ├── types/           # Interfaces communes
-│   │   ├── sdk/             # PlayLabSDK (optionnel)
-│   │   └── utils/           # SeededRandom, helpers
-│   ├── platform/            # Catalogue (optionnel)
-│   │   └── index.html       # Liste tools + games
-│   └── server/              # Backend (optionnel)
-│       ├── api/             # Routes REST
-│       ├── ws/              # WebSocket
-│       └── sessions/        # Gestion parties
+│   └── scripts/             # Scripts de build
+│       ├── build-catalogue.ts
+│       └── build-parcours.js
 └── docs/                    # Documentation
 ```
 
