@@ -1,0 +1,69 @@
+# Configuration Codecov pour Playlab42
+# Documentation : https://docs.codecov.com/docs/codecovyml-reference
+
+# Configuration de la couverture
+coverage:
+  # Précision des pourcentages (2 décimales)
+  precision: 2
+  # Arrondi (down, up, nearest)
+  round: down
+  # Plage de couleurs pour les badges (rouge -> vert)
+  range: "60...100"
+
+  # Statuts de couverture
+  status:
+    # Statut du projet global
+    project:
+      default:
+        # Ne pas bloquer si la couverture baisse légèrement
+        threshold: 1%
+        # Cible de couverture
+        target: auto
+
+    # Statut des changements (diff)
+    patch:
+      default:
+        # Couverture requise sur le nouveau code
+        target: 80%
+        # Ne pas bloquer si légèrement sous la cible
+        threshold: 5%
+
+# Configuration des commentaires sur les PR
+comment:
+  # Disposition du commentaire
+  layout: "header, diff, flags, components, footer"
+  # Comportement du commentaire (once = un seul, mis à jour)
+  behavior: default
+  # Exiger que les changements soient couverts
+  require_changes: true
+  # Afficher les branches couvertes
+  require_base: false
+  # Masquer les fichiers avec couverture parfaite
+  hide_project_coverage: false
+
+# Fichiers à ignorer dans le calcul de couverture
+ignore:
+  - "node_modules/**/*"
+  - "coverage/**/*"
+  - "dist/**/*"
+  - "data/**/*"
+  - "docs/**/*"
+  - "**/*.test.js"
+  - "**/*.test.ts"
+  - "**/*.spec.js"
+  - "**/*.spec.ts"
+  - "jest.config.js"
+  - "eslint.config.js"
+
+# Configuration des flags (permet de segmenter la couverture)
+flags:
+  unittests:
+    paths:
+      - lib/
+      - src/
+      - games/
+    carryforward: true
+
+# Notifications GitHub
+github_checks:
+  annotations: true
