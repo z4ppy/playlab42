@@ -63,6 +63,7 @@ playlab42/
 ├── index.html                # Portail principal
 ├── style.css                 # Styles du portail
 ├── app.js                    # Logique du portail
+├── .claude/                  # Configuration Claude Code
 ├── assets/                   # Assets du portail
 │   └── default-thumb.png     # Vignette par défaut
 ├── lib/                      # Bibliothèques partagées
@@ -81,14 +82,19 @@ playlab42/
 │       ├── engine.ts         # Moteur isomorphe (optionnel)
 │       └── bots/             # Bots IA (optionnel)
 │           └── random.js
+├── parcours/                 # Parcours pédagogiques
+│   ├── index.json            # Configuration des parcours
+│   └── epics/                # Epics (modules)
+│       └── [epic-id]/
+│           ├── epic.json     # Manifest de l'epic
+│           └── slides/       # Slides de l'epic
 ├── data/                     # Données générées
-│   └── catalogue.json        # DB des tools/games
+│   ├── catalogue.json        # DB des tools/games
+│   └── parcours.json         # DB des parcours
 ├── src/
-│   ├── core/                 # Code partagé (TypeScript)
-│   │   ├── types/            # Interfaces communes
-│   │   └── utils/            # Helpers
 │   └── scripts/              # Scripts de build
-│       └── build-catalogue.ts
+│       ├── build-catalogue.ts
+│       └── build-parcours.js
 ├── docs/                     # Documentation
 ├── openspec/                 # Specs et proposals
 ├── Dockerfile
@@ -195,3 +201,4 @@ Aucun backend requis - tout est statique.
 - [GameKit Specification](../gamekit/spec.md) - SDK pour les jeux
 - [Catalogue Specification](../catalogue/spec.md) - Format du catalogue JSON
 - [Manifests Specification](../manifests/spec.md) - Formats des manifests
+- [Parcours Specification](../parcours/spec.md) - Structure des parcours pédagogiques
