@@ -4,10 +4,11 @@ Ce document décrit le système de versioning de Playlab42.
 
 ## Vue d'ensemble
 
-Playlab42 utilise **Semantic Versioning (SemVer)** pour gérer les versions du projet.
+Playlab42 utilise **Semantic Versioning (SemVer)** avec **build metadata** pour gérer les versions du projet.
 
 ### Format de version
 
+**Version de base (SemVer) :**
 ```
 X.Y.Z
 
@@ -16,11 +17,24 @@ Y = MINOR version (nouvelles fonctionnalités, rétro-compatibles)
 Z = PATCH version (corrections de bugs, rétro-compatibles)
 ```
 
+**Avec build metadata :**
+```
+Dev local:  v0.1.0-dev+b7dc0ba (commit SHA court)
+Production: v0.1.0 build #42 (GitHub Actions run number)
+```
+
 ### Exemples
 
 - `0.1.0` → `0.1.1` : Correction de bug (PATCH)
 - `0.1.0` → `0.2.0` : Nouvelle fonctionnalité (MINOR)
 - `0.1.0` → `1.0.0` : Breaking change (MAJOR)
+
+### Pourquoi un build number ?
+
+Avec des déploiements continus sur `main`, le build number permet de :
+- ✅ Différencier les déploiements entre deux versions
+- ✅ Tracer précisément le code déployé (commit SHA)
+- ✅ Identifier rapidement le build en production
 
 ## Architecture
 
@@ -120,6 +134,47 @@ git push origin v0.1.0
 - Refactoring de...
 ```
 
+## Build Metadata
+
+### Comment ça marche
+
+Le script `scripts/inject-version.js` détecte automatiquement l'environnement :
+
+**En développement local :**
+- Détecte le commit SHA via `git rev-parse --short HEAD`
+- Génère : `v0.1.0-dev+b7dc0ba`
+- Permet de savoir quel code est testé localement
+
+**En CI/Production (GitHub Actions) :**
+- Récupère `GITHUB_RUN_NUMBER` et `GITHUB_SHA`
+- Génère : `v0.1.0 build #42`
+- Permet de tracer précisément le déploiement
+
+### Variables d'environnement
+
+| Variable | Source | Usage |
+|----------|--------|-------|
+| `CI` | GitHub Actions | Détecte si exécuté en CI |
+| `GITHUB_RUN_NUMBER` | GitHub Actions | Numéro de build incrémental |
+| `GITHUB_SHA` | GitHub Actions | Hash du commit complet |
+
+### Placeholders HTML
+
+Le système utilise deux placeholders :
+
+- `{{VERSION}}` : Version affichée (avec build metadata)
+- `{{VERSION_LINK}}` : Version de base pour les liens GitHub (sans metadata)
+
+**Exemple dans index.html :**
+```html
+<a href="https://github.com/z4ppy/playlab42/releases/tag/v{{VERSION_LINK}}">
+  {{VERSION}}
+</a>
+```
+
+Résultat en dev : `v0.1.0-dev+b7dc0ba` → lien vers `v0.1.0`
+Résultat en prod : `v0.1.0 build #42` → lien vers `v0.1.0`
+
 ## Déploiement
 
 ### GitHub Actions
@@ -128,13 +183,20 @@ Le workflow `.github/workflows/deploy.yml` injecte automatiquement la version av
 
 ```yaml
 - name: Injection de la version
+  env:
+    CI: true
+    GITHUB_RUN_NUMBER: ${{ github.run_number }}
+    GITHUB_SHA: ${{ github.sha }}
   run: npm run inject-version
 
 - name: Build des données
   run: npm run build
 ```
 
-Cela garantit que la version affichée sur GitHub Pages correspond toujours à la version dans `package.json`.
+Cela garantit que :
+- La version affichée correspond à `package.json`
+- Le build number est incrémental et traçable
+- Le commit SHA est disponible pour debug
 
 ## Développement local
 

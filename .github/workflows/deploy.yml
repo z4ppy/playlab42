@@ -40,6 +40,10 @@ jobs:
         run: npm ci
 
       - name: Injection de la version
+        env:
+          CI: true
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_SHA: ${{ github.sha }}
         run: npm run inject-version
 
       - name: Build des données (catalogue, parcours, bookmarks)
