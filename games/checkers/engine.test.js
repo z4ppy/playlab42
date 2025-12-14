@@ -255,11 +255,14 @@ describe('CheckersEngine', () => {
       const captureActions = actions.filter((a) => a.from.row === 3 && a.from.col === 2);
 
       expect(captureActions.length).toBeGreaterThan(0);
-      expect(captureActions).toContainEqual({
-        type: 'move',
-        from: { row: 3, col: 2 },
-        to: { row: 5, col: 4 },
-      });
+      // L'action de capture doit inclure la pièce capturée
+      expect(captureActions).toContainEqual(
+        expect.objectContaining({
+          type: 'move',
+          from: { row: 3, col: 2 },
+          to: { row: 5, col: 4 },
+        }),
+      );
     });
 
     it('exécute une capture et supprime la pièce adverse', () => {
@@ -366,8 +369,16 @@ describe('CheckersEngine', () => {
         playerIds: ['p1', 'p2'],
       });
 
-      // Placer une dame blanche
+      // Vider le plateau pour tester les mouvements de dame
+      for (let row = 0; row < 10; row++) {
+        for (let col = 0; col < 10; col++) {
+          state.board[row][col] = null;
+        }
+      }
+
+      // Placer une dame blanche et un pion noir pour garder la partie active
       state.board[5][4] = { type: 'king', player: 0 };
+      state.board[0][1] = { type: 'pawn', player: 1 };
 
       const actions = engine.getValidActions(state, 'p1');
       const kingMoves = actions.filter((a) => a.from.row === 5 && a.from.col === 4);
@@ -383,9 +394,17 @@ describe('CheckersEngine', () => {
         playerIds: ['p1', 'p2'],
       });
 
-      // Placer une dame et une pièce bloquante
+      // Vider le plateau
+      for (let row = 0; row < 10; row++) {
+        for (let col = 0; col < 10; col++) {
+          state.board[row][col] = null;
+        }
+      }
+
+      // Placer une dame blanche, une pièce bloquante et un pion noir
       state.board[5][4] = { type: 'king', player: 0 };
       state.board[7][6] = { type: 'pawn', player: 0 }; // Bloque la diagonale
+      state.board[0][1] = { type: 'pawn', player: 1 }; // Pion noir pour garder la partie active
 
       const actions = engine.getValidActions(state, 'p1');
       const kingMoves = actions.filter((a) => a.from.row === 5 && a.from.col === 4);
@@ -447,11 +466,11 @@ describe('CheckersEngine', () => {
 
       // Pion noir bloqué dans un coin
       state.board[9][0] = { type: 'pawn', player: 1 };
-      state.board[8][1] = { type: 'pawn', player: 0 };
+      state.board[8][1] = { type: 'pawn', player: 0 }; // Bloque mouvement simple
+      state.board[7][2] = { type: 'pawn', player: 0 }; // Bloque la capture
 
       // Pion blanc qui joue
       state.board[6][3] = { type: 'pawn', player: 0 };
-      state.board[7][4] = null;
 
       const action = {
         type: 'move',

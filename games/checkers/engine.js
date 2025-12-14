@@ -144,7 +144,7 @@ export class CheckersEngine {
 
     // Vérifier fin de partie
     this.#checkGameEnd(newState);
-    
+
     // Vérifier règle des 40 coups sans capture
     if (!this.#checkDrawByNoCaptureRule(newState)) {
       // Vérifier répétition de position
@@ -162,10 +162,10 @@ export class CheckersEngine {
    * @returns {boolean}
    */
   isValidAction(state, action, playerId) {
-    if (state.status !== 'playing') return false;
+    if (state.status !== 'playing') {return false;}
 
     const playerIndex = state.playerIds.indexOf(playerId);
-    if (playerIndex !== state.currentPlayer) return false;
+    if (playerIndex !== state.currentPlayer) {return false;}
 
     const validActions = this.getValidActions(state, playerId);
     return validActions.some(
@@ -184,10 +184,10 @@ export class CheckersEngine {
    * @returns {CheckersAction[]}
    */
   getValidActions(state, playerId) {
-    if (state.status !== 'playing') return [];
+    if (state.status !== 'playing') {return [];}
 
     const playerIndex = state.playerIds.indexOf(playerId);
-    if (playerIndex !== state.currentPlayer) return [];
+    if (playerIndex !== state.currentPlayer) {return [];}
 
     const allMoves = [];
     const allCaptures = [];
@@ -274,7 +274,7 @@ export class CheckersEngine {
    */
   #getPossibleMoves(state, from) {
     const piece = state.board[from.row][from.col];
-    if (!piece) return [];
+    if (!piece) {return [];}
 
     const moves = [];
     const directions = this.#getMoveDirections(piece);
@@ -291,8 +291,8 @@ export class CheckersEngine {
         let step = 1;
         while (true) {
           const to = { row: from.row + dr * step, col: from.col + dc * step };
-          if (!this.#isValidPosition(to)) break;
-          if (state.board[to.row][to.col]) break; // Case occupée
+          if (!this.#isValidPosition(to)) {break;}
+          if (state.board[to.row][to.col]) {break;} // Case occupée
           moves.push({ from, to });
           step++;
         }
@@ -311,7 +311,7 @@ export class CheckersEngine {
    */
   #getPossibleCaptures(state, from) {
     const piece = state.board[from.row][from.col];
-    if (!piece) return [];
+    if (!piece) {return [];}
 
     const captures = [];
 
@@ -322,10 +322,10 @@ export class CheckersEngine {
       if (sequence.positions && sequence.positions.length > 0) {
         // La dernière position de la séquence
         const lastPos = sequence.positions[sequence.positions.length - 1];
-        captures.push({ 
-          from, 
+        captures.push({
+          from,
           to: lastPos,
-          captured: sequence.captured || []
+          captured: sequence.captured || [],
         });
       }
     }
@@ -344,7 +344,7 @@ export class CheckersEngine {
    */
   #findAllCaptureSequences(state, pos, capturedSoFar, visitedPositions) {
     const piece = state.board[pos.row][pos.col];
-    if (!piece) return [];
+    if (!piece) {return [];}
 
     const sequences = [];
     const directions = this.#getCaptureDirections(piece);
@@ -399,7 +399,7 @@ export class CheckersEngine {
         // Trouver la pièce adverse
         while (true) {
           const checkPos = { row: pos.row + dr * step, col: pos.col + dc * step };
-          if (!this.#isValidPosition(checkPos)) break;
+          if (!this.#isValidPosition(checkPos)) {break;}
 
           const checkPiece = state.board[checkPos.row][checkPos.col];
           if (checkPiece) {
@@ -421,8 +421,8 @@ export class CheckersEngine {
         if (targetFound) {
           while (true) {
             const landing = { row: pos.row + dr * step, col: pos.col + dc * step };
-            if (!this.#isValidPosition(landing)) break;
-            if (state.board[landing.row][landing.col]) break;
+            if (!this.#isValidPosition(landing)) {break;}
+            if (state.board[landing.row][landing.col]) {break;}
 
             const newCaptured = [...capturedSoFar, targetFound];
 
@@ -467,7 +467,7 @@ export class CheckersEngine {
    */
   #getCapturesForMove(state, from, to) {
     const piece = state.board[from.row][from.col];
-    if (!piece) return [];
+    if (!piece) {return [];}
 
     const dr = Math.sign(to.row - from.row);
     const dc = Math.sign(to.col - from.col);
@@ -520,7 +520,7 @@ export class CheckersEngine {
    * @returns {number[][]}
    * @private
    */
-  #getCaptureDirections(piece) {
+  #getCaptureDirections(_piece) {
     // Les captures peuvent se faire dans toutes les diagonales (même arrière pour pions)
     return [
       [1, 1],
@@ -563,8 +563,8 @@ export class CheckersEngine {
    * @private
    */
   #checkDrawByNoCaptureRule(state) {
-    if (state.status !== 'playing') return false;
-    
+    if (state.status !== 'playing') {return false;}
+
     // Compter les coups depuis la dernière capture
     let movesSinceCapture = 0;
     for (let i = state.moveHistory.length - 1; i >= 0; i--) {
@@ -573,13 +573,13 @@ export class CheckersEngine {
       }
       movesSinceCapture++;
     }
-    
+
     // Règle : 40 coups sans capture = match nul
     if (movesSinceCapture >= 40) {
       state.status = 'draw';
       return true;
     }
-    
+
     return false;
   }
 
@@ -589,8 +589,8 @@ export class CheckersEngine {
    * @private
    */
   #checkDrawByRepetition(state) {
-    if (state.status !== 'playing') return;
-    
+    if (state.status !== 'playing') {return;}
+
     // Si les 4 derniers coups se répètent (2 coups par joueur)
     if (state.moveHistory.length >= 4) {
       const recent = state.moveHistory.slice(-4);
@@ -603,7 +603,7 @@ export class CheckersEngine {
         return;
       }
     }
-    
+
     // Si les 6 derniers coups montrent une répétition claire (3 fois)
     if (state.moveHistory.length >= 6) {
       const recent = state.moveHistory.slice(-6);
@@ -617,20 +617,6 @@ export class CheckersEngine {
         state.status = 'draw';
       }
     }
-  }
-
-  /**
-   * Génère une clé unique pour un plateau
-   * @param {(Piece|null)[][]} board
-   * @returns {string}
-   * @private
-   */
-  #getBoardKey(board) {
-    return board
-      .map(row =>
-        row.map(p => p ? `${p.player}${p.type[0]}` : '-').join('')
-      )
-      .join('|');
   }
 
   /**

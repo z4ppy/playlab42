@@ -21,8 +21,8 @@ export class SmartBot {
    * @returns {object} Meilleure action
    */
   chooseAction(state, validActions, _rng) {
-    if (validActions.length === 0) return null;
-    if (validActions.length === 1) return validActions[0];
+    if (validActions.length === 0) {return null;}
+    if (validActions.length === 1) {return validActions[0];}
 
     const currentPlayer = state.currentPlayer;
     let bestAction = validActions[0];
@@ -81,8 +81,8 @@ export class SmartBot {
           const score = this.#minimax(newState, depth - 1, false, alpha, beta, player);
           maxScore = Math.max(maxScore, score);
           alpha = Math.max(alpha, score);
-          if (beta <= alpha) break; // Alpha-beta pruning
-        } catch (error) {
+          if (beta <= alpha) {break;} // Alpha-beta pruning
+        } catch {
           // Ignorer les actions invalides
         }
       }
@@ -95,8 +95,8 @@ export class SmartBot {
           const score = this.#minimax(newState, depth - 1, true, alpha, beta, player);
           minScore = Math.min(minScore, score);
           beta = Math.min(beta, score);
-          if (beta <= alpha) break; // Alpha-beta pruning
-        } catch (error) {
+          if (beta <= alpha) {break;} // Alpha-beta pruning
+        } catch {
           // Ignorer les actions invalides
         }
       }
@@ -127,7 +127,7 @@ export class SmartBot {
     for (let row = 0; row < 10; row++) {
       for (let col = 0; col < 10; col++) {
         const piece = state.board[row][col];
-        if (!piece) continue;
+        if (!piece) {continue;}
 
         let pieceValue = 0;
 
