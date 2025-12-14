@@ -35,3 +35,10 @@ coverage/
 # Temporary
 tmp/
 temp/
+
+# Security audit artifacts
+npm-audit-results.json
+eslint-security-results.json
+trivy-results.json
+security-report.md
+*.sarif

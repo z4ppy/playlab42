@@ -1,0 +1,72 @@
+# Configuration Dependabot pour les mises à jour de sécurité automatiques
+# @see https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Dépendances npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    # Grouper les mises à jour mineures et de patch
+    groups:
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+    # Ouvrir max 5 PRs à la fois
+    open-pull-requests-limit: 5
+    # Préfixes pour les commits
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    # Reviewers automatiques (adapter selon l'équipe)
+    reviewers:
+      - "z4ppy"
+    # Labels automatiques
+    labels:
+      - "dependencies"
+      - "security"
+    # Ignorer les mises à jour majeures pour certains packages (si nécessaire)
+    # ignore:
+    #   - dependency-name: "package-name"
+    #     update-types: ["version-update:semver-major"]
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    commit-message:
+      prefix: "chore(ci)"
+    labels:
+      - "github-actions"
+      - "security"
+    open-pull-requests-limit: 3
+
+  # Docker (si utilisé en production)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Paris"
+    commit-message:
+      prefix: "chore(docker)"
+    labels:
+      - "docker"
+      - "security"
+    open-pull-requests-limit: 2
