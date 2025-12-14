@@ -210,7 +210,7 @@ function updateTabUI() {
  */
 async function loadCatalogue() {
   try {
-    const response = await fetch('/data/catalogue.json');
+    const response = await fetch('./data/catalogue.json');
     if (!response.ok) {throw new Error('Catalogue introuvable');}
     setState({ catalogue: await response.json() });
     renderCatalogue();
@@ -367,7 +367,7 @@ function renderCatalogue() {
  */
 async function loadParcoursCatalogue() {
   try {
-    const response = await fetch('/data/parcours.json');
+    const response = await fetch('./data/parcours.json');
     if (!response.ok) {throw new Error('Catalogue parcours introuvable');}
     setState({ parcoursCatalogue: await response.json() });
   } catch (e) {
@@ -741,7 +741,7 @@ function selectParcoursCategory(categoryId) {
  */
 async function loadBookmarksCatalogue() {
   try {
-    const response = await fetch('/data/bookmarks.json');
+    const response = await fetch('./data/bookmarks.json');
     if (!response.ok) {throw new Error('Catalogue bookmarks introuvable');}
     setState({ bookmarksCatalogue: await response.json() });
   } catch (e) {
