@@ -1,0 +1,8 @@
+# GitLeaks ignore file
+# Format: <commit-hash>:<file-path>:<rule-id>:<line-number>
+# Fichiers contenant des exemples de secrets (pas de vrais secrets)
+
+# Documentation SECRETS_MANAGEMENT.md - Exemples de code pour documentation
+# Lignes 262 et 264 : Exemples de mauvaises pratiques (hardcoded API keys)
+856fd5f2a7af353eb684f2551905dcd9490efbb0:.github/docs/SECRETS_MANAGEMENT.md:stripe-access-token:262
+856fd5f2a7af353eb684f2551905dcd9490efbb0:.github/docs/SECRETS_MANAGEMENT.md:stripe-access-token:264
