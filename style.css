@@ -485,9 +485,42 @@ footer {
   border-top: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.8rem;
   color: var(--color-text-muted);
   transition: background-color var(--transition-normal), border-color var(--transition-normal);
+}
+
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+}
+
+.version-badge:hover {
+  background: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 69, 58, 0.25);
+}
+
+.version-badge .github-icon {
+  transition: transform var(--transition-fast);
+}
+
+.version-badge:hover .github-icon {
+  transform: scale(1.1);
 }
 
 /* === Responsive === */

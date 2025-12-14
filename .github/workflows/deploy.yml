@@ -39,6 +39,9 @@ jobs:
       - name: Installation des dépendances
         run: npm ci
 
+      - name: Injection de la version
+        run: npm run inject-version
+
       - name: Build des données (catalogue, parcours, bookmarks)
         run: npm run build
 
