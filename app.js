@@ -33,6 +33,12 @@ const STORAGE_KEYS = {
   RECENT: 'recent_games',
   ACTIVE_TAB: 'playlab42.activeTab',
 };
+
+/**
+ * Nombre maximum de jeux récents à conserver dans l'historique.
+ * Limité à 5 pour éviter de surcharger l'UI et le localStorage.
+ * @const {number}
+ */
 const MAX_RECENT = 5;
 
 // === Éléments DOM (cache) ===
@@ -707,9 +713,6 @@ function openEpic(epicId, slideId = null) {
       onClose: () => {
         closeParcours();
       },
-      onSlideChange: (slide, index) => {
-        console.log(`[Portal] Slide ${index + 1}: ${slide.title}`);
-      },
     });
   }
 
@@ -1273,10 +1276,10 @@ function setupEventListeners() {
 
     switch (e.data.type) {
       case 'ready':
-        console.log(`[Portal] Jeu prêt: ${e.data.game}`);
+        // Jeu prêt, pas d'action nécessaire
         break;
       case 'score':
-        console.log(`[Portal] Score: ${e.data.score}`);
+        // Score enregistré, pas d'action nécessaire
         break;
       case 'quit':
         unloadGame();
