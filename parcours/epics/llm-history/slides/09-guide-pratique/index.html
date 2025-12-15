@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide pratique et conclusion</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .usage-section {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .usage-section h3 {
+      margin: 0 0 var(--space-md) 0;
+      color: var(--color-accent);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-md) 0;
+      font-size: var(--font-size-sm);
+    }
+    .model-table th,
+    .model-table td {
+      padding: var(--space-sm);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .model-table th {
+      background: var(--color-bg);
+      font-weight: bold;
+    }
+    .model-table td:first-child {
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .decision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    @media (max-width: 768px) {
+      .decision-grid { grid-template-columns: 1fr; }
+    }
+    .decision-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border-top: 4px solid;
+    }
+    .decision-card.opensource { border-top-color: #22c55e; }
+    .decision-card.proprietary { border-top-color: #3b82f6; }
+    .decision-card h4 {
+      margin: 0 0 var(--space-md) 0;
+    }
+    .decision-card.opensource h4 { color: #22c55e; }
+    .decision-card.proprietary h4 { color: #3b82f6; }
+    .decision-card ul {
+      margin: 0;
+      padding-left: var(--space-lg);
+      font-size: var(--font-size-sm);
+    }
+    .decision-card li {
+      margin-bottom: var(--space-xs);
+    }
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-md) 0;
+      font-size: var(--font-size-sm);
+    }
+    .price-table th,
+    .price-table td {
+      padding: var(--space-sm);
+      text-align: center;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .price-table th {
+      background: var(--color-bg-secondary);
+    }
+    .price-table td:first-child {
+      text-align: left;
+      font-weight: bold;
+    }
+    .benchmark-warning {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .benchmark-warning h4 {
+      color: #ef4444;
+      margin: 0 0 var(--space-sm) 0;
+    }
+    .benchmark-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    @media (max-width: 600px) {
+      .benchmark-grid { grid-template-columns: 1fr; }
+    }
+    .benchmark-list {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+    }
+    .benchmark-list h5 {
+      margin: 0 0 var(--space-sm) 0;
+      font-size: var(--font-size-sm);
+    }
+    .benchmark-list.bad h5 { color: #ef4444; }
+    .benchmark-list.good h5 { color: #22c55e; }
+    .benchmark-list ul {
+      margin: 0;
+      padding-left: var(--space-md);
+      font-size: var(--font-size-sm);
+    }
+    .recommendations {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+      border: 1px solid #22c55e;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .recommendations h3 {
+      color: #22c55e;
+      margin: 0 0 var(--space-md) 0;
+    }
+    .recommendations ol {
+      margin: 0;
+      padding-left: var(--space-lg);
+    }
+    .recommendations li {
+      margin-bottom: var(--space-sm);
+    }
+    .timeline-summary {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-xl) 0;
+    }
+    .timeline-summary h3 {
+      margin: 0 0 var(--space-md) 0;
+    }
+    .era-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+    }
+    .era-card {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-accent);
+    }
+    .era-card .years {
+      font-weight: bold;
+      color: var(--color-accent);
+      font-size: var(--font-size-sm);
+    }
+    .era-card .title {
+      font-weight: bold;
+      margin: var(--space-xs) 0;
+    }
+    .era-card .desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .lessons-box {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .lessons-box h3 {
+      margin: 0 0 var(--space-md) 0;
+    }
+    .lessons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+    }
+    .lesson-item {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: flex-start;
+    }
+    .lesson-number {
+      background: var(--color-accent);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .lesson-text {
+      font-size: var(--font-size-sm);
+    }
+    .glossary-section {
+      margin-top: var(--space-xl);
+    }
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    .glossary-item {
+      background: var(--color-bg-secondary);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+    }
+    .glossary-item strong {
+      color: var(--color-accent);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>📋 Guide pratique — Choisir un LLM en 2025</h1>
+
+    <h2>Par catégorie d'usage</h2>
+
+    <div class="usage-section">
+      <h3>🧮 Raisonnement et mathématiques</h3>
+      <table class="model-table">
+        <tr>
+          <th>Modèle</th>
+          <th>Points forts</th>
+          <th>Limites</th>
+        </tr>
+        <tr>
+          <td>o3</td>
+          <td>97% MATH-500, 87.5% ARC-AGI</td>
+          <td>Coût élevé, latence</td>
+        </tr>
+        <tr>
+          <td>DeepSeek R1</td>
+          <td>Performance ~o1, open source</td>
+          <td>Infrastructure requise</td>
+        </tr>
+        <tr>
+          <td>R1-Distill-Qwen-32B</td>
+          <td>Surpasse o1-mini, auto-hébergeable</td>
+          <td>Moins puissant que R1 full</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="usage-section">
+      <h3>💻 Programmation</h3>
+      <table class="model-table">
+        <tr>
+          <th>Modèle</th>
+          <th>Points forts</th>
+          <th>Cas d'usage</th>
+        </tr>
+        <tr>
+          <td>Claude Opus 4/4.5</td>
+          <td>72-82% SWE-bench</td>
+          <td>Agents de développement autonomes</td>
+        </tr>
+        <tr>
+          <td>o3</td>
+          <td>Compétitions algorithmiques</td>
+          <td>Olympiades de code</td>
+        </tr>
+        <tr>
+          <td>Qwen2.5-Coder</td>
+          <td>Open source, efficace</td>
+          <td>Auto-hébergement local</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="usage-section">
+      <h3>📝 Écriture & 🎨 Multimodal</h3>
+      <table class="model-table">
+        <tr>
+          <th>Usage</th>
+          <th>Recommandation</th>
+          <th>Caractéristiques</th>
+        </tr>
+        <tr>
+          <td>Écriture créative</td>
+          <td>Claude Sonnet 4.5</td>
+          <td>Nuance, profondeur, style</td>
+        </tr>
+        <tr>
+          <td>Multimodal complet</td>
+          <td>Gemini 2.5 Pro</td>
+          <td>1M+ tokens, intégration native</td>
+        </tr>
+        <tr>
+          <td>Contexte très long</td>
+          <td>Llama 4 Scout</td>
+          <td>10M tokens (record)</td>
+        </tr>
+      </table>
+    </div>
+
+    <h2>Open source vs Propriétaire</h2>
+
+    <p>L'écart de performance s'est réduit : les meilleurs modèles open source atteignent ~<strong>95%</strong> des performances des propriétaires.</p>
+
+    <div class="decision-grid">
+      <div class="decision-card opensource">
+        <h4>✅ Choisir Open Source quand :</h4>
+        <ul>
+          <li>Volume &gt; 2M tokens/jour (ROI en 6-12 mois)</li>
+          <li>Exigences strictes de confidentialité (HIPAA, PCI)</li>
+          <li>Besoin de fine-tuning spécifique au domaine</li>
+          <li>Déploiement edge/embarqué</li>
+          <li>Contrôle total sur l'inférence</li>
+        </ul>
+      </div>
+      <div class="decision-card proprietary">
+        <h4>✅ Choisir Propriétaire quand :</h4>
+        <ul>
+          <li>Prototypage rapide</li>
+          <li>Volume faible à moyen</li>
+          <li>Besoin du cutting-edge absolu</li>
+          <li>Équipe DevOps limitée</li>
+          <li>Intégrations écosystème (Google, Microsoft)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Comparaison des coûts (décembre 2025)</h3>
+
+    <table class="price-table">
+      <tr>
+        <th>Modèle</th>
+        <th>Input/M tokens</th>
+        <th>Output/M tokens</th>
+      </tr>
+      <tr>
+        <td>GPT-4o</td>
+        <td>$2.50</td>
+        <td>$10.00</td>
+      </tr>
+      <tr>
+        <td>Claude Sonnet 4</td>
+        <td>$3.00</td>
+        <td>$15.00</td>
+      </tr>
+      <tr>
+        <td>Gemini 2.0 Pro</td>
+        <td>$1.25</td>
+        <td>$5.00</td>
+      </tr>
+      <tr>
+        <td>DeepSeek R1 (API)</td>
+        <td>$0.55</td>
+        <td>$2.19</td>
+      </tr>
+      <tr>
+        <td style="color: #22c55e">Auto-hébergé</td>
+        <td style="color: #22c55e">&lt;$0.05</td>
+        <td style="color: #22c55e">&lt;$0.15</td>
+      </tr>
+    </table>
+
+    <h2>Les limites des benchmarks</h2>
+
+    <div class="benchmark-warning">
+      <h4>⚠️ Attention aux benchmarks saturés</h4>
+      <p>Certains benchmarks sont saturés (&gt;90%) ou contaminés par les données d'entraînement.</p>
+    </div>
+
+    <div class="benchmark-grid">
+      <div class="benchmark-list bad">
+        <h5>❌ Benchmarks à éviter</h5>
+        <ul>
+          <li>MMLU (connaissances générales)</li>
+          <li>HumanEval (code basique)</li>
+          <li>GSM8K (contamination évidente)</li>
+        </ul>
+      </div>
+      <div class="benchmark-list good">
+        <h5>✅ Benchmarks à privilégier</h5>
+        <ul>
+          <li>GPQA Diamond (niveau PhD)</li>
+          <li>SWE-bench Verified (issues GitHub)</li>
+          <li>ARC-AGI-2 (raisonnement abstrait)</li>
+          <li>FrontierMath (niveau recherche)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="recommendations">
+      <h3>Recommandations pratiques</h3>
+      <ol>
+        <li><strong>Pour débuter :</strong> Commencer avec une API propriétaire (GPT-4o, Claude Sonnet), valider le cas d'usage, puis évaluer l'open source si volume/confidentialité le justifient.</li>
+        <li><strong>Pour évaluer :</strong> TOUJOURS tester sur vos propres données — les benchmarks publics sont optimisés.</li>
+        <li><strong>Pour fine-tuner :</strong> Commencer par prompting et RAG avant de fine-tuner. QLoRA sur 7-13B souvent suffisant.</li>
+      </ol>
+    </div>
+
+    <h2>Synthèse historique</h2>
+
+    <div class="timeline-summary">
+      <h3>Une décennie de révolutions</h3>
+      <div class="era-grid">
+        <div class="era-card">
+          <div class="years">2014-2017</div>
+          <div class="title">Les fondations</div>
+          <div class="desc">Attention de Bahdanau, Transformer abandonne les RNN</div>
+        </div>
+        <div class="era-card">
+          <div class="years">2018-2020</div>
+          <div class="title">Modèles de fondation</div>
+          <div class="desc">BERT/GPT, paradigme pré-entraînement + fine-tuning</div>
+        </div>
+        <div class="era-card">
+          <div class="years">2021-2022</div>
+          <div class="title">Alignement prioritaire</div>
+          <div class="desc">InstructGPT/RLHF, Chinchilla rééquilibre</div>
+        </div>
+        <div class="era-card">
+          <div class="years">2022-2023</div>
+          <div class="title">Démocratisation</div>
+          <div class="desc">ChatGPT grand public, LLaMA open source</div>
+        </div>
+        <div class="era-card">
+          <div class="years">2024-2025</div>
+          <div class="title">Ère du raisonnement</div>
+          <div class="desc">o3, DeepSeek R1, test-time compute</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lessons-box">
+      <h3>Leçons pour les praticiens IA</h3>
+      <div class="lessons-grid">
+        <div class="lesson-item">
+          <span class="lesson-number">1</span>
+          <span class="lesson-text"><strong>Architectures persistantes</strong> — Le Transformer, malgré Mamba/RWKV, reste dominant</span>
+        </div>
+        <div class="lesson-item">
+          <span class="lesson-number">2</span>
+          <span class="lesson-text"><strong>Scaling a des limites</strong> — Alignement (RLHF, DPO) et efficacité (MoE, quantification) importent autant</span>
+        </div>
+        <div class="lesson-item">
+          <span class="lesson-number">3</span>
+          <span class="lesson-text"><strong>Écosystème dynamique</strong> — Open source et propriétaire se stimulent mutuellement</span>
+        </div>
+        <div class="lesson-item">
+          <span class="lesson-number">4</span>
+          <span class="lesson-text"><strong>Benchmarks trompeurs</strong> — Toujours évaluer sur vos propres données</span>
+        </div>
+        <div class="lesson-item">
+          <span class="lesson-number">5</span>
+          <span class="lesson-text"><strong>Pas de "meilleur LLM" universel</strong> — Le choix dépend du cas d'usage et des contraintes</span>
+        </div>
+      </div>
+    </div>
+
+    <h2>Glossaire des termes clés</h2>
+
+    <div class="glossary-grid">
+      <div class="glossary-item"><strong>Attention</strong> — Mécanisme de pondération dynamique des parties d'une séquence</div>
+      <div class="glossary-item"><strong>Transformer</strong> — Architecture basée uniquement sur l'attention, sans récurrence</div>
+      <div class="glossary-item"><strong>RLHF</strong> — Reinforcement Learning from Human Feedback</div>
+      <div class="glossary-item"><strong>DPO</strong> — Direct Preference Optimization, alternative simplifiée au RLHF</div>
+      <div class="glossary-item"><strong>MoE</strong> — Mixture of Experts, architecture sparse</div>
+      <div class="glossary-item"><strong>LoRA</strong> — Low-Rank Adaptation, fine-tuning efficace</div>
+      <div class="glossary-item"><strong>RAG</strong> — Retrieval Augmented Generation</div>
+      <div class="glossary-item"><strong>CoT</strong> — Chain-of-Thought, prompting avec raisonnement</div>
+      <div class="glossary-item"><strong>Scaling Laws</strong> — Lois de puissance reliant performance et ressources</div>
+      <div class="glossary-item"><strong>Emergent Abilities</strong> — Capacités apparaissant soudainement avec l'échelle</div>
+      <div class="glossary-item"><strong>Test-time Compute</strong> — Augmentation du compute à l'inférence</div>
+      <div class="glossary-item"><strong>Context Window</strong> — Nombre max de tokens qu'un modèle peut traiter</div>
+    </div>
+
+    <blockquote>
+      La prochaine décennie promet d'être tout aussi transformative. Les questions ouvertes portent désormais
+      sur l'AGI, la sécurité à long terme, et l'impact sociétal de ces technologies.
+    </blockquote>
+  </article>
+</body>
+</html>

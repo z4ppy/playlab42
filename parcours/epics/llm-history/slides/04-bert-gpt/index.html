@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BERT et GPT (2018)</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .year-header {
+      text-align: center;
+      padding: var(--space-lg);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-xl);
+    }
+    .year-header .year {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .year-header .subtitle {
+      color: var(--color-text-muted);
+    }
+    .comparison-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin: var(--space-xl) 0;
+    }
+    @media (max-width: 768px) {
+      .comparison-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .model-card {
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border: 2px solid;
+    }
+    .model-card.gpt {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(249, 115, 22, 0.05));
+      border-color: #ef4444;
+    }
+    .model-card.bert {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(34, 197, 94, 0.05));
+      border-color: #3b82f6;
+    }
+    .model-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+    .model-logo {
+      font-size: 2.5rem;
+    }
+    .model-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .model-card.gpt .model-name { color: #ef4444; }
+    .model-card.bert .model-name { color: #3b82f6; }
+    .model-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .meta-tag {
+      background: var(--color-bg);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+    }
+    .model-card.gpt .meta-tag { border: 1px solid #ef4444; }
+    .model-card.bert .meta-tag { border: 1px solid #3b82f6; }
+    .architecture-diagram {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      text-align: center;
+    }
+    .training-box {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .training-box h4 {
+      margin: 0 0 var(--space-sm) 0;
+      font-size: var(--font-size-md);
+    }
+    .usecase-list {
+      margin: var(--space-md) 0;
+      padding-left: var(--space-lg);
+    }
+    .usecase-list li {
+      margin-bottom: var(--space-xs);
+    }
+    .versus-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      margin: var(--space-xl) 0;
+    }
+    .versus-item {
+      text-align: center;
+    }
+    .versus-item .direction {
+      font-size: 2rem;
+      margin-bottom: var(--space-xs);
+    }
+    .versus-item .label {
+      font-weight: bold;
+    }
+    .versus-vs {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-text-muted);
+    }
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-lg) 0;
+    }
+    .result-item {
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+      border-top: 3px solid var(--color-accent);
+    }
+    .result-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .result-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+    .paradigm-box {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(236, 72, 153, 0.1));
+      border: 2px solid #9333ea;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      text-align: center;
+      margin: var(--space-xl) 0;
+    }
+    .paradigm-box h3 {
+      color: #9333ea;
+      margin: 0 0 var(--space-md) 0;
+    }
+    .paradigm-flow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+    .paradigm-step {
+      background: var(--color-bg);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      font-weight: bold;
+    }
+    .paradigm-arrow {
+      color: #9333ea;
+      font-size: 1.5rem;
+    }
+    .precursor-section {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .precursor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    .precursor-card {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-accent);
+    }
+    .precursor-card h5 {
+      margin: 0 0 var(--space-xs) 0;
+      color: var(--color-accent);
+    }
+    .precursor-card .date {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🔀 BERT et GPT — Deux philosophies divergentes (2018)</h1>
+
+    <div class="year-header">
+      <div class="year">2018</div>
+      <div class="subtitle">L'année du pré-entraînement</div>
+    </div>
+
+    <h2>Travaux précurseurs</h2>
+
+    <div class="precursor-section">
+      <p>Avant BERT et GPT, deux travaux clés préparent le terrain :</p>
+      <div class="precursor-grid">
+        <div class="precursor-card">
+          <h5>ELMo</h5>
+          <div class="date">Février 2018 — AI2</div>
+          <p>Premiers <strong>embeddings contextuels</strong> à grande échelle. Un même mot obtient des vecteurs différents selon son contexte.</p>
+        </div>
+        <div class="precursor-card">
+          <h5>ULMFiT</h5>
+          <div class="date">Janvier 2018 — Jeremy Howard</div>
+          <p>Premier framework de <strong>transfer learning universel</strong> pour le NLP. Discriminative fine-tuning, gradual unfreezing.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Deux architectures, deux philosophies</h2>
+
+    <div class="comparison-container">
+      <!-- GPT -->
+      <div class="model-card gpt">
+        <div class="model-header">
+          <span class="model-logo">🔴</span>
+          <div>
+            <div class="model-name">GPT-1</div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-muted)">OpenAI — Juin 2018</div>
+          </div>
+        </div>
+
+        <div class="model-meta">
+          <span class="meta-tag">117M paramètres</span>
+          <span class="meta-tag">Décodeur</span>
+          <span class="meta-tag">Unidirectionnel</span>
+        </div>
+
+        <div class="architecture-diagram">
+          <svg viewBox="0 0 300 120" width="280" height="120">
+            <text x="150" y="15" text-anchor="middle" fill="currentColor" font-size="11" font-weight="bold">Architecture Décodeur</text>
+
+            <!-- Tokens avec masquage -->
+            <g transform="translate(30, 35)">
+              <rect x="0" y="0" width="40" height="25" rx="4" fill="#ef4444" opacity="0.8"/>
+              <text x="20" y="17" text-anchor="middle" fill="white" font-size="9">Le</text>
+
+              <rect x="50" y="0" width="40" height="25" rx="4" fill="#ef4444" opacity="0.6"/>
+              <text x="70" y="17" text-anchor="middle" fill="white" font-size="9">chat</text>
+
+              <rect x="100" y="0" width="40" height="25" rx="4" fill="#ef4444" opacity="0.4"/>
+              <text x="120" y="17" text-anchor="middle" fill="white" font-size="9">mange</text>
+
+              <rect x="150" y="0" width="40" height="25" rx="4" fill="#ef4444" opacity="0.2"/>
+              <text x="170" y="17" text-anchor="middle" fill="white" font-size="9">?</text>
+
+              <!-- Flèche direction -->
+              <path d="M200 12 L230 12" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+            </g>
+
+            <!-- Explication -->
+            <text x="150" y="85" text-anchor="middle" fill="currentColor" font-size="10">Prédit le prochain token</text>
+            <text x="150" y="100" text-anchor="middle" fill="currentColor" font-size="10">(ne voit que le passé)</text>
+
+            <defs>
+              <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#ef4444"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="training-box">
+          <h4>Entraînement</h4>
+          <p><strong>Language Modeling</strong> : prédire le prochain token en ne voyant que les tokens précédents.</p>
+          <p>Données : BooksCorpus (7 000 livres, ~800M mots)</p>
+        </div>
+
+        <h4>Points forts</h4>
+        <ul class="usecase-list">
+          <li>Excellent en <strong>génération de texte</strong></li>
+          <li>Dialogue, écriture créative</li>
+          <li>Complétion de code</li>
+        </ul>
+      </div>
+
+      <!-- BERT -->
+      <div class="model-card bert">
+        <div class="model-header">
+          <span class="model-logo">🔵</span>
+          <div>
+            <div class="model-name">BERT</div>
+            <div style="font-size: var(--font-size-sm); color: var(--color-text-muted)">Google — Octobre 2018</div>
+          </div>
+        </div>
+
+        <div class="model-meta">
+          <span class="meta-tag">110M / 340M paramètres</span>
+          <span class="meta-tag">Encodeur</span>
+          <span class="meta-tag">Bidirectionnel</span>
+        </div>
+
+        <div class="architecture-diagram">
+          <svg viewBox="0 0 300 120" width="280" height="120">
+            <text x="150" y="15" text-anchor="middle" fill="currentColor" font-size="11" font-weight="bold">Architecture Encodeur</text>
+
+            <!-- Tokens avec masque -->
+            <g transform="translate(30, 35)">
+              <rect x="0" y="0" width="40" height="25" rx="4" fill="#3b82f6" opacity="0.8"/>
+              <text x="20" y="17" text-anchor="middle" fill="white" font-size="9">Le</text>
+
+              <rect x="50" y="0" width="40" height="25" rx="4" fill="#1f2937"/>
+              <text x="70" y="17" text-anchor="middle" fill="white" font-size="9">[MASK]</text>
+
+              <rect x="100" y="0" width="40" height="25" rx="4" fill="#3b82f6" opacity="0.8"/>
+              <text x="120" y="17" text-anchor="middle" fill="white" font-size="9">mange</text>
+
+              <rect x="150" y="0" width="40" height="25" rx="4" fill="#3b82f6" opacity="0.8"/>
+              <text x="170" y="17" text-anchor="middle" fill="white" font-size="9">la</text>
+
+              <!-- Flèches bidirectionnelles -->
+              <path d="M20 30 C20 50 70 50 70 30" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
+              <path d="M70 30 C70 50 120 50 120 30" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
+              <path d="M120 30 C120 50 170 50 170 30" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
+            </g>
+
+            <!-- Explication -->
+            <text x="150" y="85" text-anchor="middle" fill="currentColor" font-size="10">Prédit les tokens masqués</text>
+            <text x="150" y="100" text-anchor="middle" fill="currentColor" font-size="10">(voit tout le contexte)</text>
+          </svg>
+        </div>
+
+        <div class="training-box">
+          <h4>Entraînement</h4>
+          <p><strong>Masked LM</strong> : 15% des tokens masqués, prédits via contexte bidirectionnel.</p>
+          <p><strong>Next Sentence Prediction</strong> : deux phrases se suivent-elles ?</p>
+        </div>
+
+        <h4>Points forts</h4>
+        <ul class="usecase-list">
+          <li>Excellent en <strong>compréhension</strong></li>
+          <li>Classification, NER, QA</li>
+          <li>Analyse de sentiment</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="versus-box">
+      <div class="versus-item">
+        <div class="direction">→</div>
+        <div class="label" style="color: #ef4444">GPT : Unidirectionnel</div>
+        <div style="font-size: var(--font-size-sm); color: var(--color-text-muted)">Génération séquentielle</div>
+      </div>
+      <div class="versus-vs">VS</div>
+      <div class="versus-item">
+        <div class="direction">↔</div>
+        <div class="label" style="color: #3b82f6">BERT : Bidirectionnel</div>
+        <div style="font-size: var(--font-size-sm); color: var(--color-text-muted)">Compréhension profonde</div>
+      </div>
+    </div>
+
+    <h2>Résultats spectaculaires de BERT</h2>
+
+    <div class="results-grid">
+      <div class="result-item">
+        <div class="result-value">+7.7</div>
+        <div class="result-label">points sur GLUE</div>
+      </div>
+      <div class="result-item">
+        <div class="result-value">93.2%</div>
+        <div class="result-label">SQuAD v1.1 F1</div>
+      </div>
+      <div class="result-item">
+        <div class="result-value">11</div>
+        <div class="result-label">SOTA simultanés</div>
+      </div>
+      <div class="result-item">
+        <div class="result-value">> humain</div>
+        <div class="result-label">sur lecture</div>
+      </div>
+    </div>
+
+    <h2>Le paradigme fondateur</h2>
+
+    <div class="paradigm-box">
+      <h3>Pré-entraînement + Fine-tuning</h3>
+      <p>Ce succès établit le paradigme qui domine encore aujourd'hui :</p>
+      <div class="paradigm-flow">
+        <div class="paradigm-step">1. Pré-entraîner</div>
+        <span class="paradigm-arrow">→</span>
+        <div class="paradigm-step">Données massives non-supervisées</div>
+        <span class="paradigm-arrow">→</span>
+        <div class="paradigm-step">2. Fine-tuner</div>
+        <span class="paradigm-arrow">→</span>
+        <div class="paradigm-step">Peu de données supervisées</div>
+      </div>
+    </div>
+
+    <blockquote>
+      <strong>Encodeur (BERT) vs Décodeur (GPT)</strong> :<br>
+      L'encodeur (bidirectionnel) excelle en <em>compréhension</em> (classification, NER, QA).<br>
+      Le décodeur (unidirectionnel) excelle en <em>génération</em> (texte, code, dialogue).
+    </blockquote>
+  </article>
+</body>
+</html>

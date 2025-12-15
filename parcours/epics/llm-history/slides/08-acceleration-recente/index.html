@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L'accélération récente (2024-2025)</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .paradigm-shift {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(236, 72, 153, 0.1));
+      border: 2px solid #9333ea;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      text-align: center;
+      margin: var(--space-lg) 0;
+    }
+    .paradigm-shift h2 {
+      color: #9333ea;
+      margin: 0 0 var(--space-md) 0;
+    }
+    .paradigm-shift .concept {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .benchmark-hero {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .benchmark-card {
+      background: var(--color-bg-secondary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      border-top: 4px solid var(--color-accent);
+    }
+    .benchmark-card .score {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .benchmark-card .name {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .benchmark-card .model {
+      font-size: var(--font-size-sm);
+      font-weight: bold;
+      margin-top: var(--space-xs);
+    }
+    .company-section {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      border-left: 4px solid;
+    }
+    .company-section.deepseek { border-left-color: #3b82f6; }
+    .company-section.anthropic { border-left-color: #f97316; }
+    .company-section.openai { border-left-color: #22c55e; }
+    .company-section.google { border-left-color: #4285f4; }
+    .company-section.meta { border-left-color: #0866ff; }
+    .company-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+    .company-logo {
+      font-size: 2rem;
+    }
+    .company-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    .model-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    .model-item {
+      background: var(--color-bg);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+    }
+    .model-item strong {
+      color: var(--color-accent);
+    }
+    .impact-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .impact-box strong {
+      color: #ef4444;
+    }
+    .timeline-mini {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .timeline-item {
+      background: var(--color-bg);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--color-accent);
+    }
+    .timeline-item .date {
+      font-size: var(--font-size-xs);
+      color: var(--color-accent);
+      font-weight: bold;
+    }
+    .progress-chart {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: var(--space-md) 0;
+    }
+    .alt-arch-section {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    .arch-card {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+    .arch-card h5 {
+      margin: 0 0 var(--space-xs) 0;
+      color: var(--color-accent);
+    }
+    .arch-card .detail {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .stat-pill {
+      background: var(--color-bg);
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      border: 1px solid var(--color-border);
+    }
+    .stat-pill strong {
+      color: var(--color-accent);
+    }
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+      border: 1px solid #22c55e;
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .highlight-box strong {
+      color: #22c55e;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🚀 L'accélération récente (2024-2025)</h1>
+
+    <div class="paradigm-shift">
+      <h2>Le nouveau paradigme</h2>
+      <p class="concept">Test-Time Compute</p>
+      <p>Augmenter le compute à l'<strong>inférence</strong> (pas seulement à l'entraînement) via une recherche guidée dans l'espace des raisonnements.</p>
+    </div>
+
+    <h2>Les modèles de raisonnement changent la donne</h2>
+
+    <div class="company-section openai">
+      <div class="company-header">
+        <span class="company-logo">🟢</span>
+        <span class="company-name">OpenAI o1 / o3</span>
+      </div>
+      <p>
+        <strong>o1</strong> (septembre 2024) : premier "reasoning model" qui internalise le chain-of-thought.
+        Le modèle "pense" avant de répondre, avec une trace de raisonnement invisible à l'utilisateur.
+      </p>
+      <p>
+        <strong>o3</strong> (décembre 2024) repousse les limites sur les benchmarks de raisonnement.
+      </p>
+    </div>
+
+    <div class="benchmark-hero">
+      <div class="benchmark-card">
+        <div class="score">87.5%</div>
+        <div class="name">ARC-AGI</div>
+        <div class="model">o3 (vs 85% humains)</div>
+      </div>
+      <div class="benchmark-card">
+        <div class="score">25.2%</div>
+        <div class="name">FrontierMath</div>
+        <div class="model">o3 (autres &lt;2%)</div>
+      </div>
+      <div class="benchmark-card">
+        <div class="score">96.7%</div>
+        <div class="name">MATH-500</div>
+        <div class="model">o3</div>
+      </div>
+    </div>
+
+    <div class="progress-chart">
+      <svg viewBox="0 0 500 150" width="100%" height="150">
+        <text x="250" y="20" text-anchor="middle" fill="currentColor" font-weight="bold" font-size="12">Progression ARC-AGI (raisonnement abstrait)</text>
+
+        <!-- Axe -->
+        <line x1="50" y1="120" x2="450" y2="120" stroke="currentColor" stroke-width="2"/>
+
+        <!-- Points -->
+        <circle cx="80" cy="115" r="8" fill="#ef4444"/>
+        <text x="80" y="140" text-anchor="middle" fill="currentColor" font-size="9">GPT-3 (0%)</text>
+        <text x="80" y="100" text-anchor="middle" fill="currentColor" font-size="8">2020</text>
+
+        <circle cx="200" cy="110" r="8" fill="#f59e0b"/>
+        <text x="200" y="140" text-anchor="middle" fill="currentColor" font-size="9">GPT-4o (5%)</text>
+        <text x="200" y="100" text-anchor="middle" fill="currentColor" font-size="8">2024</text>
+
+        <circle cx="350" cy="45" r="12" fill="#22c55e"/>
+        <text x="350" y="140" text-anchor="middle" fill="currentColor" font-size="9">o3 (87.5%)</text>
+        <text x="350" y="30" text-anchor="middle" fill="#22c55e" font-size="10" font-weight="bold">Déc. 2024</text>
+
+        <!-- Ligne humaine -->
+        <line x1="50" y1="50" x2="450" y2="50" stroke="#9333ea" stroke-width="1" stroke-dasharray="4"/>
+        <text x="460" y="55" fill="#9333ea" font-size="9">Humains (85%)</text>
+      </svg>
+    </div>
+
+    <h2>DeepSeek bouleverse les attentes</h2>
+
+    <div class="company-section deepseek">
+      <div class="company-header">
+        <span class="company-logo">🔵</span>
+        <span class="company-name">DeepSeek (Chine)</span>
+      </div>
+      <p>Startup fondée par Liang Wenfeng (ex-hedge fund High-Flyer). Démontre que l'<strong>efficacité</strong> peut rivaliser avec les budgets massifs.</p>
+
+      <div class="model-list">
+        <div class="model-item">
+          <strong>DeepSeek V3</strong><br>
+          671B total, 37B actifs/token<br>
+          ~$5.6M d'entraînement
+        </div>
+        <div class="model-item">
+          <strong>DeepSeek R1</strong><br>
+          Raisonnement via RL pur<br>
+          Découverte spontanée de self-verification
+        </div>
+        <div class="model-item">
+          <strong>R1-Distill-Qwen-32B</strong><br>
+          Surpasse o1-mini<br>
+          Licence MIT
+        </div>
+      </div>
+
+      <div class="impact-box">
+        <strong>27 janvier 2025 :</strong> Les marchés perdent $1 trillion en capitalisation. Nvidia -17%.
+        La preuve qu'on peut faire plus avec moins.
+      </div>
+    </div>
+
+    <h2>Claude 4 excelle en agents de code</h2>
+
+    <div class="company-section anthropic">
+      <div class="company-header">
+        <span class="company-logo">🟠</span>
+        <span class="company-name">Anthropic Claude</span>
+      </div>
+
+      <div class="timeline-mini">
+        <div class="timeline-item">
+          <div class="date">Mars 2024</div>
+          Claude 3 (Haiku, Sonnet, Opus)
+        </div>
+        <div class="timeline-item">
+          <div class="date">Juin 2024</div>
+          Claude 3.5 Sonnet (2× plus rapide)
+        </div>
+        <div class="timeline-item">
+          <div class="date">Oct. 2024</div>
+          Computer Use (navigation écran)
+        </div>
+        <div class="timeline-item">
+          <div class="date">Mai 2025</div>
+          Claude 4 Opus (72.5% SWE-bench)
+        </div>
+        <div class="timeline-item">
+          <div class="date">Nov. 2025</div>
+          Claude Opus 4.5
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <strong>Sonnet 4.5 :</strong> 77.2% sur SWE-bench (résolution d'issues GitHub réelles), jusqu'à 82% en mode high-compute.
+      </div>
+    </div>
+
+    <h2>Google Gemini et la course au contexte</h2>
+
+    <div class="company-section google">
+      <div class="company-header">
+        <span class="company-logo">🔴</span>
+        <span class="company-name">Google Gemini</span>
+      </div>
+
+      <div class="stats-row">
+        <span class="stat-pill"><strong>1M tokens</strong> (Gemini 1.5 Pro)</span>
+        <span class="stat-pill">Multimodal natif I/O</span>
+        <span class="stat-pill">Tool use natif</span>
+      </div>
+
+      <p>
+        <strong>Gemini 2.0 Flash</strong> (décembre 2024) conçu pour "l'ère des agents" : génération audio TTS native,
+        intégration Search/Maps/code execution.
+      </p>
+    </div>
+
+    <h2>Llama 4 ouvre le MoE au monde open source</h2>
+
+    <div class="company-section meta">
+      <div class="company-header">
+        <span class="company-logo">🔵</span>
+        <span class="company-name">Meta Llama 4</span>
+      </div>
+
+      <p><strong>Avril 2025</strong> — Première architecture <strong>MoE</strong> de Meta, <strong>nativement multimodal</strong>.</p>
+
+      <div class="model-list">
+        <div class="model-item">
+          <strong>Scout</strong><br>
+          109B total, 17B actifs<br>
+          <strong>10M tokens</strong> de contexte!
+        </div>
+        <div class="model-item">
+          <strong>Maverick</strong><br>
+          400B total, 128 experts<br>
+          Rivalise GPT-4o
+        </div>
+        <div class="model-item">
+          <strong>Behemoth</strong><br>
+          ~2T paramètres<br>
+          En cours d'entraînement
+        </div>
+      </div>
+    </div>
+
+    <h2>L'écosystème chinois atteint la parité</h2>
+
+    <div class="model-list">
+      <div class="model-item">
+        <strong>Qwen 3</strong> (Alibaba)<br>
+        36T tokens, 119 langues<br>
+        MoE jusqu'à 235B
+      </div>
+      <div class="model-item">
+        <strong>Yi-Lightning</strong> (01.AI)<br>
+        Rivalise GPT-4o<br>
+        Kai-Fu Lee
+      </div>
+      <div class="model-item">
+        <strong>GLM-4.5</strong> (Zhipu)<br>
+        355B paramètres
+      </div>
+      <div class="model-item">
+        <strong>Kimi</strong> (Moonshot)<br>
+        Long-context specialist
+      </div>
+    </div>
+
+    <h2>Architectures alternatives</h2>
+
+    <div class="alt-arch-section">
+      <p>Des alternatives au Transformer émergent, avec une complexité <strong>O(n)</strong> au lieu de O(n²) :</p>
+
+      <div class="arch-grid">
+        <div class="arch-card">
+          <h5>Mamba</h5>
+          <div class="detail">State Space Models (SSM). Selective state spaces. Mamba-3B égale Transformers 2× plus gros.</div>
+        </div>
+        <div class="arch-card">
+          <h5>Jamba</h5>
+          <div class="detail">AI21 Labs. Hybride Transformer + Mamba + MoE. 256K tokens sur un seul GPU.</div>
+        </div>
+        <div class="arch-card">
+          <h5>RWKV</h5>
+          <div class="detail">RNN réinventé, complexité linéaire. Déployé sur 1.5B machines via Windows Copilot.</div>
+        </div>
+      </div>
+
+      <p style="margin-top: var(--space-md); font-size: var(--font-size-sm); color: var(--color-text-muted)">
+        <strong>Statut :</strong> Ces architectures restent de niche — légèrement moins performantes que les Transformers optimisés (Flash Attention),
+        plus difficiles à entraîner, moins matures pour l'in-context learning sur très longs contextes.
+      </p>
+    </div>
+
+    <blockquote>
+      2024-2025 marque l'émergence des <strong>modèles de raisonnement</strong> (o3, DeepSeek R1) et la démocratisation
+      continue via l'open source. L'écart de performance entre modèles propriétaires et ouverts atteint désormais ~95%.
+    </blockquote>
+  </article>
+</body>
+</html>

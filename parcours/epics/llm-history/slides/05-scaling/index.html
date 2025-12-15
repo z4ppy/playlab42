@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L'ère du scaling (2019-2022)</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .model-evolution {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      gap: var(--space-md);
+      padding: var(--space-xl) 0;
+      margin: var(--space-lg) 0;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+    }
+    .model-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 80px;
+    }
+    .bar {
+      width: 60px;
+      background: linear-gradient(to top, var(--color-accent), #9333ea);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      transition: height 0.5s ease;
+    }
+    .model-bar .name {
+      font-size: var(--font-size-sm);
+      font-weight: bold;
+      margin-top: var(--space-xs);
+    }
+    .model-bar .params {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+    .scaling-laws-diagram {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      overflow-x: auto;
+    }
+    .law-formula {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      font-family: monospace;
+      text-align: center;
+      margin: var(--space-md) 0;
+    }
+    .chinchilla-box {
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(249, 115, 22, 0.1));
+      border: 2px solid #eab308;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .chinchilla-box h3 {
+      color: #eab308;
+      margin: 0 0 var(--space-md) 0;
+    }
+    .chinchilla-rule {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: var(--space-md) 0;
+    }
+    .emergence-section {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(236, 72, 153, 0.1));
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .emergence-diagram {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: var(--space-md) 0;
+    }
+    .icl-examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .icl-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border-top: 4px solid var(--color-accent);
+    }
+    .icl-card h4 {
+      margin: 0 0 var(--space-sm) 0;
+      color: var(--color-accent);
+    }
+    .icl-card code {
+      display: block;
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      white-space: pre-wrap;
+      margin-top: var(--space-sm);
+    }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      justify-content: center;
+      margin: var(--space-lg) 0;
+    }
+    .stat-box {
+      background: var(--color-bg-secondary);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      min-width: 140px;
+    }
+    .stat-box .value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .stat-box .label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .rlhf-section {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+      border: 2px solid #22c55e;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .rlhf-section h3 {
+      color: #22c55e;
+      margin: 0 0 var(--space-md) 0;
+    }
+    .rlhf-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      justify-content: center;
+      margin: var(--space-md) 0;
+    }
+    .rlhf-step {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+      min-width: 150px;
+      flex: 1;
+    }
+    .rlhf-step .number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #22c55e;
+    }
+    .rlhf-step .name {
+      font-weight: bold;
+      margin: var(--space-xs) 0;
+    }
+    .rlhf-step .desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .key-insight {
+      background: var(--color-bg-secondary);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+    .key-insight strong {
+      color: var(--color-accent);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>📈 L'ère du scaling (2019-2022)</h1>
+
+    <h2>L'explosion des paramètres</h2>
+
+    <div class="model-evolution">
+      <div class="model-bar">
+        <div class="bar" style="height: 20px;"></div>
+        <div class="name">GPT-1</div>
+        <div class="params">117M</div>
+      </div>
+      <div class="model-bar">
+        <div class="bar" style="height: 40px;"></div>
+        <div class="name">GPT-2</div>
+        <div class="params">1.5B</div>
+      </div>
+      <div class="model-bar">
+        <div class="bar" style="height: 180px;"></div>
+        <div class="name">GPT-3</div>
+        <div class="params">175B</div>
+      </div>
+      <div class="model-bar">
+        <div class="bar" style="height: 80px;"></div>
+        <div class="name">Chinchilla</div>
+        <div class="params">70B</div>
+      </div>
+    </div>
+
+    <h2>GPT-2 : "Trop dangereux pour être publié" (2019)</h2>
+
+    <p>
+      OpenAI annonce GPT-2 avec <strong>1.5 milliard de paramètres</strong> et prend la décision controversée
+      de ne pas publier le modèle complet, invoquant des risques de désinformation.
+    </p>
+
+    <div class="key-insight">
+      <strong>Titre du papier :</strong> "Language Models are Unsupervised Multitask Learners"<br>
+      <strong>Découverte clé :</strong> le modèle peut effectuer des tâches variées <em>sans entraînement spécifique</em>,
+      simplement avec un prompt. C'est l'émergence du <strong>zero-shot learning</strong>.
+    </div>
+
+    <h2>GPT-3 : Le passage à l'échelle industrielle (2020)</h2>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="value">175B</div>
+        <div class="label">Paramètres</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">300B</div>
+        <div class="label">Tokens d'entraînement</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">$4.6M</div>
+        <div class="label">Coût estimé</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">96</div>
+        <div class="label">Couches</div>
+      </div>
+    </div>
+
+    <h3>L'in-context learning : une révolution</h3>
+
+    <div class="icl-examples">
+      <div class="icl-card">
+        <h4>Zero-shot</h4>
+        <p>Instructions seules, aucun exemple</p>
+        <code>Traduire l'anglais vers le français:
+sea otter =></code>
+      </div>
+      <div class="icl-card">
+        <h4>One-shot</h4>
+        <p>Un seul exemple fourni</p>
+        <code>Traduire l'anglais vers le français:
+sea otter => loutre de mer
+cheese =></code>
+      </div>
+      <div class="icl-card">
+        <h4>Few-shot</h4>
+        <p>Plusieurs exemples dans le prompt</p>
+        <code>[exemples de traductions...]
+pineapple =></code>
+      </div>
+    </div>
+
+    <div class="key-insight">
+      Le modèle "apprend" temporairement de nouveaux patterns simplement en les voyant dans le prompt,
+      <strong>sans modification des poids</strong>. Cette capacité n'était pas explicitement optimisée
+      mais <strong>émerge du scaling</strong>.
+    </div>
+
+    <h2>Les lois d'échelle (Scaling Laws)</h2>
+
+    <div class="scaling-laws-diagram">
+      <svg viewBox="0 0 600 250" width="100%" height="250">
+        <!-- Axes -->
+        <line x1="80" y1="200" x2="550" y2="200" stroke="currentColor" stroke-width="2"/>
+        <line x1="80" y1="200" x2="80" y2="30" stroke="currentColor" stroke-width="2"/>
+
+        <!-- Labels axes -->
+        <text x="315" y="235" text-anchor="middle" fill="currentColor" font-size="12">Paramètres / Données / Compute (log)</text>
+        <text x="30" y="115" text-anchor="middle" fill="currentColor" font-size="12" transform="rotate(-90, 30, 115)">Loss (log)</text>
+
+        <!-- Courbe de scaling (power law) -->
+        <path d="M100 50 Q200 80 300 120 Q400 150 500 170" stroke="#3b82f6" stroke-width="3" fill="none"/>
+
+        <!-- Points sur la courbe -->
+        <circle cx="100" cy="50" r="6" fill="#ef4444"/>
+        <circle cx="200" cy="85" r="6" fill="#f59e0b"/>
+        <circle cx="300" cy="115" r="6" fill="#22c55e"/>
+        <circle cx="400" cy="145" r="6" fill="#3b82f6"/>
+        <circle cx="500" cy="168" r="6" fill="#9333ea"/>
+
+        <!-- Labels modèles -->
+        <text x="100" y="40" text-anchor="middle" fill="#ef4444" font-size="10">Petit</text>
+        <text x="500" y="185" text-anchor="middle" fill="#9333ea" font-size="10">GPT-3</text>
+
+        <!-- Annotation -->
+        <text x="350" y="80" fill="currentColor" font-size="11" font-style="italic">Tendance linéaire en log-log</text>
+        <text x="350" y="95" fill="currentColor" font-size="11" font-style="italic">sur 7 ordres de magnitude!</text>
+      </svg>
+    </div>
+
+    <div class="law-formula">
+      L(N) ∝ N<sup>-0.076</sup> &nbsp;&nbsp;|&nbsp;&nbsp; L(D) ∝ D<sup>-0.095</sup> &nbsp;&nbsp;|&nbsp;&nbsp; L(C) ∝ C<sup>-0.050</sup>
+    </div>
+
+    <h2>Chinchilla renverse les conclusions (2022)</h2>
+
+    <div class="chinchilla-box">
+      <h3>🦦 La révolution Chinchilla</h3>
+      <p>
+        DeepMind entraîne <strong>400+ modèles</strong> et démontre que modèle et données doivent être mis à l'échelle
+        <strong>proportionnellement</strong> :
+      </p>
+      <div class="chinchilla-rule">
+        Règle Chinchilla : ~20 tokens par paramètre
+      </div>
+      <p>
+        <strong>Implication :</strong> GPT-3 était massivement sous-entraîné !<br>
+        Avec 300B tokens, il aurait dû avoir ~15B paramètres.<br>
+        Inversement, ses 175B paramètres auraient nécessité ~3.5T tokens.
+      </p>
+      <p>
+        <strong>Démonstration :</strong> Chinchilla (70B params, 1.4T tokens) surpasse GPT-3 (175B) et Gopher (280B)
+        avec le <em>même budget compute</em> !
+      </p>
+    </div>
+
+    <h2>Capacités émergentes (2022)</h2>
+
+    <div class="emergence-section">
+      <p>
+        Certaines capacités <strong>n'existent pas</strong> dans les petits modèles mais
+        <strong>apparaissent soudainement</strong> dans les grands, sans pouvoir être prédites.
+      </p>
+
+      <div class="emergence-diagram">
+        <svg viewBox="0 0 500 180" width="100%" height="180">
+          <!-- Axes -->
+          <line x1="60" y1="150" x2="450" y2="150" stroke="currentColor" stroke-width="2"/>
+          <line x1="60" y1="150" x2="60" y2="20" stroke="currentColor" stroke-width="2"/>
+
+          <!-- Labels -->
+          <text x="255" y="175" text-anchor="middle" fill="currentColor" font-size="11">Taille du modèle (paramètres)</text>
+          <text x="25" y="85" text-anchor="middle" fill="currentColor" font-size="11" transform="rotate(-90, 25, 85)">Performance</text>
+
+          <!-- Courbe emergence (sigmoid) -->
+          <path d="M80 140 L150 138 L200 135 L250 130 C280 120 300 80 320 50 L350 45 L400 42 L440 40"
+                stroke="#9333ea" stroke-width="3" fill="none"/>
+
+          <!-- Zone d'émergence -->
+          <rect x="250" y="40" width="80" height="100" fill="#9333ea" opacity="0.1"/>
+          <text x="290" y="30" text-anchor="middle" fill="#9333ea" font-size="10" font-weight="bold">Émergence!</text>
+
+          <!-- Annotations -->
+          <text x="120" y="125" fill="var(--color-text-muted)" font-size="9">~0% performance</text>
+          <text x="400" y="60" fill="#22c55e" font-size="9">~100%</text>
+
+          <!-- Tailles -->
+          <text x="100" y="165" fill="var(--color-text-muted)" font-size="9">1B</text>
+          <text x="200" y="165" fill="var(--color-text-muted)" font-size="9">10B</text>
+          <text x="300" y="165" fill="var(--color-text-muted)" font-size="9">100B</text>
+          <text x="400" y="165" fill="var(--color-text-muted)" font-size="9">1T</text>
+        </svg>
+      </div>
+
+      <p><strong>137+ capacités émergentes</strong> identifiées, incluant :</p>
+      <ul>
+        <li>Arithmétique multi-chiffres (apparaît vers 13B pour 3 chiffres)</li>
+        <li>Raisonnement logique multi-étapes</li>
+        <li>Tâches complexes de BIG-bench</li>
+      </ul>
+    </div>
+
+    <h2>InstructGPT et l'alignement (mars 2022)</h2>
+
+    <div class="rlhf-section">
+      <h3>RLHF : Reinforcement Learning from Human Feedback</h3>
+      <p>
+        Les LLM entraînés sur la prédiction du prochain token ne sont pas <strong>alignés</strong>
+        avec l'intention des utilisateurs. La solution : RLHF en trois étapes.
+      </p>
+
+      <div class="rlhf-steps">
+        <div class="rlhf-step">
+          <div class="number">1</div>
+          <div class="name">SFT</div>
+          <div class="desc">Supervised Fine-Tuning sur ~13K démonstrations humaines</div>
+        </div>
+        <div class="rlhf-step">
+          <div class="number">2</div>
+          <div class="name">Reward Model</div>
+          <div class="desc">Entraîner un modèle à prédire les préférences humaines</div>
+        </div>
+        <div class="rlhf-step">
+          <div class="number">3</div>
+          <div class="name">PPO</div>
+          <div class="desc">Fine-tuner via RL pour maximiser le reward</div>
+        </div>
+      </div>
+
+      <div class="key-insight">
+        <strong>Résultat frappant :</strong> InstructGPT 1.3B est préféré à GPT-3 175B malgré <strong>100× moins de paramètres</strong>.
+        L'alignement peut être plus important que le scaling !
+      </div>
+    </div>
+
+    <blockquote>
+      Cette période établit deux leçons fondamentales :<br>
+      1. Les performances suivent des <strong>lois de puissance prévisibles</strong>.<br>
+      2. L'<strong>alignement</strong> (comment le modèle répond) peut surpasser le scaling brut.
+    </blockquote>
+  </article>
+</body>
+</html>

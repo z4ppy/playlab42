@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 180" width="380" height="180">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1b4b;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#312e81;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="timelineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="50%" style="stop-color:#9333ea"/>
+      <stop offset="100%" style="stop-color:#ec4899"/>
+    </linearGradient>
+    <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#60a5fa"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="380" height="180" fill="url(#bgGrad)"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.1">
+    <line x1="0" y1="45" x2="380" y2="45" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="90" x2="380" y2="90" stroke="white" stroke-width="1"/>
+    <line x1="0" y1="135" x2="380" y2="135" stroke="white" stroke-width="1"/>
+    <line x1="95" y1="0" x2="95" y2="180" stroke="white" stroke-width="1"/>
+    <line x1="190" y1="0" x2="190" y2="180" stroke="white" stroke-width="1"/>
+    <line x1="285" y1="0" x2="285" y2="180" stroke="white" stroke-width="1"/>
+  </g>
+
+  <!-- Neural network nodes background -->
+  <g opacity="0.15">
+    <circle cx="50" cy="30" r="8" fill="#60a5fa"/>
+    <circle cx="90" cy="60" r="6" fill="#a78bfa"/>
+    <circle cx="330" cy="40" r="10" fill="#f472b6"/>
+    <circle cx="300" cy="150" r="7" fill="#60a5fa"/>
+    <circle cx="60" cy="140" r="5" fill="#a78bfa"/>
+    <line x1="50" y1="30" x2="90" y2="60" stroke="#60a5fa" stroke-width="1"/>
+    <line x1="300" y1="150" x2="330" y2="40" stroke="#f472b6" stroke-width="1"/>
+  </g>
+
+  <!-- Brain icon -->
+  <g transform="translate(30, 55)">
+    <ellipse cx="35" cy="35" rx="30" ry="28" fill="url(#brainGrad)" opacity="0.9"/>
+    <!-- Brain details -->
+    <path d="M20 35 Q25 25 35 25 Q45 25 50 35" stroke="white" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M25 42 Q35 38 45 42" stroke="white" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M30 50 Q35 47 40 50" stroke="white" stroke-width="1.5" fill="none" opacity="0.5"/>
+    <!-- Glow effect -->
+    <circle cx="35" cy="35" r="32" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.3"/>
+  </g>
+
+  <!-- Title -->
+  <text x="110" y="65" fill="white" font-family="system-ui, sans-serif" font-size="18" font-weight="bold">Histoire des</text>
+  <text x="110" y="90" fill="url(#timelineGrad)" font-family="system-ui, sans-serif" font-size="24" font-weight="bold">LLM</text>
+
+  <!-- Timeline -->
+  <g transform="translate(30, 115)">
+    <line x1="0" y1="20" x2="320" y2="20" stroke="url(#timelineGrad)" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Timeline dots and years -->
+    <circle cx="0" cy="20" r="6" fill="#3b82f6"/>
+    <text x="0" y="45" fill="#93c5fd" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle">2014</text>
+    <text x="0" y="10" fill="white" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">Attention</text>
+
+    <circle cx="80" cy="20" r="6" fill="#6366f1"/>
+    <text x="80" y="45" fill="#a5b4fc" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle">2017</text>
+    <text x="80" y="10" fill="white" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">Transformer</text>
+
+    <circle cx="160" cy="20" r="6" fill="#8b5cf6"/>
+    <text x="160" y="45" fill="#c4b5fd" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle">2020</text>
+    <text x="160" y="10" fill="white" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">GPT-3</text>
+
+    <circle cx="240" cy="20" r="6" fill="#a855f7"/>
+    <text x="240" y="45" fill="#d8b4fe" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle">2022</text>
+    <text x="240" y="10" fill="white" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">ChatGPT</text>
+
+    <circle cx="320" cy="20" r="8" fill="#ec4899"/>
+    <text x="320" y="45" fill="#f9a8d4" font-family="system-ui, sans-serif" font-size="10" text-anchor="middle">2025</text>
+    <text x="320" y="10" fill="white" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">o3/R1</text>
+  </g>
+
+  <!-- Subtitle -->
+  <text x="230" y="90" fill="#a5b4fc" font-family="system-ui, sans-serif" font-size="11">De l'attention au raisonnement</text>
+</svg>

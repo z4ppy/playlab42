@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Les techniques clés</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .technique-section {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-xl) 0;
+      border-left: 4px solid var(--color-accent);
+    }
+    .technique-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+    .technique-icon {
+      font-size: 2rem;
+    }
+    .technique-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    .technique-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .diagram-box {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: var(--space-md) 0;
+      overflow-x: auto;
+    }
+    .steps-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+      justify-content: center;
+      margin: var(--space-md) 0;
+    }
+    .step-box {
+      background: var(--color-bg);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+      min-width: 100px;
+      border: 1px solid var(--color-border);
+    }
+    .step-box .number {
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .step-arrow {
+      color: var(--color-accent);
+      font-size: 1.2rem;
+    }
+    .formula-box {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      font-family: monospace;
+      text-align: center;
+      margin: var(--space-md) 0;
+      overflow-x: auto;
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    @media (max-width: 600px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+    .compare-card {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+    .compare-card h5 {
+      margin: 0 0 var(--space-sm) 0;
+      color: var(--color-accent);
+    }
+    .pros-cons {
+      font-size: var(--font-size-sm);
+    }
+    .pros-cons .pro { color: #22c55e; }
+    .pros-cons .con { color: #ef4444; }
+    .moe-diagram {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: var(--space-md) 0;
+    }
+    .cot-example {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      font-family: monospace;
+      font-size: var(--font-size-sm);
+      white-space: pre-wrap;
+    }
+    .cot-example .thought { color: #9333ea; }
+    .cot-example .answer { color: #22c55e; }
+    .stats-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .stat-badge {
+      background: var(--color-bg);
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-accent);
+    }
+    .stat-badge strong {
+      color: var(--color-accent);
+    }
+    .key-point {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+      border: 1px solid #22c55e;
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .key-point strong {
+      color: #22c55e;
+    }
+    .rag-flow {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: var(--space-md) 0;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🔧 Les techniques clés qui ont façonné les LLM</h1>
+
+    <!-- RLHF -->
+    <div class="technique-section">
+      <div class="technique-header">
+        <span class="technique-icon">🎯</span>
+        <div>
+          <h2 class="technique-title">RLHF</h2>
+          <div class="technique-subtitle">Reinforcement Learning from Human Feedback</div>
+        </div>
+      </div>
+
+      <p>Devenu le standard industriel pour l'alignement après InstructGPT (mars 2022).</p>
+
+      <div class="diagram-box">
+        <svg viewBox="0 0 600 200" width="100%" height="200">
+          <!-- Phase 1: SFT -->
+          <g transform="translate(30, 30)">
+            <rect x="0" y="0" width="150" height="80" rx="8" fill="#3b82f6" opacity="0.2" stroke="#3b82f6" stroke-width="2"/>
+            <text x="75" y="25" text-anchor="middle" fill="#3b82f6" font-weight="bold" font-size="12">Phase 1: SFT</text>
+            <text x="75" y="45" text-anchor="middle" fill="currentColor" font-size="10">Démonstrations</text>
+            <text x="75" y="60" text-anchor="middle" fill="currentColor" font-size="10">humaines (~13K)</text>
+            <text x="75" y="75" text-anchor="middle" fill="var(--color-text-muted)" font-size="9">→ Modèle base</text>
+          </g>
+
+          <!-- Flèche -->
+          <path d="M190 70 L220 70" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#arrowTech)"/>
+
+          <!-- Phase 2: Reward Model -->
+          <g transform="translate(225, 30)">
+            <rect x="0" y="0" width="150" height="80" rx="8" fill="#f59e0b" opacity="0.2" stroke="#f59e0b" stroke-width="2"/>
+            <text x="75" y="25" text-anchor="middle" fill="#f59e0b" font-weight="bold" font-size="12">Phase 2: Reward</text>
+            <text x="75" y="45" text-anchor="middle" fill="currentColor" font-size="10">K outputs classés</text>
+            <text x="75" y="60" text-anchor="middle" fill="currentColor" font-size="10">par des humains</text>
+            <text x="75" y="75" text-anchor="middle" fill="var(--color-text-muted)" font-size="9">→ Reward Model</text>
+          </g>
+
+          <!-- Flèche -->
+          <path d="M385 70 L415 70" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#arrowTech)"/>
+
+          <!-- Phase 3: PPO -->
+          <g transform="translate(420, 30)">
+            <rect x="0" y="0" width="150" height="80" rx="8" fill="#22c55e" opacity="0.2" stroke="#22c55e" stroke-width="2"/>
+            <text x="75" y="25" text-anchor="middle" fill="#22c55e" font-weight="bold" font-size="12">Phase 3: PPO</text>
+            <text x="75" y="45" text-anchor="middle" fill="currentColor" font-size="10">Fine-tuning via RL</text>
+            <text x="75" y="60" text-anchor="middle" fill="currentColor" font-size="10">+ régularisation KL</text>
+            <text x="75" y="75" text-anchor="middle" fill="var(--color-text-muted)" font-size="9">→ Modèle aligné</text>
+          </g>
+
+          <!-- Légende -->
+          <text x="300" y="140" text-anchor="middle" fill="var(--color-text-muted)" font-size="10">P(y_w > y_l) = σ(r(x, y_w) - r(x, y_l))</text>
+          <text x="300" y="160" text-anchor="middle" fill="var(--color-text-muted)" font-size="9">Modèle Bradley-Terry pour les préférences</text>
+
+          <defs>
+            <marker id="arrowTech" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="currentColor"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <div class="stats-inline">
+        <span class="stat-badge">Coût: <strong>~$1/préférence</strong></span>
+        <span class="stat-badge">InstructGPT 1.3B <strong>></strong> GPT-3 175B</span>
+      </div>
+    </div>
+
+    <!-- DPO -->
+    <div class="technique-section">
+      <div class="technique-header">
+        <span class="technique-icon">⚡</span>
+        <div>
+          <h2 class="technique-title">DPO</h2>
+          <div class="technique-subtitle">Direct Preference Optimization (Stanford, mai 2023)</div>
+        </div>
+      </div>
+
+      <p>
+        Alternative élégante au RLHF : <strong>élimine le reward model explicite</strong> grâce à une correspondance
+        analytique entre récompense optimale et politique optimale.
+      </p>
+
+      <div class="formula-box">
+        L_DPO = -E log σ(β(log π_θ(y_w|x)/π_ref(y_w|x) - log π_θ(y_l|x)/π_ref(y_l|x)))
+      </div>
+
+      <div class="comparison-grid">
+        <div class="compare-card">
+          <h5>RLHF</h5>
+          <div class="pros-cons">
+            <span class="con">✗</span> ~500 lignes de code<br>
+            <span class="con">✗</span> 3 modèles (policy, ref, reward)<br>
+            <span class="con">✗</span> Instable (RL)
+          </div>
+        </div>
+        <div class="compare-card">
+          <h5>DPO</h5>
+          <div class="pros-cons">
+            <span class="pro">✓</span> ~50 lignes de code<br>
+            <span class="pro">✓</span> 1 seul modèle<br>
+            <span class="pro">✓</span> Stable (classification)
+          </div>
+        </div>
+      </div>
+
+      <p><strong>Adopté par :</strong> LLaMA 2, Zephyr, Mistral/Mixtral</p>
+    </div>
+
+    <!-- MoE -->
+    <div class="technique-section">
+      <div class="technique-header">
+        <span class="technique-icon">🧩</span>
+        <div>
+          <h2 class="technique-title">Mixture of Experts (MoE)</h2>
+          <div class="technique-subtitle">Architecture sparse pour l'efficacité</div>
+        </div>
+      </div>
+
+      <p>
+        Concept des années 1990 (Jacobs et al., avec Hinton), modernisé avec le <strong>Switch Transformer</strong> (Google, 2021).
+      </p>
+
+      <div class="moe-diagram">
+        <svg viewBox="0 0 500 180" width="100%" height="180">
+          <!-- Input -->
+          <rect x="20" y="70" width="60" height="40" rx="5" fill="var(--color-accent)" opacity="0.3" stroke="var(--color-accent)"/>
+          <text x="50" y="95" text-anchor="middle" fill="currentColor" font-size="11">Token</text>
+
+          <!-- Router -->
+          <rect x="110" y="60" width="70" height="60" rx="5" fill="#f59e0b" opacity="0.3" stroke="#f59e0b"/>
+          <text x="145" y="85" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="bold">Router</text>
+          <text x="145" y="100" text-anchor="middle" fill="#f59e0b" font-size="9">Sélectionne</text>
+          <text x="145" y="112" text-anchor="middle" fill="#f59e0b" font-size="9">1-2 experts</text>
+
+          <!-- Experts -->
+          <g transform="translate(210, 10)">
+            <rect x="0" y="0" width="50" height="35" rx="5" fill="#22c55e" opacity="0.8"/>
+            <text x="25" y="22" text-anchor="middle" fill="white" font-size="10">E1 ✓</text>
+
+            <rect x="60" y="0" width="50" height="35" rx="5" fill="#cbd5e1" opacity="0.5"/>
+            <text x="85" y="22" text-anchor="middle" fill="currentColor" font-size="10">E2</text>
+
+            <rect x="120" y="0" width="50" height="35" rx="5" fill="#22c55e" opacity="0.8"/>
+            <text x="145" y="22" text-anchor="middle" fill="white" font-size="10">E3 ✓</text>
+
+            <rect x="0" y="45" width="50" height="35" rx="5" fill="#cbd5e1" opacity="0.5"/>
+            <text x="25" y="67" text-anchor="middle" fill="currentColor" font-size="10">E4</text>
+
+            <rect x="60" y="45" width="50" height="35" rx="5" fill="#cbd5e1" opacity="0.5"/>
+            <text x="85" y="67" text-anchor="middle" fill="currentColor" font-size="10">E5</text>
+
+            <rect x="120" y="45" width="50" height="35" rx="5" fill="#cbd5e1" opacity="0.5"/>
+            <text x="145" y="67" text-anchor="middle" fill="currentColor" font-size="10">E6</text>
+
+            <rect x="30" y="90" width="50" height="35" rx="5" fill="#cbd5e1" opacity="0.5"/>
+            <text x="55" y="112" text-anchor="middle" fill="currentColor" font-size="10">E7</text>
+
+            <rect x="90" y="90" width="50" height="35" rx="5" fill="#cbd5e1" opacity="0.5"/>
+            <text x="115" y="112" text-anchor="middle" fill="currentColor" font-size="10">E8</text>
+          </g>
+
+          <!-- Output -->
+          <rect x="400" y="70" width="80" height="40" rx="5" fill="#9333ea" opacity="0.3" stroke="#9333ea"/>
+          <text x="440" y="90" text-anchor="middle" fill="#9333ea" font-size="10" font-weight="bold">Combine</text>
+          <text x="440" y="105" text-anchor="middle" fill="#9333ea" font-size="9">E1 + E3</text>
+
+          <!-- Connections -->
+          <path d="M80 90 L110 90" stroke="currentColor" stroke-width="2"/>
+          <path d="M180 90 L210 90" stroke="currentColor" stroke-width="2"/>
+          <path d="M380 90 L400 90" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="key-point">
+        <strong>Mixtral 8x7B :</strong> 46.7B paramètres totaux, seulement <strong>12.9B actifs</strong> par token (2 experts sur 8).
+        Performances d'un 70B, vitesse d'un 13B.
+      </div>
+    </div>
+
+    <!-- Chain-of-Thought -->
+    <div class="technique-section">
+      <div class="technique-header">
+        <span class="technique-icon">💭</span>
+        <div>
+          <h2 class="technique-title">Chain-of-Thought (CoT)</h2>
+          <div class="technique-subtitle">Wei et al., janvier 2022</div>
+        </div>
+      </div>
+
+      <p>
+        Inclure des <strong>étapes de raisonnement intermédiaires</strong> dans les exemples few-shot améliore
+        drastiquement les performances sur les tâches complexes.
+      </p>
+
+      <div class="comparison-grid">
+        <div class="compare-card">
+          <h5>Prompting standard</h5>
+          <div class="cot-example">Q: Roger a 5 balles, il achète 2 paquets de 3.
+Combien en a-t-il ?
+<span class="answer">A: 11</span></div>
+        </div>
+        <div class="compare-card">
+          <h5>Chain-of-Thought</h5>
+          <div class="cot-example">Q: Roger a 5 balles, il achète 2 paquets de 3.
+Combien en a-t-il ?
+<span class="thought">A: Roger commence avec 5 balles.
+2 paquets de 3 font 6 balles.
+5 + 6 = 11.</span>
+<span class="answer">La réponse est 11.</span></div>
+        </div>
+      </div>
+
+      <div class="key-point">
+        <strong>Zero-shot CoT :</strong> Ajouter simplement "Let's think step by step" au prompt suffit souvent à déclencher le raisonnement !
+      </div>
+    </div>
+
+    <!-- RAG -->
+    <div class="technique-section">
+      <div class="technique-header">
+        <span class="technique-icon">📚</span>
+        <div>
+          <h2 class="technique-title">RAG</h2>
+          <div class="technique-subtitle">Retrieval Augmented Generation (Lewis et al., 2020)</div>
+        </div>
+      </div>
+
+      <div class="rag-flow">
+        <svg viewBox="0 0 550 120" width="100%" height="120">
+          <!-- Query -->
+          <rect x="10" y="40" width="80" height="40" rx="5" fill="var(--color-accent)" opacity="0.3" stroke="var(--color-accent)"/>
+          <text x="50" y="65" text-anchor="middle" fill="currentColor" font-size="10">Question</text>
+
+          <!-- Retriever -->
+          <rect x="120" y="30" width="100" height="60" rx="5" fill="#3b82f6" opacity="0.2" stroke="#3b82f6"/>
+          <text x="170" y="55" text-anchor="middle" fill="#3b82f6" font-size="11" font-weight="bold">Retriever</text>
+          <text x="170" y="70" text-anchor="middle" fill="#3b82f6" font-size="9">Recherche docs</text>
+
+          <!-- Documents -->
+          <rect x="250" y="10" width="80" height="30" rx="3" fill="#22c55e" opacity="0.3" stroke="#22c55e"/>
+          <text x="290" y="30" text-anchor="middle" fill="#22c55e" font-size="9">Doc 1</text>
+          <rect x="250" y="45" width="80" height="30" rx="3" fill="#22c55e" opacity="0.3" stroke="#22c55e"/>
+          <text x="290" y="65" text-anchor="middle" fill="#22c55e" font-size="9">Doc 2</text>
+          <rect x="250" y="80" width="80" height="30" rx="3" fill="#22c55e" opacity="0.3" stroke="#22c55e"/>
+          <text x="290" y="100" text-anchor="middle" fill="#22c55e" font-size="9">Doc 3</text>
+
+          <!-- Generator -->
+          <rect x="360" y="30" width="100" height="60" rx="5" fill="#9333ea" opacity="0.2" stroke="#9333ea"/>
+          <text x="410" y="55" text-anchor="middle" fill="#9333ea" font-size="11" font-weight="bold">LLM</text>
+          <text x="410" y="70" text-anchor="middle" fill="#9333ea" font-size="9">Génère réponse</text>
+
+          <!-- Output -->
+          <rect x="490" y="40" width="50" height="40" rx="5" fill="#f59e0b" opacity="0.3" stroke="#f59e0b"/>
+          <text x="515" y="65" text-anchor="middle" fill="currentColor" font-size="9">Réponse</text>
+
+          <!-- Arrows -->
+          <path d="M90 60 L120 60" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M220 60 L250 60" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M330 60 L360 60" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M460 60 L490 60" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+
+      <p><strong>Avantages :</strong> réduction des hallucinations, mise à jour sans réentraînement, traçabilité des sources.</p>
+      <p><strong>Frameworks :</strong> LangChain, LlamaIndex, Haystack</p>
+    </div>
+
+    <!-- LoRA -->
+    <div class="technique-section">
+      <div class="technique-header">
+        <span class="technique-icon">🔬</span>
+        <div>
+          <h2 class="technique-title">LoRA & QLoRA</h2>
+          <div class="technique-subtitle">Low-Rank Adaptation (Microsoft, juin 2021)</div>
+        </div>
+      </div>
+
+      <p>
+        Au lieu de fine-tuner tous les poids W, on apprend seulement un <strong>delta de rang faible</strong> :
+      </p>
+
+      <div class="formula-box">
+        W' = W + ΔW = W + BA<br>
+        <span style="font-size: 0.9em; color: var(--color-text-muted)">où B ∈ R^(d×r) et A ∈ R^(r×k) avec r ≪ min(d, k)</span>
+      </div>
+
+      <div class="stats-inline">
+        <span class="stat-badge">Réduction <strong>10,000×</strong> params entraînables</span>
+        <span class="stat-badge">Mémoire <strong>÷3</strong></span>
+        <span class="stat-badge">Latence <strong>+0</strong> (fusionnable)</span>
+      </div>
+
+      <div class="key-point">
+        <strong>QLoRA (mai 2023) :</strong> Fine-tuner un modèle de <strong>65B paramètres sur un seul GPU 48GB</strong> en 24h
+        grâce à la quantification 4-bit (NF4).
+      </div>
+    </div>
+
+    <blockquote>
+      Ces techniques ont démocratisé l'accès aux LLM : RAG pour la spécialisation sans réentraînement,
+      LoRA/QLoRA pour le fine-tuning accessible, et DPO pour l'alignement simplifié.
+    </blockquote>
+  </article>
+</body>
+</html>

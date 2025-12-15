@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Les prémices : l'attention (2014-2016)</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .myth-buster {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1));
+      border: 2px solid #ef4444;
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .myth-buster h3 {
+      color: #ef4444;
+      margin: 0 0 var(--space-sm) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .attention-diagram {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      overflow-x: auto;
+    }
+    .attention-svg {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+    .paper-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-md) 0;
+      border-left: 4px solid var(--color-accent);
+    }
+    .paper-title {
+      font-style: italic;
+      color: var(--color-accent);
+      font-weight: bold;
+    }
+    .paper-authors {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+    .paper-year {
+      display: inline-block;
+      background: var(--color-accent);
+      color: white;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+      font-weight: bold;
+      margin-right: var(--space-sm);
+    }
+    .formula-box {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      font-family: 'Times New Roman', serif;
+      font-size: 1.1rem;
+      text-align: center;
+      margin: var(--space-md) 0;
+      overflow-x: auto;
+    }
+    .formula-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+      margin-top: var(--space-xs);
+    }
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .concept-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border-top: 4px solid var(--color-accent);
+    }
+    .concept-card h4 {
+      margin: 0 0 var(--space-sm) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .keyword-box {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+      border: 1px solid var(--color-accent);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .keyword-box strong {
+      color: var(--color-accent);
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-md) 0;
+      font-size: var(--font-size-sm);
+    }
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-sm);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .comparison-table th {
+      background: var(--color-bg-secondary);
+      font-weight: bold;
+    }
+    .comparison-table td:first-child {
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🔍 Les prémices : l'attention avant le Transformer (2014-2016)</h1>
+
+    <div class="myth-buster">
+      <h3>💡 Idée reçue corrigée</h3>
+      <p>
+        Le mécanisme d'<strong>attention</strong> n'a <em>pas</em> été inventé par le papier "Attention Is All You Need" (2017).
+        Son histoire commence <strong>trois ans plus tôt</strong>, en septembre 2014.
+      </p>
+    </div>
+
+    <h2>1.1 Bahdanau et la naissance de l'attention (2014)</h2>
+
+    <div class="paper-card">
+      <span class="paper-year">Sept. 2014</span>
+      <span class="paper-title">"Neural Machine Translation by Jointly Learning to Align and Translate"</span>
+      <div class="paper-authors">Dzmitry Bahdanau, Kyunghyun Cho, Yoshua Bengio</div>
+    </div>
+
+    <p>
+      À cette époque, les modèles de traduction neuronale (seq2seq) reposaient sur des architectures <strong>encodeur-décodeur</strong>
+      à base de <strong>RNN</strong> (Recurrent Neural Networks) ou <strong>LSTM</strong> (Long Short-Term Memory).
+    </p>
+
+    <h3>Le problème du goulot d'étranglement</h3>
+
+    <div class="attention-diagram">
+      <svg class="attention-svg" viewBox="0 0 600 280" width="600" height="280">
+        <!-- Titre -->
+        <text x="300" y="20" text-anchor="middle" fill="currentColor" font-weight="bold" font-size="14">Seq2Seq AVANT l'attention : compression en vecteur fixe</text>
+
+        <!-- Encodeur -->
+        <g transform="translate(50, 50)">
+          <text x="100" y="0" text-anchor="middle" fill="currentColor" font-size="12" font-weight="bold">ENCODEUR</text>
+          <!-- Mots source -->
+          <rect x="0" y="20" width="50" height="30" rx="5" fill="#3b82f6" opacity="0.3" stroke="#3b82f6"/>
+          <text x="25" y="40" text-anchor="middle" fill="currentColor" font-size="11">Le</text>
+          <rect x="60" y="20" width="50" height="30" rx="5" fill="#3b82f6" opacity="0.4" stroke="#3b82f6"/>
+          <text x="85" y="40" text-anchor="middle" fill="currentColor" font-size="11">chat</text>
+          <rect x="120" y="20" width="50" height="30" rx="5" fill="#3b82f6" opacity="0.5" stroke="#3b82f6"/>
+          <text x="145" y="40" text-anchor="middle" fill="currentColor" font-size="11">mange</text>
+          <rect x="180" y="20" width="50" height="30" rx="5" fill="#3b82f6" opacity="0.8" stroke="#3b82f6"/>
+          <text x="205" y="40" text-anchor="middle" fill="currentColor" font-size="11">...</text>
+
+          <!-- Flèches vers vecteur -->
+          <path d="M25 55 L125 90" stroke="#3b82f6" stroke-width="1" fill="none" marker-end="url(#arrow)"/>
+          <path d="M85 55 L125 90" stroke="#3b82f6" stroke-width="1" fill="none"/>
+          <path d="M145 55 L125 90" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
+          <path d="M205 55 L125 90" stroke="#3b82f6" stroke-width="2" fill="none"/>
+
+          <!-- Context Vector (goulot) -->
+          <rect x="100" y="95" width="50" height="40" rx="5" fill="#ef4444" stroke="#ef4444" stroke-width="2"/>
+          <text x="125" y="115" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Context</text>
+          <text x="125" y="127" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Vector</text>
+        </g>
+
+        <!-- Flèche centrale -->
+        <path d="M300 145 L300 165" stroke="#ef4444" stroke-width="3" fill="none" marker-end="url(#arrow-red)"/>
+        <text x="300" y="185" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="bold">GOULOT!</text>
+
+        <!-- Décodeur -->
+        <g transform="translate(350, 50)">
+          <text x="100" y="0" text-anchor="middle" fill="currentColor" font-size="12" font-weight="bold">DÉCODEUR</text>
+          <!-- Mots cible -->
+          <rect x="0" y="120" width="50" height="30" rx="5" fill="#22c55e" opacity="0.3" stroke="#22c55e"/>
+          <text x="25" y="140" text-anchor="middle" fill="currentColor" font-size="11">The</text>
+          <rect x="60" y="120" width="50" height="30" rx="5" fill="#22c55e" opacity="0.5" stroke="#22c55e"/>
+          <text x="85" y="140" text-anchor="middle" fill="currentColor" font-size="11">cat</text>
+          <rect x="120" y="120" width="50" height="30" rx="5" fill="#22c55e" opacity="0.7" stroke="#22c55e"/>
+          <text x="145" y="140" text-anchor="middle" fill="currentColor" font-size="11">eats</text>
+          <rect x="180" y="120" width="50" height="30" rx="5" fill="#22c55e" opacity="0.9" stroke="#22c55e"/>
+          <text x="205" y="140" text-anchor="middle" fill="currentColor" font-size="11">...</text>
+
+          <!-- Flèches depuis vecteur -->
+          <path d="M-50 95 L25 115" stroke="#22c55e" stroke-width="1" fill="none"/>
+          <path d="M-50 95 L85 115" stroke="#22c55e" stroke-width="1" fill="none"/>
+          <path d="M-50 95 L145 115" stroke="#22c55e" stroke-width="1" fill="none"/>
+        </g>
+
+        <!-- Légende problème -->
+        <g transform="translate(50, 220)">
+          <rect x="0" y="0" width="500" height="50" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-dasharray="4"/>
+          <text x="250" y="20" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="bold">Problème : toute la phrase compressée en UN vecteur fixe</text>
+          <text x="250" y="38" text-anchor="middle" fill="#dc2626" font-size="11">Plus la phrase est longue, plus l'information se perd</text>
+        </g>
+
+        <!-- Markers -->
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6"/>
+          </marker>
+          <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <h3>La solution : l'attention de Bahdanau</h3>
+
+    <p>
+      Au lieu de s'appuyer uniquement sur le dernier état caché de l'encodeur, le décodeur peut désormais
+      <strong>"regarder" tous les états cachés</strong> de la séquence d'entrée et leur attribuer des
+      <strong>poids d'importance différents</strong> à chaque étape de génération.
+    </p>
+
+    <div class="attention-diagram">
+      <svg class="attention-svg" viewBox="0 0 600 300" width="600" height="300">
+        <!-- Titre -->
+        <text x="300" y="20" text-anchor="middle" fill="currentColor" font-weight="bold" font-size="14">AVEC Attention : le décodeur "regarde" tous les états</text>
+
+        <!-- États encodeur (h) -->
+        <g transform="translate(50, 50)">
+          <text x="200" y="0" text-anchor="middle" fill="#3b82f6" font-size="12" font-weight="bold">États cachés encodeur (h₁, h₂, h₃, h₄)</text>
+          <circle cx="50" cy="40" r="25" fill="#3b82f6" opacity="0.6"/>
+          <text x="50" y="45" text-anchor="middle" fill="white" font-size="12" font-weight="bold">h₁</text>
+          <text x="50" y="85" text-anchor="middle" fill="currentColor" font-size="10">Le</text>
+
+          <circle cx="150" cy="40" r="25" fill="#3b82f6" opacity="0.6"/>
+          <text x="150" y="45" text-anchor="middle" fill="white" font-size="12" font-weight="bold">h₂</text>
+          <text x="150" y="85" text-anchor="middle" fill="currentColor" font-size="10">chat</text>
+
+          <circle cx="250" cy="40" r="25" fill="#3b82f6" opacity="0.6"/>
+          <text x="250" y="45" text-anchor="middle" fill="white" font-size="12" font-weight="bold">h₃</text>
+          <text x="250" y="85" text-anchor="middle" fill="currentColor" font-size="10">mange</text>
+
+          <circle cx="350" cy="40" r="25" fill="#3b82f6" opacity="0.6"/>
+          <text x="350" y="45" text-anchor="middle" fill="white" font-size="12" font-weight="bold">h₄</text>
+          <text x="350" y="85" text-anchor="middle" fill="currentColor" font-size="10">la souris</text>
+        </g>
+
+        <!-- Poids d'attention (alpha) -->
+        <g transform="translate(50, 150)">
+          <text x="200" y="0" text-anchor="middle" fill="#9333ea" font-size="11">Poids d'attention pour générer "cat"</text>
+
+          <!-- Lignes d'attention avec épaisseur variable -->
+          <line x1="50" y1="-40" x2="200" y2="40" stroke="#9333ea" stroke-width="1" opacity="0.3"/>
+          <line x1="150" y1="-40" x2="200" y2="40" stroke="#9333ea" stroke-width="4" opacity="0.8"/>
+          <line x1="250" y1="-40" x2="200" y2="40" stroke="#9333ea" stroke-width="1.5" opacity="0.4"/>
+          <line x1="350" y1="-40" x2="200" y2="40" stroke="#9333ea" stroke-width="1" opacity="0.2"/>
+
+          <!-- Poids alpha -->
+          <text x="50" y="20" text-anchor="middle" fill="#9333ea" font-size="10">α=0.1</text>
+          <text x="150" y="20" text-anchor="middle" fill="#9333ea" font-size="10" font-weight="bold">α=0.7</text>
+          <text x="250" y="20" text-anchor="middle" fill="#9333ea" font-size="10">α=0.15</text>
+          <text x="350" y="20" text-anchor="middle" fill="#9333ea" font-size="10">α=0.05</text>
+        </g>
+
+        <!-- État décodeur -->
+        <g transform="translate(200, 190)">
+          <rect x="0" y="0" width="100" height="40" rx="8" fill="#22c55e" stroke="#22c55e" stroke-width="2"/>
+          <text x="50" y="25" text-anchor="middle" fill="white" font-size="12" font-weight="bold">→ "cat"</text>
+        </g>
+
+        <!-- Formule simplifiée -->
+        <g transform="translate(50, 250)">
+          <rect x="0" y="0" width="500" height="40" rx="8" fill="var(--color-bg-secondary)" stroke="var(--color-border)"/>
+          <text x="250" y="25" text-anchor="middle" fill="currentColor" font-size="12">
+            contexte = α₁·h₁ + α₂·h₂ + α₃·h₃ + α₄·h₄  (somme pondérée)
+          </text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="formula-box">
+      e<sub>ij</sub> = v<sup>T</sup> · tanh(W<sub>s</sub> · s<sub>i-1</sub> + W<sub>h</sub> · h<sub>j</sub>)<br>
+      α<sub>ij</sub> = softmax(e<sub>ij</sub>)<br>
+      c<sub>i</sub> = Σ<sub>j</sub> α<sub>ij</sub> · h<sub>j</sub>
+      <div class="formula-label">Formule de l'attention de Bahdanau (attention additive)</div>
+    </div>
+
+    <div class="keyword-box">
+      <strong>Attention de Bahdanau / Additive Attention</strong> — Mécanisme permettant au décodeur de pondérer
+      dynamiquement les états cachés de l'encodeur à chaque étape de génération.
+      Le terme "attention" a été suggéré par Yoshua Bengio, inspiré par les travaux en sciences cognitives.
+    </div>
+
+    <h2>1.2 Luong et les variantes d'attention (2015)</h2>
+
+    <div class="paper-card">
+      <span class="paper-year">2015</span>
+      <span class="paper-title">"Effective Approaches to Attention-based Neural Machine Translation"</span>
+      <div class="paper-authors">Minh-Thang Luong, Hieu Pham, Christopher Manning (Stanford)</div>
+    </div>
+
+    <table class="comparison-table">
+      <tr>
+        <th>Variante</th>
+        <th>Description</th>
+        <th>Caractéristique</th>
+      </tr>
+      <tr>
+        <td>Attention globale</td>
+        <td>Considère toutes les positions de la séquence source</td>
+        <td>Plus précise, plus coûteuse</td>
+      </tr>
+      <tr>
+        <td>Attention locale</td>
+        <td>Se concentre sur une fenêtre autour d'une position prédite</td>
+        <td>Plus efficace pour longues séquences</td>
+      </tr>
+      <tr>
+        <td>Dot-product</td>
+        <td>score = s<sub>t</sub><sup>T</sup> · h<sub>s</sub></td>
+        <td>Plus simple et plus rapide</td>
+      </tr>
+    </table>
+
+    <div class="keyword-box">
+      <strong>Attention de Luong / Multiplicative Attention</strong> — Variante plus efficace calculant directement
+      le produit scalaire entre états. Ce papier a reçu le <strong>Test of Time Award à ACL 2025</strong>.
+    </div>
+
+    <h2>1.3 Le self-attention émerge (2016)</h2>
+
+    <p>
+      En 2016, <strong>Cheng et al.</strong> introduisent le concept de <strong>self-attention</strong>
+      (qu'ils appellent "intra-attention"). Au lieu de relier encodeur et décodeur, l'attention s'applique
+      <strong>au sein d'une même séquence</strong>, permettant à chaque mot de "regarder" tous les autres mots.
+    </p>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <h4>🔄 Cross-Attention</h4>
+        <p>Relie deux séquences différentes (encodeur → décodeur). Utilisé pour la traduction.</p>
+      </div>
+      <div class="concept-card">
+        <h4>🔁 Self-Attention</h4>
+        <p>Une séquence s'attends à elle-même. Capture les relations internes entre tous les mots.</p>
+      </div>
+    </div>
+
+    <blockquote>
+      Cependant, toutes ces architectures restent <strong>hybrides</strong> : l'attention vient en complément des RNN,
+      qui continuent de traiter les séquences de manière <strong>séquentielle</strong>, token par token.
+      Cette nature séquentielle empêche la parallélisation...
+    </blockquote>
+  </article>
+</body>
+</html>

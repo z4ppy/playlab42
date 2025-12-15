@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT et la démocratisation (2022-2023)</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .launch-hero {
+      background: linear-gradient(135deg, rgba(16, 163, 127, 0.1), rgba(59, 130, 246, 0.1));
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      text-align: center;
+      margin: var(--space-lg) 0;
+      border: 2px solid #10a37f;
+    }
+    .launch-date {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #10a37f;
+    }
+    .launch-name {
+      font-size: 1.5rem;
+      margin-top: var(--space-sm);
+    }
+    .growth-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-xl) 0;
+    }
+    .growth-stat {
+      background: var(--color-bg-secondary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      text-align: center;
+    }
+    .growth-stat .value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .growth-stat .context {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-xs);
+    }
+    .comparison-box {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .comparison-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    .comparison-item {
+      background: var(--color-bg);
+      padding: var(--space-sm);
+      border-radius: var(--radius-md);
+      text-align: center;
+      font-size: var(--font-size-sm);
+    }
+    .comparison-item .time {
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .industry-reactions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .reaction-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border-left: 4px solid;
+    }
+    .reaction-card.google { border-left-color: #4285f4; }
+    .reaction-card.microsoft { border-left-color: #00a4ef; }
+    .reaction-card.meta { border-left-color: #0866ff; }
+    .reaction-card h4 {
+      margin: 0 0 var(--space-sm) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .reaction-card.google h4 { color: #4285f4; }
+    .reaction-card.microsoft h4 { color: #00a4ef; }
+    .reaction-card.meta h4 { color: #0866ff; }
+    .timeline-vertical {
+      position: relative;
+      padding-left: var(--space-xl);
+      margin: var(--space-xl) 0;
+    }
+    .timeline-vertical::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, #10a37f, #3b82f6, #9333ea);
+    }
+    .timeline-event {
+      position: relative;
+      margin-bottom: var(--space-lg);
+      padding: var(--space-md);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-md);
+    }
+    .timeline-event::before {
+      content: '';
+      position: absolute;
+      left: calc(-1 * var(--space-xl) + 2px);
+      top: var(--space-md);
+      width: 14px;
+      height: 14px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      border: 3px solid var(--color-bg);
+    }
+    .timeline-event .date {
+      font-size: var(--font-size-sm);
+      color: var(--color-accent);
+      font-weight: bold;
+    }
+    .timeline-event .title {
+      font-weight: bold;
+      margin: var(--space-xs) 0;
+    }
+    .opensource-section {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(236, 72, 153, 0.1));
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .opensource-section h3 {
+      color: #9333ea;
+      margin: 0 0 var(--space-md) 0;
+    }
+    .model-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    .model-card {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      border: 1px solid var(--color-border);
+    }
+    .model-card h5 {
+      margin: 0 0 var(--space-xs) 0;
+      color: var(--color-accent);
+    }
+    .model-card .detail {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .leak-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .leak-box strong {
+      color: #ef4444;
+    }
+    .company-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .company-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border-top: 4px solid var(--color-accent);
+    }
+    .company-card h4 {
+      margin: 0 0 var(--space-sm) 0;
+    }
+    .company-card .founded {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .quote-box {
+      background: var(--color-bg-secondary);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      font-style: italic;
+    }
+    .quote-box .source {
+      margin-top: var(--space-sm);
+      font-style: normal;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>💬 L'explosion ChatGPT démocratise l'IA (2022-2023)</h1>
+
+    <div class="launch-hero">
+      <div class="launch-date">30 novembre 2022</div>
+      <div class="launch-name">ChatGPT est lancé</div>
+      <p>Une préversion de recherche gratuite basée sur GPT-3.5 fine-tuné avec RLHF</p>
+    </div>
+
+    <h2>Une adoption virale sans précédent</h2>
+
+    <div class="growth-stats">
+      <div class="growth-stat">
+        <div class="value">1M</div>
+        <div class="context">utilisateurs en 5 jours</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">100M</div>
+        <div class="context">utilisateurs en 2 mois</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">-41%</div>
+        <div class="context">hallucinations vs GPT-3</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">-25%</div>
+        <div class="context">sorties toxiques</div>
+      </div>
+    </div>
+
+    <div class="comparison-box">
+      <h4>Temps pour atteindre 100 millions d'utilisateurs</h4>
+      <div class="comparison-list">
+        <div class="comparison-item">
+          <div class="time">2 mois</div>
+          ChatGPT
+        </div>
+        <div class="comparison-item">
+          <div class="time">9 mois</div>
+          TikTok
+        </div>
+        <div class="comparison-item">
+          <div class="time">2.5 ans</div>
+          Instagram
+        </div>
+        <div class="comparison-item">
+          <div class="time">3.5 ans</div>
+          Netflix
+        </div>
+      </div>
+    </div>
+
+    <h2>Réactions de l'industrie</h2>
+
+    <div class="industry-reactions">
+      <div class="reaction-card google">
+        <h4>🔴 Google</h4>
+        <p><strong>"Code Red"</strong> interne avec réunions d'urgence impliquant Larry Page et Sergey Brin.</p>
+        <p>Lancement précipité de <strong>Bard</strong> le 6 février 2023. Une erreur factuelle dans la démo
+        fait perdre <strong>$100 milliards</strong> en capitalisation en une journée.</p>
+      </div>
+      <div class="reaction-card microsoft">
+        <h4>🔵 Microsoft</h4>
+        <p>Investissement de <strong>$10 milliards</strong> dans OpenAI (janvier 2023).</p>
+        <p>Intégration de GPT dans <strong>Bing</strong> (février 2023) et lancement de Copilot.</p>
+      </div>
+      <div class="reaction-card meta">
+        <h4>🔵 Meta & Amazon</h4>
+        <p>Accélération majeure des efforts IA internes.</p>
+        <p>Meta prépare LLaMA, Amazon investit dans Anthropic.</p>
+      </div>
+    </div>
+
+    <h2>GPT-4 : la multimodalité arrive (mars 2023)</h2>
+
+    <div class="growth-stats">
+      <div class="growth-stat">
+        <div class="value">90e</div>
+        <div class="context">percentile bar exam</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">93e</div>
+        <div class="context">percentile SAT Reading</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">-82%</div>
+        <div class="context">contenu interdit</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">+40%</div>
+        <div class="context">factualité</div>
+      </div>
+    </div>
+
+    <p>
+      Premier modèle de la série à accepter des <strong>images en entrée</strong>.
+      OpenAI rompt avec sa tradition de transparence : aucun détail technique révélé.
+    </p>
+
+    <h2>LLaMA déclenche la révolution open source</h2>
+
+    <div class="timeline-vertical">
+      <div class="timeline-event">
+        <div class="date">24 février 2023</div>
+        <div class="title">Meta annonce LLaMA</div>
+        <p>Versions 7B, 13B, 33B et 65B paramètres. Licence non-commerciale pour chercheurs.</p>
+        <p><strong>LLaMA-13B surpasse GPT-3 (175B)</strong> sur la plupart des benchmarks !</p>
+      </div>
+
+      <div class="timeline-event">
+        <div class="date">3-6 mars 2023</div>
+        <div class="title">La fuite qui change tout</div>
+        <div class="leak-box">
+          <strong>Fuite sur 4chan :</strong> Les poids complets sont publiés anonymement via torrent.
+          Le genie est sorti de la bouteille.
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="date">Mars 2023</div>
+        <div class="title">L'écosystème explose</div>
+        <div class="model-cards">
+          <div class="model-card">
+            <h5>Stanford Alpaca</h5>
+            <div class="detail">Fine-tuning de LLaMA 7B pour &lt;$600</div>
+          </div>
+          <div class="model-card">
+            <h5>Vicuna-13B</h5>
+            <div class="detail">~90% qualité ChatGPT pour $300</div>
+          </div>
+          <div class="model-card">
+            <h5>+ des dizaines</h5>
+            <div class="detail">Koala, Dolly, WizardLM...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-event">
+        <div class="date">Juillet 2023</div>
+        <div class="title">LLaMA 2 officialise l'ouverture</div>
+        <p>Licence commerciale (!), partenariat Microsoft. 7B, 13B et 70B params. 2T tokens.</p>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      "We Have No Moat. And neither does OpenAI."
+      <div class="source">— Memo interne Google fuité, mai 2023</div>
+    </div>
+
+    <h2>Nouveaux acteurs majeurs</h2>
+
+    <div class="company-grid">
+      <div class="company-card">
+        <h4>🔮 Anthropic</h4>
+        <div class="founded">Fondée 2021 par ex-OpenAI</div>
+        <p>Claude 1.0 (mars 2023), puis Claude 2 (juillet).</p>
+        <p><strong>Constitutional AI</strong> : 75 principes explicites incluant la Déclaration des Droits de l'Homme.</p>
+      </div>
+      <div class="company-card">
+        <h4>🇫🇷 Mistral AI</h4>
+        <div class="founded">Paris, avril 2023</div>
+        <p><strong>€105M en seed</strong> — record européen.</p>
+        <p>Mistral 7B (sept.) surpasse LLaMA 2 13B. Apache 2.0, distribué via torrent.</p>
+        <p>Mixtral 8x7B (déc.) : premier MoE open source majeur.</p>
+      </div>
+    </div>
+
+    <h2>GPT-4 Turbo et la course au contexte</h2>
+
+    <div class="growth-stats">
+      <div class="growth-stat">
+        <div class="value">128K</div>
+        <div class="context">tokens de contexte<br>(~300 pages)</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">÷3</div>
+        <div class="context">prix en entrée</div>
+      </div>
+      <div class="growth-stat">
+        <div class="value">÷2</div>
+        <div class="context">prix en sortie</div>
+      </div>
+    </div>
+
+    <blockquote>
+      2022-2023 marque l'entrée de l'IA générative dans le grand public et l'émergence d'un écosystème
+      open source compétitif. L'écart entre modèles propriétaires et ouverts se réduit drastiquement.
+    </blockquote>
+  </article>
+</body>
+</html>
