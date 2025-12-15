@@ -9,6 +9,12 @@
         "order": 1
       },
       {
+        "id": "agentique",
+        "label": "Agentique",
+        "icon": "🤖",
+        "order": 2
+      },
+      {
         "id": "autres",
         "label": "Autres",
         "icon": "📚",
@@ -21,6 +27,7 @@
       "avance": "Avancé",
       "ia": "Intelligence Artificielle",
       "dev": "Développement",
+      "agent": "Agents IA",
       "histoire": "Histoire",
       "internet": "Internet",
       "archive": "Archive",

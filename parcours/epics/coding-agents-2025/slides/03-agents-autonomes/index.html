@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agents autonomes - Coding Agents 2025</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .agent-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .agent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .agent-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .agent-name {
+      font-size: var(--font-size-lg);
+      font-weight: bold;
+    }
+    .agent-org {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .agent-badges {
+      display: flex;
+      gap: var(--space-xs);
+      flex-wrap: wrap;
+    }
+    .agent-badge {
+      font-size: var(--font-size-xs);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+    }
+    .badge-success {
+      background: #2e7d32;
+      color: white;
+    }
+    .badge-warning {
+      background: #f57c00;
+      color: white;
+    }
+    .badge-info {
+      background: var(--color-accent);
+      color: white;
+    }
+    .agent-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: var(--font-size-sm);
+    }
+    .feature-icon {
+      color: var(--color-accent);
+    }
+    .reality-check {
+      background: rgba(255, 87, 34, 0.1);
+      border-left: 4px solid #ff5722;
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: var(--space-md) 0;
+    }
+    .reality-check-title {
+      font-weight: bold;
+      color: #ff5722;
+      margin-bottom: var(--space-sm);
+    }
+    .emerging-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .emerging-card {
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border-top: 3px solid var(--color-accent);
+    }
+    .emerging-name {
+      font-weight: bold;
+      margin-bottom: var(--space-xs);
+    }
+    .emerging-funding {
+      font-size: var(--font-size-xs);
+      color: var(--color-accent);
+      margin-bottom: var(--space-sm);
+    }
+    .emerging-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🦾 Les agents autonomes</h1>
+
+    <p>
+      Les agents autonomes vont au-delà de l'assistance : ils tentent de résoudre des tâches complètes
+      de manière indépendante. Ce segment repousse les limites mais expose aussi les difficultés actuelles.
+    </p>
+
+    <!-- Devin -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-title">
+          <span class="agent-name">Devin</span>
+          <span class="agent-org">Cognition Labs</span>
+        </div>
+        <div class="agent-badges">
+          <span class="agent-badge badge-info">Pionnier</span>
+          <span class="agent-badge badge-warning">15-20% succès</span>
+        </div>
+      </div>
+
+      <p>
+        Annoncé en mars 2024 comme premier "AI software engineer". Combine modèles propriétaires
+        et apprentissage par renforcement dans un environnement sandboxé Docker.
+      </p>
+
+      <div class="agent-features">
+        <div class="feature"><span class="feature-icon">✓</span> IDE agent-native (Devin 2.0)</div>
+        <div class="feature"><span class="feature-icon">✓</span> Interface Slack</div>
+        <div class="feature"><span class="feature-icon">✓</span> Multi-Devins parallèles</div>
+        <div class="feature"><span class="feature-icon">✓</span> Planning interactif</div>
+        <div class="feature"><span class="feature-icon">✓</span> $20/mois (vs $500 initial)</div>
+      </div>
+
+      <div class="reality-check">
+        <div class="reality-check-title">⚠️ Réalité des tests indépendants</div>
+        <p>
+          Taux de succès réel de <strong>15-20%</strong> seulement. Difficulté à prédire quelles tâches réussiront.
+          Tendance à créer des abstractions inutiles. Peut passer des jours sur des solutions impossibles.
+        </p>
+      </div>
+    </div>
+
+    <!-- SWE-agent -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-title">
+          <span class="agent-name">SWE-agent</span>
+          <span class="agent-org">Princeton University</span>
+        </div>
+        <div class="agent-badges">
+          <span class="agent-badge badge-success">SOTA</span>
+          <span class="agent-badge badge-info">Open Source</span>
+        </div>
+      </div>
+
+      <p>
+        Introduit le concept d'<strong>Agent-Computer Interface (ACI)</strong> — une interface spécialement
+        conçue pour les LLM. Pattern ReAct avec correction automatique des erreurs de syntaxe.
+      </p>
+
+      <div class="agent-features">
+        <div class="feature"><span class="feature-icon">✓</span> Pattern ReAct (Thought → Action → Observation)</div>
+        <div class="feature"><span class="feature-icon">✓</span> Linter intégré (51,7% erreurs corrigées)</div>
+        <div class="feature"><span class="feature-icon">✓</span> State-of-the-art avec Claude 3.7</div>
+        <div class="feature"><span class="feature-icon">✓</span> Mini-SWE-Agent : 100 lignes → 65% SWE-bench</div>
+      </div>
+    </div>
+
+    <!-- OpenHands -->
+    <div class="agent-card">
+      <div class="agent-header">
+        <div class="agent-title">
+          <span class="agent-name">OpenHands</span>
+          <span class="agent-org">ex-OpenDevin</span>
+        </div>
+        <div class="agent-badges">
+          <span class="agent-badge badge-success">65k+ ⭐</span>
+          <span class="agent-badge badge-info">Généraliste</span>
+        </div>
+      </div>
+
+      <p>
+        Plateforme complète pour agents généralistes. Environnement Docker isolé permettant modification de code,
+        exécution shell, navigation web et interaction avec APIs.
+      </p>
+
+      <div class="agent-features">
+        <div class="feature"><span class="feature-icon">✓</span> SDK Python composable</div>
+        <div class="feature"><span class="feature-icon">✓</span> Multi-interfaces (CLI, GUI, API, VS Code)</div>
+        <div class="feature"><span class="feature-icon">✓</span> 60% succès sur workflows ML structurés</div>
+        <div class="feature"><span class="feature-icon">✓</span> Chute sur tâches ambiguës</div>
+      </div>
+    </div>
+
+    <h2>L'écosystème émergent</h2>
+
+    <p>
+      De nouveaux acteurs se structurent autour de niches spécifiques, portés par des levées de fonds massives.
+    </p>
+
+    <div class="emerging-grid">
+      <div class="emerging-card">
+        <div class="emerging-name">Factory AI</div>
+        <div class="emerging-funding">58,75% Terminal-Bench (SOTA)</div>
+        <div class="emerging-desc">
+          "Droids" dédiés par type de tâche. Context engineering avancé. MongoDB, EY, Zapier.
+        </div>
+      </div>
+
+      <div class="emerging-card">
+        <div class="emerging-name">Augment Code</div>
+        <div class="emerging-funding">$252M levés — $977M valorisation</div>
+        <div class="emerging-desc">
+          Context engine propriétaire. Reinforcement learning depuis comportements développeurs. 100+ outils externes.
+        </div>
+      </div>
+
+      <div class="emerging-card">
+        <div class="emerging-name">Poolside</div>
+        <div class="emerging-funding">$626M levés — $3B valorisation</div>
+        <div class="emerging-desc">
+          RLCEF (Reinforcement Learning from Code Execution Feedback). Cible Global 2000 et secteur public.
+        </div>
+      </div>
+
+      <div class="emerging-card">
+        <div class="emerging-name">Magic.dev</div>
+        <div class="emerging-funding">$465M levés</div>
+        <div class="emerging-desc">
+          Fenêtres de contexte 100M tokens via Long-Term Memory Network. Partenariat Google Cloud.
+        </div>
+      </div>
+    </div>
+
+    <blockquote>
+      Les agents autonomes promettent beaucoup mais délivrent de manière imprévisible.
+      L'état de l'art reste la collaboration humain-agent, pas le remplacement total.
+    </blockquote>
+  </article>
+</body>
+</html>

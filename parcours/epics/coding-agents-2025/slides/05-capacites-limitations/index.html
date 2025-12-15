@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capacités et limitations - Coding Agents 2025</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin: var(--space-xl) 0 var(--space-md);
+    }
+    .section-icon {
+      font-size: 1.5rem;
+    }
+    .benchmark-card {
+      background: var(--color-bg-secondary);
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      margin: var(--space-md) 0;
+    }
+    .benchmark-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-md);
+    }
+    .benchmark-name {
+      font-weight: bold;
+      font-size: var(--font-size-md);
+    }
+    .benchmark-org {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .score-bar {
+      height: 24px;
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: var(--space-sm) 0;
+    }
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-accent), #ff8a80);
+      display: flex;
+      align-items: center;
+      padding-left: var(--space-sm);
+      color: white;
+      font-weight: bold;
+      font-size: var(--font-size-sm);
+    }
+    .strengths-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .strength-item {
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .strength-icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-xs);
+    }
+    .strength-label {
+      font-weight: bold;
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-xs);
+    }
+    .strength-desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+    .limitation-card {
+      background: rgba(244, 67, 54, 0.1);
+      border-left: 4px solid #f44336;
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: var(--space-md) 0;
+    }
+    .limitation-title {
+      font-weight: bold;
+      color: #f44336;
+      margin-bottom: var(--space-sm);
+    }
+    .limitation-stat {
+      display: inline-block;
+      background: rgba(244, 67, 54, 0.2);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+      margin-right: var(--space-xs);
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-md) 0;
+      font-size: var(--font-size-sm);
+    }
+    .comparison-table th,
+    .comparison-table td {
+      padding: var(--space-sm);
+      text-align: center;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .comparison-table th {
+      background: var(--color-bg-secondary);
+    }
+    .score-good {
+      color: #4caf50;
+      font-weight: bold;
+    }
+    .score-bad {
+      color: #f44336;
+      font-weight: bold;
+    }
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .security-item {
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+    }
+    .security-item-title {
+      font-weight: bold;
+      margin-bottom: var(--space-xs);
+    }
+    .security-item-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>⚖️ Capacités et limitations</h1>
+
+    <p>
+      Un état des lieux réaliste est essentiel pour utiliser ces outils efficacement.
+      Les progrès sont spectaculaires, mais les limitations persistent sur les tâches complexes.
+    </p>
+
+    <!-- Benchmarks -->
+    <div class="section-header">
+      <span class="section-icon">📊</span>
+      <h2>Benchmarks : des progrès spectaculaires</h2>
+    </div>
+
+    <div class="benchmark-card">
+      <div class="benchmark-header">
+        <div>
+          <div class="benchmark-name">SWE-bench Verified</div>
+          <div class="benchmark-org">Princeton / Scale AI — Issues GitHub réelles</div>
+        </div>
+      </div>
+      <p>500 tâches validées par humains. Repo + description → patch validé par tests.</p>
+
+      <div class="score-bar">
+        <div class="score-fill" style="width: 77%;">77,2% — Claude 4.5 Sonnet</div>
+      </div>
+      <div class="score-bar">
+        <div class="score-fill" style="width: 56%;">56% — GitHub Copilot</div>
+      </div>
+      <div class="score-bar">
+        <div class="score-fill" style="width: 2%;">1,96% — Initial 2023</div>
+      </div>
+    </div>
+
+    <div class="benchmark-card">
+      <div class="benchmark-header">
+        <div>
+          <div class="benchmark-name">HumanEval / LiveCodeBench</div>
+          <div class="benchmark-org">Évaluation capacités de génération</div>
+        </div>
+      </div>
+      <p>
+        HumanEval (164 problèmes) atteint <strong>saturation (>95%)</strong> pour les modèles récents.
+        LiveCodeBench (mis à jour continuellement) révèle : <strong>0% sur problèmes "hard"</strong> sans outils externes.
+      </p>
+    </div>
+
+    <!-- Forces -->
+    <div class="section-header">
+      <span class="section-icon">💪</span>
+      <h2>Forces : où les agents excellent</h2>
+    </div>
+
+    <div class="strengths-grid">
+      <div class="strength-item">
+        <div class="strength-icon">✍️</div>
+        <div class="strength-label">Génération de code</div>
+        <div class="strength-desc">41% du code 2024 généré par IA. 40% du code Microsoft via Copilot.</div>
+      </div>
+      <div class="strength-item">
+        <div class="strength-icon">🔄</div>
+        <div class="strength-label">Refactoring</div>
+        <div class="strength-desc">Callbacks → async/await, réduction complexité, migrations frameworks.</div>
+      </div>
+      <div class="strength-item">
+        <div class="strength-icon">🐛</div>
+        <div class="strength-label">Debugging</div>
+        <div class="strength-desc">"Fix this logic error" en langage naturel. Multi-thread géré.</div>
+      </div>
+      <div class="strength-item">
+        <div class="strength-icon">🧪</div>
+        <div class="strength-label">Génération de tests</div>
+        <div class="strength-desc">Tests unitaires, intégration, edge cases avec assertions.</div>
+      </div>
+      <div class="strength-item">
+        <div class="strength-icon">📖</div>
+        <div class="strength-label">Documentation</div>
+        <div class="strength-desc">Docstrings, README, API docs. -50% temps selon études.</div>
+      </div>
+      <div class="strength-item">
+        <div class="strength-icon">🌐</div>
+        <div class="strength-label">Traduction</div>
+        <div class="strength-desc">12+ langages de prog, 23 langues naturelles.</div>
+      </div>
+    </div>
+
+    <!-- Limitations -->
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <h2>Limitations : les défis persistants</h2>
+    </div>
+
+    <div class="limitation-card">
+      <div class="limitation-title">🎭 Hallucinations de packages</div>
+      <p>
+        Étude 2025 : <span class="limitation-stat">20%</span> des 756 000 échantillons recommandent des packages inexistants.
+        <span class="limitation-stat">43%</span> des noms hallucinés sont répétés sur 10 requêtes.
+      </p>
+      <p><strong>Risque :</strong> "Slopsquatting" — création de packages malveillants avec noms hallucinés.</p>
+    </div>
+
+    <div class="limitation-card">
+      <div class="limitation-title">📐 Édition multi-fichiers</div>
+      <p><strong>Le talon d'Achille des agents.</strong></p>
+      <table class="comparison-table">
+        <tr>
+          <th>Type d'édition</th>
+          <th>Taux de succès</th>
+        </tr>
+        <tr>
+          <td>Fichier unique</td>
+          <td class="score-good">97-100%</td>
+        </tr>
+        <tr>
+          <td>Multi-fichiers coordonnés</td>
+          <td class="score-bad">18-30%</td>
+        </tr>
+        <tr>
+          <td>Avec éléments visuels</td>
+          <td class="score-bad">-73,2% (SWE-bench Multimodal)</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="limitation-card">
+      <div class="limitation-title">🏗️ Raisonnement architectural</div>
+      <p>
+        Faible sur abstractions multi-couches et patterns avancés.
+        "Les modèles excellent en programmation compétitive mais échouent sur l'ingénierie réelle."
+      </p>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="section-header">
+      <span class="section-icon">🔐</span>
+      <h2>Sécurité du code généré</h2>
+    </div>
+
+    <p>
+      <strong>40%</strong> du code généré contient des vulnérabilités selon les études.
+    </p>
+
+    <div class="security-grid">
+      <div class="security-item">
+        <div class="security-item-title">Vulnérabilités classiques</div>
+        <div class="security-item-desc">SQL injection, XSS, secrets hardcodés, chiffrement obsolète</div>
+      </div>
+      <div class="security-item">
+        <div class="security-item-title">Memory poisoning</div>
+        <div class="security-item-desc">Injection de code malveillant dans le contexte de l'agent</div>
+      </div>
+      <div class="security-item">
+        <div class="security-item-title">Tool misuse</div>
+        <div class="security-item-desc">Utilisation d'outils pour des actions non prévues</div>
+      </div>
+      <div class="security-item">
+        <div class="security-item-title">Prompt injection</div>
+        <div class="security-item-desc">Manipulation de l'agent via données d'entrée</div>
+      </div>
+    </div>
+
+    <blockquote>
+      Les benchmarks sont utiles mais imparfaits. La performance réelle varie selon le type de tâche,
+      la familiarité du codebase, et la qualité des specs.
+    </blockquote>
+  </article>
+</body>
+</html>

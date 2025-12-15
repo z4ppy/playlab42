@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture interne - Coding Agents 2025</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .concept-section {
+      margin: var(--space-xl) 0;
+      padding: var(--space-lg);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+    }
+    .concept-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .concept-icon {
+      font-size: 1.5rem;
+    }
+    .concept-title {
+      font-size: var(--font-size-lg);
+      font-weight: bold;
+      margin: 0;
+    }
+    .code-block {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      font-family: monospace;
+      font-size: var(--font-size-sm);
+      overflow-x: auto;
+      margin: var(--space-md) 0;
+    }
+    .code-comment {
+      color: var(--color-text-muted);
+    }
+    .code-keyword {
+      color: var(--color-accent);
+    }
+    .cycle-diagram {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+      padding: var(--space-lg);
+      background: var(--color-bg);
+      border-radius: var(--radius-lg);
+    }
+    .cycle-step {
+      text-align: center;
+      padding: var(--space-md);
+      min-width: 100px;
+    }
+    .cycle-step-icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-xs);
+    }
+    .cycle-step-name {
+      font-weight: bold;
+      font-size: var(--font-size-sm);
+    }
+    .cycle-step-desc {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+    .cycle-arrow {
+      font-size: 1.5rem;
+      color: var(--color-accent);
+    }
+    .tools-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-md) 0;
+      font-size: var(--font-size-sm);
+    }
+    .tools-table th,
+    .tools-table td {
+      padding: var(--space-sm);
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .tools-table th {
+      background: var(--color-bg);
+      font-weight: bold;
+    }
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .pattern-card {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border-top: 3px solid var(--color-accent);
+    }
+    .pattern-name {
+      font-weight: bold;
+      margin-bottom: var(--space-xs);
+    }
+    .pattern-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .warning-box {
+      background: rgba(255, 152, 0, 0.1);
+      border-left: 4px solid #ff9800;
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: var(--space-md) 0;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🏗️ Architecture interne</h1>
+
+    <p>
+      Comprendre l'architecture des coding agents est essentiel pour les utiliser efficacement
+      et diagnostiquer leurs échecs. Voici les mécanismes fondamentaux.
+    </p>
+
+    <!-- ReAct -->
+    <div class="concept-section">
+      <div class="concept-header">
+        <span class="concept-icon">🧠</span>
+        <h2 class="concept-title">Pattern ReAct</h2>
+      </div>
+
+      <p>
+        Le pattern <strong>ReAct</strong> (Reasoning + Acting, Yao et al. 2022) entrelace traces verbales
+        et appels d'outils. Contrairement au Chain-of-Thought pur, ReAct permet l'interaction avec l'environnement.
+      </p>
+
+      <div class="code-block">
+<span class="code-keyword">Thought 1:</span> Je dois localiser la fonction défaillante
+<span class="code-keyword">Action 1:</span> Search["error handling getUserById"]
+<span class="code-comment">Observation 1: src/users.ts:45 - getUserById function</span>
+
+<span class="code-keyword">Thought 2:</span> Je vois le problème - pas de vérification null
+<span class="code-keyword">Action 2:</span> Edit["src/users.ts", old="return user", new="return user ?? null"]
+<span class="code-comment">Observation 2: File updated successfully</span>
+
+<span class="code-keyword">Final Answer:</span> Bug corrigé, la fonction retourne maintenant null si user n'existe pas.
+      </div>
+
+      <p>
+        <strong>Avantages :</strong> Interprétabilité des traces, réduction des hallucinations via ancrage dans les données externes.
+      </p>
+    </div>
+
+    <!-- Boucle OODA -->
+    <div class="concept-section">
+      <div class="concept-header">
+        <span class="concept-icon">🔄</span>
+        <h2 class="concept-title">Boucle Agent (OODA)</h2>
+      </div>
+
+      <p>
+        L'architecture agent suit un cycle <strong>OODA</strong> adapté du domaine militaire :
+      </p>
+
+      <div class="cycle-diagram">
+        <div class="cycle-step">
+          <div class="cycle-step-icon">👁️</div>
+          <div class="cycle-step-name">Observe</div>
+          <div class="cycle-step-desc">Collecte de l'état<br>(messages, fichiers, erreurs)</div>
+        </div>
+        <span class="cycle-arrow">→</span>
+        <div class="cycle-step">
+          <div class="cycle-step-icon">🧭</div>
+          <div class="cycle-step-name">Orient</div>
+          <div class="cycle-step-desc">Analyse par le LLM<br>du contexte</div>
+        </div>
+        <span class="cycle-arrow">→</span>
+        <div class="cycle-step">
+          <div class="cycle-step-icon">🎯</div>
+          <div class="cycle-step-name">Decide</div>
+          <div class="cycle-step-desc">Sélection de l'action<br>(outil ou réponse)</div>
+        </div>
+        <span class="cycle-arrow">→</span>
+        <div class="cycle-step">
+          <div class="cycle-step-icon">⚡</div>
+          <div class="cycle-step-name">Act</div>
+          <div class="cycle-step-desc">Exécution et<br>capture feedback</div>
+        </div>
+      </div>
+
+      <p>
+        Un paramètre <code>max_steps</code> (typiquement 10-25) prévient les boucles infinies.
+        L'exponential backoff gère les erreurs transitoires.
+      </p>
+    </div>
+
+    <!-- Tool Use -->
+    <div class="concept-section">
+      <div class="concept-header">
+        <span class="concept-icon">🔧</span>
+        <h2 class="concept-title">Tool Use</h2>
+      </div>
+
+      <p>Les outils constituent l'interface avec le monde réel :</p>
+
+      <table class="tools-table">
+        <tr>
+          <th>Catégorie</th>
+          <th>Outils typiques</th>
+          <th>Usage</th>
+        </tr>
+        <tr>
+          <td><strong>File I/O</strong></td>
+          <td>read_file, write_file, list_dir</td>
+          <td>Manipulation du code</td>
+        </tr>
+        <tr>
+          <td><strong>Shell</strong></td>
+          <td>bash, run_command</td>
+          <td>Exécution, tests</td>
+        </tr>
+        <tr>
+          <td><strong>Search</strong></td>
+          <td>grep, ripgrep, semantic_search</td>
+          <td>Navigation codebase</td>
+        </tr>
+        <tr>
+          <td><strong>LSP</strong></td>
+          <td>get_definitions, find_references</td>
+          <td>Intelligence code</td>
+        </tr>
+        <tr>
+          <td><strong>Git</strong></td>
+          <td>git_diff, git_commit</td>
+          <td>Version control</td>
+        </tr>
+      </table>
+
+      <p>
+        <strong>OpenAI</strong> utilise <code>functions</code> avec JSON Schema.
+        <strong>Anthropic</strong> emploie <code>tools</code> avec <code>input_schema</code>.
+      </p>
+    </div>
+
+    <!-- Contexte et RAG -->
+    <div class="concept-section">
+      <div class="concept-header">
+        <span class="concept-icon">📚</span>
+        <h2 class="concept-title">Gestion du contexte</h2>
+      </div>
+
+      <p>
+        Les fenêtres de contexte ont explosé — de 8k tokens en 2023 à <strong>10 millions pour Llama 4 Scout</strong> —
+        mais le phénomène <strong>Lost-in-the-Middle</strong> persiste.
+      </p>
+
+      <div class="warning-box">
+        <strong>⚠️ Lost-in-the-Middle</strong> : Les informations au milieu du contexte sont moins bien traitées.
+        Chute de précision à <strong>15,6%</strong> au-delà de 128-256k tokens pour certains modèles.
+      </div>
+
+      <p><strong>Solutions :</strong></p>
+      <ul>
+        <li><strong>Chunking AST</strong> : Découpage par unités logiques (fonctions, classes)</li>
+        <li><strong>RAG sur codebase</strong> : Indexation → Retrieval → Augmentation → Generation</li>
+        <li><strong>Meta-RAG</strong> (2025) : Listes Read/Write/New pour cibler précisément le code</li>
+      </ul>
+    </div>
+
+    <!-- Multi-agents -->
+    <div class="concept-section">
+      <div class="concept-header">
+        <span class="concept-icon">🤝</span>
+        <h2 class="concept-title">Orchestration multi-agents</h2>
+      </div>
+
+      <div class="pattern-grid">
+        <div class="pattern-card">
+          <div class="pattern-name">Hub-and-Spoke</div>
+          <div class="pattern-desc">
+            Orchestrateur central (Planner) qui dispatche aux agents spécialisés (Navigator, Editor, Executor).
+            HyperAgent : 31,4% SWE-bench.
+          </div>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-name">Sequential (Pipeline)</div>
+          <div class="pattern-desc">
+            Chaîne d'agents : Planner → Coder → Reviewer → Tester.
+            Chaque agent enrichit le travail du précédent.
+          </div>
+        </div>
+        <div class="pattern-card">
+          <div class="pattern-name">Parallel (Fork-Join)</div>
+          <div class="pattern-desc">
+            Agents simultanés (Search, Analyzer, TestGen) avec fusion par un Coordinator.
+            Optimise la latence.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        Communication via <strong>handoffs</strong> (OpenAI Agents SDK) ou <strong>shared state</strong> (LangGraph).
+        Frameworks : LangGraph, AutoGen, CrewAI, MetaGPT.
+      </p>
+    </div>
+
+    <!-- Sandboxing -->
+    <div class="concept-section">
+      <div class="concept-header">
+        <span class="concept-icon">🔒</span>
+        <h2 class="concept-title">Sandboxing</h2>
+      </div>
+
+      <p>L'exécution sécurisée est critique. Niveaux d'isolation :</p>
+
+      <ul>
+        <li><strong>Docker containers</strong> (standard) : namespace/cgroups, network disabled, resource limits</li>
+        <li><strong>gVisor</strong> : Kernel user-space pour isolation supplémentaire</li>
+        <li><strong>Firecracker</strong> : MicroVM pour environnements multi-tenant</li>
+      </ul>
+
+      <div class="code-block">
+<span class="code-comment"># Démarrer un sandbox Docker pour Claude Code</span>
+docker sandbox run claude-code --workspace /project --timeout 300
+      </div>
+    </div>
+
+    <blockquote>
+      La maîtrise de l'architecture interne permet d'optimiser les prompts,
+      d'anticiper les limitations et de diagnostiquer les échecs.
+    </blockquote>
+  </article>
+</body>
+</html>
