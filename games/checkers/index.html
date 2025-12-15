@@ -224,6 +224,10 @@
 
   <script type="module">
     import { CheckersEngine } from './engine.js';
+    import { initTheme } from '/lib/theme.js';
+
+    // Initialiser le thème (dark/light)
+    initTheme();
 
     const engine = new CheckersEngine();
     let state = null;
