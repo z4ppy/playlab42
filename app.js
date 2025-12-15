@@ -3,7 +3,7 @@
  * @see openspec/specs/portal/spec.md
  */
 
-import { $, on, delegate, escapeHtml, cloneTemplate, debounce } from './lib/dom.js';
+import { $, on, delegate, cloneTemplate, debounce } from './lib/dom.js';
 import { getTheme, setTheme, THEMES } from './lib/theme.js';
 import { ParcoursViewer } from './lib/parcours-viewer.js';
 
@@ -293,7 +293,7 @@ function createCardElement(item, type) {
     const thumbSrc = item.path.replace('index.html', 'thumb.png');
     const img = document.createElement('img');
     img.src = thumbSrc;
-    img.alt = escapeHtml(item.name);
+    img.alt = item.name;
     img.loading = 'lazy';
     img.onerror = () => {
       thumb.textContent = item.icon || '🎮';
@@ -304,15 +304,15 @@ function createCardElement(item, type) {
   }
 
   // Info
-  title.textContent = (item.icon ? `${item.icon  } ` : '') + escapeHtml(item.name);
-  desc.textContent = escapeHtml(item.description);
+  title.textContent = (item.icon ? `${item.icon  } ` : '') + item.name;
+  desc.textContent = item.description;
 
   // Tags
   if (item.tags?.length) {
     for (const tag of item.tags.slice(0, 3)) {
       const tagFragment = cloneTemplate('tag-template');
       const tagEl = tagFragment.querySelector('.card-tag');
-      tagEl.textContent = escapeHtml(tag);
+      tagEl.textContent = tag;
       tagsContainer.appendChild(tagFragment);
     }
   }
@@ -419,7 +419,7 @@ function createEpicCardElement(epic) {
   if (epic.thumbnail) {
     const img = document.createElement('img');
     img.src = epic.thumbnail;
-    img.alt = escapeHtml(epic.title);
+    img.alt = epic.title;
     img.loading = 'lazy';
     img.onerror = () => {
       thumb.textContent = epic.icon || '📚';
@@ -430,8 +430,8 @@ function createEpicCardElement(epic) {
   }
 
   // Info
-  title.textContent = (epic.icon ? `${epic.icon} ` : '') + escapeHtml(epic.title);
-  desc.textContent = escapeHtml(epic.description);
+  title.textContent = (epic.icon ? `${epic.icon} ` : '') + epic.title;
+  desc.textContent = epic.description;
 
   // Meta
   if (epic.duration) {
@@ -444,7 +444,7 @@ function createEpicCardElement(epic) {
     for (const tag of epic.tags.slice(0, 3)) {
       const tagEl = document.createElement('span');
       tagEl.className = 'epic-tag';
-      tagEl.textContent = escapeHtml(tag);
+      tagEl.textContent = tag;
       tagsContainer.appendChild(tagEl);
     }
   }
@@ -851,8 +851,8 @@ function createBookmarkItemElement(bookmark) {
   link.href = bookmark.url;
   link.dataset.bookmarkUrl = bookmark.url;
   icon.textContent = bookmark.icon || '🔗';
-  title.textContent = escapeHtml(bookmark.displayTitle || bookmark.title);
-  description.textContent = escapeHtml(bookmark.displayDescription || bookmark.description || '');
+  title.textContent = bookmark.displayTitle || bookmark.title;
+  description.textContent = bookmark.displayDescription || bookmark.description || '';
   domain.textContent = bookmark.domain;
 
   // Stocker les données pour la preview
@@ -989,7 +989,7 @@ function loadGame(path, name, type, id) {
   el.viewSettings.classList.remove('active');
   el.viewGame.classList.add('active');
   document.body.classList.add('game-active');
-  el.gameTitle.textContent = escapeHtml(name);
+  el.gameTitle.textContent = name;
   el.loading.classList.remove('hidden');
 
   el.gameIframe.src = path;
