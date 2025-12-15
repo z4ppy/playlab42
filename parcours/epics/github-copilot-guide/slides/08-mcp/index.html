@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP — Model Context Protocol — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .mcp-diagram {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      text-align: center;
+      white-space: pre;
+    }
+    .server-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .server-card {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+    }
+    .server-card strong {
+      color: var(--color-accent);
+    }
+    .use-case {
+      background: var(--color-bg-secondary);
+      border-left: 4px solid var(--color-info);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: var(--space-md) 0;
+    }
+    .use-case h4 {
+      margin-top: 0;
+      color: var(--color-info);
+    }
+    .beta-badge {
+      background: var(--color-warning);
+      color: var(--color-text-inverse);
+      padding: 0.2em 0.5em;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>MCP — Model Context Protocol</h1>
+
+    <h2>Qu'est-ce que MCP ?</h2>
+
+    <p><strong>MCP (Model Context Protocol)</strong> est un protocole open-source créé par <strong>Anthropic</strong> pour connecter les applications d'IA à des systèmes externes de manière standardisée.</p>
+
+    <blockquote>
+      MCP est à l'IA ce que l'<strong>USB-C</strong> est aux périphériques : un connecteur universel standardisé.
+    </blockquote>
+
+    <h3>Objectif</h3>
+
+    <p>Permettre aux assistants IA d'accéder de manière standardisée à :</p>
+    <ul>
+      <li><strong>Sources de données</strong> — fichiers locaux, bases de données, APIs</li>
+      <li><strong>Outils</strong> — moteurs de recherche, calculateurs, services externes</li>
+      <li><strong>Workflows</strong> — prompts spécialisés, processus métier</li>
+    </ul>
+
+    <h2>Architecture</h2>
+
+    <div class="mcp-diagram">┌─────────────────┐         ┌──────────────────┐
+│   MCP Client    │◄───────►│   MCP Server     │
+│  (Copilot, etc.)│  JSON   │  (Expose tools)  │
+└─────────────────┘  RPC    └──────────────────┘</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Composant</th>
+          <th>Rôle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>MCP Servers</strong></td><td>Exposent des données et des outils via le protocole</td></tr>
+        <tr><td><strong>MCP Clients</strong></td><td>Applications qui se connectent aux serveurs (Copilot, Claude...)</td></tr>
+        <tr><td><strong>Resources</strong></td><td>Accès en lecture aux sources de données</td></tr>
+        <tr><td><strong>Tools</strong></td><td>Fonctions exécutables par l'IA</td></tr>
+        <tr><td><strong>Prompts</strong></td><td>Templates de prompts réutilisables</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Support dans GitHub Copilot <span class="beta-badge">BETA</span></h2>
+
+    <p>Depuis <strong>décembre 2024</strong>, GitHub Copilot supporte MCP via les <strong>Copilot Extensions</strong> (bêta publique).</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Détail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Annonce</strong></td><td>4 décembre 2024</td></tr>
+        <tr><td><strong>Statut</strong></td><td>Bêta publique</td></tr>
+        <tr><td><strong>Via</strong></td><td>GitHub Copilot Extensions</td></tr>
+        <tr><td><strong>IDE</strong></td><td>VS Code principalement</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Serveurs MCP disponibles</h2>
+
+    <h3>Bases de données</h3>
+    <div class="server-grid">
+      <div class="server-card"><strong>PostgreSQL</strong><br>Requêtes SQL, schéma</div>
+      <div class="server-card"><strong>MySQL</strong><br>Connexion bases MySQL</div>
+      <div class="server-card"><strong>SQLite</strong><br>Bases locales légères</div>
+      <div class="server-card"><strong>MongoDB</strong><br>Documents NoSQL</div>
+    </div>
+
+    <h3>Services et APIs</h3>
+    <div class="server-grid">
+      <div class="server-card"><strong>GitHub</strong><br>Repos, issues, PRs</div>
+      <div class="server-card"><strong>Slack</strong><br>Messages, channels</div>
+      <div class="server-card"><strong>Notion</strong><br>Pages et bases</div>
+      <div class="server-card"><strong>Google Drive</strong><br>Fichiers cloud</div>
+    </div>
+
+    <h3>Outils de développement</h3>
+    <div class="server-grid">
+      <div class="server-card"><strong>Filesystem</strong><br>Accès fichiers locaux</div>
+      <div class="server-card"><strong>Git</strong><br>Opérations Git</div>
+      <div class="server-card"><strong>Puppeteer</strong><br>Automatisation web</div>
+      <div class="server-card"><strong>Memory</strong><br>Mémoire contextuelle</div>
+    </div>
+
+    <h2>Cas d'usage</h2>
+
+    <div class="use-case">
+      <h4>Chatbot d'entreprise</h4>
+      <p>Connectez Copilot à vos bases de données internes pour répondre à des questions métier via conversation naturelle.</p>
+    </div>
+
+    <div class="use-case">
+      <h4>Assistant de développement enrichi</h4>
+      <p>Accès au filesystem, opérations Git automatisées, recherche dans la documentation, interaction avec vos APIs internes.</p>
+    </div>
+
+    <div class="use-case">
+      <h4>Analyse de données</h4>
+      <p>Connexion directe à PostgreSQL ou MongoDB. L'IA génère les requêtes, analyse les résultats, propose des insights.</p>
+    </div>
+
+    <div class="use-case">
+      <h4>Workflow automatisé</h4>
+      <p>Création de tickets Jira depuis une conversation, mise à jour de Notion, envoi de messages Slack — le tout orchestré par l'IA.</p>
+    </div>
+
+    <h2>Configuration</h2>
+
+    <p>Les serveurs MCP se configurent généralement via un fichier JSON :</p>
+
+    <pre><code>{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/project"]
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "DATABASE_URL": "postgresql://user:pass@localhost/db"
+      }
+    }
+  }
+}</code></pre>
+
+    <h2>Ressources</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ressource</th>
+          <th>URL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Site officiel MCP</td>
+          <td><a href="https://modelcontextprotocol.io" target="_blank">modelcontextprotocol.io</a></td>
+        </tr>
+        <tr>
+          <td>Serveurs de référence</td>
+          <td><a href="https://github.com/modelcontextprotocol/servers" target="_blank">github.com/modelcontextprotocol/servers</a></td>
+        </tr>
+        <tr>
+          <td>Spécification</td>
+          <td><a href="https://modelcontextprotocol.io/specification" target="_blank">modelcontextprotocol.io/specification</a></td>
+        </tr>
+        <tr>
+          <td>Copilot Extensions</td>
+          <td><a href="https://docs.github.com/copilot/using-github-copilot/using-extensions-to-integrate-external-tools-with-copilot-chat" target="_blank">docs.github.com/.../extensions</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <blockquote>
+      <strong>Note :</strong> MCP est un protocole jeune mais en adoption rapide. Son intégration dans Copilot et Claude suggère qu'il deviendra un standard pour les intégrations IA-systèmes externes.
+    </blockquote>
+  </article>
+</body>
+</html>

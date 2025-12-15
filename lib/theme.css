@@ -91,6 +91,14 @@
   --color-text-muted: #666;
   --color-text-inverse: #eee;
 
+  /* Couleurs sémantiques (ajustées pour fond clair) */
+  --color-success: #16a34a;
+  --color-success-light: rgba(22, 163, 74, 0.1);
+  --color-error: #dc2626;
+  --color-error-light: rgba(220, 38, 38, 0.1);
+  --color-warning: #d97706;
+  --color-info: #0284c7;
+
   /* Bordures et ombres */
   --color-border: #ccc;
   --color-shadow: rgba(0, 0, 0, 0.1);
@@ -116,6 +124,14 @@
     --color-text: #1a1a2e;
     --color-text-muted: #666;
     --color-text-inverse: #eee;
+
+    /* Couleurs sémantiques (ajustées pour fond clair) */
+    --color-success: #16a34a;
+    --color-success-light: rgba(22, 163, 74, 0.1);
+    --color-error: #dc2626;
+    --color-error-light: rgba(220, 38, 38, 0.1);
+    --color-warning: #d97706;
+    --color-info: #0284c7;
 
     /* Bordures et ombres */
     --color-border: #ccc;

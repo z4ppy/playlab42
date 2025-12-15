@@ -71,5 +71,46 @@
     "ogImageOriginal": "https://jestjs.io/img/opengraph.png",
     "favicon": "https://jestjs.io/favicon.ico",
     "fetchedAt": "2025-12-13T22:37:40.779Z"
+  },
+  "https://github.com/features/copilot": {
+    "ogTitle": "GitHub Copilot · Your AI pair programmer",
+    "ogDescription": "GitHub Copilot works alongside you directly in your editor, suggesting whole lines or entire functions for you.",
+    "ogImage": "data/bookmarks-images/dba769c840cc.png",
+    "ogSiteName": "GitHub",
+    "ogImageOriginal": "https://images.ctfassets.net/8aevphvgewt8/5IdZ8KizWhMOGixAmVSw0g/f81f5f263a88eabe5d3e102300d44a88/github-copilot-social-img.png",
+    "favicon": "https://github.com/favicon.ico",
+    "fetchedAt": "2025-12-15T12:36:04.407Z"
+  },
+  "https://docs.github.com/copilot": {
+    "ogTitle": "documentationGitHub Copilot - Documentation GitHub",
+    "ogImage": "data/bookmarks-images/755a92c7c5c8.png",
+    "ogSiteName": "GitHub Docs",
+    "ogDescription": "Vous pouvez utiliser GitHub Copilot pour améliorer votre productivité et vous aider dans votre travail sur le code.",
+    "ogImageOriginal": "https://docs.github.com/assets/cb-345/images/social-cards/copilot.png",
+    "favicon": "https://docs.github.com/favicon.ico",
+    "fetchedAt": "2025-12-15T12:36:04.460Z"
+  },
+  "https://github.com/github/copilot-cli": {
+    "ogTitle": "GitHub - github/copilot-cli: GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal.",
+    "ogDescription": "GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal.  - GitHub - github/copilot-cli: GitHub Copilot CLI brings the power of Copilot coding agent directly to your t...",
+    "ogImage": "https://opengraph.githubassets.com/feca6eae94e7bbe08f067afeebf15ec2a41bc4a2649a2f70238326e0fde71f9b/github/copilot-cli",
+    "ogSiteName": "GitHub",
+    "favicon": "https://github.com/favicon.ico",
+    "fetchedAt": "2025-12-15T12:36:04.629Z"
+  },
+  "https://modelcontextprotocol.io": {
+    "ogTitle": "What is the Model Context Protocol (MCP)? - Model Context Protocol",
+    "ogImage": "data/bookmarks-images/69eebb0309ab.png",
+    "ogImageOriginal": "https://raw.githubusercontent.com/modelcontextprotocol/docs/2eb6171ddbfeefde349dc3b8d5e2b87414c26250/images/og-image.png",
+    "favicon": "https://modelcontextprotocol.io/favicon.ico",
+    "fetchedAt": "2025-12-15T12:36:04.984Z"
+  },
+  "https://opencode.ai": {
+    "ogImage": "data/bookmarks-images/2d47f4c26137.png",
+    "ogTitle": "OpenCode | The open source AI coding agent",
+    "ogDescription": "OpenCode - The open source coding agent.",
+    "ogImageOriginal": "/social-share.png",
+    "favicon": "https://opencode.ai/favicon.ico",
+    "fetchedAt": "2025-12-15T12:36:05.797Z"
   }
 }

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration personnelle par IDE — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .ide-section {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .ide-section h3 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .ide-logo {
+      font-size: 1.5rem;
+    }
+    .shortcut-table td:first-child {
+      font-weight: 600;
+    }
+    .support-check { color: var(--color-success); }
+    .support-cross { color: var(--color-error); }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Configuration personnelle par IDE</h1>
+
+    <div class="ide-section">
+      <h3><span class="ide-logo">💙</span> 4.1 VS Code</h3>
+
+      <h4>Paramètres recommandés (settings.json)</h4>
+
+      <pre><code>{
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false
+  },
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+  "chat.promptFilesLocations": {
+    ".github/prompts": true
+  },
+  "chat.agent.enabled": true,
+  "chat.agent.maxRequests": 25
+}</code></pre>
+
+      <h4>Raccourcis essentiels</h4>
+
+      <table class="shortcut-table">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>macOS</th>
+            <th>Windows/Linux</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Ouvrir Chat</td><td><code>Ctrl+Cmd+I</code></td><td><code>Ctrl+Alt+I</code></td></tr>
+          <tr><td>Chat inline</td><td><code>Cmd+I</code></td><td><code>Ctrl+I</code></td></tr>
+          <tr><td>Accepter suggestion</td><td><code>Tab</code></td><td><code>Tab</code></td></tr>
+          <tr><td>Suggestion suivante</td><td><code>Option+]</code></td><td><code>Alt+]</code></td></tr>
+          <tr><td>Déclencher suggestion</td><td><code>Option+\</code></td><td><code>Alt+\</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ide-section">
+      <h3><span class="ide-logo">🧠</span> 4.2 JetBrains (Rider, PhpStorm, WebStorm...)</h3>
+
+      <h4>Accès aux paramètres</h4>
+
+      <p><strong>File &gt; Settings &gt; Languages &amp; Frameworks &gt; GitHub Copilot</strong></p>
+
+      <h4>Instructions globales personnelles</h4>
+
+      <p>Créer manuellement :</p>
+      <ul>
+        <li><strong>macOS/Linux :</strong> <code>~/.config/github-copilot/intellij/global-copilot-instructions.md</code></li>
+        <li><strong>Windows :</strong> <code>%APPDATA%\Local\github-copilot\intellij\global-copilot-instructions.md</code></li>
+      </ul>
+
+      <h4>Limitations actuelles</h4>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Fonctionnalité</th>
+            <th>Support</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>copilot-instructions.md</td><td><span class="support-check">✅</span></td></tr>
+          <tr><td>.instructions.md conditionnels</td><td><span class="support-cross">❌</span></td></tr>
+          <tr><td>Fichiers .prompt.md</td><td><span class="support-check">✅</span></td></tr>
+          <tr><td>Mode Agent</td><td><span class="support-check">✅</span> (Preview)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ide-section">
+      <h3><span class="ide-logo">💜</span> 4.3 Visual Studio</h3>
+
+      <h4>Accès aux paramètres</h4>
+
+      <p><strong>Tools &gt; Options &gt; GitHub &gt; Copilot</strong></p>
+
+      <h4>Fonctionnalités spécifiques</h4>
+
+      <ul>
+        <li><strong>Contexte sémantique C#</strong> : inclut automatiquement les fichiers fermés pertinents</li>
+        <li><strong>Référence #solution</strong> : interroge l'ensemble de la solution</li>
+        <li><strong>Intégration IntelliSense</strong> : suggestions contextuelles avancées</li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <h2>Matrice de compatibilité IDE</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Fonctionnalité</th>
+          <th>VS Code</th>
+          <th>JetBrains</th>
+          <th>Visual Studio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>copilot-instructions.md</td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span></td>
+        </tr>
+        <tr>
+          <td>.instructions.md conditionnels</td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-cross">❌</span></td>
+          <td><span class="support-check">✅</span></td>
+        </tr>
+        <tr>
+          <td>Fichiers .prompt.md</td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span></td>
+        </tr>
+        <tr>
+          <td>agents.md</td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span></td>
+        </tr>
+        <tr>
+          <td>Mode Agent</td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span> (Preview)</td>
+          <td><span class="support-check">✅</span></td>
+        </tr>
+        <tr>
+          <td>Next Edit Suggestions</td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-cross">❌</span></td>
+          <td><span class="support-cross">❌</span></td>
+        </tr>
+        <tr>
+          <td>@workspace</td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span></td>
+          <td><span class="support-check">✅</span> (#solution)</td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+</body>
+</html>

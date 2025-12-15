@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-13T22:38:32.518Z",
+  "generatedAt": "2025-12-15T12:36:05.798Z",
   "categories": [
     {
       "id": "llm-ia",
@@ -281,12 +281,140 @@
           "displayDescription": "Documentation Docker"
         }
       ]
+    },
+    {
+      "id": "modules",
+      "label": "Depuis les modules",
+      "icon": "📦",
+      "order": 99,
+      "bookmarks": [
+        {
+          "url": "https://github.com/features/copilot",
+          "title": "GitHub Copilot",
+          "description": "Page officielle GitHub Copilot",
+          "icon": "🤖",
+          "tags": [
+            "copilot",
+            "github",
+            "ia"
+          ],
+          "source": "parcours",
+          "sourceId": "github-copilot-guide",
+          "domain": "github.com",
+          "meta": {
+            "ogTitle": "GitHub Copilot · Your AI pair programmer",
+            "ogDescription": "GitHub Copilot works alongside you directly in your editor, suggesting whole lines or entire functions for you.",
+            "ogImage": "data/bookmarks-images/dba769c840cc.png",
+            "ogSiteName": "GitHub",
+            "ogImageOriginal": "https://images.ctfassets.net/8aevphvgewt8/5IdZ8KizWhMOGixAmVSw0g/f81f5f263a88eabe5d3e102300d44a88/github-copilot-social-img.png",
+            "favicon": "https://github.com/favicon.ico",
+            "fetchedAt": "2025-12-15T12:36:04.407Z"
+          },
+          "displayTitle": "GitHub Copilot",
+          "displayDescription": "Page officielle GitHub Copilot"
+        },
+        {
+          "url": "https://docs.github.com/copilot",
+          "title": "Documentation GitHub Copilot",
+          "description": "Documentation officielle complète",
+          "icon": "📚",
+          "tags": [
+            "copilot",
+            "documentation"
+          ],
+          "source": "parcours",
+          "sourceId": "github-copilot-guide",
+          "domain": "docs.github.com",
+          "meta": {
+            "ogTitle": "documentationGitHub Copilot - Documentation GitHub",
+            "ogImage": "data/bookmarks-images/755a92c7c5c8.png",
+            "ogSiteName": "GitHub Docs",
+            "ogDescription": "Vous pouvez utiliser GitHub Copilot pour améliorer votre productivité et vous aider dans votre travail sur le code.",
+            "ogImageOriginal": "https://docs.github.com/assets/cb-345/images/social-cards/copilot.png",
+            "favicon": "https://docs.github.com/favicon.ico",
+            "fetchedAt": "2025-12-15T12:36:04.460Z"
+          },
+          "displayTitle": "Documentation GitHub Copilot",
+          "displayDescription": "Documentation officielle complète"
+        },
+        {
+          "url": "https://github.com/github/copilot-cli",
+          "title": "GitHub Copilot CLI",
+          "description": "Agent IA terminal officiel GitHub",
+          "icon": "⌨️",
+          "tags": [
+            "copilot",
+            "cli",
+            "terminal"
+          ],
+          "source": "parcours",
+          "sourceId": "github-copilot-guide",
+          "domain": "github.com",
+          "meta": {
+            "ogTitle": "GitHub - github/copilot-cli: GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal.",
+            "ogDescription": "GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal.  - GitHub - github/copilot-cli: GitHub Copilot CLI brings the power of Copilot coding agent directly to your t...",
+            "ogImage": "https://opengraph.githubassets.com/feca6eae94e7bbe08f067afeebf15ec2a41bc4a2649a2f70238326e0fde71f9b/github/copilot-cli",
+            "ogSiteName": "GitHub",
+            "favicon": "https://github.com/favicon.ico",
+            "fetchedAt": "2025-12-15T12:36:04.629Z"
+          },
+          "displayTitle": "GitHub Copilot CLI",
+          "displayDescription": "Agent IA terminal officiel GitHub"
+        },
+        {
+          "url": "https://opencode.ai",
+          "title": "OpenCode",
+          "description": "Agent IA terminal open-source",
+          "icon": "🔓",
+          "tags": [
+            "opencode",
+            "cli",
+            "open-source"
+          ],
+          "source": "parcours",
+          "sourceId": "github-copilot-guide",
+          "domain": "opencode.ai",
+          "meta": {
+            "ogImage": "data/bookmarks-images/2d47f4c26137.png",
+            "ogTitle": "OpenCode | The open source AI coding agent",
+            "ogDescription": "OpenCode - The open source coding agent.",
+            "ogImageOriginal": "/social-share.png",
+            "favicon": "https://opencode.ai/favicon.ico",
+            "fetchedAt": "2025-12-15T12:36:05.797Z"
+          },
+          "displayTitle": "OpenCode",
+          "displayDescription": "Agent IA terminal open-source"
+        },
+        {
+          "url": "https://modelcontextprotocol.io",
+          "title": "Model Context Protocol",
+          "description": "Protocole MCP par Anthropic",
+          "icon": "🔌",
+          "tags": [
+            "mcp",
+            "anthropic",
+            "protocol"
+          ],
+          "source": "parcours",
+          "sourceId": "github-copilot-guide",
+          "domain": "modelcontextprotocol.io",
+          "meta": {
+            "ogTitle": "What is the Model Context Protocol (MCP)? - Model Context Protocol",
+            "ogImage": "data/bookmarks-images/69eebb0309ab.png",
+            "ogImageOriginal": "https://raw.githubusercontent.com/modelcontextprotocol/docs/2eb6171ddbfeefde349dc3b8d5e2b87414c26250/images/og-image.png",
+            "favicon": "https://modelcontextprotocol.io/favicon.ico",
+            "fetchedAt": "2025-12-15T12:36:04.984Z"
+          },
+          "displayTitle": "Model Context Protocol",
+          "displayDescription": "Protocole MCP par Anthropic"
+        }
+      ]
     }
   ],
   "tags": [
     {
       "id": "ia",
-      "count": 4
+      "count": 5
     },
     {
       "id": "chat",
@@ -297,11 +425,19 @@
       "count": 3
     },
     {
-      "id": "openai",
-      "count": 1
+      "id": "copilot",
+      "count": 3
     },
     {
       "id": "anthropic",
+      "count": 2
+    },
+    {
+      "id": "cli",
+      "count": 2
+    },
+    {
+      "id": "openai",
       "count": 1
     },
     {
@@ -394,6 +530,34 @@
     },
     {
       "id": "devops",
+      "count": 1
+    },
+    {
+      "id": "github",
+      "count": 1
+    },
+    {
+      "id": "documentation",
+      "count": 1
+    },
+    {
+      "id": "terminal",
+      "count": 1
+    },
+    {
+      "id": "opencode",
+      "count": 1
+    },
+    {
+      "id": "open-source",
+      "count": 1
+    },
+    {
+      "id": "mcp",
+      "count": 1
+    },
+    {
+      "id": "protocol",
       "count": 1
     }
   ]

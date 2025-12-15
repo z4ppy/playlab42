@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autocomplétion et suggestions — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .mode-card {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .mode-card h4 {
+      margin-top: 0;
+      color: var(--color-accent);
+    }
+    .shortcut-key {
+      display: inline-block;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0.1em 0.5em;
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+    }
+    .best-practice {
+      background: var(--color-success-light);
+      border-left: 4px solid var(--color-success);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: var(--space-md) 0;
+    }
+    .best-practice h4 {
+      margin-top: 0;
+      color: var(--color-success);
+    }
+    .nes-feature {
+      background: var(--color-info);
+      color: white;
+      padding: 0.2em 0.5em;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Autocomplétion et suggestions</h1>
+
+    <h2>Comment fonctionne l'autocomplétion</h2>
+
+    <p>L'autocomplétion de Copilot affiche des <strong>suggestions inline</strong> (ghost text) directement dans l'éditeur, en texte grisé. Elle analyse :</p>
+
+    <ul>
+      <li>Le <strong>fichier actuel</strong> — code, commentaires, imports</li>
+      <li>Les <strong>fichiers ouverts</strong> — contexte des onglets adjacents</li>
+      <li>Les <strong>noms de fichiers</strong> — pour inférer le type de code attendu</li>
+      <li>Les <strong>patterns existants</strong> — style et conventions du projet</li>
+    </ul>
+
+    <h2>Les modes de suggestion</h2>
+
+    <div class="mode-card">
+      <h4>Ligne par ligne</h4>
+      <p>Le mode le plus fréquent. Copilot suggère la fin de la ligne en cours après quelques caractères tapés. Idéal pour les complétions simples et le code répétitif.</p>
+    </div>
+
+    <div class="mode-card">
+      <h4>Bloc de code</h4>
+      <p>Plusieurs lignes suggérées simultanément. Activé pour les structures logiques : <code>if/else</code>, boucles, <code>try/catch</code>, fonctions courtes. Les blocs sont cohérents et correctement indentés.</p>
+    </div>
+
+    <div class="mode-card">
+      <h4>Fonction entière</h4>
+      <p>Génère une fonction complète à partir d'une signature ou d'un commentaire. Particulièrement efficace après un <strong>commentaire JSDoc, docstring Python, ou XML C#</strong>.</p>
+    </div>
+
+    <h2>Next Edit Suggestions <span class="nes-feature">NEW</span></h2>
+
+    <p><strong>Next Edit Suggestions</strong> est une fonctionnalité avancée qui prédit le prochain endroit à éditer dans votre code.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Concept</strong></td>
+          <td>Détecte les patterns et suggère des modifications cohérentes</td>
+        </tr>
+        <tr>
+          <td><strong>Cas d'usage</strong></td>
+          <td>Refactoring, renommage, implémentations répétitives</td>
+        </tr>
+        <tr>
+          <td><strong>Activation</strong></td>
+          <td>VS Code uniquement (pour l'instant)</td>
+        </tr>
+        <tr>
+          <td><strong>Config</strong></td>
+          <td><code>"github.copilot.nextEditSuggestions.enabled": true</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Raccourcis clavier</h2>
+
+    <h3>VS Code</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>macOS</th>
+          <th>Windows/Linux</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Accepter la suggestion</td>
+          <td><span class="shortcut-key">Tab</span></td>
+          <td><span class="shortcut-key">Tab</span></td>
+        </tr>
+        <tr>
+          <td>Accepter mot par mot</td>
+          <td><span class="shortcut-key">Cmd+→</span></td>
+          <td><span class="shortcut-key">Ctrl+→</span></td>
+        </tr>
+        <tr>
+          <td>Rejeter la suggestion</td>
+          <td><span class="shortcut-key">Esc</span></td>
+          <td><span class="shortcut-key">Esc</span></td>
+        </tr>
+        <tr>
+          <td>Suggestion suivante</td>
+          <td><span class="shortcut-key">Option+]</span></td>
+          <td><span class="shortcut-key">Alt+]</span></td>
+        </tr>
+        <tr>
+          <td>Suggestion précédente</td>
+          <td><span class="shortcut-key">Option+[</span></td>
+          <td><span class="shortcut-key">Alt+[</span></td>
+        </tr>
+        <tr>
+          <td>Déclencher manuellement</td>
+          <td><span class="shortcut-key">Option+\</span></td>
+          <td><span class="shortcut-key">Alt+\</span></td>
+        </tr>
+        <tr>
+          <td>Panneau suggestions</td>
+          <td><span class="shortcut-key">Ctrl+Enter</span></td>
+          <td><span class="shortcut-key">Ctrl+Enter</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>JetBrains</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Raccourci</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Accepter</td><td><span class="shortcut-key">Tab</span></td></tr>
+        <tr><td>Rejeter</td><td><span class="shortcut-key">Esc</span></td></tr>
+        <tr><td>Suggestion suivante</td><td><span class="shortcut-key">Alt+]</span></td></tr>
+        <tr><td>Suggestion précédente</td><td><span class="shortcut-key">Alt+[</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Bonnes pratiques pour de meilleures suggestions</h2>
+
+    <div class="best-practice">
+      <h4>Nommage explicite</h4>
+      <p>Utilisez des noms de variables et fonctions descriptifs. <code>getUserById(userId)</code> donnera de meilleures suggestions que <code>get(id)</code>.</p>
+    </div>
+
+    <div class="best-practice">
+      <h4>Commentaires d'intention</h4>
+      <p>Écrivez un commentaire décrivant ce que vous voulez faire avant de coder. Copilot s'en servira pour générer le code correspondant.</p>
+      <pre><code>// Valider l'email avec regex, retourner false si null ou vide
+function validateEmail(email) {</code></pre>
+    </div>
+
+    <div class="best-practice">
+      <h4>Contexte ouvert</h4>
+      <p>Gardez les fichiers pertinents ouverts dans l'éditeur. Copilot utilise les onglets adjacents pour comprendre votre architecture.</p>
+    </div>
+
+    <div class="best-practice">
+      <h4>Exemples dans le fichier</h4>
+      <p>Si vous avez du code similaire dans le même fichier, Copilot apprendra le pattern et le reproduira.</p>
+    </div>
+
+    <div class="best-practice">
+      <h4>Signatures complètes</h4>
+      <p>Écrivez la signature de fonction complète (types inclus) avant de demander le corps. Plus d'infos = meilleures suggestions.</p>
+    </div>
+
+    <h2>Configuration par langage</h2>
+
+    <p>Vous pouvez activer/désactiver Copilot par type de fichier dans <code>settings.json</code> :</p>
+
+    <pre><code>{
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "plaintext": false,
+    "markdown": true,
+    "env": false
+  }
+}</code></pre>
+
+    <h2>Fichiers à exclure</h2>
+
+    <p>Pour des raisons de sécurité, désactivez Copilot sur les fichiers sensibles :</p>
+
+    <pre><code>{
+  "github.copilot.enable": {
+    "*.env": false,
+    "*.secrets": false,
+    "*.pem": false,
+    "*.key": false
+  }
+}</code></pre>
+
+    <blockquote>
+      <strong>Rappel :</strong> Toujours relire et tester les suggestions. Copilot est un assistant, pas un remplaçant de votre jugement.
+    </blockquote>
+  </article>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-14T09:05:13.323Z",
+  "generatedAt": "2025-12-15T12:57:38.535Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -21,7 +21,7 @@
       "duration": "45 min",
       "difficulty": "intermediate",
       "icon": "🤖",
-      "thumbnail": "./parcours/epics/coding-agents-2025/thumbnail.svg",
+      "thumbnail": "./parcours/epics/coding-agents-2025/assets/banner.png",
       "slideCount": 6,
       "optionalSlideCount": 0,
       "hasIndex": false,
@@ -65,32 +65,90 @@
       ]
     },
     {
-      "id": "exemple-article",
-      "title": "Article exemple",
-      "description": "Un article de démonstration pour tester l'affichage des parcours.",
-      "path": "./parcours/epics/exemple-article",
+      "id": "github-copilot-guide",
+      "title": "GitHub Copilot — Guide du développeur",
+      "description": "Guide complet pour maîtriser GitHub Copilot : présentation du service, autocomplétion, configuration projet, agents spécialisés, techniques de prompting, MCP et bonnes pratiques.",
+      "path": "./parcours/epics/github-copilot-guide",
       "hierarchy": [
-        "autres"
+        "ia-dev"
       ],
       "tags": [
-        "exemple",
-        "test"
+        "copilot",
+        "ia",
+        "productivité",
+        "ide",
+        "guide",
+        "mcp"
       ],
-      "author": "PlayLab42",
-      "created": "2025-10-01",
-      "duration": "2 min",
-      "difficulty": "beginner",
-      "icon": "📝",
-      "thumbnail": null,
-      "slideCount": 1,
+      "author": "Playlab42",
+      "created": "2025-12-15",
+      "duration": "60 min",
+      "difficulty": "intermediate",
+      "icon": "🤖",
+      "thumbnail": "./parcours/epics/github-copilot-guide/assets/banner.png",
+      "slideCount": 10,
       "optionalSlideCount": 0,
       "hasIndex": false,
       "structure": [
         {
           "type": "slide",
+          "id": "00-presentation",
+          "title": "Présentation de GitHub Copilot",
+          "icon": "✨"
+        },
+        {
+          "type": "slide",
           "id": "01-introduction",
-          "title": "Introduction",
-          "icon": "📝"
+          "title": "Quick Start et concepts clés",
+          "icon": "🚀"
+        },
+        {
+          "type": "slide",
+          "id": "02-autocompletion",
+          "title": "Autocomplétion et suggestions",
+          "icon": "⌨️"
+        },
+        {
+          "type": "slide",
+          "id": "02-configuration-projet",
+          "title": "Configuration projet",
+          "icon": "⚙️"
+        },
+        {
+          "type": "slide",
+          "id": "03-agents-specialises",
+          "title": "Agents spécialisés",
+          "icon": "🤖"
+        },
+        {
+          "type": "slide",
+          "id": "04-configuration-ide",
+          "title": "Configuration personnelle par IDE",
+          "icon": "💻"
+        },
+        {
+          "type": "slide",
+          "id": "05-prompting",
+          "title": "Techniques de prompting",
+          "icon": "💬"
+        },
+        {
+          "type": "slide",
+          "id": "06-bonnes-pratiques",
+          "title": "Développement responsable",
+          "icon": "✅"
+        },
+        {
+          "type": "slide",
+          "id": "08-mcp",
+          "title": "MCP — Model Context Protocol",
+          "icon": "🔌"
+        },
+        {
+          "type": "slide",
+          "id": "07-cli-annexes",
+          "title": "Copilot CLI, OpenCode et Annexes",
+          "icon": "📚"
         }
       ]
     },
@@ -239,7 +297,7 @@
       {
         "id": "ia",
         "label": "Intelligence Artificielle",
-        "count": 2
+        "count": 3
       },
       {
         "id": "dev",
@@ -257,13 +315,28 @@
         "count": 1
       },
       {
-        "id": "exemple",
-        "label": "Exemple",
+        "id": "copilot",
+        "label": "copilot",
         "count": 1
       },
       {
-        "id": "test",
-        "label": "Test",
+        "id": "productivité",
+        "label": "productivité",
+        "count": 1
+      },
+      {
+        "id": "ide",
+        "label": "ide",
+        "count": 1
+      },
+      {
+        "id": "guide",
+        "label": "guide",
+        "count": 1
+      },
+      {
+        "id": "mcp",
+        "label": "mcp",
         "count": 1
       },
       {
@@ -296,6 +369,94 @@
   "featured": {
     "recent": [
       {
+        "id": "github-copilot-guide",
+        "title": "GitHub Copilot — Guide du développeur",
+        "description": "Guide complet pour maîtriser GitHub Copilot : présentation du service, autocomplétion, configuration projet, agents spécialisés, techniques de prompting, MCP et bonnes pratiques.",
+        "path": "./parcours/epics/github-copilot-guide",
+        "hierarchy": [
+          "ia-dev"
+        ],
+        "tags": [
+          "copilot",
+          "ia",
+          "productivité",
+          "ide",
+          "guide",
+          "mcp"
+        ],
+        "author": "Playlab42",
+        "created": "2025-12-15",
+        "duration": "60 min",
+        "difficulty": "intermediate",
+        "icon": "🤖",
+        "thumbnail": "./parcours/epics/github-copilot-guide/assets/banner.png",
+        "slideCount": 10,
+        "optionalSlideCount": 0,
+        "hasIndex": false,
+        "structure": [
+          {
+            "type": "slide",
+            "id": "00-presentation",
+            "title": "Présentation de GitHub Copilot",
+            "icon": "✨"
+          },
+          {
+            "type": "slide",
+            "id": "01-introduction",
+            "title": "Quick Start et concepts clés",
+            "icon": "🚀"
+          },
+          {
+            "type": "slide",
+            "id": "02-autocompletion",
+            "title": "Autocomplétion et suggestions",
+            "icon": "⌨️"
+          },
+          {
+            "type": "slide",
+            "id": "02-configuration-projet",
+            "title": "Configuration projet",
+            "icon": "⚙️"
+          },
+          {
+            "type": "slide",
+            "id": "03-agents-specialises",
+            "title": "Agents spécialisés",
+            "icon": "🤖"
+          },
+          {
+            "type": "slide",
+            "id": "04-configuration-ide",
+            "title": "Configuration personnelle par IDE",
+            "icon": "💻"
+          },
+          {
+            "type": "slide",
+            "id": "05-prompting",
+            "title": "Techniques de prompting",
+            "icon": "💬"
+          },
+          {
+            "type": "slide",
+            "id": "06-bonnes-pratiques",
+            "title": "Développement responsable",
+            "icon": "✅"
+          },
+          {
+            "type": "slide",
+            "id": "08-mcp",
+            "title": "MCP — Model Context Protocol",
+            "icon": "🔌"
+          },
+          {
+            "type": "slide",
+            "id": "07-cli-annexes",
+            "title": "Copilot CLI, OpenCode et Annexes",
+            "icon": "📚"
+          }
+        ]
+      },
+      {
         "id": "coding-agents-2025",
         "title": "Coding Agents en 2025",
         "description": "Guide technique complet sur les coding agents : écosystème, architecture, capacités et perspectives.",
@@ -314,7 +475,7 @@
         "duration": "45 min",
         "difficulty": "intermediate",
         "icon": "🤖",
-        "thumbnail": "./parcours/epics/coding-agents-2025/thumbnail.svg",
+        "thumbnail": "./parcours/epics/coding-agents-2025/assets/banner.png",
         "slideCount": 6,
         "optionalSlideCount": 0,
         "hasIndex": false,
@@ -439,36 +600,6 @@
             "id": "07-aller-plus-loin",
             "title": "Pour aller plus loin",
             "icon": "🚀"
-          }
-        ]
-      },
-      {
-        "id": "exemple-article",
-        "title": "Article exemple",
-        "description": "Un article de démonstration pour tester l'affichage des parcours.",
-        "path": "./parcours/epics/exemple-article",
-        "hierarchy": [
-          "autres"
-        ],
-        "tags": [
-          "exemple",
-          "test"
-        ],
-        "author": "PlayLab42",
-        "created": "2025-10-01",
-        "duration": "2 min",
-        "difficulty": "beginner",
-        "icon": "📝",
-        "thumbnail": null,
-        "slideCount": 1,
-        "optionalSlideCount": 0,
-        "hasIndex": false,
-        "structure": [
-          {
-            "type": "slide",
-            "id": "01-introduction",
-            "title": "Introduction",
-            "icon": "📝"
           }
         ]
       }

@@ -12,7 +12,7 @@
     "language": "fr"
   },
   "icon": "🤖",
-  "thumbnail": "thumbnail.svg",
+  "thumbnail": "assets/banner.png",
   "content": [
     { "id": "01-introduction" },
     { "id": "02-panorama" },
