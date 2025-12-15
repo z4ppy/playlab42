@@ -23,6 +23,7 @@
             --dl-bg-primary: #0a0f1a;
             --dl-bg-secondary: #111827;
             --dl-bg-tertiary: #1f2937;
+            --dl-bg-card: #1e293b;
             --dl-accent-blue: #3b82f6;
             --dl-accent-cyan: #06b6d4;
             --dl-accent-purple: #8b5cf6;
@@ -31,31 +32,39 @@
             --dl-accent-red: #ef4444;
             --dl-accent-orange: #f97316;
             --dl-text-primary: #f1f5f9;
-            --dl-text-secondary: #94a3b8;
-            --dl-text-muted: #64748b;
+            --dl-text-secondary: #cbd5e1;
+            --dl-text-muted: #94a3b8;
             --dl-border-color: #374151;
+            --dl-nav-bg: rgba(15, 23, 42, 0.95);
+            --dl-grid-color: #1e293b;
         }
 
         /* Support du thème light */
         [data-theme="light"] {
             --dl-bg-primary: #f8fafc;
-            --dl-bg-secondary: #f1f5f9;
-            --dl-bg-tertiary: #e2e8f0;
-            --dl-text-primary: #1e293b;
-            --dl-text-secondary: #475569;
+            --dl-bg-secondary: #e2e8f0;
+            --dl-bg-tertiary: #cbd5e1;
+            --dl-bg-card: #ffffff;
+            --dl-text-primary: #0f172a;
+            --dl-text-secondary: #334155;
             --dl-text-muted: #64748b;
-            --dl-border-color: #cbd5e1;
+            --dl-border-color: #94a3b8;
+            --dl-nav-bg: rgba(255, 255, 255, 0.95);
+            --dl-grid-color: #e2e8f0;
         }
 
         @media (prefers-color-scheme: light) {
             :root:not([data-theme]) {
                 --dl-bg-primary: #f8fafc;
-                --dl-bg-secondary: #f1f5f9;
-                --dl-bg-tertiary: #e2e8f0;
-                --dl-text-primary: #1e293b;
-                --dl-text-secondary: #475569;
+                --dl-bg-secondary: #e2e8f0;
+                --dl-bg-tertiary: #cbd5e1;
+                --dl-bg-card: #ffffff;
+                --dl-text-primary: #0f172a;
+                --dl-text-secondary: #334155;
                 --dl-text-muted: #64748b;
-                --dl-border-color: #cbd5e1;
+                --dl-border-color: #94a3b8;
+                --dl-nav-bg: rgba(255, 255, 255, 0.95);
+                --dl-grid-color: #e2e8f0;
             }
         }
 
@@ -171,51 +180,149 @@
             font-weight: bold;
             font-size: 0.875rem;
         }
+
+        /* === Classes utilitaires pour le thème === */
+        /* Textes */
+        .dl-text-primary { color: var(--dl-text-primary) !important; }
+        .dl-text-secondary { color: var(--dl-text-secondary) !important; }
+        .dl-text-muted { color: var(--dl-text-muted) !important; }
+
+        /* Fonds */
+        .dl-bg-primary { background-color: var(--dl-bg-primary) !important; }
+        .dl-bg-secondary { background-color: var(--dl-bg-secondary) !important; }
+        .dl-bg-tertiary { background-color: var(--dl-bg-tertiary) !important; }
+        .dl-bg-card { background-color: var(--dl-bg-card) !important; }
+
+        /* Bordures */
+        .dl-border { border-color: var(--dl-border-color) !important; }
+
+        /* Navigation */
+        nav.dl-nav {
+            background: var(--dl-nav-bg) !important;
+            border-color: var(--dl-border-color) !important;
+        }
+        nav.dl-nav a { color: var(--dl-text-muted) !important; }
+        nav.dl-nav a:hover { color: var(--dl-text-primary) !important; }
+        nav.dl-nav a.active { color: var(--dl-accent-blue) !important; }
+        nav.dl-nav .nav-title { color: var(--dl-text-primary) !important; }
+        nav.dl-nav .nav-accent { color: var(--dl-accent-blue) !important; }
+
+        /* Header hero */
+        .hero-section {
+            border-color: var(--dl-border-color) !important;
+        }
+        .hero-section .hero-grid {
+            background-image: linear-gradient(to right, var(--dl-grid-color) 1px, transparent 1px),
+                              linear-gradient(to bottom, var(--dl-grid-color) 1px, transparent 1px) !important;
+        }
+
+        /* Cards et boxes */
+        .dl-card {
+            background-color: var(--dl-bg-card) !important;
+            border-color: var(--dl-border-color) !important;
+        }
+        .dl-card h3, .dl-card h4 { color: var(--dl-text-primary) !important; }
+        .dl-card p { color: var(--dl-text-muted) !important; }
+
+        /* Badges */
+        .dl-badge {
+            background-color: var(--dl-bg-secondary) !important;
+            color: var(--dl-text-secondary) !important;
+        }
+
+        /* Lab sidebar */
+        .lab-sidebar {
+            background: var(--dl-bg-secondary) !important;
+            border-color: var(--dl-border-color) !important;
+        }
+        .lab-panel {
+            background: var(--dl-bg-tertiary) !important;
+            border-color: var(--dl-border-color) !important;
+        }
+        .lab-metric {
+            background: var(--dl-bg-primary) !important;
+            border-color: var(--dl-border-color) !important;
+        }
+
+        /* Footer */
+        footer.dl-footer {
+            background: var(--dl-bg-secondary) !important;
+            border-color: var(--dl-border-color) !important;
+            color: var(--dl-text-muted) !important;
+        }
+
+        /* Inputs et selects */
+        .dl-select {
+            background: var(--dl-bg-tertiary) !important;
+            border-color: var(--dl-border-color) !important;
+            color: var(--dl-text-primary) !important;
+        }
+        .dl-input {
+            background: var(--dl-bg-tertiary) !important;
+        }
+
+        /* Overlay rapide */
+        .lab-overlay {
+            background: rgba(0, 0, 0, 0.7) !important;
+        }
+        [data-theme="light"] .lab-overlay {
+            background: rgba(255, 255, 255, 0.8) !important;
+        }
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme]) .lab-overlay {
+                background: rgba(255, 255, 255, 0.8) !important;
+            }
+        }
+
+        /* Visualisation réseau */
+        .lab-vis-area {
+            background: var(--dl-bg-primary) !important;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white">
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800/50">
+    <nav class="dl-nav sticky top-0 z-50 backdrop-blur-md border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <span class="text-xl">🧠</span>
                     </div>
-                    <span class="font-bold text-xl text-white">Deep Learning <span class="text-blue-400">Introduction</span></span>
+                    <span class="nav-title font-bold text-xl">Deep Learning <span class="nav-accent">Introduction</span></span>
                 </div>
                 <div class="hidden md:flex space-x-6 text-sm font-medium">
-                    <a href="#intro" class="text-gray-400 hover:text-white transition-colors">Introduction</a>
-                    <a href="#neuron" class="text-gray-400 hover:text-white transition-colors">Le Neurone</a>
-                    <a href="#forward" class="text-gray-400 hover:text-white transition-colors">Forward</a>
-                    <a href="#backprop" class="text-gray-400 hover:text-white transition-colors">Backprop</a>
-                    <a href="#optimizer" class="text-gray-400 hover:text-white transition-colors">Optimiseur</a>
-                    <a href="#simulation" class="text-blue-400 hover:text-blue-300 transition-colors font-semibold">Lab</a>
+                    <a href="#intro" class="transition-colors">Introduction</a>
+                    <a href="#neuron" class="transition-colors">Le Neurone</a>
+                    <a href="#forward" class="transition-colors">Forward</a>
+                    <a href="#backprop" class="transition-colors">Backprop</a>
+                    <a href="#optimizer" class="transition-colors">Optimiseur</a>
+                    <a href="#simulation" class="active transition-colors font-semibold">Lab</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="relative py-20 overflow-hidden border-b border-slate-800/50">
+    <header class="hero-section relative py-20 overflow-hidden border-b">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
             <div class="inline-block mb-6 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium">
                 Cours Interactif Complet
             </div>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold dl-text-primary tracking-tight mb-6">
                 Comment les réseaux de neurones <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">apprennent</span>
             </h1>
-            <p class="max-w-2xl mx-auto text-lg text-gray-400 mb-8 leading-relaxed">
+            <p class="max-w-2xl mx-auto text-lg dl-text-muted mb-8 leading-relaxed">
                 Un voyage pédagogique de zéro à expert, avec des analogies, des mathématiques progressives, et un laboratoire interactif pour expérimenter en temps réel.
             </p>
             <div class="flex flex-wrap justify-center gap-4 text-sm">
-                <span class="px-3 py-1 bg-slate-800 rounded-full text-gray-300">~30 min de lecture</span>
-                <span class="px-3 py-1 bg-slate-800 rounded-full text-gray-300">Niveau : Débutant → Intermédiaire</span>
-                <span class="px-3 py-1 bg-slate-800 rounded-full text-gray-300">Lab interactif inclus</span>
+                <span class="dl-badge px-3 py-1 rounded-full">~30 min de lecture</span>
+                <span class="dl-badge px-3 py-1 rounded-full">Niveau : Débutant → Intermédiaire</span>
+                <span class="dl-badge px-3 py-1 rounded-full">Lab interactif inclus</span>
             </div>
         </div>
-        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none"></div>
+        <div class="hero-grid absolute inset-0 bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none"></div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -224,10 +331,10 @@
         <section id="intro" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">🎯</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 1 : L'Objectif</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 1 : L'Objectif</h2>
             </div>
 
-            <div class="prose-content text-gray-300">
+            <div class="prose-content dl-text-secondary">
                 <p class="mb-6">
                     Imaginez que vous devez apprendre à un enfant à reconnaître des chats dans des photos. Vous ne lui donnez pas une liste de règles ("un chat a des oreilles pointues, des moustaches..."). À la place, vous lui montrez des milliers de photos en disant "chat" ou "pas chat". Petit à petit, il <em>apprend</em> à reconnaître les patterns.
                 </p>
@@ -237,7 +344,7 @@
                         <span class="text-2xl">🧠</span>
                         <div>
                             <h4 class="font-bold text-green-400 mb-2">Analogie : L'élève et le professeur</h4>
-                            <p class="text-gray-300 text-sm">
+                            <p class="dl-text-secondary text-sm">
                                 Un réseau de neurones est comme un élève qui fait un exercice, vérifie sa réponse, puis <strong>corrige ses erreurs</strong>. La rétropropagation est le mécanisme qui lui permet de savoir <em>comment</em> corriger chaque partie de son raisonnement.
                             </p>
                         </div>
@@ -249,20 +356,20 @@
                 </p>
 
                 <div class="grid md:grid-cols-3 gap-4 my-8">
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-center">
+                    <div class="dl-card p-4 rounded-xl border text-center">
                         <div class="text-3xl mb-2">➡️</div>
                         <h4 class="font-bold text-blue-400 mb-1">1. Forward Pass</h4>
-                        <p class="text-xs text-gray-400">Calculer une prédiction à partir de l'entrée</p>
+                        <p class="text-xs dl-text-muted">Calculer une prédiction à partir de l'entrée</p>
                     </div>
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-center">
+                    <div class="dl-card p-4 rounded-xl border text-center">
                         <div class="text-3xl mb-2">📏</div>
-                        <h4 class="font-bold text-yellow-400 mb-1">2. Mesurer l'Erreur</h4>
-                        <p class="text-xs text-gray-400">Comparer la prédiction à la vraie réponse</p>
+                        <h4 class="font-bold text-yellow-500 mb-1">2. Mesurer l'Erreur</h4>
+                        <p class="text-xs dl-text-muted">Comparer la prédiction à la vraie réponse</p>
                     </div>
-                    <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 text-center">
+                    <div class="dl-card p-4 rounded-xl border text-center">
                         <div class="text-3xl mb-2">⬅️</div>
                         <h4 class="font-bold text-red-400 mb-1">3. Backprop</h4>
-                        <p class="text-xs text-gray-400">Propager l'erreur pour corriger les poids</p>
+                        <p class="text-xs dl-text-muted">Propager l'erreur pour corriger les poids</p>
                     </div>
                 </div>
             </div>
@@ -272,17 +379,17 @@
         <section id="neuron" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">⚡</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 2 : Anatomie d'un Neurone</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 2 : Anatomie d'un Neurone</h2>
             </div>
 
-            <div class="prose-content text-gray-300">
+            <div class="prose-content dl-text-secondary">
                 <p class="mb-6">
                     Un neurone artificiel est une unité de calcul très simple. Il reçoit des nombres en entrée, les combine, et produit un nombre en sortie. Voici comment :
                 </p>
 
                 <div class="step-indicator">
                     <span class="step-number">1</span>
-                    <span class="text-white font-semibold">Somme pondérée</span>
+                    <span class="dl-text-primary font-semibold">Somme pondérée</span>
                 </div>
                 <p class="mb-4 ml-10">
                     Chaque entrée \(x_i\) est multipliée par un <strong>poids</strong> \(w_i\) (son "importance"), puis on additionne le tout avec un <strong>biais</strong> \(b\) :
@@ -293,7 +400,7 @@
 
                 <div class="step-indicator">
                     <span class="step-number">2</span>
-                    <span class="text-white font-semibold">Fonction d'activation</span>
+                    <span class="dl-text-primary font-semibold">Fonction d'activation</span>
                 </div>
                 <p class="mb-4 ml-10">
                     Cette somme passe dans une <strong>fonction d'activation</strong> qui introduit de la non-linéarité (sinon, empiler des couches ne servirait à rien !) :
@@ -307,15 +414,15 @@
                     <div class="grid md:grid-cols-3 gap-4 text-sm">
                         <div>
                             <span class="font-mono text-cyan-400">tanh(z)</span>
-                            <p class="text-gray-400 text-xs mt-1">Sortie entre -1 et 1. Utilisée dans notre simulation.</p>
+                            <p class="dl-text-muted text-xs mt-1">Sortie entre -1 et 1. Utilisée dans notre simulation.</p>
                         </div>
                         <div>
                             <span class="font-mono text-cyan-400">sigmoid(z)</span>
-                            <p class="text-gray-400 text-xs mt-1">Sortie entre 0 et 1. Idéale pour les probabilités.</p>
+                            <p class="dl-text-muted text-xs mt-1">Sortie entre 0 et 1. Idéale pour les probabilités.</p>
                         </div>
                         <div>
                             <span class="font-mono text-cyan-400">ReLU(z)</span>
-                            <p class="text-gray-400 text-xs mt-1">max(0, z). La plus populaire aujourd'hui.</p>
+                            <p class="dl-text-muted text-xs mt-1">max(0, z). La plus populaire aujourd'hui.</p>
                         </div>
                     </div>
                 </div>
@@ -325,7 +432,7 @@
                         <span class="text-2xl">🚰</span>
                         <div>
                             <h4 class="font-bold text-green-400 mb-2">Analogie : Le robinet et les tuyaux</h4>
-                            <p class="text-gray-300 text-sm">
+                            <p class="dl-text-secondary text-sm">
                                 Imaginez de l'eau qui coule dans des tuyaux. Les <strong>poids</strong> sont comme des vannes qui contrôlent le débit. Les <strong>biais</strong> ajoutent ou retirent un peu d'eau. La <strong>fonction d'activation</strong> est un filtre qui décide si l'eau passe ou non (et en quelle quantité).
                             </p>
                         </div>
@@ -338,10 +445,10 @@
         <section id="forward" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">➡️</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 3 : La Propagation Avant</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 3 : La Propagation Avant</h2>
             </div>
 
-            <div class="prose-content text-gray-300">
+            <div class="prose-content dl-text-secondary">
                 <p class="mb-6">
                     La <strong>propagation avant</strong> (forward propagation) est simplement le calcul de la sortie du réseau à partir d'une entrée. L'information "coule" de gauche à droite, couche par couche.
                 </p>
@@ -351,9 +458,9 @@
                 </p>
 
                 <div class="math-block">
-                    <p class="text-sm text-gray-400 mb-2">1. La somme pondérée :</p>
+                    <p class="text-sm dl-text-muted mb-2">1. La somme pondérée :</p>
                     $$ z^{[l]} = W^{[l]} \cdot a^{[l-1]} + b^{[l]} $$
-                    <p class="text-sm text-gray-400 mb-2 mt-4">2. L'activation :</p>
+                    <p class="text-sm dl-text-muted mb-2 mt-4">2. L'activation :</p>
                     $$ a^{[l]} = \sigma(z^{[l]}) $$
                 </div>
 
@@ -366,7 +473,7 @@
                         <span class="text-2xl">🏭</span>
                         <div>
                             <h4 class="font-bold text-green-400 mb-2">Analogie : La chaîne de production</h4>
-                            <p class="text-gray-300 text-sm">
+                            <p class="dl-text-secondary text-sm">
                                 Imaginez une usine avec plusieurs stations. La matière première (entrée) passe de station en station. Chaque station la transforme un peu (poids + activation). À la fin, vous obtenez le produit fini (prédiction). Si le produit est défectueux, vous devez remonter la chaîne pour trouver <em>quelle</em> station a fait une erreur.
                             </p>
                         </div>
@@ -379,10 +486,10 @@
         <section id="loss" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">📏</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 4 : Mesurer l'Erreur</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 4 : Mesurer l'Erreur</h2>
             </div>
 
-            <div class="prose-content text-gray-300">
+            <div class="prose-content dl-text-secondary">
                 <p class="mb-6">
                     Une fois qu'on a une prédiction \(\hat{y}\), il faut mesurer <strong>à quel point elle est fausse</strong>. C'est le rôle de la <strong>fonction de perte</strong> (loss function).
                 </p>
@@ -401,7 +508,7 @@
 
                 <div class="concept-box">
                     <h4 class="font-bold text-blue-400 mb-3">L'Objectif de l'Entraînement</h4>
-                    <p class="text-gray-300 text-sm">
+                    <p class="dl-text-secondary text-sm">
                         Trouver les valeurs de poids \(W\) et biais \(b\) qui <strong>minimisent</strong> la fonction de perte sur l'ensemble des données d'entraînement. C'est un problème d'<strong>optimisation</strong>.
                     </p>
                 </div>
@@ -411,7 +518,7 @@
                         <span class="text-2xl">⛰️</span>
                         <div>
                             <h4 class="font-bold text-green-400 mb-2">Analogie : La montagne dans le brouillard</h4>
-                            <p class="text-gray-300 text-sm">
+                            <p class="dl-text-secondary text-sm">
                                 Imaginez que vous êtes sur une montagne, les yeux bandés, et vous voulez descendre au point le plus bas (le minimum de la perte). Vous ne pouvez que <strong>tâter le sol autour de vous</strong> pour sentir la pente. À chaque pas, vous allez dans la direction qui descend le plus. C'est la <strong>descente de gradient</strong>.
                             </p>
                         </div>
@@ -424,10 +531,10 @@
         <section id="backprop" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">⬅️</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 5 : La Rétropropagation</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 5 : La Rétropropagation</h2>
             </div>
 
-            <div class="prose-content text-gray-300">
+            <div class="prose-content dl-text-secondary">
                 <p class="mb-6">
                     Maintenant, la question clé : <strong>comment ajuster chaque poids pour réduire l'erreur ?</strong>
                 </p>
@@ -438,22 +545,22 @@
 
                 <div class="concept-box">
                     <h4 class="font-bold text-blue-400 mb-3">La Règle de la Chaîne (Chain Rule)</h4>
-                    <p class="text-gray-300 text-sm mb-4">
+                    <p class="dl-text-secondary text-sm mb-4">
                         C'est l'outil mathématique fondamental. Si \(L\) dépend de \(a\), qui dépend de \(z\), qui dépend de \(w\), alors :
                     </p>
                     <div class="math-block text-center">
                         $$ \frac{\partial L}{\partial w} = \frac{\partial L}{\partial a} \cdot \frac{\partial a}{\partial z} \cdot \frac{\partial z}{\partial w} $$
                     </div>
-                    <p class="text-gray-400 text-xs mt-3">
+                    <p class="dl-text-muted text-xs mt-3">
                         On décompose un calcul complexe en une série de calculs simples, multipliés ensemble.
                     </p>
                 </div>
 
-                <h3 class="text-xl font-bold text-white mt-10 mb-4">Le Calcul Étape par Étape</h3>
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Le Calcul Étape par Étape</h3>
 
                 <div class="step-indicator">
                     <span class="step-number">1</span>
-                    <span class="text-white font-semibold">Erreur de sortie</span>
+                    <span class="dl-text-primary font-semibold">Erreur de sortie</span>
                 </div>
                 <p class="mb-4 ml-10">
                     On commence par la fin. Pour la dernière couche :
@@ -464,7 +571,7 @@
 
                 <div class="step-indicator">
                     <span class="step-number">2</span>
-                    <span class="text-white font-semibold">Propagation arrière de l'erreur</span>
+                    <span class="dl-text-primary font-semibold">Propagation arrière de l'erreur</span>
                 </div>
                 <p class="mb-4 ml-10">
                     Pour chaque couche précédente, on "propage" l'erreur en arrière :
@@ -472,20 +579,20 @@
                 <div class="math-block text-sm">
                     $$ \delta^{[l]} = \delta^{[l+1]} \cdot W^{[l+1]} \cdot \sigma'(z^{[l]}) $$
                 </div>
-                <p class="mb-6 ml-10 text-sm text-gray-400">
+                <p class="mb-6 ml-10 text-sm dl-text-muted">
                     Où \(\sigma'(z)\) est la dérivée de la fonction d'activation. Pour tanh : \(\sigma'(z) = 1 - \tanh^2(z)\).
                 </p>
 
                 <div class="step-indicator">
                     <span class="step-number">3</span>
-                    <span class="text-white font-semibold">Calcul des gradients</span>
+                    <span class="dl-text-primary font-semibold">Calcul des gradients</span>
                 </div>
                 <p class="mb-4 ml-10">
                     Maintenant qu'on a les \(\delta\) pour chaque couche, on calcule le gradient pour chaque poids :
                 </p>
                 <div class="math-block text-sm">
                     $$ \frac{\partial L}{\partial W^{[l]}} = \delta^{[l]} \cdot (a^{[l-1]})^T $$
-                    <p class="text-gray-400 text-xs mt-2">
+                    <p class="dl-text-muted text-xs mt-2">
                         Le gradient d'un poids = erreur locale × entrée de ce poids
                     </p>
                 </div>
@@ -495,7 +602,7 @@
                         <span class="text-2xl">💡</span>
                         <div>
                             <h4 class="font-bold text-green-400 mb-2">Analogie : Le jeu du téléphone inversé</h4>
-                            <p class="text-gray-300 text-sm">
+                            <p class="dl-text-secondary text-sm">
                                 Imaginez une file de personnes. Le dernier reçoit un message "tu t'es trompé de X". Il chuchote à la personne devant lui "c'est en partie ta faute". Cette personne calcule sa part de responsabilité et transmet le message. À la fin, chaque personne sait <strong>à quel point elle a contribué</strong> à l'erreur finale.
                             </p>
                         </div>
@@ -506,8 +613,8 @@
                     <div class="flex items-start gap-3">
                         <span class="text-2xl">⚠️</span>
                         <div>
-                            <h4 class="font-bold text-yellow-400 mb-2">Pourquoi c'est efficace ?</h4>
-                            <p class="text-gray-300 text-sm">
+                            <h4 class="font-bold text-yellow-500 mb-2">Pourquoi c'est efficace ?</h4>
+                            <p class="dl-text-secondary text-sm">
                                 L'alternative naïve serait de calculer la dérivée pour chaque poids <strong>indépendamment</strong>, en faisant une forward pass à chaque fois. Avec 1 million de poids, cela ferait 1 million de forward passes ! La backprop fait le même travail en <strong>1 forward pass + 1 backward pass</strong>. C'est un gain de temps gigantesque.
                             </p>
                         </div>
@@ -520,10 +627,10 @@
         <section id="optimizer" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">🔧</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 6 : La Descente de Gradient & Adam</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 6 : La Descente de Gradient & Adam</h2>
             </div>
 
-            <div class="prose-content text-gray-300">
+            <div class="prose-content dl-text-secondary">
                 <p class="mb-6">
                     Maintenant qu'on a les gradients, on peut mettre à jour les poids. La méthode la plus simple est la <strong>Descente de Gradient</strong> (Gradient Descent) :
                 </p>
@@ -539,33 +646,33 @@
                 <div class="grid md:grid-cols-2 gap-4 my-8">
                     <div class="bg-red-500/10 border border-red-500/30 p-4 rounded-xl">
                         <h4 class="font-bold text-red-400 mb-2">η trop grand</h4>
-                        <p class="text-sm text-gray-400">On "saute" par-dessus le minimum, oscillation, divergence possible.</p>
+                        <p class="text-sm dl-text-muted">On "saute" par-dessus le minimum, oscillation, divergence possible.</p>
                     </div>
                     <div class="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-xl">
-                        <h4 class="font-bold text-yellow-400 mb-2">η trop petit</h4>
-                        <p class="text-sm text-gray-400">Convergence très lente, risque de rester coincé dans un minimum local.</p>
+                        <h4 class="font-bold text-yellow-500 mb-2">η trop petit</h4>
+                        <p class="text-sm dl-text-muted">Convergence très lente, risque de rester coincé dans un minimum local.</p>
                     </div>
                 </div>
 
-                <h3 class="text-xl font-bold text-white mt-10 mb-4">L'Optimiseur Adam</h3>
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">L'Optimiseur Adam</h3>
 
                 <p class="mb-6">
                     La descente de gradient "vanilla" a des limitations. L'<strong>optimiseur Adam</strong> (Adaptive Moment Estimation) combine deux améliorations :
                 </p>
 
                 <div class="grid md:grid-cols-2 gap-6 my-8">
-                    <div class="bg-slate-800/50 p-5 rounded-xl border border-slate-700">
+                    <div class="dl-card p-5 rounded-xl border">
                         <h4 class="font-bold text-purple-400 mb-3">Momentum</h4>
-                        <p class="text-sm text-gray-400 mb-3">
+                        <p class="text-sm dl-text-muted mb-3">
                             Au lieu d'utiliser uniquement le gradient actuel, on utilise une <strong>moyenne mobile</strong> des gradients passés. Cela "lisse" la trajectoire et accélère la convergence.
                         </p>
                         <div class="math-block text-xs py-2">
                             $$ m_t = \beta_1 \cdot m_{t-1} + (1-\beta_1) \cdot g_t $$
                         </div>
                     </div>
-                    <div class="bg-slate-800/50 p-5 rounded-xl border border-slate-700">
+                    <div class="dl-card p-5 rounded-xl border">
                         <h4 class="font-bold text-orange-400 mb-3">Taux Adaptatif</h4>
-                        <p class="text-sm text-gray-400 mb-3">
+                        <p class="text-sm dl-text-muted mb-3">
                             Chaque poids a son propre learning rate qui s'ajuste en fonction de la <strong>variance de ses gradients</strong>. Un poids avec des gradients stables avance plus vite.
                         </p>
                         <div class="math-block text-xs py-2">
@@ -579,7 +686,7 @@
                         <span class="text-2xl">⚽</span>
                         <div>
                             <h4 class="font-bold text-green-400 mb-2">Analogie : La balle qui roule</h4>
-                            <p class="text-gray-300 text-sm">
+                            <p class="dl-text-secondary text-sm">
                                 Imaginez une balle qui roule dans une vallée. Le <strong>momentum</strong>, c'est son inertie : si elle roule toujours dans la même direction, elle accélère. Le <strong>taux adaptatif</strong>, c'est comme si la balle freinait automatiquement quand le terrain devient chaotique, mais accélérait sur les lignes droites.
                             </p>
                         </div>
@@ -592,10 +699,10 @@
         <section id="history" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">📜</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 7 : Un Peu d'Histoire</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 7 : Un Peu d'Histoire</h2>
             </div>
 
-            <div class="prose-content text-gray-300">
+            <div class="prose-content dl-text-secondary">
                 <p class="mb-8">
                     La rétropropagation n'est pas une invention soudaine, mais le fruit de décennies de recherche en mathématiques, théorie du contrôle, et informatique.
                 </p>
@@ -603,28 +710,28 @@
                 <div class="space-y-6">
                     <div class="history-card">
                         <span class="text-cyan-400 font-mono text-xs mb-1 block">1960s - Aérospatiale</span>
-                        <h3 class="text-lg font-semibold text-white">Kelley & Bryson</h3>
-                        <p class="text-gray-400 mt-1 text-sm">Utilisent les gradients pour optimiser les trajectoires de fusées. Les bases mathématiques existent déjà !</p>
+                        <h3 class="text-lg font-semibold dl-text-primary">Kelley & Bryson</h3>
+                        <p class="dl-text-muted mt-1 text-sm">Utilisent les gradients pour optimiser les trajectoires de fusées. Les bases mathématiques existent déjà !</p>
                     </div>
                     <div class="history-card">
                         <span class="text-cyan-400 font-mono text-xs mb-1 block">1970 - Différentiation Automatique</span>
-                        <h3 class="text-lg font-semibold text-white">Seppo Linnainmaa</h3>
-                        <p class="text-gray-400 mt-1 text-sm">Formalise le "mode inverse" de la différentiation automatique. C'est l'algorithme qui rend le calcul efficace.</p>
+                        <h3 class="text-lg font-semibold dl-text-primary">Seppo Linnainmaa</h3>
+                        <p class="dl-text-muted mt-1 text-sm">Formalise le "mode inverse" de la différentiation automatique. C'est l'algorithme qui rend le calcul efficace.</p>
                     </div>
                     <div class="history-card">
                         <span class="text-cyan-400 font-mono text-xs mb-1 block">1974 - La Thèse Oubliée</span>
-                        <h3 class="text-lg font-semibold text-white">Paul Werbos</h3>
-                        <p class="text-gray-400 mt-1 text-sm">Dans sa thèse de PhD, il propose explicitement d'appliquer cela aux réseaux de neurones. Malheureusement, c'est l'époque de "l'hiver de l'IA" et personne n'y prête attention.</p>
+                        <h3 class="text-lg font-semibold dl-text-primary">Paul Werbos</h3>
+                        <p class="dl-text-muted mt-1 text-sm">Dans sa thèse de PhD, il propose explicitement d'appliquer cela aux réseaux de neurones. Malheureusement, c'est l'époque de "l'hiver de l'IA" et personne n'y prête attention.</p>
                     </div>
                     <div class="history-card">
                         <span class="text-cyan-400 font-mono text-xs mb-1 block">1986 - Le Triomphe</span>
-                        <h3 class="text-lg font-semibold text-white">Rumelhart, Hinton & Williams</h3>
-                        <p class="text-gray-400 mt-1 text-sm">Leur article dans <em>Nature</em> popularise enfin la technique. Ils montrent qu'un réseau peut apprendre des représentations internes, résolvant le fameux problème XOR.</p>
+                        <h3 class="text-lg font-semibold dl-text-primary">Rumelhart, Hinton & Williams</h3>
+                        <p class="dl-text-muted mt-1 text-sm">Leur article dans <em>Nature</em> popularise enfin la technique. Ils montrent qu'un réseau peut apprendre des représentations internes, résolvant le fameux problème XOR.</p>
                     </div>
                     <div class="history-card">
                         <span class="text-cyan-400 font-mono text-xs mb-1 block">2015 - L'Ère Moderne</span>
-                        <h3 class="text-lg font-semibold text-white">Kingma & Ba</h3>
-                        <p class="text-gray-400 mt-1 text-sm">Publication de l'optimiseur Adam, qui devient rapidement le standard pour entraîner les réseaux profonds.</p>
+                        <h3 class="text-lg font-semibold dl-text-primary">Kingma & Ba</h3>
+                        <p class="dl-text-muted mt-1 text-sm">Publication de l'optimiseur Adam, qui devient rapidement le standard pour entraîner les réseaux profonds.</p>
                     </div>
                 </div>
             </div>
@@ -634,16 +741,16 @@
         <section id="pitfalls" class="mb-24 scroll-mt-24">
             <div class="flex items-center gap-3 mb-6">
                 <span class="text-3xl">⚠️</span>
-                <h2 class="text-3xl font-bold text-white">Chapitre 8 : Pièges Classiques</h2>
+                <h2 class="text-3xl font-bold dl-text-primary">Chapitre 8 : Pièges Classiques</h2>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
-                <div class="card-hover bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                <div class="card-hover dl-card p-6 rounded-xl border">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">📉</div>
-                        <h3 class="text-lg font-bold text-white">Vanishing Gradient</h3>
+                        <h3 class="text-lg font-bold dl-text-primary">Vanishing Gradient</h3>
                     </div>
-                    <p class="text-sm text-gray-400 mb-4">
+                    <p class="text-sm dl-text-muted mb-4">
                         Dans les réseaux très profonds, les gradients se multiplient couche après couche. Si chaque dérivée est &lt; 1, le gradient devient minuscule et les premières couches n'apprennent plus.
                     </p>
                     <div class="text-xs text-blue-400 font-mono">
@@ -651,12 +758,12 @@
                     </div>
                 </div>
 
-                <div class="card-hover bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                <div class="card-hover dl-card p-6 rounded-xl border">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">🕳️</div>
-                        <h3 class="text-lg font-bold text-white">Minimums Locaux</h3>
+                        <h3 class="text-lg font-bold dl-text-primary">Minimums Locaux</h3>
                     </div>
-                    <p class="text-sm text-gray-400 mb-4">
+                    <p class="text-sm dl-text-muted mb-4">
                         La descente de gradient peut rester coincée dans un "creux" qui n'est pas le minimum global. En pratique, en haute dimension, c'est moins problématique qu'on ne le pensait.
                     </p>
                     <div class="text-xs text-purple-400 font-mono">
@@ -664,25 +771,25 @@
                     </div>
                 </div>
 
-                <div class="card-hover bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                <div class="card-hover dl-card p-6 rounded-xl border">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center">📚</div>
-                        <h3 class="text-lg font-bold text-white">Overfitting</h3>
+                        <h3 class="text-lg font-bold dl-text-primary">Overfitting</h3>
                     </div>
-                    <p class="text-sm text-gray-400 mb-4">
+                    <p class="text-sm dl-text-muted mb-4">
                         Le réseau "apprend par cœur" les données d'entraînement au lieu de généraliser. Il performe bien sur les données vues, mais mal sur les nouvelles.
                     </p>
-                    <div class="text-xs text-yellow-400 font-mono">
+                    <div class="text-xs text-yellow-500 font-mono">
                         Solutions : Early Stopping, Dropout, Regularization
                     </div>
                 </div>
 
-                <div class="card-hover bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                <div class="card-hover dl-card p-6 rounded-xl border">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">💥</div>
-                        <h3 class="text-lg font-bold text-white">Exploding Gradient</h3>
+                        <h3 class="text-lg font-bold dl-text-primary">Exploding Gradient</h3>
                     </div>
-                    <p class="text-sm text-gray-400 mb-4">
+                    <p class="text-sm dl-text-muted mb-4">
                         L'inverse du vanishing : les gradients deviennent énormes et font "exploser" les poids vers l'infini.
                     </p>
                     <div class="text-xs text-orange-400 font-mono">
@@ -697,11 +804,11 @@
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">🧪</span>
-                    <h2 class="text-3xl font-bold text-white">Laboratoire Interactif</h2>
+                    <h2 class="text-3xl font-bold dl-text-primary">Laboratoire Interactif</h2>
                 </div>
                 <div class="flex gap-3 items-center">
-                     <span class="text-xs text-gray-400 uppercase tracking-wide hidden sm:inline">Problème:</span>
-                     <select id="task-select" class="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg px-3 py-2 cursor-pointer">
+                     <span class="text-xs dl-text-muted uppercase tracking-wide hidden sm:inline">Problème:</span>
+                     <select id="task-select" class="dl-select text-sm rounded-lg px-3 py-2 cursor-pointer border">
                         <option value="xor">XOR (Logique)</option>
                         <option value="circle">Cercle (Classification)</option>
                         <option value="sine">Sinus (Régression)</option>
@@ -710,77 +817,77 @@
                 </div>
             </div>
 
-            <p class="text-gray-400 mb-6">
+            <p class="dl-text-muted mb-6">
                 Mettez en pratique ce que vous avez appris ! Observez le réseau apprendre en temps réel. Les lignes jaunes indiquent les poids avec un fort gradient (qui changent beaucoup).
             </p>
 
             <!-- THE APP CONTAINER -->
-            <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col lg:flex-row min-h-[650px]">
+            <div class="dl-bg-primary rounded-2xl border dl-border overflow-hidden shadow-2xl flex flex-col lg:flex-row min-h-[650px]">
 
                 <!-- SIDEBAR CONTROLS -->
-                <aside class="w-full lg:w-72 bg-slate-900/80 border-r border-slate-800 p-4 flex flex-col gap-4 overflow-y-auto">
+                <aside class="lab-sidebar w-full lg:w-72 border-r p-4 flex flex-col gap-4 overflow-y-auto">
 
                     <!-- Control Panel -->
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 space-y-4">
+                    <div class="lab-panel p-4 rounded-xl border space-y-4">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider">Contrôles</h3>
+                            <h3 class="text-xs font-bold dl-text-secondary uppercase tracking-wider">Contrôles</h3>
                             <div class="flex items-center gap-2">
-                                <span id="status-text" class="text-[10px] text-gray-500 uppercase">Prêt</span>
+                                <span id="status-text" class="text-[10px] dl-text-muted uppercase">Prêt</span>
                                 <div class="w-2.5 h-2.5 rounded-full bg-slate-500" id="status-dot"></div>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-between">
                             <div>
-                                <label class="text-xs text-gray-300 block">Rendu Visuel</label>
-                                <p class="text-[10px] text-gray-500">Désactiver = plus rapide</p>
+                                <label class="text-xs dl-text-secondary block">Rendu Visuel</label>
+                                <p class="text-[10px] dl-text-muted">Désactiver = plus rapide</p>
                             </div>
                             <div id="render-toggle" class="toggle-switch active" data-active="true"></div>
                         </div>
 
                         <div class="flex items-center justify-between">
                             <div>
-                                <label class="text-xs text-gray-300 block">Auto-Stop</label>
-                                <p class="text-[10px] text-gray-500">Arrêt si sur-apprentissage</p>
+                                <label class="text-xs dl-text-secondary block">Auto-Stop</label>
+                                <p class="text-[10px] dl-text-muted">Arrêt si sur-apprentissage</p>
                             </div>
                             <div id="autostop-toggle" class="toggle-switch" data-active="false"></div>
                         </div>
 
                         <div>
-                            <div class="flex justify-between text-xs text-gray-400 mb-2">
+                            <div class="flex justify-between text-xs dl-text-muted mb-2">
                                 <span>Learning Rate (η)</span>
                                 <span id="lr-val" class="text-blue-400 font-mono font-semibold">0.01</span>
                             </div>
-                            <input type="range" id="lr-input" min="0.001" max="0.1" step="0.001" value="0.01" class="w-full h-1.5 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                            <input type="range" id="lr-input" min="0.001" max="0.1" step="0.001" value="0.01" class="dl-input w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-blue-500">
                         </div>
 
                         <div class="grid grid-cols-2 gap-2 pt-2">
                             <button id="btn-train" class="col-span-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-blue-900/30 flex items-center justify-center gap-2">
                                 <span>DÉMARRER</span>
                             </button>
-                            <button id="btn-reset" class="bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg text-xs font-medium transition border border-slate-600">Reset</button>
-                            <button id="btn-step" class="bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg text-xs font-medium transition border border-slate-600">+1 Epoch</button>
+                            <button id="btn-reset" class="dl-bg-tertiary hover:opacity-80 dl-text-primary py-2 rounded-lg text-xs font-medium transition border dl-border">Reset</button>
+                            <button id="btn-step" class="dl-bg-tertiary hover:opacity-80 dl-text-primary py-2 rounded-lg text-xs font-medium transition border dl-border">+1 Epoch</button>
                         </div>
                     </div>
 
                     <!-- Stats Panel -->
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700 flex-grow flex flex-col min-h-[250px]">
-                        <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">Métriques</h3>
+                    <div class="lab-panel p-4 rounded-xl border flex-grow flex flex-col min-h-[250px]">
+                        <h3 class="text-xs font-bold dl-text-secondary uppercase tracking-wider mb-3">Métriques</h3>
                         <div class="grid grid-cols-2 gap-2 mb-3">
-                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                                <span class="text-[10px] text-gray-500 block">Epochs</span>
-                                <span id="metric-epoch" class="text-sm font-mono text-white font-bold">0</span>
+                            <div class="lab-metric p-2 rounded-lg border">
+                                <span class="text-[10px] dl-text-muted block">Epochs</span>
+                                <span id="metric-epoch" class="text-sm font-mono dl-text-primary font-bold">0</span>
                             </div>
-                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                                <span class="text-[10px] text-gray-500 block">Train Loss</span>
+                            <div class="lab-metric p-2 rounded-lg border">
+                                <span class="text-[10px] dl-text-muted block">Train Loss</span>
                                 <span id="metric-loss" class="text-sm font-mono text-red-400 font-bold">0.000</span>
                             </div>
-                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800">
-                                <span class="text-[10px] text-gray-500 block">Val Loss</span>
-                                <span id="metric-val-loss" class="text-sm font-mono text-yellow-400 font-bold">0.000</span>
+                            <div class="lab-metric p-2 rounded-lg border">
+                                <span class="text-[10px] dl-text-muted block">Val Loss</span>
+                                <span id="metric-val-loss" class="text-sm font-mono text-yellow-500 font-bold">0.000</span>
                             </div>
-                            <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800 relative">
-                                <span class="text-[10px] text-gray-500 block">Best Val</span>
+                            <div class="lab-metric p-2 rounded-lg border relative">
+                                <span class="text-[10px] dl-text-muted block">Best Val</span>
                                 <span id="metric-best-loss" class="text-sm font-mono text-green-400 font-bold">∞</span>
                                 <div id="overfit-indicator" class="absolute top-1 right-1 hidden">
                                     <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" title="Sur-apprentissage"></div>
@@ -791,36 +898,36 @@
                         <div class="flex-grow min-h-[80px] relative">
                             <canvas id="lossChart"></canvas>
                         </div>
-                        <div class="flex justify-center gap-4 mt-2 text-[10px]">
+                        <div class="flex justify-center gap-4 mt-2 text-[10px] dl-text-muted">
                             <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-red-400 rounded"></span> Train</span>
                             <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-yellow-400 rounded"></span> Val</span>
                         </div>
                     </div>
 
-                    <div class="text-[11px] text-center text-gray-500 font-mono bg-slate-800/40 rounded-lg py-2 px-3 border border-slate-700/50">
-                        Arch: <span id="arch-display" class="text-gray-300">...</span>
+                    <div class="text-[11px] text-center dl-text-muted font-mono dl-bg-tertiary rounded-lg py-2 px-3 border dl-border">
+                        Arch: <span id="arch-display" class="dl-text-secondary">...</span>
                     </div>
                 </aside>
 
                 <!-- VISUALIZATION AREA -->
-                <div class="flex-grow flex flex-col md:flex-row bg-[#020617] relative">
-                    <div class="flex-1 border-b md:border-b-0 md:border-r border-slate-800 relative overflow-hidden min-h-[250px]">
-                        <div class="absolute top-3 left-3 z-10 bg-slate-900/90 px-3 py-1.5 rounded-lg text-[11px] font-bold text-gray-300 border border-slate-700 backdrop-blur-sm pointer-events-none">
+                <div class="lab-vis-area flex-grow flex flex-col md:flex-row relative">
+                    <div class="flex-1 border-b md:border-b-0 md:border-r dl-border relative overflow-hidden min-h-[250px]">
+                        <div class="absolute top-3 left-3 z-10 dl-bg-secondary px-3 py-1.5 rounded-lg text-[11px] font-bold dl-text-secondary border dl-border backdrop-blur-sm pointer-events-none">
                             Réseau (Forward →, Backprop ←)
                         </div>
                         <canvas id="networkCanvas" class="w-full h-full"></canvas>
                     </div>
 
                     <div class="flex-1 relative overflow-hidden min-h-[250px]">
-                        <div class="absolute top-3 left-3 z-10 bg-slate-900/90 px-3 py-1.5 rounded-lg text-[11px] font-bold text-gray-300 border border-slate-700 backdrop-blur-sm pointer-events-none">
+                        <div class="absolute top-3 left-3 z-10 dl-bg-secondary px-3 py-1.5 rounded-lg text-[11px] font-bold dl-text-secondary border dl-border backdrop-blur-sm pointer-events-none">
                             Prédictions du réseau
                         </div>
                         <canvas id="visCanvas" class="w-full h-full"></canvas>
 
-                        <div id="fast-mode-overlay" class="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center hidden">
+                        <div id="fast-mode-overlay" class="lab-overlay absolute inset-0 backdrop-blur-sm flex items-center justify-center hidden">
                             <div class="text-center">
                                 <div class="w-10 h-10 border-4 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin mx-auto mb-3"></div>
-                                <div class="text-yellow-400 font-bold">Mode Rapide</div>
+                                <div class="text-yellow-500 font-bold">Mode Rapide</div>
                             </div>
                         </div>
                     </div>
@@ -831,8 +938,8 @@
         <!-- CONCLUSION -->
         <section id="conclusion" class="mb-16">
             <div class="concept-box">
-                <h3 class="text-xl font-bold text-white mb-4">Résumé</h3>
-                <ol class="list-decimal list-inside space-y-3 text-gray-300">
+                <h3 class="text-xl font-bold dl-text-primary mb-4">Résumé</h3>
+                <ol class="list-decimal list-inside space-y-3 dl-text-secondary">
                     <li><strong>Forward Pass</strong> : L'entrée traverse le réseau couche par couche pour produire une prédiction.</li>
                     <li><strong>Fonction de Perte</strong> : Mesure l'écart entre la prédiction et la vraie réponse.</li>
                     <li><strong>Backpropagation</strong> : Utilise la règle de la chaîne pour calculer la "responsabilité" de chaque poids dans l'erreur.</li>
@@ -846,21 +953,21 @@
 
     <!-- Toast -->
     <div id="toast" class="toast">
-        <div class="bg-slate-800 border border-slate-600 rounded-xl shadow-2xl p-4 flex items-center gap-3 max-w-sm">
+        <div class="dl-bg-secondary border dl-border rounded-xl shadow-2xl p-4 flex items-center gap-3 max-w-sm">
             <div id="toast-icon" class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
                 <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <div id="toast-title" class="text-white font-semibold text-sm">Early Stop</div>
-                <div id="toast-message" class="text-gray-400 text-xs">Convergence atteinte</div>
+                <div id="toast-title" class="dl-text-primary font-semibold text-sm">Early Stop</div>
+                <div id="toast-message" class="dl-text-muted text-xs">Convergence atteinte</div>
             </div>
-            <button onclick="hideToast()" class="text-gray-500 hover:text-white ml-2">✕</button>
+            <button onclick="hideToast()" class="dl-text-muted hover:opacity-70 ml-2">✕</button>
         </div>
     </div>
 
-    <footer class="border-t border-slate-800 bg-slate-900/50 py-8 text-center text-gray-500 text-sm">
+    <footer class="dl-footer border-t py-8 text-center text-sm">
         <p>Cours généré pour expliquer les fondamentaux du Deep Learning</p>
     </footer>
 
