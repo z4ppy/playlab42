@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go 9x9 - Playlab42</title>
+    <link rel="stylesheet" href="/lib/theme.css">
+    <style>
+        :root {
+            --board-size: min(80vmin, 720px);
+            --cell-size: calc(var(--board-size) / 9);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: var(--font-size-xl);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: var(--space-xl);
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .panel {
+            background: var(--color-bg-secondary);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .board-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        .board {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            width: var(--board-size);
+            height: var(--board-size);
+            background: #d2a15f;
+            border: 6px solid #b58646;
+            box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .cell {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .cell:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .stone {
+            position: absolute;
+            inset: 8%;
+            border-radius: 50%;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.35);
+        }
+
+        .stone.black {
+            background: #1a1a1a;
+        }
+
+        .stone.white {
+            background: #f5f5f5;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .last-move::after {
+            content: '';
+            position: absolute;
+            inset: 45%;
+            width: 10%;
+            height: 10%;
+            border-radius: 50%;
+            background: var(--color-accent);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .controls label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-muted);
+        }
+
+        select,
+        button {
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            font-size: var(--font-size-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            background: var(--color-bg);
+            color: var(--color-text);
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-accent-hover);
+        }
+
+        .status {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+        }
+
+        .card {
+            padding: var(--space-md);
+            background: var(--color-bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-md);
+        }
+
+        .scores div {
+            font-size: var(--font-size-md);
+        }
+
+        .legend {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-muted);
+            line-height: 1.4;
+        }
+
+        @media (max-width: 960px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            :root {
+                --board-size: 92vw;
+            }
+        }
+    </style>
+    <script type="module">
+        import { initTheme } from '/lib/theme.js';
+        initTheme();
+    </script>
+</head>
+
+<body>
+    <h1>⚫ Go 9x9</h1>
+    <div class="layout">
+        <div class="panel">
+            <div class="status" id="status">Configurez et jouez</div>
+            <div class="board-wrapper">
+                <div class="board" id="board"></div>
+            </div>
+            <div class="legend" style="margin-top: var(--space-md);">
+                Règles : ko simple, suicide interdit, scoring chinois (komi 6.5). Actions : placer, passer, résigner.
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="controls">
+                <label for="bot-select">Adversaire</label>
+                <select id="bot-select">
+                    <option value="random">🤖 Random (défaut)</option>
+                    <option value="greedy">🤖 Greedy</option>
+                    <option value="human">👤 Hot-seat</option>
+                </select>
+                <button class="btn-primary" id="btn-start">Démarrer</button>
+                <button id="btn-pass">Passer</button>
+                <button id="btn-resign">Résigner</button>
+                <button id="btn-reset">Reset</button>
+            </div>
+
+            <div class="meta" style="margin-top: var(--space-lg);">
+                <div class="card">
+                    <div>Captures Noir (vous)</div>
+                    <strong id="captures-black">0</strong>
+                </div>
+                <div class="card">
+                    <div>Captures Blanc</div>
+                    <strong id="captures-white">0</strong>
+                </div>
+                <div class="card">
+                    <div>Score Noir</div>
+                    <strong id="score-black">-</strong>
+                </div>
+                <div class="card">
+                    <div>Score Blanc</div>
+                    <strong id="score-white">-</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { $, on } from '/lib/dom.js';
+        import { SeededRandom } from '/lib/seeded-random.js';
+        import { Go9x9Engine } from './engine.js';
+        import { RandomBot } from './bots/random.js';
+        import { GreedyBot } from './bots/greedy.js';
+
+        const boardEl = $('#board');
+        const statusEl = $('#status');
+        const capturesBlackEl = $('#captures-black');
+        const capturesWhiteEl = $('#captures-white');
+        const scoreBlackEl = $('#score-black');
+        const scoreWhiteEl = $('#score-white');
+        const botSelect = $('#bot-select');
+        const btnStart = $('#btn-start');
+        const btnPass = $('#btn-pass');
+        const btnResign = $('#btn-resign');
+        const btnReset = $('#btn-reset');
+
+        const engine = new Go9x9Engine();
+        const humanId = 'black';
+        const opponentId = 'white';
+
+        let state = null;
+        let rng = null;
+        let bot = null;
+
+        function buildBoard() {
+            boardEl.innerHTML = '';
+            for (let y = 0; y < 9; y++) {
+                for (let x = 0; x < 9; x++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'cell';
+                    btn.dataset.x = x;
+                    btn.dataset.y = y;
+                    on(btn, 'click', () => handleHumanMove(x, y));
+                    boardEl.appendChild(btn);
+                }
+            }
+        }
+
+        function startGame() {
+            rng = new SeededRandom(Date.now());
+            const seed = rng.getState();
+
+            const playerIds = [humanId, opponentId];
+            state = engine.init({ seed, playerIds });
+
+            const opponent = botSelect.value;
+            if (opponent === 'human') {
+                bot = null;
+            } else {
+                bot = opponent === 'greedy' ? new GreedyBot() : new RandomBot();
+                bot.onGameStart(opponentId, state);
+            }
+
+            render();
+
+            if (state.currentPlayerId === opponentId && bot) {
+                setTimeout(playBot, 300);
+            }
+        }
+
+        function handleHumanMove(x, y) {
+            if (!state || state.gameOver) return;
+            if (state.currentPlayerId !== humanId) return;
+            const action = { type: 'place', x, y };
+            if (!engine.isValidAction(state, action, humanId)) return;
+            state = engine.applyAction(state, action, humanId);
+            render();
+            maybeBotTurn();
+        }
+
+        function maybeBotTurn() {
+            if (!bot || state.gameOver) return;
+            if (state.currentPlayerId !== opponentId) return;
+            setTimeout(playBot, 150);
+        }
+
+        function playBot() {
+            if (!bot || state.gameOver || state.currentPlayerId !== opponentId) return;
+            const valid = engine.getValidActions(state, opponentId);
+            const action = bot.chooseAction(state, valid, rng);
+            state = engine.applyAction(state, action, opponentId);
+            render();
+        }
+
+        function pass() {
+            if (!state || state.gameOver) return;
+            const player = state.currentPlayerId;
+            state = engine.applyAction(state, { type: 'pass' }, player);
+            render();
+            maybeBotTurn();
+        }
+
+        function resign() {
+            if (!state || state.gameOver) return;
+            const player = state.currentPlayerId;
+            state = engine.applyAction(state, { type: 'resign' }, player);
+            render();
+        }
+
+        function render() {
+            if (!state) return;
+
+            boardEl.querySelectorAll('.cell').forEach((cell) => {
+                const x = Number(cell.dataset.x);
+                const y = Number(cell.dataset.y);
+                const value = state.board[y][x];
+                cell.innerHTML = '';
+                cell.classList.remove('last-move');
+                if (value === 1 || value === 2) {
+                    const stone = document.createElement('div');
+                    stone.className = `stone ${value === 1 ? 'black' : 'white'}`;
+                    cell.appendChild(stone);
+                }
+                if (state.lastMove && state.lastMove.type === 'place' && state.lastMove.x === x && state.lastMove.y === y) {
+                    cell.classList.add('last-move');
+                }
+            });
+
+            const captures = state.captures || {};
+            capturesBlackEl.textContent = captures[humanId] ?? 0;
+            capturesWhiteEl.textContent = captures[opponentId] ?? 0;
+
+            if (state.scores) {
+                scoreBlackEl.textContent = state.scores.black.toFixed(1);
+                scoreWhiteEl.textContent = state.scores.white.toFixed(1);
+            } else {
+                scoreBlackEl.textContent = '-';
+                scoreWhiteEl.textContent = '-';
+            }
+
+            if (state.gameOver) {
+                if (state.winners === null) {
+                    statusEl.textContent = 'Partie terminée : égalité';
+                } else if (state.winners.includes(humanId)) {
+                    statusEl.textContent = 'Victoire Noir';
+                } else if (state.winners.includes(opponentId)) {
+                    statusEl.textContent = 'Victoire Blanc';
+                } else {
+                    statusEl.textContent = 'Partie terminée';
+                }
+            } else {
+                statusEl.textContent = state.currentPlayerId === humanId ? 'À vous (Noir)' : 'À l’adversaire (Blanc)';
+            }
+        }
+
+        on(btnStart, 'click', startGame);
+        on(btnPass, 'click', pass);
+        on(btnResign, 'click', resign);
+        on(btnReset, 'click', startGame);
+
+        buildBoard();
+        startGame();
+    </script>
+</body>
+
+</html>

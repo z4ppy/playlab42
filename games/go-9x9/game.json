@@ -1,0 +1,41 @@
+{
+    "id": "go-9x9",
+    "name": "Go 9x9",
+    "description": "Plateau 9x9, ko simple, scoring chinois (komi 6.5)",
+    "players": {
+        "min": 2,
+        "max": 2
+    },
+    "type": "turn-based",
+    "tags": [
+        "strategy",
+        "board",
+        "abstract"
+    ],
+    "author": "Playlab42",
+    "icon": "⚫",
+    "version": "1.0.0",
+    "controls": "mouse",
+    "orientation": "desktop",
+    "minWidth": 960,
+    "minHeight": 640,
+    "defaultConfig": {
+        "boardSize": 9,
+        "komi": 6.5
+    },
+    "bots": {
+        "default": "Random",
+        "available": [
+            {
+                "name": "Random",
+                "file": "bots/random.js",
+                "difficulty": "easy"
+            },
+            {
+                "name": "Greedy",
+                "file": "bots/greedy.js",
+                "difficulty": "medium"
+            }
+        ]
+    }
+}

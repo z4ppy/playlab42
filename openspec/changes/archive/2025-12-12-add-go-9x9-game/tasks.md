@@ -1,0 +1,11 @@
+- [x] Relire les specs game-engine, bot, manifests, catalogue et noter les invariants applicables au Go 9x9.
+- [x] Définir le modèle d'état/actions (plateau, groupes, libertés, historique ko simple, scores/komi) et la liste de cas de test.
+- [x] Rédiger la spec delta Go 9x9 (requirements + scenarios) couvrant règles, actions autorisées, scoring, bots et manifest/catalogue.
+- [x] Esquisser un design technique (structure état, détection captures/ko, scoring chinois) pour valider les choix avant implémentation.
+- [x] Implémenter le moteur Go 9x9 isomorphe (init, validation, application d'action, scoring, fin de partie) avec déterminisme seedé.
+- [x] Ajouter tests unitaires : captures simples/chaînes, suicide interdit, ko simple, double passe, résignation, scoring chinois avec komi 6.5, déterminisme (seed).
+- [x] Implémenter bots Random (défaut) et Greedy (heuristique simple) en respectant l'interface Bot et le déterminisme via SeededRandom.
+- [x] Créer l'UI standalone desktop-first (index + JS) : placement, passer, résigner, affichage captures/score final, reset.
+- [x] Rédiger `game.json` (id `go-9x9`, 2 joueurs, turn-based, tags, orientation desktop, icon/emoji, bots.available) et vérifier l'intégration catalogue.
+- [x] Ajouter la doc utilisateur (README ou section dans index) : règles, contrôles, limites MVP, bots disponibles.
+- [ ] Lancer lint/tests si dispos, build catalogue si nécessaire, vérifier rendu manuel et ajuster si écart.
