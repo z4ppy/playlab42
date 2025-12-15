@@ -4,21 +4,45 @@
 [![Deploy](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml)
 [![codecov](https://codecov.io/gh/z4ppy/playlab42/graph/badge.svg)](https://codecov.io/gh/z4ppy/playlab42)
 
-Plateforme pédagogique de mini-jeux et outils collaboratifs pour la formation dev assistée par IA.
+Plateforme pédagogique complète pour la formation au développement assisté par IA : supports de cours, base de connaissance, outils et jeux collaboratifs.
 
 **[Voir la démo live](https://z4ppy.github.io/playlab42/)**
 
 ## Vision
 
-**Playlab42** est une vitrine collaborative de mini-jeux et outils créés pendant des formations. Les participants développent des jeux, des outils et des bots avec l'assistance de l'IA. Le projet s'enrichit au fil des sessions.
+**Playlab42** est à la fois un **support de formation**, un **démonstrateur technique** et un **projet collaboratif vivant**.
 
-### Cas d'usage
+### 📚 Consulter - Base de connaissance
 
-- **Utiliser** : Catalogue d'outils et jeux accessibles via navigateur
-- **Jouer** : Mini-jeux standalone ou multi-joueur
-- **Créer** : Développer ses propres outils/jeux pendant une formation
-- **Apprendre** : Support pédagogique pour TypeScript, WebSocket, IA/ML
-- **Expérimenter** : Entraîner des bots et réseaux de neurones
+Le site met à disposition des **ressources pédagogiques** sélectionnées par les formateurs :
+- **Parcours thématiques** : Slides et contenus structurés (histoire de l'IA, transformers, agents, etc.)
+- **Documentation** : Guides pratiques, howto, tutoriels
+- **Concepts clés** : Explications accessibles de notions techniques
+- **Bookmarks** : Liens vers des ressources externes de qualité
+
+Les stagiaires peuvent consulter ces contenus pendant et après la formation pour approfondir leurs connaissances.
+
+### 🔍 Apprendre par l'exemple - Le projet comme démonstrateur
+
+Playlab42 n'est pas qu'un catalogue : **son code source illustre les bonnes pratiques** du développement moderne assisté par IA :
+- **Prompts pré-configurés** : Instructions pour agents IA (AGENTS.md, CLAUDE.md)
+- **OpenSpec** : Workflow de spécification et gestion des changements
+- **Agents spécialisés** : Commandes slash pour différents contextes
+- **CI/CD** : Intégration continue avec GitHub Actions
+- **Qualité** : Linting, tests automatisés, couverture de code
+- **Conteneurisation** : Environnement Docker reproductible
+
+En explorant le projet, les participants découvrent une architecture concrète qui fonctionne bien avec les outils d'IA.
+
+### 🚀 Contribuer - Enrichir le projet
+
+Chaque session de formation se conclut par une **contribution réelle** via Pull Request. Les participants peuvent :
+- **Créer un mini-jeu** : Morpion, snake, quiz, etc.
+- **Développer un outil** : Convertisseur JSON, palette de couleurs, encodeur...
+- **Rédiger une documentation** : Présenter un concept, un hobby, un sujet technique (avec l'aide de l'IA)
+- **Améliorer l'existant** : Corriger des bugs, enrichir les contenus
+
+Le projet s'enrichit ainsi au fil des sessions, créant une base de connaissances collaborative.
 
 ## Fonctionnalités principales
 
