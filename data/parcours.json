@@ -6,7 +6,7 @@
       "id": "coding-agents-2025",
       "title": "Coding Agents en 2025",
       "description": "Guide technique complet sur les coding agents : écosystème, architecture, capacités et perspectives.",
-      "path": "/parcours/epics/coding-agents-2025",
+      "path": "./parcours/epics/coding-agents-2025",
       "hierarchy": [
         "agentique"
       ],
@@ -21,7 +21,7 @@
       "duration": "45 min",
       "difficulty": "intermediate",
       "icon": "🤖",
-      "thumbnail": "/parcours/epics/coding-agents-2025/thumbnail.svg",
+      "thumbnail": "./parcours/epics/coding-agents-2025/thumbnail.svg",
       "slideCount": 6,
       "optionalSlideCount": 0,
       "hasIndex": false,
@@ -68,7 +68,7 @@
       "id": "exemple-article",
       "title": "Article exemple",
       "description": "Un article de démonstration pour tester l'affichage des parcours.",
-      "path": "/parcours/epics/exemple-article",
+      "path": "./parcours/epics/exemple-article",
       "hierarchy": [
         "autres"
       ],
@@ -98,7 +98,7 @@
       "id": "hello-playlab42",
       "title": "Bienvenue sur PlayLab42",
       "description": "Découvrez la plateforme, ses objectifs pédagogiques et comment contribuer.",
-      "path": "/parcours/epics/hello-playlab42",
+      "path": "./parcours/epics/hello-playlab42",
       "hierarchy": [
         "playlab42"
       ],
@@ -114,7 +114,7 @@
       "duration": "15 min",
       "difficulty": "beginner",
       "icon": "👋",
-      "thumbnail": "/parcours/epics/hello-playlab42/thumbnail.png",
+      "thumbnail": "./parcours/epics/hello-playlab42/thumbnail.png",
       "slideCount": 7,
       "optionalSlideCount": 0,
       "hasIndex": false,
@@ -183,7 +183,7 @@
       "id": "internet-france-1994",
       "title": "L'Internet débarque en France",
       "description": "Dossier spécial : cette technologie américaine qui va révolutionner nos entreprises.",
-      "path": "/parcours/epics/internet-france-1994",
+      "path": "./parcours/epics/internet-france-1994",
       "hierarchy": [
         "autres"
       ],
@@ -299,7 +299,7 @@
         "id": "coding-agents-2025",
         "title": "Coding Agents en 2025",
         "description": "Guide technique complet sur les coding agents : écosystème, architecture, capacités et perspectives.",
-        "path": "/parcours/epics/coding-agents-2025",
+        "path": "./parcours/epics/coding-agents-2025",
         "hierarchy": [
           "agentique"
         ],
@@ -314,7 +314,7 @@
         "duration": "45 min",
         "difficulty": "intermediate",
         "icon": "🤖",
-        "thumbnail": "/parcours/epics/coding-agents-2025/thumbnail.svg",
+        "thumbnail": "./parcours/epics/coding-agents-2025/thumbnail.svg",
         "slideCount": 6,
         "optionalSlideCount": 0,
         "hasIndex": false,
@@ -361,7 +361,7 @@
         "id": "hello-playlab42",
         "title": "Bienvenue sur PlayLab42",
         "description": "Découvrez la plateforme, ses objectifs pédagogiques et comment contribuer.",
-        "path": "/parcours/epics/hello-playlab42",
+        "path": "./parcours/epics/hello-playlab42",
         "hierarchy": [
           "playlab42"
         ],
@@ -377,7 +377,7 @@
         "duration": "15 min",
         "difficulty": "beginner",
         "icon": "👋",
-        "thumbnail": "/parcours/epics/hello-playlab42/thumbnail.png",
+        "thumbnail": "./parcours/epics/hello-playlab42/thumbnail.png",
         "slideCount": 7,
         "optionalSlideCount": 0,
         "hasIndex": false,
@@ -446,7 +446,7 @@
         "id": "exemple-article",
         "title": "Article exemple",
         "description": "Un article de démonstration pour tester l'affichage des parcours.",
-        "path": "/parcours/epics/exemple-article",
+        "path": "./parcours/epics/exemple-article",
         "hierarchy": [
           "autres"
         ],
