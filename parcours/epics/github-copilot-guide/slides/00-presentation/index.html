@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Présentation de GitHub Copilot — Guide du développeur</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .plan-card {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .plan-card h4 {
+      margin-top: 0;
+      color: var(--color-accent);
+    }
+    .plan-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .tool-card {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      text-align: center;
+    }
+    .tool-card .icon {
+      font-size: 2rem;
+      margin-bottom: var(--space-sm);
+    }
+    .tool-card h4 {
+      margin: 0 0 var(--space-xs) 0;
+      font-size: 1rem;
+    }
+    .tool-card p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+    }
+    .guide-scope {
+      background: var(--color-accent-light);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: var(--space-lg) 0;
+    }
+    .guide-scope h3 {
+      margin-top: 0;
+      color: var(--color-accent);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md);">
+      <img src="../../assets/copilot-logo.svg" alt="GitHub Copilot" style="width: 80px; height: 80px;">
+      <h1 style="margin: 0;">Présentation de GitHub Copilot</h1>
+    </div>
+
+    <p><strong>GitHub Copilot</strong> est une suite d'outils d'assistance au développement basée sur l'IA, proposée par GitHub (Microsoft). Lancé en 2021, il est devenu l'assistant de programmation le plus utilisé au monde.</p>
+
+    <h2>Les offres disponibles</h2>
+
+    <div class="plan-card">
+      <h4>Copilot Individual</h4>
+      <p class="plan-price">~10 $/mois</p>
+      <p>Pour les développeurs individuels. Accès complet à Copilot dans l'IDE, Chat et CLI.</p>
+    </div>
+
+    <div class="plan-card">
+      <h4>Copilot Business</h4>
+      <p class="plan-price">~19 $/utilisateur/mois</p>
+      <p>Pour les équipes et organisations. Gestion centralisée des licences, paramètres de sécurité renforcés, exclusion des suggestions basées sur du code public.</p>
+    </div>
+
+    <div class="plan-card">
+      <h4>Copilot Enterprise</h4>
+      <p class="plan-price">~39 $/utilisateur/mois</p>
+      <p>Pour les grandes entreprises. Copilot Chat sur github.com, indexation de la codebase, documentation personnalisée, fine-tuning sur le code interne.</p>
+    </div>
+
+    <h2>Les outils de la suite Copilot</h2>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="icon">💻</div>
+        <h4>Copilot dans l'IDE</h4>
+        <p>Autocomplétion intelligente et suggestions de code en temps réel</p>
+      </div>
+      <div class="tool-card">
+        <div class="icon">💬</div>
+        <h4>Copilot Chat</h4>
+        <p>Interface conversationnelle pour questions, debugging, refactoring</p>
+      </div>
+      <div class="tool-card">
+        <div class="icon">⌨️</div>
+        <h4>Copilot CLI</h4>
+        <p>Assistant en ligne de commande pour git, shell, npm...</p>
+      </div>
+      <div class="tool-card">
+        <div class="icon">🌐</div>
+        <h4>Copilot sur github.com</h4>
+        <p>Chat web et revue de PR automatique (Enterprise)</p>
+      </div>
+      <div class="tool-card">
+        <div class="icon">🔌</div>
+        <h4>Copilot Extensions</h4>
+        <p>Connexion à des outils tiers via MCP</p>
+      </div>
+      <div class="tool-card">
+        <div class="icon">🔗</div>
+        <h4>Copilot API</h4>
+        <p>Pour intégrations custom dans vos outils</p>
+      </div>
+    </div>
+
+    <h2>Connexion et authentification</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Authentification</strong></td>
+          <td>Via compte GitHub personnel ou organisation (OAuth)</td>
+        </tr>
+        <tr>
+          <td><strong>Licence</strong></td>
+          <td>Vérification automatique de la souscription active</td>
+        </tr>
+        <tr>
+          <td><strong>Organisation</strong></td>
+          <td>L'admin peut assigner des seats, définir des politiques</td>
+        </tr>
+        <tr>
+          <td><strong>Confidentialité</strong></td>
+          <td>Code non utilisé pour l'entraînement (Business/Enterprise)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Modèles IA utilisés</h2>
+
+    <p>GitHub Copilot s'appuie sur plusieurs modèles :</p>
+
+    <ul>
+      <li><strong>GPT-4</strong> (OpenAI) — Modèle principal pour Chat et tâches complexes</li>
+      <li><strong>Claude 3.5 Sonnet</strong> (Anthropic) — Disponible comme alternative depuis 2024</li>
+      <li><strong>Codex</strong> — Base historique pour l'autocomplétion</li>
+    </ul>
+
+    <p>Dans certaines versions, vous pouvez choisir le modèle à utiliser.</p>
+
+    <h2>IDEs supportés</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>IDE</th>
+          <th>Support</th>
+          <th>Fonctionnalités</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>VS Code</strong></td>
+          <td>Officiel complet</td>
+          <td>Chat, inline, CLI, Extensions</td>
+        </tr>
+        <tr>
+          <td><strong>JetBrains</strong></td>
+          <td>Officiel complet</td>
+          <td>IntelliJ, Rider, PhpStorm, WebStorm...</td>
+        </tr>
+        <tr>
+          <td><strong>Visual Studio</strong></td>
+          <td>Officiel complet</td>
+          <td>VS 2022+, intégration native</td>
+        </tr>
+        <tr>
+          <td><strong>Neovim</strong></td>
+          <td>Plugin officiel</td>
+          <td>Suggestions inline, configurable</td>
+        </tr>
+        <tr>
+          <td><strong>Xcode</strong></td>
+          <td>Officiel</td>
+          <td>Support macOS/iOS natif</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="guide-scope">
+      <h3>Ce que couvre ce guide</h3>
+      <p>Ce guide se concentre sur la <strong>configuration et l'utilisation de Copilot dans les IDE</strong>. Vous apprendrez à :</p>
+      <ul>
+        <li><strong>Configurer votre projet</strong> — fichiers d'instructions, agents spécialisés</li>
+        <li><strong>Maîtriser l'autocomplétion</strong> — suggestions inline, Next Edit Suggestions</li>
+        <li><strong>Utiliser Copilot Chat</strong> — commandes slash, participants, prompting</li>
+        <li><strong>Créer des agents</strong> — personas spécialisées pour votre équipe</li>
+        <li><strong>Configurer MCP</strong> — connecter Copilot à vos outils externes</li>
+        <li><strong>Utiliser Copilot CLI</strong> — assistant terminal</li>
+      </ul>
+    </div>
+  </article>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agents spécialisés — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .agent-card {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .agent-card h4 {
+      margin-top: 0;
+      color: var(--color-accent);
+    }
+    .file-tree {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+    }
+    .boundaries-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .boundaries-list li {
+      padding: var(--space-xs) 0;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Agents spécialisés</h1>
+
+    <h2>3.1 Concept et intérêt des agents</h2>
+
+    <h3>Pourquoi des agents plutôt qu'un assistant générique ?</h3>
+
+    <p>L'analyse de plus de 2500 fichiers agents.md révèle un constat clair : <strong>les assistants génériques échouent car ils sont trop vagues</strong>.</p>
+
+    <blockquote>
+      ❌ "Tu es un assistant de code utile" → ne fonctionne pas<br>
+      ✅ "Tu es un ingénieur QA qui écrit des tests xUnit, suit ces conventions, et ne modifie jamais le code source" → fonctionne
+    </blockquote>
+
+    <h3>L'approche "équipe de spécialistes"</h3>
+
+    <p>Créez plusieurs agents avec des rôles précis plutôt qu'un assistant générique :</p>
+
+    <div class="file-tree">.github/agents/
+├── docs-agent.md      # Rédaction documentation
+├── test-agent.md      # Écriture de tests
+├── review-agent.md    # Revue de code
+└── security-agent.md  # Analyse sécurité</div>
+
+    <p>Invocation : <code>@docs-agent génère la doc de cette classe</code></p>
+
+    <hr>
+
+    <h2>3.2 Anatomie d'un bon agent.md</h2>
+
+    <h3>Les 6 domaines essentiels</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Domaine</th>
+          <th>Contenu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>1. Persona</strong></td><td>Rôle précis, compétences, type de sortie</td></tr>
+        <tr><td><strong>2. Commandes</strong></td><td>Outils exécutables avec flags</td></tr>
+        <tr><td><strong>3. Structure projet</strong></td><td>Où lire, où écrire, stack technique</td></tr>
+        <tr><td><strong>4. Style de code</strong></td><td>Exemples concrets (snippet > paragraphe)</td></tr>
+        <tr><td><strong>5. Workflow</strong></td><td>Conventions de commit, process</td></tr>
+        <tr><td><strong>6. Boundaries</strong></td><td>Ce qu'il peut/doit/ne doit jamais faire</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Structure de boundaries en 3 niveaux</h3>
+
+    <pre><code>## Boundaries
+- ✅ **Always do:** [actions obligatoires]
+- ⚠️ **Ask first:** [actions nécessitant validation]
+- 🚫 **Never do:** [actions interdites]</code></pre>
+
+    <h3>Template complet</h3>
+
+    <pre><code>---
+name: [nom-agent]
+description: [Description en une phrase]
+---
+
+Tu es un expert [rôle] pour ce projet.
+
+## Ton rôle
+- Tu maîtrises [compétences]
+- Tu produis [type de sortie]
+- Ta mission : [objectif précis]
+
+## Connaissance projet
+- **Stack :** [technologies avec versions]
+- **Structure :**
+  - `src/` : [description] — tu LIS ici
+  - `tests/` : [description] — tu ÉCRIS ici
+
+## Commandes disponibles
+- **Build :** `dotnet build`
+- **Test :** `dotnet test`
+- **Lint :** `dotnet format`
+
+## Standards de code
+
+```csharp
+// ✅ Bon - noms descriptifs, gestion d'erreur, types nullables
+public async Task&lt;User?&gt; GetActiveUserByIdAsync(int id)
+{
+    ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+    return await _context.Users
+        .FirstOrDefaultAsync(u =&gt; u.Id == id &amp;&amp; u.IsActive);
+}
+
+// ❌ Mauvais - vague, pas de validation, pas async
+public User Get(int x)
+{
+    return _context.Users.Where(u =&gt; u.Id == x).First();
+}
+```
+
+## Boundaries
+- ✅ **Always:** Écrire dans `tests/`, lancer les tests, suivre les conventions
+- ⚠️ **Ask first:** Modifier le schéma DB, ajouter des packages NuGet
+- 🚫 **Never:** Commiter des secrets, modifier les fichiers de config prod</code></pre>
+
+    <hr>
+
+    <h2>3.3 Catalogue d'agents recommandés</h2>
+
+    <div class="agent-card">
+      <h4>@test-agent — Qualité et tests</h4>
+      <pre><code>---
+name: test-agent
+description: Ingénieur QA qui écrit des tests complets
+---
+
+Tu es un ingénieur qualité logiciel pour ce projet.
+
+## Ton rôle
+- Tu écris des tests unitaires et d'intégration
+- Tu maximises la couverture des cas critiques
+- Tu ne modifies JAMAIS le code source, uniquement les tests
+
+## Commandes disponibles
+- **C# :** `dotnet test --verbosity normal`
+- **PHP :** `php bin/phpunit`
+- **React :** `npm test`
+
+## Standards
+- Pattern AAA (Arrange, Act, Assert)
+- Un test = un comportement vérifié
+- Mocks pour les dépendances externes (DB, API, fichiers)
+- Nommage : `MethodName_Scenario_ExpectedBehavior`
+
+## Boundaries
+- ✅ **Always:** Écrire dans le dossier tests/, lancer les tests après création
+- ⚠️ **Ask first:** Ajouter des dépendances de test
+- 🚫 **Never:** Modifier le code source, supprimer un test qui échoue</code></pre>
+    </div>
+
+    <div class="agent-card">
+      <h4>@docs-agent — Documentation technique</h4>
+      <pre><code>---
+name: docs-agent
+description: Rédacteur technique pour la documentation
+---
+
+Tu es un rédacteur technique expert.
+
+## Ton rôle
+- Tu lis le code source et génères de la documentation
+- Tu écris pour un public développeur
+- Tu maintiens la doc à jour avec le code
+
+## Commandes disponibles
+- **Générer API docs :** `dotnet tool run docfx`
+- **Vérifier liens :** `npm run docs:check`
+
+## Standards
+- XML doc comments pour C# (summary, param, returns, example)
+- JSDoc pour TypeScript
+- README par module avec : objectif, installation, usage, exemples
+
+## Boundaries
+- ✅ **Always:** Documenter les méthodes publiques, inclure des exemples
+- ⚠️ **Ask first:** Modifier la structure de la documentation existante
+- 🚫 **Never:** Modifier le code source, inventer des fonctionnalités</code></pre>
+    </div>
+
+    <div class="agent-card">
+      <h4>@security-agent — Analyse sécurité</h4>
+      <pre><code>---
+name: security-agent
+description: Analyste sécurité qui détecte les vulnérabilités
+---
+
+Tu es un expert en sécurité applicative.
+
+## Ton rôle
+- Tu détectes les vulnérabilités (injection, XSS, CSRF, etc.)
+- Tu vérifies la gestion des secrets
+- Tu proposes des remédiations concrètes
+
+## Ce que tu cherches
+- Secrets/credentials en dur dans le code
+- Injections SQL (requêtes non paramétrées)
+- XSS (données utilisateur non échappées)
+- CSRF (tokens manquants)
+- Dépendances avec CVE connues
+- Permissions trop larges
+
+## Boundaries
+- ✅ **Always:** Signaler avec gravité (critique/haute/moyenne/basse) et remédiation
+- ⚠️ **Ask first:** Avant de modifier du code existant
+- 🚫 **Never:** Logger ou afficher des secrets trouvés</code></pre>
+    </div>
+  </article>
+</body>
+</html>

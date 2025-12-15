@@ -1,0 +1,64 @@
+{
+  "id": "github-copilot-guide",
+  "title": "GitHub Copilot — Guide du développeur",
+  "description": "Guide complet pour maîtriser GitHub Copilot : présentation du service, autocomplétion, configuration projet, agents spécialisés, techniques de prompting, MCP et bonnes pratiques.",
+  "hierarchy": ["ia-dev"],
+  "tags": ["copilot", "ia", "productivité", "ide", "guide", "mcp"],
+  "metadata": {
+    "author": "Playlab42",
+    "created": "2025-12-15",
+    "duration": "60 min",
+    "difficulty": "intermediate"
+  },
+  "icon": "🤖",
+  "thumbnail": "assets/banner.png",
+  "content": [
+    { "id": "00-presentation" },
+    { "id": "01-introduction" },
+    { "id": "02-autocompletion" },
+    { "id": "02-configuration-projet" },
+    { "id": "03-agents-specialises" },
+    { "id": "04-configuration-ide" },
+    { "id": "05-prompting" },
+    { "id": "06-bonnes-pratiques" },
+    { "id": "08-mcp" },
+    { "id": "07-cli-annexes" }
+  ],
+  "bookmarks": [
+    {
+      "url": "https://github.com/features/copilot",
+      "title": "GitHub Copilot",
+      "description": "Page officielle GitHub Copilot",
+      "icon": "🤖",
+      "tags": ["copilot", "github", "ia"]
+    },
+    {
+      "url": "https://docs.github.com/copilot",
+      "title": "Documentation GitHub Copilot",
+      "description": "Documentation officielle complète",
+      "icon": "📚",
+      "tags": ["copilot", "documentation"]
+    },
+    {
+      "url": "https://github.com/github/copilot-cli",
+      "title": "GitHub Copilot CLI",
+      "description": "Agent IA terminal officiel GitHub",
+      "icon": "⌨️",
+      "tags": ["copilot", "cli", "terminal"]
+    },
+    {
+      "url": "https://opencode.ai",
+      "title": "OpenCode",
+      "description": "Agent IA terminal open-source",
+      "icon": "🔓",
+      "tags": ["opencode", "cli", "open-source"]
+    },
+    {
+      "url": "https://modelcontextprotocol.io",
+      "title": "Model Context Protocol",
+      "description": "Protocole MCP par Anthropic",
+      "icon": "🔌",
+      "tags": ["mcp", "anthropic", "protocol"]
+    }
+  ]
+}

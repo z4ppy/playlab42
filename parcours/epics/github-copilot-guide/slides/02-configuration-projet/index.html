@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration projet — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .good-bad-table td:first-child { color: var(--color-success); }
+    .good-bad-table td:last-child { color: var(--color-error); }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Configuration projet</h1>
+
+    <h2>2.1 Le fichier copilot-instructions.md</h2>
+
+    <h3>Emplacement et rôle</h3>
+
+    <p>Le fichier <code>.github/copilot-instructions.md</code> est le <strong>contexte global</strong> automatiquement injecté dans chaque interaction Copilot Chat. C'est le point d'entrée pour configurer Copilot sur un projet.</p>
+
+    <h3>Structure recommandée</h3>
+
+    <pre><code># [Nom du projet] — Instructions Copilot
+
+## Vue d'ensemble
+[Description en 2-3 phrases du projet et de son objectif]
+
+## Stack technique
+### Backend
+- [Langage] [version] avec [framework]
+- [Base de données] avec [ORM]
+
+### Frontend
+- [Framework] [version] avec [langage]
+
+### Tests
+- [Frameworks de test]
+
+## Conventions de code
+- [Convention de nommage]
+- [Format des commits]
+- [Autres règles]
+
+## Structure du projet
+- `src/` : [description]
+- `tests/` : [description]</code></pre>
+
+    <h3>Exemple concret — Application .NET + React</h3>
+
+    <pre><code># GestionRH — Instructions Copilot
+
+## Vue d'ensemble
+Application de gestion des ressources humaines.
+API REST .NET avec frontend React et base PostgreSQL.
+
+## Stack technique
+### Backend
+- C# 12 / .NET 8 avec ASP.NET Core Web API
+- PostgreSQL 16 avec Entity Framework Core 8
+- MediatR pour CQRS
+- FluentValidation pour la validation
+
+### Frontend
+- React 18 avec TypeScript 5
+- TanStack Query pour le data fetching
+- Tailwind CSS pour le styling
+
+### Tests
+- xUnit + Moq pour les tests unitaires C#
+- Vitest + Testing Library pour React
+- Playwright pour les tests E2E
+
+## Conventions de code
+- C# : PascalCase (classes, méthodes), camelCase (variables locales)
+- TypeScript : camelCase (fonctions, variables), PascalCase (composants, types)
+- Commits : Conventional Commits (feat:, fix:, docs:, refactor:)
+- Un controller = un domaine métier
+- Un composant React = un fichier
+
+## Structure du projet
+- src/Api/ : Controllers, DTOs, configuration ASP.NET
+- src/Domain/ : Entités, interfaces, logique métier
+- src/Infrastructure/ : Repositories, services externes
+- src/Web/ : Application React (Vite)
+- tests/Unit/ : Tests unitaires
+- tests/Integration/ : Tests d'intégration API</code></pre>
+
+    <h3>Exemple concret — Application Symfony</h3>
+
+    <pre><code># PortailClient — Instructions Copilot
+
+## Vue d'ensemble
+Portail client B2B pour la gestion des commandes et factures.
+Application Symfony avec frontend React intégré.
+
+## Stack technique
+### Backend
+- PHP 8.3 avec Symfony 7.1
+- MySQL 8 avec Doctrine ORM
+- Messenger pour les jobs asynchrones
+- API Platform pour l'API REST
+
+### Frontend
+- React 18 avec TypeScript
+- Webpack Encore pour le build
+- Bootstrap 5 pour le styling
+
+### Tests
+- PHPUnit pour les tests unitaires
+- Symfony WebTestCase pour les tests fonctionnels
+- Vitest pour les tests React
+
+## Conventions de code
+- PHP : PSR-12, nommage Symfony (camelCase méthodes, PascalCase classes)
+- Services dans src/Service/, un service = une responsabilité
+- Controllers légers, logique dans les services
+- Injection de dépendances par constructeur uniquement
+
+## Structure du projet
+- src/Controller/ : Controllers Symfony
+- src/Entity/ : Entités Doctrine
+- src/Repository/ : Repositories Doctrine
+- src/Service/ : Services métier
+- assets/ : Code React/TypeScript
+- tests/ : Tests PHPUnit</code></pre>
+
+    <h3>Ce qui fonctionne / ne fonctionne pas</h3>
+
+    <table class="good-bad-table">
+      <thead>
+        <tr>
+          <th>✅ Efficace</th>
+          <th>❌ Inefficace</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Stack technique avec versions</td><td>Liens vers documentation externe</td></tr>
+        <tr><td>Conventions de nommage précises</td><td>Instructions sur le ton ("sois amical")</td></tr>
+        <tr><td>Structure des dossiers</td><td>Demandes de longueur de réponse</td></tr>
+        <tr><td>Commandes de build/test</td><td>Règles trop génériques</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2>2.2 Instructions conditionnelles par type de fichier</h2>
+
+    <h3>Principe</h3>
+
+    <p>Les fichiers <code>.github/instructions/*.instructions.md</code> permettent des instructions <strong>contextuelles</strong> qui ne s'appliquent qu'à certains fichiers, via un frontmatter YAML.</p>
+
+    <h3>Syntaxe</h3>
+
+    <pre><code>---
+applyTo: "[pattern glob]"
+---
+# Instructions spécifiques</code></pre>
+
+    <h3>Patterns glob supportés</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Pattern</th>
+          <th>Cible</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>**/*.cs</code></td><td>Tous les fichiers C#</td></tr>
+        <tr><td><code>**/*.php</code></td><td>Tous les fichiers PHP</td></tr>
+        <tr><td><code>**/*.tsx</code></td><td>Tous les composants React</td></tr>
+        <tr><td><code>**/tests/**/*</code></td><td>Tout dans les dossiers tests</td></tr>
+        <tr><td><code>**/*.cs,**/*.razor</code></td><td>Patterns multiples (virgule)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Exemples pratiques</h3>
+
+    <p><strong>Pour le code C#</strong> (<code>csharp.instructions.md</code>) :</p>
+
+    <pre><code>---
+applyTo: "**/*.cs"
+---
+# Standards C#
+
+- Utiliser les nullable reference types (activer &lt;Nullable&gt;enable&lt;/Nullable&gt;)
+- Préférer les records pour les DTOs
+- Primary constructors pour l'injection de dépendances
+- Expression-bodied members quand une seule ligne
+- Utiliser LINQ plutôt que les boucles foreach quand pertinent
+- XML documentation pour les méthodes publiques</code></pre>
+
+    <p><strong>Pour le code PHP/Symfony</strong> (<code>php.instructions.md</code>) :</p>
+
+    <pre><code>---
+applyTo: "**/*.php"
+---
+# Standards PHP / Symfony
+
+- Strict types obligatoire : declare(strict_types=1)
+- Type hints sur tous les paramètres et retours
+- Attributs PHP 8 plutôt qu'annotations (#[Route], #[ORM\Entity])
+- Injection par constructeur avec readonly properties
+- Pas de logique métier dans les controllers
+- Services finaux par défaut (final class)</code></pre>
+
+    <p><strong>Pour les composants React</strong> (<code>react.instructions.md</code>) :</p>
+
+    <pre><code>---
+applyTo: "**/*.tsx,**/*.jsx"
+---
+# Standards React
+
+- Functional components uniquement (pas de classes)
+- Hooks personnalisés dans src/hooks/
+- Props typées avec interface (pas type)
+- Destructuring des props dans la signature
+- Pas de any, typer explicitement
+- useCallback/useMemo seulement si nécessaire (éviter l'optimisation prématurée)</code></pre>
+
+    <p><strong>Pour les tests</strong> (<code>tests.instructions.md</code>) :</p>
+
+    <pre><code>---
+applyTo: "**/tests/**/*,**/*.test.*,**/*.spec.*,**/*Tests.cs"
+---
+# Standards de test
+
+- Pattern AAA : Arrange, Act, Assert
+- Un fichier de test par classe/composant testé
+- Nommage explicite : MethodName_Scenario_ExpectedResult (C#)
+- Mocks pour toutes les dépendances externes
+- Pas de dépendance entre tests (isolation totale)
+- Tests déterministes : pas de dates/heures dynamiques non mockées</code></pre>
+
+    <hr>
+
+    <h2>2.3 Fichiers de prompts réutilisables</h2>
+
+    <h3>Principe</h3>
+
+    <p>Les fichiers <code>.github/prompts/*.prompt.md</code> sont des <strong>templates de prompts</strong> invocables à la demande pour standardiser les tâches récurrentes.</p>
+
+    <h3>Structure</h3>
+
+    <pre><code>---
+description: "[Description pour le menu]"
+mode: [ask|agent]
+tools: ['codebase', 'terminal']  # optionnel
+---
+[Corps du prompt]</code></pre>
+
+    <h3>Exemples</h3>
+
+    <p><strong>Génération de tests</strong> (<code>generate-tests.prompt.md</code>) :</p>
+
+    <pre><code>---
+description: "Génère des tests unitaires complets"
+mode: agent
+tools: ['codebase', 'terminal']
+---
+Génère des tests unitaires pour le code sélectionné.
+
+## Exigences
+- Couvrir le cas nominal (happy path)
+- Couvrir les cas limites (null, vide, valeurs max)
+- Couvrir les cas d'erreur et exceptions
+- Mocker les dépendances externes
+
+## Format
+- Utiliser le framework de test du projet (xUnit/PHPUnit/Vitest)
+- Nommage explicite des cas de test
+- Un Assert par test quand possible</code></pre>
+
+    <p><strong>Revue de code</strong> (<code>code-review.prompt.md</code>) :</p>
+
+    <pre><code>---
+description: "Analyse le code pour une revue"
+mode: ask
+---
+Analyse le code sélectionné et identifie :
+
+1. **Bugs potentiels** : erreurs logiques, null references, edge cases
+2. **Sécurité** : injections SQL, XSS, secrets exposés
+3. **Performance** : requêtes N+1, allocations inutiles
+4. **Maintenabilité** : nommage, duplication, couplage fort
+
+Pour chaque problème :
+- Localisation précise
+- Gravité (critique / important / mineur)
+- Suggestion de correction avec code</code></pre>
+
+    <p><strong>Pré-commit</strong> (<code>pre-commit.prompt.md</code>) :</p>
+
+    <pre><code>---
+description: "Checklist avant commit"
+mode: agent
+tools: ['terminal', 'codebase']
+---
+Vérifie avant commit :
+
+1. [ ] Les tests passent
+2. [ ] Pas d'erreurs de lint/analyse statique
+3. [ ] Pas de secrets ou credentials en dur
+4. [ ] Pas de Console.WriteLine / console.log de debug
+5. [ ] Les imports/usings sont utilisés
+6. [ ] Pas de code commenté inutile
+
+Signale chaque problème avec sa localisation.</code></pre>
+  </article>
+</body>
+</html>

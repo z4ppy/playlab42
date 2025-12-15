@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Start et concepts clés — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .version-info {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-lg);
+    }
+    .checklist {
+      list-style: none;
+      padding-left: var(--space-md);
+    }
+    .checklist li::before {
+      content: "☐ ";
+    }
+    .step-number {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      background: var(--color-accent);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 2rem;
+      font-weight: bold;
+      margin-right: var(--space-sm);
+    }
+    .config-levels {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      white-space: pre;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <p class="version-info"><strong>Version</strong> : 1.0 | <strong>Dernière mise à jour</strong> : Décembre 2025<br>
+    <strong>Public cible</strong> : Développeurs de tous niveaux<br>
+    <strong>IDE couverts</strong> : VS Code, JetBrains (IntelliJ, Rider, PhpStorm...), Visual Studio</p>
+
+    <h1>Quick Start — Copilot en 5 minutes</h1>
+
+    <h2><span class="step-number">1</span> Créer le fichier projet (2 min)</h2>
+
+    <p>Créez <code>.github/copilot-instructions.md</code> à la racine de votre repo :</p>
+
+    <pre><code># [Nom du projet] — Instructions Copilot
+
+## Stack technique
+- C# 12 / .NET 8 avec ASP.NET Core
+- PostgreSQL avec Entity Framework Core
+- React 18 avec TypeScript
+
+## Conventions
+- Nommage : PascalCase (C#), camelCase (JS/TS)
+- Commits : format Conventional Commits
+- Tests : xUnit (C#), Vitest (React)
+
+## Structure
+- src/Api/ : Controllers et endpoints
+- src/Domain/ : Logique métier
+- src/Web/ : Frontend React
+- tests/ : Tests unitaires et intégration</code></pre>
+
+    <h2><span class="step-number">2</span> Activer dans votre IDE (1 min)</h2>
+
+    <h3>VS Code</h3>
+    <ul class="checklist">
+      <li>Extension "GitHub Copilot" installée</li>
+      <li>Extension "GitHub Copilot Chat" installée</li>
+      <li><code>Ctrl+Shift+P</code> → "GitHub Copilot: Sign In"</li>
+    </ul>
+
+    <h3>JetBrains (Rider, PhpStorm...)</h3>
+    <ul class="checklist">
+      <li>Plugin "GitHub Copilot" installé (Settings → Plugins)</li>
+      <li>Settings → Languages &amp; Frameworks → GitHub Copilot → Login</li>
+    </ul>
+
+    <h3>Visual Studio</h3>
+    <ul class="checklist">
+      <li>Extension installée (incluse par défaut v17.10+)</li>
+      <li>Tools → Options → GitHub → Copilot → Sign In</li>
+    </ul>
+
+    <h2><span class="step-number">3</span> Premier prompt efficace (2 min)</h2>
+
+    <p>Ouvrez Copilot Chat (<code>Ctrl+Alt+I</code> VS Code / <code>Alt+C</code> JetBrains) et testez :</p>
+
+    <pre><code>Crée un endpoint API qui retourne la liste des utilisateurs actifs.
+- Controller ASP.NET Core
+- Route GET /api/users/active
+- Filtrer par IsActive == true
+- Retourner un DTO avec Id, Email, FullName</code></pre>
+
+    <h2>Commandes essentielles à retenir</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Commande</th>
+          <th>Usage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/explain</code></td><td>Comprendre du code existant</td></tr>
+        <tr><td><code>/fix</code></td><td>Corriger une erreur</td></tr>
+        <tr><td><code>/tests</code></td><td>Générer des tests unitaires</td></tr>
+        <tr><td><code>/doc</code></td><td>Ajouter de la documentation</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Raccourci magique :</strong> Sélectionnez du code + <code>Ctrl+I</code> (VS Code) pour un prompt contextuel.</p>
+
+    <hr>
+
+    <h1>Introduction et concepts clés</h1>
+
+    <h2>Qu'est-ce que GitHub Copilot ?</h2>
+
+    <p>GitHub Copilot est une <strong>suite d'outils d'assistance au développement</strong> basée sur l'IA, proposée par GitHub. Elle comprend plusieurs produits :</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Copilot dans l'IDE</strong></td><td>Assistant intégré (VS Code, JetBrains, Visual Studio)</td></tr>
+        <tr><td><strong>Copilot CLI</strong></td><td>Assistant en ligne de commande</td></tr>
+        <tr><td><strong>Copilot sur github.com</strong></td><td>Chat web, revue de PR automatique</td></tr>
+        <tr><td><strong>Copilot API</strong></td><td>Pour intégrations custom</td></tr>
+        <tr><td><strong>Copilot Extensions</strong></td><td>Connexion à des outils tiers (MCP)</td></tr>
+      </tbody>
+    </table>
+
+    <blockquote>
+      Ce guide se concentre sur l'usage dans les IDE, qui représente le cœur de l'expérience développeur au quotidien. Une section couvre également Copilot CLI pour les usages terminal.
+    </blockquote>
+
+    <h2>Modes d'interaction dans l'IDE</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>Description</th>
+          <th>Cas d'usage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Complétion inline</strong></td><td>Suggestions automatiques pendant la frappe</td><td>Code répétitif, patterns connus</td></tr>
+        <tr><td><strong>Copilot Chat</strong></td><td>Interface conversationnelle</td><td>Questions, refactoring, explications</td></tr>
+        <tr><td><strong>Mode Agent</strong></td><td>Exécution autonome multi-fichiers</td><td>Tâches complexes, génération de code</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Les 3 niveaux de configuration</h2>
+
+    <div class="config-levels">┌─────────────────────────────────────────────────────────┐
+│  Niveau 1 : Instructions projet                         │
+│  └── .github/copilot-instructions.md                    │
+│  └── .github/instructions/*.instructions.md             │
+│  └── .github/agents/*.md                                │
+├─────────────────────────────────────────────────────────┤
+│  Niveau 2 : Instructions personnelles                   │
+│  └── Paramètres IDE (settings.json, etc.)               │
+│  └── Fichiers globaux utilisateur                       │
+├─────────────────────────────────────────────────────────┤
+│  Niveau 3 : Prompts réutilisables                       │
+│  └── .github/prompts/*.prompt.md                        │
+└─────────────────────────────────────────────────────────┘</div>
+
+    <h2>Vocabulaire essentiel</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Terme</th>
+          <th>Définition</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Custom Instructions</strong></td><td>Règles permanentes qui guident Copilot pour un projet ou utilisateur</td></tr>
+        <tr><td><strong>Agent</strong></td><td>Persona spécialisée avec un rôle précis (@test-agent, @docs-agent)</td></tr>
+        <tr><td><strong>Participant</strong></td><td>Contexte spécifique invoqué avec @ (@workspace, @terminal)</td></tr>
+        <tr><td><strong>Slash command</strong></td><td>Commande rapide préfixée par / (/explain, /fix, /tests)</td></tr>
+        <tr><td><strong>Prompt file</strong></td><td>Template de prompt réutilisable (.prompt.md)</td></tr>
+      </tbody>
+    </table>
+  </article>
+</body>
+</html>

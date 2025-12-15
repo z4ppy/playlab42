@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Développement responsable — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .principle-card {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .principle-card h3 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .principle-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      background: var(--color-accent);
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .strengths { color: var(--color-success); }
+    .limits { color: var(--color-warning); }
+    .error-table td:first-child { font-weight: 600; }
+    .error-table td:nth-child(2) { color: var(--color-error); }
+    .error-table td:nth-child(3) { color: var(--color-success); }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Développement responsable avec l'IA</h1>
+
+    <h2>Les principes essentiels</h2>
+
+    <p>L'IA est un <strong>accélérateur</strong>, pas un substitut à la compréhension. Adopter une approche responsable garantit des gains de productivité sans sacrifier la qualité.</p>
+
+    <div class="principle-card">
+      <h3><span class="principle-number">1</span> Comprendre avant de commiter</h3>
+      <p>Toute suggestion acceptée doit être comprise. En cas de doute :</p>
+      <ul>
+        <li>Utiliser <code>/explain</code> pour décortiquer le code</li>
+        <li>Demander des alternatives pour comparer</li>
+        <li>Ne jamais commiter du code "magique" incompris</li>
+      </ul>
+    </div>
+
+    <div class="principle-card">
+      <h3><span class="principle-number">2</span> Toujours relire et valider</h3>
+      <p>Le code généré peut contenir :</p>
+      <ul>
+        <li>Des bugs subtils (edge cases non gérés)</li>
+        <li>Des failles de sécurité</li>
+        <li>Des patterns obsolètes ou non conformes au projet</li>
+      </ul>
+      <p><strong>Règle : chaque suggestion mérite une relecture critique.</strong></p>
+    </div>
+
+    <div class="principle-card">
+      <h3><span class="principle-number">3</span> Tester systématiquement</h3>
+      <p>Une suggestion qui "a l'air correcte" ne l'est pas forcément :</p>
+      <ul>
+        <li>Écrire ou générer des tests unitaires</li>
+        <li>Vérifier les cas limites (null, vide, valeurs extrêmes)</li>
+        <li>Tester manuellement les parcours utilisateur</li>
+      </ul>
+    </div>
+
+    <div class="principle-card">
+      <h3><span class="principle-number">4</span> Itérer par petites étapes</h3>
+      <p>Les prompts monolithiques ("crée une application complète") produisent des résultats médiocres. Préférer :</p>
+      <ul>
+        <li>Un prompt = une fonctionnalité atomique</li>
+        <li>Valider chaque étape avant de passer à la suivante</li>
+        <li>Construire incrémentalement</li>
+      </ul>
+    </div>
+
+    <div class="principle-card">
+      <h3><span class="principle-number">5</span> Rester maître de l'architecture</h3>
+      <p>Copilot excelle pour l'implémentation, pas pour les décisions d'architecture :</p>
+      <ul>
+        <li>Définir la structure avant de coder</li>
+        <li>Imposer les patterns via les instructions projet</li>
+        <li>Ne pas laisser l'IA décider du découpage des responsabilités</li>
+      </ul>
+    </div>
+
+    <h2>Ce que Copilot fait bien / moins bien</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="strengths">✅ Points forts</th>
+          <th class="limits">⚠️ Limites</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Code boilerplate, CRUD</td><td>Logique métier complexe</td></tr>
+        <tr><td>Patterns standards</td><td>Optimisations pointues</td></tr>
+        <tr><td>Tests unitaires basiques</td><td>Architecture et design</td></tr>
+        <tr><td>Refactoring guidé</td><td>Code impliquant des secrets</td></tr>
+        <tr><td>Documentation</td><td>Debugging de bugs complexes</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h1>Erreurs courantes et pièges à éviter</h1>
+
+    <table class="error-table">
+      <thead>
+        <tr>
+          <th>Erreur</th>
+          <th>Impact</th>
+          <th>Solution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Accepter sans comprendre</td>
+          <td>Bugs, failles</td>
+          <td><code>/explain</code> systématique</td>
+        </tr>
+        <tr>
+          <td>Prompts vagues</td>
+          <td>Hors sujet</td>
+          <td>Spécifier entrées/sorties</td>
+        </tr>
+        <tr>
+          <td>Ignorer le contexte</td>
+          <td>Suggestions génériques</td>
+          <td>Ouvrir les fichiers liés, <code>#file</code></td>
+        </tr>
+        <tr>
+          <td>Un seul prompt géant</td>
+          <td>Résultats incohérents</td>
+          <td>Décomposer en étapes</td>
+        </tr>
+        <tr>
+          <td>Ne pas tester</td>
+          <td>Bugs en production</td>
+          <td>Tests après chaque génération</td>
+        </tr>
+        <tr>
+          <td>Confiance aveugle sécurité</td>
+          <td>Vulnérabilités</td>
+          <td>Revue manuelle obligatoire</td>
+        </tr>
+        <tr>
+          <td>Pas de boundaries</td>
+          <td>Actions destructrices</td>
+          <td>Définir Always/Ask/Never</td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Techniques de prompting — GitHub Copilot Guide</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .principle-box {
+      background: var(--color-bg-secondary);
+      border-left: 4px solid var(--color-accent);
+      padding: var(--space-md);
+      margin: var(--space-md) 0;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+    .principle-box h3 {
+      margin-top: 0;
+      color: var(--color-accent);
+    }
+    .bad-example {
+      color: var(--color-error);
+    }
+    .good-example {
+      color: var(--color-success);
+    }
+    .decompose-list {
+      counter-reset: step;
+      list-style: none;
+      padding-left: 0;
+    }
+    .decompose-list li {
+      counter-increment: step;
+      padding-left: 2.5rem;
+      position: relative;
+      margin-bottom: var(--space-sm);
+    }
+    .decompose-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      background: var(--color-accent);
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 1.75rem;
+      font-weight: bold;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>Techniques de prompting</h1>
+
+    <h2>5.1 Les 4 principes fondamentaux</h2>
+
+    <div class="principle-box">
+      <h3>Principe 1 : Commencer large, puis préciser</h3>
+
+      <p class="bad-example">❌ "Fais une validation"</p>
+
+      <p class="good-example">✅ "Crée une méthode C# qui valide une adresse email.</p>
+      <pre><code>- Entrée : string (peut être null)
+- Sortie : bool
+- Utiliser une regex ou MailAddress
+- Retourner false si null ou vide</code></pre>
+    </div>
+
+    <div class="principle-box">
+      <h3>Principe 2 : Fournir des exemples</h3>
+
+      <pre><code>"Crée une fonction qui extrait les mentions d'un tweet.
+ Entrée : '@jean et @marie vont au cinéma'
+ Sortie attendue : ['@jean', '@marie']"</code></pre>
+    </div>
+
+    <div class="principle-box">
+      <h3>Principe 3 : Décomposer les tâches complexes</h3>
+
+      <p>Au lieu de "Crée une API d'authentification" :</p>
+
+      <ol class="decompose-list">
+        <li>"Crée l'entité User avec Email et PasswordHash"</li>
+        <li>"Ajoute le endpoint POST /auth/register"</li>
+        <li>"Implémente POST /auth/login avec génération JWT"</li>
+        <li>"Crée le middleware de validation du token"</li>
+      </ol>
+    </div>
+
+    <div class="principle-box">
+      <h3>Principe 4 : Utiliser le contexte</h3>
+
+      <ul>
+        <li>Ouvrir les fichiers liés avant de prompter</li>
+        <li>Sélectionner le code concerné</li>
+        <li>Utiliser <code>#file:UserService.cs</code> ou <code>@workspace</code></li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <h2>5.2 Commandes slash et participants</h2>
+
+    <h3>Commandes slash</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Commande</th>
+          <th>Usage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/explain</code></td><td>Comprendre du code</td></tr>
+        <tr><td><code>/fix</code></td><td>Corriger une erreur</td></tr>
+        <tr><td><code>/tests</code></td><td>Générer des tests</td></tr>
+        <tr><td><code>/doc</code></td><td>Documenter</td></tr>
+        <tr><td><code>/optimize</code></td><td>Améliorer les performances</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Participants (VS Code)</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Participant</th>
+          <th>Contexte</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>@workspace</code></td><td>Tout le codebase</td></tr>
+        <tr><td><code>@terminal</code></td><td>Historique terminal</td></tr>
+        <tr><td><code>@vscode</code></td><td>Paramètres IDE</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2>5.3 Patterns de prompts réutilisables</h2>
+
+    <h3>Refactoring</h3>
+
+    <pre><code>Refactorise ce code pour :
+- Extraire la logique dupliquée
+- Améliorer les noms de variables
+- Réduire la complexité
+- Garder le même comportement</code></pre>
+
+    <h3>Debug</h3>
+
+    <pre><code>Erreur : [coller l'erreur]
+Code : [sélection ou #file]
+Comportement attendu : [description]
+
+Identifie la cause et propose une correction.</code></pre>
+
+    <h3>Génération de tests</h3>
+
+    <pre><code>Génère des tests unitaires pour cette classe.
+- Couvrir les cas nominaux
+- Couvrir les edge cases (null, vide, limites)
+- Mocker les dépendances
+- Utiliser le pattern AAA</code></pre>
+
+    <h3>Revue de code</h3>
+
+    <pre><code>Fais une revue de ce code en vérifiant :
+1. Bugs potentiels et edge cases
+2. Failles de sécurité
+3. Problèmes de performance
+4. Respect des conventions du projet
+
+Pour chaque issue : localisation, gravité, suggestion de fix.</code></pre>
+
+    <h3>Migration / Mise à jour</h3>
+
+    <pre><code>Migre ce code de [ancien] vers [nouveau].
+- Préserver le comportement existant
+- Utiliser les nouvelles APIs recommandées
+- Signaler les breaking changes</code></pre>
+  </article>
+</body>
+</html>
