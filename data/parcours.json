@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-14T09:05:13.323Z",
+  "generatedAt": "2025-12-15T11:26:26.282Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -61,36 +61,6 @@
           "id": "06-perspectives-2026",
           "title": "Perspectives 2026",
           "icon": "🔮"
-        }
-      ]
-    },
-    {
-      "id": "exemple-article",
-      "title": "Article exemple",
-      "description": "Un article de démonstration pour tester l'affichage des parcours.",
-      "path": "/parcours/epics/exemple-article",
-      "hierarchy": [
-        "autres"
-      ],
-      "tags": [
-        "exemple",
-        "test"
-      ],
-      "author": "PlayLab42",
-      "created": "2025-10-01",
-      "duration": "2 min",
-      "difficulty": "beginner",
-      "icon": "📝",
-      "thumbnail": null,
-      "slideCount": 1,
-      "optionalSlideCount": 0,
-      "hasIndex": false,
-      "structure": [
-        {
-          "type": "slide",
-          "id": "01-introduction",
-          "title": "Introduction",
-          "icon": "📝"
         }
       ]
     },
@@ -229,7 +199,7 @@
         "id": "autres",
         "label": "Autres",
         "icon": "📚",
-        "count": 4,
+        "count": 3,
         "thumbnail": null,
         "visible": true,
         "children": []
@@ -254,16 +224,6 @@
       {
         "id": "agent",
         "label": "Agents IA",
-        "count": 1
-      },
-      {
-        "id": "exemple",
-        "label": "Exemple",
-        "count": 1
-      },
-      {
-        "id": "test",
-        "label": "Test",
         "count": 1
       },
       {
@@ -439,36 +399,6 @@
             "id": "07-aller-plus-loin",
             "title": "Pour aller plus loin",
             "icon": "🚀"
-          }
-        ]
-      },
-      {
-        "id": "exemple-article",
-        "title": "Article exemple",
-        "description": "Un article de démonstration pour tester l'affichage des parcours.",
-        "path": "/parcours/epics/exemple-article",
-        "hierarchy": [
-          "autres"
-        ],
-        "tags": [
-          "exemple",
-          "test"
-        ],
-        "author": "PlayLab42",
-        "created": "2025-10-01",
-        "duration": "2 min",
-        "difficulty": "beginner",
-        "icon": "📝",
-        "thumbnail": null,
-        "slideCount": 1,
-        "optionalSlideCount": 0,
-        "hasIndex": false,
-        "structure": [
-          {
-            "type": "slide",
-            "id": "01-introduction",
-            "title": "Introduction",
-            "icon": "📝"
           }
         ]
       }
