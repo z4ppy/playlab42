@@ -2,7 +2,10 @@
 
 [![CI](https://github.com/z4ppy/playlab42/actions/workflows/ci.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/ci.yml)
 [![Deploy](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml)
+[![Security Audit](https://github.com/z4ppy/playlab42/actions/workflows/security-audit.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/security-audit.yml)
 [![codecov](https://codecov.io/gh/z4ppy/playlab42/graph/badge.svg)](https://codecov.io/gh/z4ppy/playlab42)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE)
+[![Node.js 20+](https://img.shields.io/badge/node-20%2B-brightgreen.svg)](https://nodejs.org/)
 
 Plateforme pédagogique complète pour la formation au développement assisté par IA : supports de cours, base de connaissance, outils et jeux collaboratifs.
 
