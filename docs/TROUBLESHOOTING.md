@@ -1040,5 +1040,5 @@ Partager `diagnostic.log` lors de l'ouverture d'une issue.
 
 ---
 
-*Document maintenu par l'équipe BU DAP*
+*Document maintenu par l'équipe Docaposte*
 *Dernière mise à jour : 2025-12-14*

@@ -22,8 +22,8 @@
     "training",
     "typescript"
   ],
-  "author": "BU DAP",
-  "license": "MIT",
+  "author": "Docaposte",
+  "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/jest": "^30.0.0",

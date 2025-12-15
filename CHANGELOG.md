@@ -218,4 +218,4 @@ style: Formatage                     → (pas dans changelog)
 
 ---
 
-*Maintenu par l'équipe BU DAP*
+*Maintenu par l'équipe Docaposte*

@@ -619,5 +619,5 @@ Vous êtes maintenant prêt à contribuer à Playlab42. N'hésitez pas à explor
 
 ---
 
-*Document maintenu par l'équipe BU DAP*
+*Document maintenu par l'équipe Docaposte*
 *Dernière mise à jour : 2025-12-14*

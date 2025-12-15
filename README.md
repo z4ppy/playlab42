@@ -197,4 +197,4 @@ Référence à Douglas Adams : la réponse à la grande question sur la vie, l'u
 
 ---
 
-*Projet collaboratif - BU DAP*
+*Projet collaboratif - Docaposte*

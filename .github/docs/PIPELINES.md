@@ -548,5 +548,5 @@ Pour proposer des modifications aux workflows :
 
 ---
 
-*Document maintenu par l'équipe BU DAP*
+*Document maintenu par l'équipe Docaposte*
 *Dernière mise à jour : 2025-12-14*

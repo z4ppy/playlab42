@@ -693,5 +693,5 @@ The diff coverage is `85.71%`.
 
 ---
 
-*Document maintenu par l'équipe BU DAP*
+*Document maintenu par l'équipe Docaposte*
 *Dernière mise à jour : 2025-12-14*
