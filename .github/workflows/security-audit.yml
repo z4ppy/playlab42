@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configuration Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload des résultats npm audit
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: npm-audit-results
           path: npm-audit-results.json
@@ -66,7 +66,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configuration Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -97,7 +97,7 @@ jobs:
 
       - name: Upload des résultats ESLint
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: eslint-security-results
           path: eslint-security-results.json
@@ -136,7 +136,7 @@ jobs:
 
       - name: Upload des résultats Trivy
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: trivy-results
           path: trivy-results.json
@@ -167,7 +167,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configuration Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -220,7 +220,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Télécharger tous les artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         continue-on-error: true
 
       - name: Générer le rapport consolidé
@@ -271,7 +271,7 @@ jobs:
           echo "Pour plus de détails, consultez les artifacts du workflow." >> security-report.md
 
       - name: Upload du rapport consolidé
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: security-report
           path: security-report.md

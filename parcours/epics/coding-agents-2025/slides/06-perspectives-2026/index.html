@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perspectives 2026 - Coding Agents 2025</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .trend-section {
+      margin: var(--space-xl) 0;
+      padding: var(--space-lg);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+    }
+    .trend-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .trend-icon {
+      font-size: 2rem;
+    }
+    .trend-title {
+      font-size: var(--font-size-lg);
+      font-weight: bold;
+      margin: 0;
+    }
+    .partners-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin: var(--space-md) 0;
+    }
+    .partner-badge {
+      font-size: var(--font-size-xs);
+      padding: 4px 10px;
+      background: var(--color-bg);
+      border-radius: var(--radius-sm);
+    }
+    .primitives-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .primitive-card {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .primitive-icon {
+      font-size: 1.5rem;
+      margin-bottom: var(--space-xs);
+    }
+    .primitive-name {
+      font-weight: bold;
+      margin-bottom: var(--space-xs);
+    }
+    .primitive-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .stat-highlight {
+      display: inline-block;
+      background: var(--color-accent);
+      color: white;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-weight: bold;
+      margin: 0 var(--space-xs);
+    }
+    .context-comparison {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .context-item {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .context-value {
+      font-size: var(--font-size-lg);
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .context-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .warning-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .warning-stat {
+      background: rgba(244, 67, 54, 0.1);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .warning-stat-value {
+      font-size: var(--font-size-xl);
+      font-weight: bold;
+      color: #f44336;
+    }
+    .warning-stat-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+    }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-md) 0;
+    }
+    .skill-card {
+      background: var(--color-bg);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border-top: 3px solid var(--color-accent);
+    }
+    .skill-name {
+      font-weight: bold;
+      margin-bottom: var(--space-xs);
+    }
+    .skill-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .conclusion-box {
+      background: linear-gradient(135deg, var(--color-accent), #ff8a80);
+      color: white;
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
+      margin: var(--space-xl) 0;
+    }
+    .conclusion-box h3 {
+      margin-top: 0;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🔮 Perspectives 2026</h1>
+
+    <p>
+      Trois évolutions structurantes se dessinent pour 2026 : la standardisation via MCP,
+      l'autonomie croissante des agents, et l'impératif de gouvernance.
+    </p>
+
+    <!-- MCP -->
+    <div class="trend-section">
+      <div class="trend-header">
+        <span class="trend-icon">🔌</span>
+        <h2 class="trend-title">MCP : le standard universel</h2>
+      </div>
+
+      <p>
+        Le <strong>Model Context Protocol</strong>, lancé par Anthropic en novembre 2024,
+        a été transféré en décembre 2025 à l'<strong>Agentic AI Foundation</strong>
+        sous la Linux Foundation. C'est le "port USB-C pour l'IA".
+      </p>
+
+      <div class="partners-list">
+        <span class="partner-badge">Anthropic</span>
+        <span class="partner-badge">Block</span>
+        <span class="partner-badge">OpenAI</span>
+        <span class="partner-badge">Google</span>
+        <span class="partner-badge">Microsoft</span>
+        <span class="partner-badge">AWS</span>
+        <span class="partner-badge">Cloudflare</span>
+        <span class="partner-badge">Bloomberg</span>
+      </div>
+
+      <p><strong>Trois primitives fondamentales :</strong></p>
+
+      <div class="primitives-grid">
+        <div class="primitive-card">
+          <div class="primitive-icon">🔧</div>
+          <div class="primitive-name">Tools</div>
+          <div class="primitive-desc">Actions que l'agent peut exécuter</div>
+        </div>
+        <div class="primitive-card">
+          <div class="primitive-icon">📦</div>
+          <div class="primitive-name">Resources</div>
+          <div class="primitive-desc">Données accessibles à l'agent</div>
+        </div>
+        <div class="primitive-card">
+          <div class="primitive-icon">📝</div>
+          <div class="primitive-name">Prompts</div>
+          <div class="primitive-desc">Templates réutilisables</div>
+        </div>
+      </div>
+
+      <p>
+        Adoption massive : Cursor, Replit, Zed, Sourcegraph. Intégration OpenAI en mars 2025.
+      </p>
+    </div>
+
+    <!-- Autonomie -->
+    <div class="trend-section">
+      <div class="trend-header">
+        <span class="trend-icon">🤖</span>
+        <h2 class="trend-title">Autonomie croissante</h2>
+      </div>
+
+      <p>
+        AWS re:Invent 2025 a annoncé les <strong>"Frontier Agents"</strong> capables de coder pendant des jours
+        avec mémoire persistante. <strong>Cursor 2.0</strong> permet d'exécuter jusqu'à 8 agents en parallèle.
+      </p>
+
+      <p>
+        Gartner prévoit que<span class="stat-highlight">82%</span>des organisations
+        intégreront des agents IA pour coding, analyse de données et communication d'ici 2026.
+      </p>
+
+      <p><strong>Caractéristiques émergentes :</strong></p>
+      <ul>
+        <li><strong>Autonomie décisionnelle</strong> : Choix des repos à modifier</li>
+        <li><strong>Scalabilité</strong> : Spawning de multiples agents</li>
+        <li><strong>Apprentissage continu</strong> : Amélioration au fil des sessions</li>
+      </ul>
+
+      <blockquote>
+        <strong>Garde-fou clé :</strong> Jamais de commit direct en production, validation humaine obligatoire.
+      </blockquote>
+    </div>
+
+    <!-- Contexte massif -->
+    <div class="trend-section">
+      <div class="trend-header">
+        <span class="trend-icon">📚</span>
+        <h2 class="trend-title">Fenêtres de contexte massives</h2>
+      </div>
+
+      <div class="context-comparison">
+        <div class="context-item">
+          <div class="context-value">10M</div>
+          <div class="context-label">Llama 4 Scout</div>
+        </div>
+        <div class="context-item">
+          <div class="context-value">100M</div>
+          <div class="context-label">Magic.dev (exp.)</div>
+        </div>
+        <div class="context-item">
+          <div class="context-value">1M</div>
+          <div class="context-label">Claude / Gemini</div>
+        </div>
+        <div class="context-item">
+          <div class="context-value">8k</div>
+          <div class="context-label">GPT-3 (2023)</div>
+        </div>
+      </div>
+
+      <p>
+        Analyse de codebases entiers (50 000+ lignes) en une passe.
+        Émergence du <strong>"vibe coding"</strong> — développement piloté par intent en langage naturel.
+      </p>
+
+      <p>
+        <strong>Limitations persistantes :</strong> Lost-in-the-Middle, Context Rot (fiabilité décroissante avec la longueur).
+      </p>
+    </div>
+
+    <!-- Sécurité et gouvernance -->
+    <div class="trend-section">
+      <div class="trend-header">
+        <span class="trend-icon">🛡️</span>
+        <h2 class="trend-title">Sécurité et gouvernance</h2>
+      </div>
+
+      <p><strong>Statistiques 2025 préoccupantes :</strong></p>
+
+      <div class="warning-stats">
+        <div class="warning-stat">
+          <div class="warning-stat-value">80%</div>
+          <div class="warning-stat-label">Comportements risqués agents IA</div>
+        </div>
+        <div class="warning-stat">
+          <div class="warning-stat-value">97%</div>
+          <div class="warning-stat-label">Brèches sans contrôles d'accès</div>
+        </div>
+        <div class="warning-stat">
+          <div class="warning-stat-value">1/5</div>
+          <div class="warning-stat-label">Brèches dues au Shadow AI</div>
+        </div>
+        <div class="warning-stat">
+          <div class="warning-stat-value">30+</div>
+          <div class="warning-stat-label">Failles découvertes (Cursor, Copilot...)</div>
+        </div>
+      </div>
+
+      <p>
+        <strong>EU AI Act</strong> (effectif 2026) : Obligations de supervision humaine et documentation.
+        Conformité SOC2/HIPAA/PCI-DSS à étendre aux agents.
+      </p>
+    </div>
+
+    <!-- Évolution métier -->
+    <div class="trend-section">
+      <div class="trend-header">
+        <span class="trend-icon">👨‍💻</span>
+        <h2 class="trend-title">Évolution du métier</h2>
+      </div>
+
+      <p>
+        Le shift fondamental : de "écrire du code" vers "diriger l'IA pour écrire du code".
+        <strong>Compétences critiques 2026 :</strong>
+      </p>
+
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="skill-name">Orchestration IA</div>
+          <div class="skill-desc">Sélection et combinaison de modèles pour chaque tâche</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">Architecture</div>
+          <div class="skill-desc">Décisions que l'IA ne peut prendre seule</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">Validation</div>
+          <div class="skill-desc">Review de code IA, détection d'hallucinations</div>
+        </div>
+        <div class="skill-card">
+          <div class="skill-name">Gouvernance</div>
+          <div class="skill-desc">IP, compliance, sécurité des workflows</div>
+        </div>
+      </div>
+
+      <p>
+        <strong>Paradigme émergent :</strong> Spec-driven Development — l'ingénieur définit le "quoi" en specs,
+        l'IA génère le "comment", l'humain reviewer et orchestre.
+      </p>
+
+      <p>
+        <strong>Projection marché :</strong> Croissance de 20%/an pour atteindre $61 milliards en 2029.
+      </p>
+    </div>
+
+    <div class="conclusion-box">
+      <h3>Conclusion</h3>
+      <p>
+        Les coding agents sont devenus incontournables en 2025. Leur intégration efficace nécessite
+        la compréhension de l'architecture interne, l'acceptation des limitations actuelles,
+        et la préparation aux évolutions 2026.
+      </p>
+      <p>
+        <strong>Le développeur de demain sera un architecte-orchestrateur</strong>,
+        définissant les intentions et supervisant l'exécution par des systèmes de plus en plus capables.
+      </p>
+    </div>
+  </article>
+</body>
+</html>

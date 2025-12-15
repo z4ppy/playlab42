@@ -1,7 +1,69 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-13T20:51:50.357Z",
+  "generatedAt": "2025-12-14T09:05:13.323Z",
   "epics": [
+    {
+      "id": "coding-agents-2025",
+      "title": "Coding Agents en 2025",
+      "description": "Guide technique complet sur les coding agents : écosystème, architecture, capacités et perspectives.",
+      "path": "/parcours/epics/coding-agents-2025",
+      "hierarchy": [
+        "agentique"
+      ],
+      "tags": [
+        "ia",
+        "dev",
+        "avance",
+        "agent"
+      ],
+      "author": "cyrille",
+      "created": "2025-12-13",
+      "duration": "45 min",
+      "difficulty": "intermediate",
+      "icon": "🤖",
+      "thumbnail": "/parcours/epics/coding-agents-2025/thumbnail.svg",
+      "slideCount": 6,
+      "optionalSlideCount": 0,
+      "hasIndex": false,
+      "structure": [
+        {
+          "type": "slide",
+          "id": "01-introduction",
+          "title": "Introduction",
+          "icon": "🚀"
+        },
+        {
+          "type": "slide",
+          "id": "02-panorama",
+          "title": "Panorama de l'écosystème",
+          "icon": "🗺️"
+        },
+        {
+          "type": "slide",
+          "id": "03-agents-autonomes",
+          "title": "Agents autonomes",
+          "icon": "🦾"
+        },
+        {
+          "type": "slide",
+          "id": "04-architecture",
+          "title": "Architecture interne",
+          "icon": "🏗️"
+        },
+        {
+          "type": "slide",
+          "id": "05-capacites-limitations",
+          "title": "Capacités et limitations",
+          "icon": "⚖️"
+        },
+        {
+          "type": "slide",
+          "id": "06-perspectives-2026",
+          "title": "Perspectives 2026",
+          "icon": "🔮"
+        }
+      ]
+    },
     {
       "id": "exemple-article",
       "title": "Article exemple",
@@ -167,13 +229,33 @@
         "id": "autres",
         "label": "Autres",
         "icon": "📚",
-        "count": 3,
+        "count": 4,
         "thumbnail": null,
         "visible": true,
         "children": []
       }
     ],
     "tags": [
+      {
+        "id": "ia",
+        "label": "Intelligence Artificielle",
+        "count": 2
+      },
+      {
+        "id": "dev",
+        "label": "Développement",
+        "count": 2
+      },
+      {
+        "id": "avance",
+        "label": "Avancé",
+        "count": 1
+      },
+      {
+        "id": "agent",
+        "label": "Agents IA",
+        "count": 1
+      },
       {
         "id": "exemple",
         "label": "Exemple",
@@ -195,16 +277,6 @@
         "count": 1
       },
       {
-        "id": "ia",
-        "label": "Intelligence Artificielle",
-        "count": 1
-      },
-      {
-        "id": "dev",
-        "label": "Développement",
-        "count": 1
-      },
-      {
         "id": "histoire",
         "label": "Histoire",
         "count": 1
@@ -223,6 +295,68 @@
   },
   "featured": {
     "recent": [
+      {
+        "id": "coding-agents-2025",
+        "title": "Coding Agents en 2025",
+        "description": "Guide technique complet sur les coding agents : écosystème, architecture, capacités et perspectives.",
+        "path": "/parcours/epics/coding-agents-2025",
+        "hierarchy": [
+          "agentique"
+        ],
+        "tags": [
+          "ia",
+          "dev",
+          "avance",
+          "agent"
+        ],
+        "author": "cyrille",
+        "created": "2025-12-13",
+        "duration": "45 min",
+        "difficulty": "intermediate",
+        "icon": "🤖",
+        "thumbnail": "/parcours/epics/coding-agents-2025/thumbnail.svg",
+        "slideCount": 6,
+        "optionalSlideCount": 0,
+        "hasIndex": false,
+        "structure": [
+          {
+            "type": "slide",
+            "id": "01-introduction",
+            "title": "Introduction",
+            "icon": "🚀"
+          },
+          {
+            "type": "slide",
+            "id": "02-panorama",
+            "title": "Panorama de l'écosystème",
+            "icon": "🗺️"
+          },
+          {
+            "type": "slide",
+            "id": "03-agents-autonomes",
+            "title": "Agents autonomes",
+            "icon": "🦾"
+          },
+          {
+            "type": "slide",
+            "id": "04-architecture",
+            "title": "Architecture interne",
+            "icon": "🏗️"
+          },
+          {
+            "type": "slide",
+            "id": "05-capacites-limitations",
+            "title": "Capacités et limitations",
+            "icon": "⚖️"
+          },
+          {
+            "type": "slide",
+            "id": "06-perspectives-2026",
+            "title": "Perspectives 2026",
+            "icon": "🔮"
+          }
+        ]
+      },
       {
         "id": "hello-playlab42",
         "title": "Bienvenue sur PlayLab42",

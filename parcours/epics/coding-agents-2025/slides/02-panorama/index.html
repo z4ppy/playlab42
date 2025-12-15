@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama - Coding Agents 2025</title>
+  <link rel="stylesheet" href="/lib/theme.css">
+  <link rel="stylesheet" href="/parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '/lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .category-section {
+      margin: var(--space-xl) 0;
+    }
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--color-accent);
+    }
+    .category-icon {
+      font-size: 1.5rem;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-md);
+    }
+    .tool-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      transition: transform var(--transition-normal);
+    }
+    .tool-card:hover {
+      transform: translateY(-2px);
+    }
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-sm);
+    }
+    .tool-name {
+      font-weight: bold;
+      font-size: var(--font-size-md);
+      color: var(--color-text);
+    }
+    .tool-badge {
+      font-size: var(--font-size-xs);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--color-accent);
+      color: white;
+    }
+    .tool-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-sm);
+    }
+    .tool-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+    .tool-stat {
+      font-size: var(--font-size-xs);
+      padding: 2px 6px;
+      background: var(--color-bg);
+      border-radius: var(--radius-sm);
+    }
+    .highlight-box {
+      background: linear-gradient(135deg, var(--color-accent), #ff8a80);
+      color: white;
+      padding: var(--space-md);
+      border-radius: var(--radius-lg);
+      margin: var(--space-md) 0;
+    }
+    .highlight-box strong {
+      display: block;
+      margin-bottom: var(--space-xs);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>🗺️ Panorama de l'écosystème</h1>
+
+    <p>
+      L'écosystème des coding agents se structure autour de <strong>quatre catégories</strong> distinctes :
+      IDE AI-native, outils CLI, extensions open source, et solutions enterprise.
+    </p>
+
+    <!-- IDE AI-native -->
+    <div class="category-section">
+      <div class="category-header">
+        <span class="category-icon">💻</span>
+        <h2>IDE AI-native</h2>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Cursor</span>
+            <span class="tool-badge">Leader</span>
+          </div>
+          <div class="tool-desc">
+            IDE de référence basé sur VS Code. Agent Mode par défaut, checkpoints, autocontext par embeddings.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Multi-modèles</span>
+            <span class="tool-stat">$20-200/mois</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Windsurf</span>
+            <span class="tool-badge">Codeium</span>
+          </div>
+          <div class="tool-desc">
+            Moteur Cascade avec graphe de dépendances. Éditions multi-fichiers cohérentes, context engine 32k tokens.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">$15/mois</span>
+            <span class="tool-stat">Équipes</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">GitHub Copilot</span>
+            <span class="tool-badge">56% SWE</span>
+          </div>
+          <div class="tool-desc">
+            Agent Mode (GA avril 2025). Itère sur son code, exécute le terminal. Code Review Agent pour les PRs.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Multi-IDE</span>
+            <span class="tool-stat">Intégration GitHub</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Outils CLI -->
+    <div class="category-section">
+      <div class="category-header">
+        <span class="category-icon">⌨️</span>
+        <h2>Outils CLI</h2>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Claude Code</span>
+            <span class="tool-badge">Anthropic</span>
+          </div>
+          <div class="tool-desc">
+            CLI le plus abouti. Recherche agentique, subagents parallèles, hooks d'automatisation. Client ET serveur MCP.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Version web async</span>
+            <span class="tool-stat">Tâches longues</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Aider</span>
+            <span class="tool-badge">84,9% Polyglot</span>
+          </div>
+          <div class="tool-desc">
+            Intégration Git native. Repo Map pour cartographier le codebase. Mode Architect séparant raisonnement et édition.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Multi-modèles</span>
+            <span class="tool-stat">Interface vocale</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">OpenAI Codex CLI</span>
+            <span class="tool-badge">Rust</span>
+          </div>
+          <div class="tool-desc">
+            Agent actif en Rust. GPT-5.1-Codex-Max pour tâches 24h+ avec compaction automatique du contexte.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">ChatGPT intégré</span>
+            <span class="tool-stat">GitHub Actions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extensions Open Source -->
+    <div class="category-section">
+      <div class="category-header">
+        <span class="category-icon">🔓</span>
+        <h2>Extensions Open Source</h2>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Cline</span>
+            <span class="tool-badge">2,4M installs</span>
+          </div>
+          <div class="tool-desc">
+            Extension VS Code agentique. Human-in-the-loop avec approbation par action. Suivi des coûts en temps réel.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Multi-providers</span>
+            <span class="tool-stat">Privacy-first</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Continue.dev</span>
+            <span class="tool-badge">100% local</span>
+          </div>
+          <div class="tool-desc">
+            Architecture modulaire (Core, Extension, GUI). Support Ollama/LM Studio. CLI headless pour CI/CD.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Zero data leak</span>
+            <span class="tool-stat">Personnalisable</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solutions Enterprise -->
+    <div class="category-section">
+      <div class="category-header">
+        <span class="category-icon">🏢</span>
+        <h2>Solutions Enterprise</h2>
+      </div>
+
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Amazon Q</span>
+            <span class="tool-badge">AWS</span>
+          </div>
+          <div class="tool-desc">
+            Intégration AWS native. Questions sur ressources, CLI, troubleshooting CloudWatch/Lambda. Compliance SOC2/HIPAA/PCI.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">$19/user/mois</span>
+            <span class="tool-stat">IP indemnity</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Tabnine</span>
+            <span class="tool-badge">Air-gapped</span>
+          </div>
+          <div class="tool-desc">
+            Seul outil 100% déconnectable (Dell PowerEdge + NVIDIA). Privacy by design, 600+ langages, détection licences.
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Finance/Défense</span>
+            <span class="tool-stat">Zero retention</span>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-header">
+            <span class="tool-name">Sourcegraph Cody</span>
+            <span class="tool-badge">RAG avancé</span>
+          </div>
+          <div class="tool-desc">
+            RAG sur codebase sophistiqué. Format SCIP, 100k+ repositories. Focus sur Cody Enterprise ($59/user).
+          </div>
+          <div class="tool-stats">
+            <span class="tool-stat">Amp (agents)</span>
+            <span class="tool-stat">Indexation profonde</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Comment choisir ?</strong>
+      Développeurs individuels → Cursor ou Claude Code CLI. Équipes GitHub → Copilot Business.
+      Contraintes compliance → Tabnine ou Amazon Q. Open source → Cline ou Aider.
+    </div>
+  </article>
+</body>
+</html>
