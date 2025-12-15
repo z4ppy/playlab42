@@ -227,3 +227,8 @@ git push -u origin feature/ma-feature
 - Les parcours utilisent un système de taxonomie avec threshold (min 3 epics par catégorie)
 - Les moteurs de jeux doivent être déterministes (utiliser SeededRandom)
 - Le projet est 100% statique, pas de backend requis
+
+## Contexte utilisateur
+
+- Prénom : Cyrille
+- Organisation : Docaposte

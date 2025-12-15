@@ -1,0 +1,24 @@
+{
+  "id": "coding-agents-2025",
+  "title": "Coding Agents en 2025",
+  "description": "Guide technique complet sur les coding agents : écosystème, architecture, capacités et perspectives.",
+  "hierarchy": ["agentique"],
+  "tags": ["ia", "dev", "avance", "agent"],
+  "metadata": {
+    "author": "cyrille",
+    "created": "2025-12-13",
+    "duration": "45 min",
+    "difficulty": "intermediate",
+    "language": "fr"
+  },
+  "icon": "🤖",
+  "thumbnail": "thumbnail.svg",
+  "content": [
+    { "id": "01-introduction" },
+    { "id": "02-panorama" },
+    { "id": "03-agents-autonomes" },
+    { "id": "04-architecture" },
+    { "id": "05-capacites-limitations" },
+    { "id": "06-perspectives-2026" }
+  ]
+}
