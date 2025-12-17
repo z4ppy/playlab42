@@ -1,59 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Favicon Colibri Origami - Playlab42 -->
-  <!-- Style géométrique avec facettes pour effet papier plié -->
+  <!-- Favicon Colibri coloré - Playlab42 -->
+  <!-- Basé sur svgsilh.com/svg/158334.svg avec couleurs -->
 
-  <!-- Aile supérieure (grande) -->
-  <polygon
-    points="14,4 24,8 20,16 14,14"
-    fill="#818cf8"
-  />
-
-  <!-- Aile supérieure - facette sombre -->
-  <polygon
-    points="20,16 24,8 26,12 22,18"
-    fill="#6366f1"
-  />
+  <defs>
+    <!-- Dégradé pour le corps -->
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="50%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <!-- Dégradé pour l'aile -->
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+    <!-- Dégradé pour la gorge -->
+    <linearGradient id="throatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f43f5e"/>
+      <stop offset="100%" style="stop-color:#fb923c"/>
+    </linearGradient>
+  </defs>
 
   <!-- Corps principal -->
-  <polygon
-    points="14,14 20,16 18,24 12,20"
-    fill="#4f46e5"
-  />
-
-  <!-- Corps - facette claire -->
-  <polygon
-    points="14,14 12,20 8,16 10,12"
-    fill="#6366f1"
-  />
+  <ellipse cx="18" cy="16" rx="7" ry="5" fill="url(#bodyGrad)" transform="rotate(-25 18 16)"/>
 
   <!-- Tête -->
-  <polygon
-    points="10,12 14,14 12,10 8,8"
-    fill="#818cf8"
-  />
+  <circle cx="10" cy="10" r="5" fill="url(#bodyGrad)"/>
 
-  <!-- Bec (long et fin, caractéristique du colibri) -->
-  <polygon
-    points="8,8 2,6 3,7 8,9"
-    fill="#fbbf24"
-  />
+  <!-- Gorge colorée (caractéristique du colibri) -->
+  <ellipse cx="11" cy="12" rx="3" ry="2.5" fill="url(#throatGrad)"/>
 
-  <!-- Queue fourchue -->
-  <polygon
-    points="18,24 22,30 18,28"
-    fill="#4f46e5"
-  />
-  <polygon
-    points="18,24 18,28 14,30 16,26"
-    fill="#6366f1"
-  />
-
-  <!-- Petite aile arrière -->
-  <polygon
-    points="22,18 28,20 24,24 20,22"
-    fill="#a5b4fc"
-  />
+  <!-- Bec long -->
+  <path d="M5 9 L-1 7 L5 8 Z" fill="#1f2937" stroke="#1f2937" stroke-width="0.5"/>
 
   <!-- Oeil -->
-  <circle cx="10" cy="10" r="1.2" fill="#1e1b4b"/>
+  <circle cx="8" cy="9" r="1.2" fill="#1f2937"/>
+  <circle cx="7.7" cy="8.7" r="0.4" fill="white"/>
+
+  <!-- Aile déployée -->
+  <path d="M14 12 Q24 6 30 10 Q26 14 20 16 Q16 14 14 12" fill="url(#wingGrad)" opacity="0.9"/>
+
+  <!-- Queue fourchue -->
+  <path d="M24 18 L30 24 L26 22 L28 28 L24 22 L22 26 L22 20 Z" fill="url(#bodyGrad)"/>
+
+  <!-- Petites plumes queue -->
+  <path d="M22 20 L20 24 L21 20" fill="#10b981"/>
 </svg>
