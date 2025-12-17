@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Favicon Colibri Origami - Playlab42 -->
+  <!-- Style géométrique avec facettes pour effet papier plié -->
+
+  <!-- Aile supérieure (grande) -->
+  <polygon
+    points="14,4 24,8 20,16 14,14"
+    fill="#818cf8"
+  />
+
+  <!-- Aile supérieure - facette sombre -->
+  <polygon
+    points="20,16 24,8 26,12 22,18"
+    fill="#6366f1"
+  />
+
+  <!-- Corps principal -->
+  <polygon
+    points="14,14 20,16 18,24 12,20"
+    fill="#4f46e5"
+  />
+
+  <!-- Corps - facette claire -->
+  <polygon
+    points="14,14 12,20 8,16 10,12"
+    fill="#6366f1"
+  />
+
+  <!-- Tête -->
+  <polygon
+    points="10,12 14,14 12,10 8,8"
+    fill="#818cf8"
+  />
+
+  <!-- Bec (long et fin, caractéristique du colibri) -->
+  <polygon
+    points="8,8 2,6 3,7 8,9"
+    fill="#fbbf24"
+  />
+
+  <!-- Queue fourchue -->
+  <polygon
+    points="18,24 22,30 18,28"
+    fill="#4f46e5"
+  />
+  <polygon
+    points="18,24 18,28 14,30 16,26"
+    fill="#6366f1"
+  />
+
+  <!-- Petite aile arrière -->
+  <polygon
+    points="22,18 28,20 24,24 20,22"
+    fill="#a5b4fc"
+  />
+
+  <!-- Oeil -->
+  <circle cx="10" cy="10" r="1.2" fill="#1e1b4b"/>
+</svg>
