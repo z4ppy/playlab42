@@ -10,7 +10,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-family);
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  /* Pas de transition sur background pour éviter le flash au chargement */
 }
 
 /* Conteneur principal de la slide */
