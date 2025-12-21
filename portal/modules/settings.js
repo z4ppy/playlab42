@@ -9,7 +9,7 @@ import { state, setState, STORAGE_KEYS } from './state.js';
 import { el } from './dom-cache.js';
 import { savePreferences } from './storage.js';
 import { updateSoundButton } from './game-loader.js';
-import { getTheme, setTheme, THEMES } from '../lib/theme.js';
+import { getTheme, setTheme, THEMES } from '../../lib/theme.js';
 
 /**
  * Affiche la vue des paramètres

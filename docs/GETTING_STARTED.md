@@ -175,19 +175,22 @@ tree -L 2 -I 'node_modules'
 
 playlab42/
 ├── index.html              # Portail principal
-├── app.js                  # Logique du portail
-├── style.css              # Styles globaux
-├── lib/                   # Bibliothèques partagées
+├── portal/                 # Sources du portail
+│   ├── app.js              # Point d'entrée
+│   ├── style.css           # Styles
+│   └── modules/            # Modules JS
+├── lib/                    # Bibliothèques partagées
 │   ├── gamekit.js
 │   ├── seeded-random.js
-│   └── assets.js
-├── tools/                 # Outils HTML standalone
-├── games/                 # Jeux autonomes
+│   └── theme.js
+├── scripts/                # Scripts de build
+├── tools/                  # Outils HTML standalone
+├── games/                  # Jeux autonomes
 │   └── tic-tac-toe/
-├── parcours/              # Contenus pédagogiques
-├── data/                  # Catalogues générés
-├── docs/                  # Documentation
-└── openspec/              # Spécifications
+├── parcours/               # Contenus pédagogiques
+├── data/                   # Catalogues générés
+├── docs/                   # Documentation
+└── openspec/               # Spécifications
 ```
 
 ### 2. Exécuter les tests

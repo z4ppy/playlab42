@@ -62,7 +62,7 @@ make build-catalogue    # Génère data/catalogue.json
 make build-parcours     # Génère data/parcours.json
 
 # Linting et qualité
-make lint               # Vérifie lib/, src/, games/
+make lint               # Vérifie lib/, portal/, scripts/, games/
 make test               # Lance les tests Jest
 make test-watch         # Mode watch
 
@@ -119,26 +119,30 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 
 ```
 playlab42/
-├── index.html                # Portail principal
-├── style.css                 # Styles du portail
-├── app.js                    # Logique du portail
-├── lib/                      # Bibliothèques partagées
+├── index.html                # Portail principal (reste à la racine pour GitHub Pages)
+├── portal/                   # Sources du portail
+│   ├── app.js                # Point d'entrée du portail
+│   ├── style.css             # Styles du portail
+│   └── modules/              # Modules JS du portail
+│       ├── state.js          # État global
+│       ├── storage.js        # Persistence localStorage
+│       ├── catalogue.js      # Gestion catalogue
+│       ├── parcours.js       # Gestion parcours
+│       └── ...               # Autres modules
+├── lib/                      # Bibliothèques partagées (portail + games + tools)
 │   ├── gamekit.js            # SDK pour les jeux
 │   ├── theme.js              # Gestion thème clair/sombre
 │   ├── seeded-random.js      # PRNG déterministe
-│   ├── parcours-viewer.js    # Viewer de parcours (orchestration)
-│   └── parcours/             # Modules du viewer de parcours
-│       ├── ParcoursProgress.js    # Gestion progression
-│       ├── ParcoursNavigation.js  # Navigation entre slides
-│       └── ParcoursUI.js          # Rendu HTML
-├── app/                      # Modules du portail (en cours de refactoring)
-│   ├── state.js              # État global
-│   ├── storage.js            # Persistence localStorage
-│   └── dom-cache.js          # Cache éléments DOM
+│   ├── parcours-viewer.js    # Viewer de parcours
+│   └── parcours/             # Modules du viewer
+├── scripts/                  # Scripts de build
+│   ├── build-catalogue.js    # Génère catalogue.json
+│   ├── build-parcours.js     # Génère parcours.json
+│   └── build-bookmarks.js    # Génère bookmarks.json
 ├── tools/                    # Outils HTML standalone
-│   ├── [tool-name]/
-│   │   ├── index.html        # Un fichier = un outil
-│   │   └── tool.json         # Manifest
+│   └── [tool-name]/
+│       ├── index.html        # Un fichier = un outil
+│       └── tool.json         # Manifest
 ├── games/                    # Jeux autonomes
 │   └── [game-id]/
 │       ├── index.html        # Point d'entrée standalone
@@ -156,7 +160,6 @@ playlab42/
 ├── data/                     # Données générées (par build)
 │   ├── catalogue.json        # DB des tools/games
 │   └── parcours.json         # DB des parcours
-├── scripts/                  # Scripts de build
 ├── docs/                     # Documentation
 └── openspec/                 # Spécifications et proposals
     ├── specs/                # Specs techniques

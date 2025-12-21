@@ -6,7 +6,7 @@
  * Les éléments sont mis en cache au chargement du module.
  */
 
-import { $ } from '../lib/dom.js';
+import { $ } from '../../lib/dom.js';
 
 /**
  * Cache des éléments DOM de l'application

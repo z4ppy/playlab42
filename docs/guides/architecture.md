@@ -29,7 +29,7 @@ Playlab42 est une plateforme modulaire de mini-jeux et outils, conçue pour la f
 
 ## Composants principaux
 
-### 1. Portail (`index.html`, `app.js`, `style.css`)
+### 1. Portail (`index.html`, `portal/`)
 
 Le point d'entrée de l'application :
 - **Catalogue** : Liste les outils et jeux disponibles
@@ -299,8 +299,10 @@ rng1.int(0, 100) === rng2.int(0, 100); // true
 ```
 playlab42/
 ├── index.html              # Portail principal
-├── app.js                  # Logique du portail
-├── style.css               # Styles du portail
+├── portal/                 # Sources du portail
+│   ├── app.js              # Point d'entrée
+│   ├── style.css           # Styles
+│   └── modules/            # Modules JS
 ├── tools/                  # Outils HTML standalone
 │   └── [tool]/
 │       ├── index.html
@@ -313,9 +315,11 @@ playlab42/
 │       └── game.json       # Manifest
 ├── lib/                    # Bibliothèques partagées
 │   ├── seeded-random.js
-│   ├── game-engine.js
-│   ├── bot.js
+│   ├── theme.js
 │   └── gamekit.js
+├── scripts/                # Scripts de build
+│   ├── build-catalogue.js
+│   └── build-parcours.js
 ├── data/                   # Données générées
 │   └── catalogue.json
 ├── docs/                   # Documentation

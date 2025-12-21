@@ -7,7 +7,7 @@
 
 import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
-import { cloneTemplate } from '../lib/dom.js';
+import { cloneTemplate } from '../../lib/dom.js';
 
 /**
  * Charge le catalogue depuis le serveur

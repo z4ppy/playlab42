@@ -27,7 +27,7 @@ const stats = {
   ogCached: 0,
   ogFailed: 0,
   errors: [],
-  warnings: []
+  warnings: [],
 };
 
 /**
@@ -84,7 +84,7 @@ function scanStandaloneBookmarks(config) {
   for (const cat of config.categories || []) {
     categories.set(cat.id, {
       ...cat,
-      bookmarks: []
+      bookmarks: [],
     });
   }
 
@@ -100,7 +100,7 @@ function scanStandaloneBookmarks(config) {
   for (const file of files) {
     const filePath = join(BOOKMARKS_DIR, file);
     const data = readJSON(filePath);
-    if (!data) continue;
+    if (!data) {continue;}
 
     const categoryId = data.category || file.replace('.json', '');
 
@@ -110,7 +110,7 @@ function scanStandaloneBookmarks(config) {
         id: categoryId,
         label: categoryId,
         order: 50,
-        bookmarks: []
+        bookmarks: [],
       });
     }
 
@@ -121,7 +121,7 @@ function scanStandaloneBookmarks(config) {
         category.bookmarks.push({
           ...bookmark,
           source: 'standalone',
-          domain: extractDomain(bookmark.url)
+          domain: extractDomain(bookmark.url),
         });
         stats.standalone++;
       }
@@ -137,7 +137,7 @@ function scanStandaloneBookmarks(config) {
 function scanToolsBookmarks() {
   const bookmarks = [];
 
-  if (!existsSync(TOOLS_DIR)) return bookmarks;
+  if (!existsSync(TOOLS_DIR)) {return bookmarks;}
 
   const files = readdirSync(TOOLS_DIR)
     .filter(f => f.endsWith('.json'));
@@ -145,7 +145,7 @@ function scanToolsBookmarks() {
   for (const file of files) {
     const filePath = join(TOOLS_DIR, file);
     const manifest = readJSON(filePath);
-    if (!manifest?.bookmarks) continue;
+    if (!manifest?.bookmarks) {continue;}
 
     for (const bookmark of manifest.bookmarks) {
       if (validateBookmark(bookmark, `tool:${manifest.id}`)) {
@@ -153,7 +153,7 @@ function scanToolsBookmarks() {
           ...bookmark,
           source: 'tool',
           sourceId: manifest.id,
-          domain: extractDomain(bookmark.url)
+          domain: extractDomain(bookmark.url),
         });
         stats.fromModules++;
       }
@@ -169,17 +169,17 @@ function scanToolsBookmarks() {
 function scanGamesBookmarks() {
   const bookmarks = [];
 
-  if (!existsSync(GAMES_DIR)) return bookmarks;
+  if (!existsSync(GAMES_DIR)) {return bookmarks;}
 
   const dirs = readdirSync(GAMES_DIR)
     .filter(f => statSync(join(GAMES_DIR, f)).isDirectory());
 
   for (const dir of dirs) {
     const manifestPath = join(GAMES_DIR, dir, 'game.json');
-    if (!existsSync(manifestPath)) continue;
+    if (!existsSync(manifestPath)) {continue;}
 
     const manifest = readJSON(manifestPath);
-    if (!manifest?.bookmarks) continue;
+    if (!manifest?.bookmarks) {continue;}
 
     for (const bookmark of manifest.bookmarks) {
       if (validateBookmark(bookmark, `game:${manifest.id}`)) {
@@ -187,7 +187,7 @@ function scanGamesBookmarks() {
           ...bookmark,
           source: 'game',
           sourceId: manifest.id,
-          domain: extractDomain(bookmark.url)
+          domain: extractDomain(bookmark.url),
         });
         stats.fromModules++;
       }
@@ -203,17 +203,17 @@ function scanGamesBookmarks() {
 function scanParcoursBookmarks() {
   const bookmarks = [];
 
-  if (!existsSync(EPICS_DIR)) return bookmarks;
+  if (!existsSync(EPICS_DIR)) {return bookmarks;}
 
   const dirs = readdirSync(EPICS_DIR)
     .filter(f => statSync(join(EPICS_DIR, f)).isDirectory());
 
   for (const dir of dirs) {
     const manifestPath = join(EPICS_DIR, dir, 'epic.json');
-    if (!existsSync(manifestPath)) continue;
+    if (!existsSync(manifestPath)) {continue;}
 
     const manifest = readJSON(manifestPath);
-    if (!manifest?.bookmarks || manifest.draft) continue;
+    if (!manifest?.bookmarks || manifest.draft) {continue;}
 
     for (const bookmark of manifest.bookmarks) {
       if (validateBookmark(bookmark, `parcours:${manifest.id}`)) {
@@ -221,7 +221,7 @@ function scanParcoursBookmarks() {
           ...bookmark,
           source: 'parcours',
           sourceId: manifest.id,
-          domain: extractDomain(bookmark.url)
+          domain: extractDomain(bookmark.url),
         });
         stats.fromModules++;
       }
@@ -255,7 +255,7 @@ function deduplicateBookmarks(categories, moduleBookmarks) {
     label: 'Depuis les modules',
     icon: '📦',
     order: 99,
-    bookmarks: []
+    bookmarks: [],
   };
 
   for (const bookmark of moduleBookmarks) {
@@ -359,7 +359,7 @@ async function main() {
   const moduleBookmarks = [
     ...scanToolsBookmarks(),
     ...scanGamesBookmarks(),
-    ...scanParcoursBookmarks()
+    ...scanParcoursBookmarks(),
   ];
   console.log(`  ${stats.fromModules} bookmarks trouvés`);
 
@@ -385,7 +385,7 @@ async function main() {
     version: '1.0',
     generatedAt: new Date().toISOString(),
     categories: sortedCategories,
-    tags: aggregateTags(categories)
+    tags: aggregateTags(categories),
   };
 
   // Écrire le fichier

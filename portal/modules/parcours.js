@@ -9,8 +9,8 @@
 import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
 import { getEpicProgress } from './storage.js';
-import { cloneTemplate } from '../lib/dom.js';
-import { ParcoursViewer } from '../lib/parcours-viewer.js';
+import { cloneTemplate } from '../../lib/dom.js';
+import { ParcoursViewer } from '../../lib/parcours-viewer.js';
 
 /**
  * Charge le catalogue parcours depuis le serveur
