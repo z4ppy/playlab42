@@ -297,6 +297,10 @@
     import { RandomBot } from './bots/random.js';
     import { BlockerBot } from './bots/blocker.js';
     import { PerfectBot } from './bots/perfect.js';
+    import GameKit from '../../lib/gamekit.js';
+
+    // Initialiser GameKit pour la communication avec le portail
+    GameKit.init('tictactoe');
 
     // === État ===
     let engine = new TicTacToeEngine();
@@ -478,6 +482,8 @@
       if (state.winners) {
         if (state.winners.includes(humanId)) {
           scores.human++;
+          // Sauvegarder le score via GameKit
+          GameKit.saveScore(scores.human);
         } else {
           scores.opponent++;
         }

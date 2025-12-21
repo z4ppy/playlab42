@@ -179,6 +179,7 @@ Les specs détaillées sont dans `openspec/specs/` :
 | [manifests](openspec/specs/manifests/spec.md) | Formats tool.json, game.json |
 | [portal](openspec/specs/portal/spec.md) | Interface utilisateur |
 | [gamekit](openspec/specs/gamekit/spec.md) | SDK pour les jeux |
+| [theme](openspec/specs/theme/spec.md) | Système de thèmes clair/sombre |
 
 ## Références documentation
 

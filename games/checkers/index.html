@@ -225,9 +225,13 @@
   <script type="module">
     import { CheckersEngine } from './engine.js';
     import { initTheme } from '../../lib/theme.js';
+    import GameKit from '../../lib/gamekit.js';
 
     // Initialiser le thème (dark/light)
     initTheme();
+
+    // Initialiser GameKit pour la communication avec le portail
+    GameKit.init('checkers');
 
     const engine = new CheckersEngine();
     let state = null;
@@ -438,6 +442,10 @@
         const winnerName = state.winner === 0 ? 'Blanc' : 'Noir';
         statusEl.textContent = `🏆 Victoire du joueur ${winnerName}!`;
         statusEl.style.color = 'var(--color-success, green)';
+        // Sauvegarder si le joueur humain a gagné
+        if (playerTypes[state.winner] === 'human') {
+          GameKit.saveScore(1);
+        }
       } else if (state.status === 'draw') {
         statusEl.textContent = 'Match nul';
         statusEl.style.color = 'var(--color-warning, orange)';

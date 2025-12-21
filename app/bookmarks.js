@@ -7,7 +7,7 @@
 
 import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
-import { escapeHtml, cloneTemplate } from '../lib/dom.js';
+import { cloneTemplate } from '../lib/dom.js';
 
 /**
  * Charge le catalogue bookmarks depuis le serveur
@@ -96,8 +96,8 @@ function createBookmarkItemElement(bookmark) {
   link.href = bookmark.url;
   link.dataset.bookmarkUrl = bookmark.url;
   icon.textContent = bookmark.icon || '🔗';
-  title.textContent = escapeHtml(bookmark.displayTitle || bookmark.title);
-  description.textContent = escapeHtml(bookmark.displayDescription || bookmark.description || '');
+  title.textContent = bookmark.displayTitle || bookmark.title;
+  description.textContent = bookmark.displayDescription || bookmark.description || '';
   domain.textContent = bookmark.domain;
 
   // Stocker les données pour la preview

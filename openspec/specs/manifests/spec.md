@@ -254,7 +254,7 @@ games/
 │   ├── game.js          # Code du jeu
 │   ├── engine.ts        # Moteur de jeu (optionnel)
 │   ├── game.json        # Manifest
-│   ├── thumb.png        # Vignette (380x180, 19:9, < 50KB)
+│   ├── thumb.png        # Vignette optionnelle (380x180, 19:9, < 50KB)
 │   ├── bots/            # Bots IA
 │   │   ├── random.js
 │   │   ├── blocker.js
@@ -430,9 +430,9 @@ games/
 ⚠️  tools/timer.html: No manifest found, skipping
 ```
 
-## Vignettes
+## Vignettes (optionnelles)
 
-Les vignettes (thumbnails) sont des images d'aperçu affichées dans le catalogue.
+Les vignettes (thumbnails) sont des images d'aperçu affichées dans le catalogue. **Elles sont optionnelles** - si absentes, le portail affiche l'emoji `icon` du manifest.
 
 ### Spécifications communes
 

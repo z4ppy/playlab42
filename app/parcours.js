@@ -9,7 +9,7 @@
 import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
 import { getEpicProgress } from './storage.js';
-import { escapeHtml, cloneTemplate } from '../lib/dom.js';
+import { cloneTemplate } from '../lib/dom.js';
 import { ParcoursViewer } from '../lib/parcours-viewer.js';
 
 /**
@@ -50,7 +50,7 @@ function createEpicCardElement(epic) {
   if (epic.thumbnail) {
     const img = document.createElement('img');
     img.src = epic.thumbnail;
-    img.alt = escapeHtml(epic.title);
+    img.alt = epic.title;
     img.loading = 'lazy';
     img.onerror = () => {
       thumb.textContent = epic.icon || '📚';
@@ -61,8 +61,8 @@ function createEpicCardElement(epic) {
   }
 
   // Info
-  title.textContent = (epic.icon ? `${epic.icon} ` : '') + escapeHtml(epic.title);
-  desc.textContent = escapeHtml(epic.description);
+  title.textContent = (epic.icon ? `${epic.icon} ` : '') + epic.title;
+  desc.textContent = epic.description;
 
   // Meta
   if (epic.duration) {
@@ -75,7 +75,7 @@ function createEpicCardElement(epic) {
     for (const tag of epic.tags.slice(0, 3)) {
       const tagEl = document.createElement('span');
       tagEl.className = 'epic-tag';
-      tagEl.textContent = escapeHtml(tag);
+      tagEl.textContent = tag;
       tagsContainer.appendChild(tagEl);
     }
   }

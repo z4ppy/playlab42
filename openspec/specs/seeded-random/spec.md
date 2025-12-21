@@ -91,14 +91,22 @@ class SeededRandom {
   chance(probability: number): boolean;
 
   /**
-   * Retourne la seed actuelle (pour sérialisation).
+   * Retourne l'état interne actuel (pour sérialisation/restauration).
+   * Note : Ce n'est pas la seed initiale, mais l'état après N appels.
    */
-  getSeed(): number;
+  getState(): number;
 
   /**
    * Clone le générateur dans son état actuel.
    */
   clone(): SeededRandom;
+
+  /**
+   * Crée un générateur à partir d'un état sauvegardé.
+   * Utile pour restaurer un générateur après désérialisation.
+   * @param state - État obtenu via getState()
+   */
+  static fromState(state: number): SeededRandom;
 }
 ```
 
@@ -149,7 +157,7 @@ class SeededRandom {
     return this.random() < probability;
   }
 
-  getSeed(): number {
+  getState(): number {
     return this.state;
   }
 
@@ -157,6 +165,12 @@ class SeededRandom {
     const clone = new SeededRandom(0);
     clone.state = this.state;
     return clone;
+  }
+
+  static fromState(state: number): SeededRandom {
+    const rng = new SeededRandom(0);
+    rng.state = state;
+    return rng;
   }
 }
 ```
@@ -232,7 +246,7 @@ class MyGameEngine implements GameEngine<GameState, Action, View, Config> {
 
     return {
       board: this.generateBoard(),
-      rngState: this.rng.getSeed(),
+      rngState: this.rng.getState(),
     };
   }
 
@@ -251,7 +265,7 @@ class MyGameEngine implements GameEngine<GameState, Action, View, Config> {
 
   // Restaurer l'état du RNG depuis un état sauvegardé
   restore(state: GameState): void {
-    this.rng = new SeededRandom(state.rngState);
+    this.rng = SeededRandom.fromState(state.rngState);
   }
 }
 ```

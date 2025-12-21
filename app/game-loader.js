@@ -8,7 +8,6 @@
 import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
 import { addToRecent, savePreferences } from './storage.js';
-import { escapeHtml } from '../lib/dom.js';
 
 /**
  * Charge un jeu/outil dans l'iframe
@@ -27,7 +26,7 @@ export function loadGame(path, name, type, id) {
   el.viewSettings.classList.remove('active');
   el.viewGame.classList.add('active');
   document.body.classList.add('game-active');
-  el.gameTitle.textContent = escapeHtml(name);
+  el.gameTitle.textContent = name;
   el.loading.classList.remove('hidden');
 
   el.gameIframe.src = path;
