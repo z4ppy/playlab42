@@ -77,8 +77,83 @@
                      ═══════════════════════════════════════════════════════════ -->
                 <h3 id="gradients" class="text-xl font-bold dl-text-primary mt-12 mb-4 scroll-mt-24">Étape 1 : Calculer les Gradients</h3>
 
-                <p class="mb-6">
-                    On veut calculer \(\frac{\partial L}{\partial w}\) pour chaque poids : "si je bouge ce poids un peu, de combien l'erreur change-t-elle ?"
+                <!-- INTRODUCTION PÉDAGOGIQUE -->
+                <div class="concept-box mb-6">
+                    <h4 class="font-bold text-blue-400 mb-3">Le problème à résoudre</h4>
+                    <p class="dl-text-secondary text-sm mb-4">
+                        Notre réseau vient de faire une prédiction. Il s'est trompé. Maintenant on veut <strong>corriger ses poids</strong> pour qu'il se trompe moins la prochaine fois. Mais le réseau a des milliers de poids... <em>Lequel modifier ? Dans quel sens ? De combien ?</em>
+                    </p>
+                    <p class="dl-text-secondary text-sm">
+                        C'est le <strong>"credit assignment problem"</strong> : attribuer à chaque poids sa part de responsabilité dans l'erreur.
+                    </p>
+                </div>
+
+                <div class="analogy-box mb-6">
+                    <div class="flex items-start gap-3">
+                        <span class="text-xl">🔍</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-1">L'analogie du détective</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Imaginez un match de foot perdu 3-0. Qui est responsable ? Le gardien qui a raté un arrêt ? Le défenseur mal placé ? L'attaquant qui n'a pas marqué ? En réalité, <strong>chacun porte une fraction de la responsabilité</strong>. La rétropropagation fait exactement ce travail : elle remonte du résultat (la défaite) vers chaque joueur (chaque poids) pour calculer <em>"de combien es-tu responsable ?"</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="font-bold dl-text-primary mb-3">Qu'est-ce qu'un gradient ?</h4>
+
+                <p class="mb-4">
+                    Le <dfn>gradient</dfn> d'un poids, c'est la réponse à cette question :
+                </p>
+
+                <div class="dl-card p-4 rounded-xl border mb-4 text-center">
+                    <p class="text-lg dl-text-primary font-medium">
+                        "Si je bouge ce poids <strong>un tout petit peu</strong>, l'erreur augmente ou diminue ? De combien ?"
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <div class="dl-card p-3 rounded-xl border">
+                        <p class="text-sm"><strong class="text-red-400">Gradient positif (+)</strong></p>
+                        <p class="text-xs dl-text-muted">Si j'augmente ce poids → l'erreur augmente</p>
+                        <p class="text-xs dl-text-muted">Donc je dois <strong>diminuer</strong> ce poids</p>
+                    </div>
+                    <div class="dl-card p-3 rounded-xl border">
+                        <p class="text-sm"><strong class="text-green-400">Gradient négatif (−)</strong></p>
+                        <p class="text-xs dl-text-muted">Si j'augmente ce poids → l'erreur diminue</p>
+                        <p class="text-xs dl-text-muted">Donc je dois <strong>augmenter</strong> ce poids</p>
+                    </div>
+                </div>
+
+                <p class="mb-6 text-sm dl-text-muted italic">
+                    Le gradient est comme une <strong>boussole</strong> : il pointe vers la direction où l'erreur augmente le plus. On fait donc l'inverse — on va dans le sens opposé au gradient pour <em>descendre</em> vers moins d'erreur.
+                </p>
+
+                <h4 class="font-bold dl-text-primary mb-3">La démarche en 3 temps</h4>
+
+                <div class="grid md:grid-cols-3 gap-3 mb-8">
+                    <div class="dl-card p-3 rounded-xl border text-center">
+                        <div class="text-2xl mb-2">1️⃣</div>
+                        <p class="text-sm font-bold text-cyan-400">Forward</p>
+                        <p class="text-xs dl-text-muted">Calculer la prédiction et l'erreur</p>
+                    </div>
+                    <div class="dl-card p-3 rounded-xl border text-center">
+                        <div class="text-2xl mb-2">2️⃣</div>
+                        <p class="text-sm font-bold text-orange-400">Backward</p>
+                        <p class="text-xs dl-text-muted">Remonter pour trouver la responsabilité de chaque poids</p>
+                    </div>
+                    <div class="dl-card p-3 rounded-xl border text-center">
+                        <div class="text-2xl mb-2">3️⃣</div>
+                        <p class="text-sm font-bold text-green-400">Update</p>
+                        <p class="text-xs dl-text-muted">Corriger chaque poids proportionnellement</p>
+                    </div>
+                </div>
+
+                <!-- MAINTENANT LES FORMULES -->
+                <h4 class="font-bold dl-text-primary mb-3">Comment calculer ces gradients ?</h4>
+
+                <p class="mb-4">
+                    On note \(\frac{\partial L}{\partial w}\) le gradient du poids \(w\). Mathématiquement, c'est une dérivée partielle : "de combien \(L\) (l'erreur) change quand \(w\) change".
                 </p>
 
                 <div class="concept-box mb-6">
