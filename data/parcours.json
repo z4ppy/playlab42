@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-23T12:42:09.322Z",
+  "generatedAt": "2025-12-23T12:52:19.767Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -128,19 +128,11 @@
           ]
         },
         {
-          "type": "section",
-          "id": "contexte",
+          "type": "slide",
+          "id": "06-contexte",
           "title": "Contexte",
           "icon": "📜",
-          "optional": true,
-          "children": [
-            {
-              "type": "slide",
-              "id": "06-contexte",
-              "title": "Contexte",
-              "icon": "📜"
-            }
-          ]
+          "optional": true
         },
         {
           "type": "slide",
@@ -621,19 +613,11 @@
             ]
           },
           {
-            "type": "section",
-            "id": "contexte",
+            "type": "slide",
+            "id": "06-contexte",
             "title": "Contexte",
             "icon": "📜",
-            "optional": true,
-            "children": [
-              {
-                "type": "slide",
-                "id": "06-contexte",
-                "title": "Contexte",
-                "icon": "📜"
-              }
-            ]
+            "optional": true
           },
           {
             "type": "slide",

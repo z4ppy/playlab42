@@ -25,15 +25,7 @@
         { "id": "05-optimisation" }
       ]
     },
-    {
-      "id": "contexte",
-      "title": "Contexte",
-      "icon": "📜",
-      "optional": true,
-      "content": [
-        { "id": "06-contexte" }
-      ]
-    },
+    { "id": "06-contexte", "optional": true },
     { "id": "07-laboratoire" }
   ]
 }

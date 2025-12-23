@@ -288,7 +288,6 @@
         function drawPrediction() {
             if (!nn) return;
             const w = predCanvas.width, h = predCanvas.height;
-            const res = 30;
             const imgData = predCtx.createImageData(w, h);
 
             for (let py = 0; py < h; py++) {
@@ -303,18 +302,52 @@
                         out = nn.forward([x, y])[0];
                     }
 
+                    // t = 1 pour positif (bleu), t = 0 pour négatif (rouge)
                     const t = (out + 1) / 2;
                     const i = (py * w + px) * 4;
 
-                    // Bleu → Rouge
-                    imgData.data[i] = Math.round(239 * t + 59 * (1 - t));
-                    imgData.data[i + 1] = Math.round(68 * t + 130 * (1 - t));
-                    imgData.data[i + 2] = Math.round(68 * t + 246 * (1 - t));
+                    // Positif → Bleu (#3b82f6), Négatif → Rouge (#ef4444)
+                    imgData.data[i] = Math.round(59 * t + 239 * (1 - t));      // R
+                    imgData.data[i + 1] = Math.round(130 * t + 68 * (1 - t));  // G
+                    imgData.data[i + 2] = Math.round(246 * t + 68 * (1 - t));  // B
                     imgData.data[i + 3] = 255;
                 }
             }
 
             predCtx.putImageData(imgData, 0, 0);
+            updateNetworkViz();
+        }
+
+        function updateNetworkViz() {
+            // Met à jour les couleurs des neurones basé sur les activations
+            const neurons = networkViz.querySelectorAll('.neuron-viz');
+            let idx = 0;
+            for (let l = 0; l < nn.layers.length; l++) {
+                const layer = nn.layers[l];
+                // Entrées de la couche l
+                const inputs = l === 0 ? [0, 0] : layer.inputs;
+                if (l === 0 && inputs) {
+                    for (let j = 0; j < Math.min(layer.inSize, 8); j++) {
+                        if (neurons[idx]) {
+                            const val = inputs[j] || 0;
+                            const color = val > 0 ? `rgba(59, 130, 246, ${Math.abs(val)})` : `rgba(239, 68, 68, ${Math.abs(val)})`;
+                            neurons[idx].style.background = color;
+                        }
+                        idx++;
+                    }
+                }
+                // Sorties de la couche l
+                if (layer.outputs) {
+                    for (let j = 0; j < Math.min(layer.outSize, 8); j++) {
+                        if (neurons[idx]) {
+                            const val = layer.outputs[j] || 0;
+                            const color = val > 0 ? `rgba(59, 130, 246, ${Math.abs(val)})` : `rgba(239, 68, 68, ${Math.abs(val)})`;
+                            neurons[idx].style.background = color;
+                        }
+                        idx++;
+                    }
+                }
+            }
         }
 
         function trainEpoch() {
