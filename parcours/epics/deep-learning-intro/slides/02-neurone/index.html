@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Neurone - Deep Learning</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/deep-learning.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white">
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <section id="neuron" class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">⚡</span>
+                <h2 class="text-3xl font-bold dl-text-primary">Anatomie d'un Neurone</h2>
+            </div>
+
+            <div class="prose-content dl-text-secondary">
+                <p class="mb-6">
+                    Un neurone artificiel est une unité de calcul très simple. Il reçoit des nombres en entrée, les combine, et produit un nombre en sortie. Voici comment :
+                </p>
+
+                <div class="step-indicator">
+                    <span class="step-number">1</span>
+                    <span class="dl-text-primary font-semibold">Somme pondérée</span>
+                </div>
+                <p class="mb-4 ml-10">
+                    Chaque entrée \(x_i\) est multipliée par un <strong>poids</strong> \(w_i\) (son "importance"), puis on additionne le tout avec un <strong>biais</strong> \(b\) :
+                </p>
+                <div class="math-block text-center">
+                    $$ z = w_1 x_1 + w_2 x_2 + ... + w_n x_n + b = \sum_{i=1}^{n} w_i x_i + b $$
+                </div>
+
+                <div class="step-indicator">
+                    <span class="step-number">2</span>
+                    <span class="dl-text-primary font-semibold">Fonction d'activation</span>
+                </div>
+                <p class="mb-4 ml-10">
+                    Cette somme passe dans une <strong>fonction d'activation</strong> qui introduit de la non-linéarité (sinon, empiler des couches ne servirait à rien !) :
+                </p>
+                <div class="math-block text-center">
+                    $$ a = \sigma(z) $$
+                </div>
+
+                <div class="concept-box">
+                    <h4 class="font-bold text-blue-400 mb-3">Fonctions d'Activation Courantes</h4>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <span class="font-mono text-cyan-400">tanh(z)</span>
+                            <p class="dl-text-muted text-xs mt-1">Sortie entre -1 et 1. Utilisée dans notre simulation.</p>
+                        </div>
+                        <div>
+                            <span class="font-mono text-cyan-400">sigmoid(z)</span>
+                            <p class="dl-text-muted text-xs mt-1">Sortie entre 0 et 1. Idéale pour les probabilités.</p>
+                        </div>
+                        <div>
+                            <span class="font-mono text-cyan-400">ReLU(z)</span>
+                            <p class="dl-text-muted text-xs mt-1">max(0, z). La plus populaire aujourd'hui.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🚰</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-2">Analogie : Le robinet et les tuyaux</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Imaginez de l'eau qui coule dans des tuyaux. Les <strong>poids</strong> sont comme des vannes qui contrôlent le débit. Les <strong>biais</strong> ajoutent ou retirent un peu d'eau. La <strong>fonction d'activation</strong> est un filtre qui décide si l'eau passe ou non (et en quelle quantité).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box mt-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">💡</span>
+                        <div>
+                            <h4 class="font-bold text-yellow-500 mb-2">Pourquoi la non-linéarité ?</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Sans fonction d'activation, un réseau de 100 couches serait équivalent à... une seule couche ! La composition de fonctions linéaires reste linéaire. C'est la non-linéarité qui permet au réseau d'apprendre des patterns complexes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="dl-footer border-t py-8 text-center text-sm">
+        <p>Deep Learning pour l'impatient — Slide 2/7</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction - Deep Learning</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/deep-learning.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white">
+
+    <!-- Hero Section -->
+    <header class="hero-section relative py-20 overflow-hidden border-b">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-block mb-6 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium">
+                Cours Interactif Complet
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold dl-text-primary tracking-tight mb-6">
+                Comment les réseaux de neurones <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">apprennent</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-lg dl-text-muted mb-8 leading-relaxed">
+                Un voyage pédagogique de zéro à expert, avec des analogies, des mathématiques progressives, et un laboratoire interactif pour expérimenter en temps réel.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 text-sm">
+                <span class="dl-badge px-3 py-1 rounded-full">~30 min de lecture</span>
+                <span class="dl-badge px-3 py-1 rounded-full">Niveau : Débutant → Intermédiaire</span>
+                <span class="dl-badge px-3 py-1 rounded-full">Lab interactif inclus</span>
+            </div>
+        </div>
+        <div class="hero-grid absolute inset-0 bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <!-- CHAPITRE 1: L'OBJECTIF -->
+        <section id="objectif" class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🎯</span>
+                <h2 class="text-3xl font-bold dl-text-primary">L'Objectif</h2>
+            </div>
+
+            <div class="prose-content dl-text-secondary">
+                <p class="mb-6">
+                    Imaginez que vous devez apprendre à un enfant à reconnaître des chats dans des photos. Vous ne lui donnez pas une liste de règles ("un chat a des oreilles pointues, des moustaches..."). À la place, vous lui montrez des milliers de photos en disant "chat" ou "pas chat". Petit à petit, il <em>apprend</em> à reconnaître les patterns.
+                </p>
+
+                <div class="analogy-box">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🧠</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-2">Analogie : L'élève et le professeur</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Un réseau de neurones est comme un élève qui fait un exercice, vérifie sa réponse, puis <strong>corrige ses erreurs</strong>. La rétropropagation est le mécanisme qui lui permet de savoir <em>comment</em> corriger chaque partie de son raisonnement.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="mb-6">
+                    Le processus d'apprentissage d'un réseau de neurones se résume en <strong>3 étapes</strong> répétées des milliers de fois :
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-4 my-8">
+                    <div class="dl-card p-4 rounded-xl border text-center">
+                        <div class="text-3xl mb-2">➡️</div>
+                        <h4 class="font-bold text-blue-400 mb-1">1. Forward Pass</h4>
+                        <p class="text-xs dl-text-muted">Calculer une prédiction à partir de l'entrée</p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border text-center">
+                        <div class="text-3xl mb-2">📏</div>
+                        <h4 class="font-bold text-yellow-500 mb-1">2. Mesurer l'Erreur</h4>
+                        <p class="text-xs dl-text-muted">Comparer la prédiction à la vraie réponse</p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border text-center">
+                        <div class="text-3xl mb-2">⬅️</div>
+                        <h4 class="font-bold text-red-400 mb-1">3. Backprop</h4>
+                        <p class="text-xs dl-text-muted">Propager l'erreur pour corriger les poids</p>
+                    </div>
+                </div>
+
+                <div class="concept-box">
+                    <h4 class="font-bold text-blue-400 mb-3">Ce que vous allez apprendre</h4>
+                    <ul class="list-disc list-inside space-y-2 text-sm dl-text-secondary">
+                        <li>Comment fonctionne un <strong>neurone artificiel</strong></li>
+                        <li>La <strong>propagation avant</strong> et le calcul des prédictions</li>
+                        <li>La <strong>rétropropagation</strong> et la règle de la chaîne</li>
+                        <li>L'optimiseur <strong>Adam</strong> et la descente de gradient</li>
+                        <li>Les <strong>pièges classiques</strong> (vanishing gradient, overfitting...)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="dl-footer border-t py-8 text-center text-sm">
+        <p>Deep Learning pour l'impatient — Slide 1/7</p>
+    </footer>
+
+</body>
+</html>

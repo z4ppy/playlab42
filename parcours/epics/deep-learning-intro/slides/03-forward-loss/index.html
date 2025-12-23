@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forward & Loss - Deep Learning</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/deep-learning.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script type="module">
+        import { initSlide, sendTOC, setupScrollHandler } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+        setupScrollHandler();
+        sendTOC([
+            { id: 'forward', label: 'Propagation Avant', icon: '➡️' },
+            { id: 'loss', label: 'Mesurer l\'Erreur', icon: '📏' },
+        ]);
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white">
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <!-- FORWARD PROPAGATION -->
+        <section id="forward" class="mb-24 scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">➡️</span>
+                <h2 class="text-3xl font-bold dl-text-primary">La Propagation Avant</h2>
+            </div>
+
+            <div class="prose-content dl-text-secondary">
+                <p class="mb-6">
+                    La <strong>propagation avant</strong> (forward propagation) est simplement le calcul de la sortie du réseau à partir d'une entrée. L'information "coule" de gauche à droite, couche par couche.
+                </p>
+
+                <p class="mb-6">
+                    Pour chaque couche \(l\), on calcule :
+                </p>
+
+                <div class="math-block">
+                    <p class="text-sm dl-text-muted mb-2">1. La somme pondérée :</p>
+                    $$ z^{[l]} = W^{[l]} \cdot a^{[l-1]} + b^{[l]} $$
+                    <p class="text-sm dl-text-muted mb-2 mt-4">2. L'activation :</p>
+                    $$ a^{[l]} = \sigma(z^{[l]}) $$
+                </div>
+
+                <p class="mb-6">
+                    Où \(a^{[0]} = x\) (l'entrée). On répète ce processus jusqu'à la dernière couche pour obtenir la prédiction \(\hat{y} = a^{[L]}\).
+                </p>
+
+                <div class="analogy-box">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🏭</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-2">Analogie : La chaîne de production</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Imaginez une usine avec plusieurs stations. La matière première (entrée) passe de station en station. Chaque station la transforme un peu (poids + activation). À la fin, vous obtenez le produit fini (prédiction). Si le produit est défectueux, vous devez remonter la chaîne pour trouver <em>quelle</em> station a fait une erreur.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOSS FUNCTION -->
+        <section id="loss" class="mb-16 scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">📏</span>
+                <h2 class="text-3xl font-bold dl-text-primary">Mesurer l'Erreur</h2>
+            </div>
+
+            <div class="prose-content dl-text-secondary">
+                <p class="mb-6">
+                    Une fois qu'on a une prédiction \(\hat{y}\), il faut mesurer <strong>à quel point elle est fausse</strong>. C'est le rôle de la <strong>fonction de perte</strong> (loss function).
+                </p>
+
+                <p class="mb-4">
+                    La plus simple est l'<strong>Erreur Quadratique Moyenne</strong> (MSE) :
+                </p>
+
+                <div class="math-block text-center">
+                    $$ L = \frac{1}{2}(y - \hat{y})^2 $$
+                </div>
+
+                <p class="mb-6">
+                    Le facteur \(\frac{1}{2}\) est une convention pour simplifier les dérivées. Plus cette valeur est grande, plus le réseau se trompe.
+                </p>
+
+                <div class="concept-box">
+                    <h4 class="font-bold text-blue-400 mb-3">L'Objectif de l'Entraînement</h4>
+                    <p class="dl-text-secondary text-sm">
+                        Trouver les valeurs de poids \(W\) et biais \(b\) qui <strong>minimisent</strong> la fonction de perte sur l'ensemble des données d'entraînement. C'est un problème d'<strong>optimisation</strong>.
+                    </p>
+                </div>
+
+                <div class="analogy-box">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">⛰️</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-2">Analogie : La montagne dans le brouillard</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Imaginez que vous êtes sur une montagne, les yeux bandés, et vous voulez descendre au point le plus bas (le minimum de la perte). Vous ne pouvez que <strong>tâter le sol autour de vous</strong> pour sentir la pente. À chaque pas, vous allez dans la direction qui descend le plus. C'est la <strong>descente de gradient</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="dl-footer border-t py-8 text-center text-sm">
+        <p>Deep Learning pour l'impatient — Slide 3/7</p>
+    </footer>
+
+</body>
+</html>

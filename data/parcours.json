@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-23T11:20:10.427Z",
+  "generatedAt": "2025-12-23T12:42:09.322Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -85,15 +85,68 @@
       "difficulty": "beginner",
       "icon": "🧠",
       "thumbnail": null,
-      "slideCount": 1,
-      "optionalSlideCount": 0,
+      "slideCount": 7,
+      "optionalSlideCount": 1,
       "hasIndex": false,
       "structure": [
         {
+          "type": "section",
+          "id": "theorie",
+          "title": "Théorie",
+          "icon": "📚",
+          "children": [
+            {
+              "type": "slide",
+              "id": "01-introduction",
+              "title": "Introduction",
+              "icon": "🎯"
+            },
+            {
+              "type": "slide",
+              "id": "02-neurone",
+              "title": "Le Neurone",
+              "icon": "⚡"
+            },
+            {
+              "type": "slide",
+              "id": "03-forward-loss",
+              "title": "Forward & Loss",
+              "icon": "➡️"
+            },
+            {
+              "type": "slide",
+              "id": "04-backpropagation",
+              "title": "Rétropropagation",
+              "icon": "⬅️"
+            },
+            {
+              "type": "slide",
+              "id": "05-optimisation",
+              "title": "Optimisation",
+              "icon": "🔧"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "id": "contexte",
+          "title": "Contexte",
+          "icon": "📜",
+          "optional": true,
+          "children": [
+            {
+              "type": "slide",
+              "id": "06-contexte",
+              "title": "Contexte",
+              "icon": "📜"
+            }
+          ]
+        },
+        {
           "type": "slide",
-          "id": "01-retropropagation",
-          "title": "La Rétropropagation",
-          "icon": "🧠"
+          "id": "07-laboratoire",
+          "title": "Laboratoire",
+          "icon": "🧪"
         }
       ]
     },
@@ -525,15 +578,68 @@
         "difficulty": "beginner",
         "icon": "🧠",
         "thumbnail": null,
-        "slideCount": 1,
-        "optionalSlideCount": 0,
+        "slideCount": 7,
+        "optionalSlideCount": 1,
         "hasIndex": false,
         "structure": [
           {
+            "type": "section",
+            "id": "theorie",
+            "title": "Théorie",
+            "icon": "📚",
+            "children": [
+              {
+                "type": "slide",
+                "id": "01-introduction",
+                "title": "Introduction",
+                "icon": "🎯"
+              },
+              {
+                "type": "slide",
+                "id": "02-neurone",
+                "title": "Le Neurone",
+                "icon": "⚡"
+              },
+              {
+                "type": "slide",
+                "id": "03-forward-loss",
+                "title": "Forward & Loss",
+                "icon": "➡️"
+              },
+              {
+                "type": "slide",
+                "id": "04-backpropagation",
+                "title": "Rétropropagation",
+                "icon": "⬅️"
+              },
+              {
+                "type": "slide",
+                "id": "05-optimisation",
+                "title": "Optimisation",
+                "icon": "🔧"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "id": "contexte",
+            "title": "Contexte",
+            "icon": "📜",
+            "optional": true,
+            "children": [
+              {
+                "type": "slide",
+                "id": "06-contexte",
+                "title": "Contexte",
+                "icon": "📜"
+              }
+            ]
+          },
+          {
             "type": "slide",
-            "id": "01-retropropagation",
-            "title": "La Rétropropagation",
-            "icon": "🧠"
+            "id": "07-laboratoire",
+            "title": "Laboratoire",
+            "icon": "🧪"
           }
         ]
       },

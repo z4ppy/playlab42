@@ -1,8 +1,0 @@
-{
-  "id": "01-retropropagation",
-  "title": "La Rétropropagation",
-  "description": "Comment les réseaux de neurones apprennent : anatomie d'un neurone, forward propagation, backpropagation, optimiseur Adam et laboratoire interactif.",
-  "type": "interactive",
-  "duration": "30 min",
-  "icon": "🧠"
-}

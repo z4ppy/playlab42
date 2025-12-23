@@ -13,6 +13,27 @@
   },
   "icon": "🧠",
   "content": [
-    { "id": "01-retropropagation" }
+    {
+      "id": "theorie",
+      "title": "Théorie",
+      "icon": "📚",
+      "content": [
+        { "id": "01-introduction" },
+        { "id": "02-neurone" },
+        { "id": "03-forward-loss" },
+        { "id": "04-backpropagation" },
+        { "id": "05-optimisation" }
+      ]
+    },
+    {
+      "id": "contexte",
+      "title": "Contexte",
+      "icon": "📜",
+      "optional": true,
+      "content": [
+        { "id": "06-contexte" }
+      ]
+    },
+    { "id": "07-laboratoire" }
   ]
 }

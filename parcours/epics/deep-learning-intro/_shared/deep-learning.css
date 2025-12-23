@@ -1,0 +1,190 @@
+/**
+ * Deep Learning - Styles partagés
+ * Utilisé par toutes les slides du parcours deep-learning-intro
+ */
+
+/* === Variables du thème === */
+:root {
+    --dl-bg-primary: #0a0f1a;
+    --dl-bg-secondary: #111827;
+    --dl-bg-tertiary: #1f2937;
+    --dl-bg-card: #1e293b;
+    --dl-accent-blue: #3b82f6;
+    --dl-accent-cyan: #06b6d4;
+    --dl-accent-purple: #8b5cf6;
+    --dl-accent-green: #10b981;
+    --dl-accent-yellow: #f59e0b;
+    --dl-accent-red: #ef4444;
+    --dl-accent-orange: #f97316;
+    --dl-text-primary: #f1f5f9;
+    --dl-text-secondary: #cbd5e1;
+    --dl-text-muted: #94a3b8;
+    --dl-border-color: #374151;
+    --dl-nav-bg: rgba(15, 23, 42, 0.95);
+    --dl-grid-color: #1e293b;
+}
+
+/* Support du thème light */
+[data-theme="light"] {
+    --dl-bg-primary: #f8fafc;
+    --dl-bg-secondary: #e2e8f0;
+    --dl-bg-tertiary: #cbd5e1;
+    --dl-bg-card: #ffffff;
+    --dl-text-primary: #0f172a;
+    --dl-text-secondary: #334155;
+    --dl-text-muted: #64748b;
+    --dl-border-color: #94a3b8;
+    --dl-nav-bg: rgba(255, 255, 255, 0.95);
+    --dl-grid-color: #e2e8f0;
+}
+
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+        --dl-bg-primary: #f8fafc;
+        --dl-bg-secondary: #e2e8f0;
+        --dl-bg-tertiary: #cbd5e1;
+        --dl-bg-card: #ffffff;
+        --dl-text-primary: #0f172a;
+        --dl-text-secondary: #334155;
+        --dl-text-muted: #64748b;
+        --dl-border-color: #94a3b8;
+        --dl-nav-bg: rgba(255, 255, 255, 0.95);
+        --dl-grid-color: #e2e8f0;
+    }
+}
+
+/* === Base === */
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--dl-bg-primary);
+    color: var(--dl-text-primary);
+    background-image:
+        radial-gradient(ellipse at 20% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+}
+
+.font-mono { font-family: 'Monaco', 'Menlo', 'Consolas', monospace; }
+
+.prose-content {
+    font-size: 1.05rem;
+    line-height: 1.85;
+}
+
+/* === Blocs de contenu === */
+.math-block {
+    overflow-x: auto;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, var(--dl-bg-secondary) 0%, var(--dl-bg-tertiary) 100%);
+    border-radius: 0.75rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid var(--dl-accent-blue);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.concept-box {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.analogy-box {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.warning-box {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* === Timeline histoire === */
+.history-card {
+    border-left: 2px solid var(--dl-border-color);
+    padding-left: 1.5rem;
+    position: relative;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+.history-card:hover { border-left-color: var(--dl-accent-blue); }
+.history-card::before {
+    content: ''; position: absolute; left: -6px; top: 0;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--dl-accent-blue); box-shadow: 0 0 10px var(--dl-accent-blue);
+}
+
+/* === Étapes numérotées === */
+.step-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+.step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--dl-accent-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+/* === Classes utilitaires === */
+.dl-text-primary { color: var(--dl-text-primary) !important; }
+.dl-text-secondary { color: var(--dl-text-secondary) !important; }
+.dl-text-muted { color: var(--dl-text-muted) !important; }
+
+.dl-bg-primary { background-color: var(--dl-bg-primary) !important; }
+.dl-bg-secondary { background-color: var(--dl-bg-secondary) !important; }
+.dl-bg-tertiary { background-color: var(--dl-bg-tertiary) !important; }
+.dl-bg-card { background-color: var(--dl-bg-card) !important; }
+
+.dl-border { border-color: var(--dl-border-color) !important; }
+
+.dl-card {
+    background-color: var(--dl-bg-card) !important;
+    border-color: var(--dl-border-color) !important;
+}
+.dl-card h3, .dl-card h4 { color: var(--dl-text-primary) !important; }
+.dl-card p { color: var(--dl-text-muted) !important; }
+
+.dl-badge {
+    background-color: var(--dl-bg-secondary) !important;
+    color: var(--dl-text-secondary) !important;
+}
+
+/* === Cards interactives === */
+.card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); }
+
+/* === Hero section === */
+.hero-section {
+    border-color: var(--dl-border-color) !important;
+}
+.hero-section .hero-grid {
+    background-image: linear-gradient(to right, var(--dl-grid-color) 1px, transparent 1px),
+                      linear-gradient(to bottom, var(--dl-grid-color) 1px, transparent 1px) !important;
+}
+
+/* === Scrollbar === */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--dl-bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--dl-border-color); border-radius: 4px; }
+
+/* === Footer === */
+footer.dl-footer {
+    background: var(--dl-bg-secondary) !important;
+    border-color: var(--dl-border-color) !important;
+    color: var(--dl-text-muted) !important;
+}

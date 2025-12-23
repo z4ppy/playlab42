@@ -1,0 +1,8 @@
+{
+  "id": "07-laboratoire",
+  "title": "Laboratoire",
+  "description": "Expérimentez avec un réseau de neurones interactif",
+  "type": "interactive",
+  "icon": "🧪",
+  "duration": "5 min"
+}

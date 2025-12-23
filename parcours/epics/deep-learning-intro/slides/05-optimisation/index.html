@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimisation - Deep Learning</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/deep-learning.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script type="module">
+        import { initSlide, sendTOC, setupScrollHandler } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+        setupScrollHandler();
+        sendTOC([
+            { id: 'gradient', label: 'Descente de Gradient', icon: '📉' },
+            { id: 'adam', label: 'Optimiseur Adam', icon: '🚀' },
+        ]);
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white">
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <section id="optimizer" class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🔧</span>
+                <h2 class="text-3xl font-bold dl-text-primary">La Descente de Gradient & Adam</h2>
+            </div>
+
+            <div class="prose-content dl-text-secondary">
+
+                <div id="gradient" class="scroll-mt-24">
+                    <p class="mb-6">
+                        Maintenant qu'on a les gradients, on peut mettre à jour les poids. La méthode la plus simple est la <strong>Descente de Gradient</strong> (Gradient Descent) :
+                    </p>
+
+                    <div class="math-block text-center">
+                        $$ w_{t+1} = w_t - \eta \cdot \frac{\partial L}{\partial w} $$
+                    </div>
+
+                    <p class="mb-6">
+                        Où \(\eta\) est le <strong>taux d'apprentissage</strong> (learning rate). C'est la taille du pas qu'on fait à chaque itération.
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-4 my-8">
+                        <div class="bg-red-500/10 border border-red-500/30 p-4 rounded-xl">
+                            <h4 class="font-bold text-red-400 mb-2">η trop grand</h4>
+                            <p class="text-sm dl-text-muted">On "saute" par-dessus le minimum, oscillation, divergence possible.</p>
+                        </div>
+                        <div class="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-xl">
+                            <h4 class="font-bold text-yellow-500 mb-2">η trop petit</h4>
+                            <p class="text-sm dl-text-muted">Convergence très lente, risque de rester coincé dans un minimum local.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 id="adam" class="text-xl font-bold dl-text-primary mt-10 mb-4 scroll-mt-24">L'Optimiseur Adam</h3>
+
+                <p class="mb-6">
+                    La descente de gradient "vanilla" a des limitations. L'<strong>optimiseur Adam</strong> (Adaptive Moment Estimation) combine deux améliorations :
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 my-8">
+                    <div class="dl-card p-5 rounded-xl border">
+                        <h4 class="font-bold text-purple-400 mb-3">Momentum</h4>
+                        <p class="text-sm dl-text-muted mb-3">
+                            Au lieu d'utiliser uniquement le gradient actuel, on utilise une <strong>moyenne mobile</strong> des gradients passés. Cela "lisse" la trajectoire et accélère la convergence.
+                        </p>
+                        <div class="math-block text-xs py-2">
+                            $$ m_t = \beta_1 \cdot m_{t-1} + (1-\beta_1) \cdot g_t $$
+                        </div>
+                    </div>
+                    <div class="dl-card p-5 rounded-xl border">
+                        <h4 class="font-bold text-orange-400 mb-3">Taux Adaptatif</h4>
+                        <p class="text-sm dl-text-muted mb-3">
+                            Chaque poids a son propre learning rate qui s'ajuste en fonction de la <strong>variance de ses gradients</strong>. Un poids avec des gradients stables avance plus vite.
+                        </p>
+                        <div class="math-block text-xs py-2">
+                            $$ v_t = \beta_2 \cdot v_{t-1} + (1-\beta_2) \cdot g_t^2 $$
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">⚽</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-2">Analogie : La balle qui roule</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Imaginez une balle qui roule dans une vallée. Le <strong>momentum</strong>, c'est son inertie : si elle roule toujours dans la même direction, elle accélère. Le <strong>taux adaptatif</strong>, c'est comme si la balle freinait automatiquement quand le terrain devient chaotique, mais accélérait sur les lignes droites.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box mt-8">
+                    <h4 class="font-bold text-blue-400 mb-3">Paramètres Adam par défaut</h4>
+                    <div class="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <span class="font-mono text-cyan-400">β₁ = 0.9</span>
+                            <p class="dl-text-muted text-xs mt-1">Décroissance du momentum</p>
+                        </div>
+                        <div>
+                            <span class="font-mono text-cyan-400">β₂ = 0.999</span>
+                            <p class="dl-text-muted text-xs mt-1">Décroissance de la variance</p>
+                        </div>
+                        <div>
+                            <span class="font-mono text-cyan-400">ε = 10⁻⁸</span>
+                            <p class="dl-text-muted text-xs mt-1">Stabilité numérique</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="dl-footer border-t py-8 text-center text-sm">
+        <p>Deep Learning pour l'impatient — Slide 5/7</p>
+    </footer>
+
+</body>
+</html>

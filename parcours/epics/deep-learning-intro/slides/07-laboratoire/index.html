@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratoire - Deep Learning</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/deep-learning.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Styles spécifiques au lab - plein écran optimisé */
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        .lab-container { flex: 1; display: flex; flex-direction: column; }
+
+        /* Canvas et contrôles */
+        #canvas-container { position: relative; border-radius: 0.75rem; overflow: hidden; }
+        #dataCanvas { cursor: crosshair; }
+
+        /* Visualisation réseau */
+        .layer-viz { display: flex; flex-direction: column; gap: 2px; align-items: center; }
+        .neuron-viz {
+            width: 20px; height: 20px; border-radius: 50%;
+            border: 2px solid var(--dl-border-color);
+            transition: all 0.1s ease;
+        }
+
+        /* Stats cards */
+        .stat-card {
+            background: var(--dl-bg-card);
+            border: 1px solid var(--dl-border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+        .stat-value { font-size: 1.25rem; font-weight: bold; font-family: monospace; }
+
+        /* Boutons */
+        .lab-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .lab-btn-primary { background: var(--dl-accent-blue); color: white; }
+        .lab-btn-primary:hover { background: #2563eb; }
+        .lab-btn-danger { background: var(--dl-accent-red); color: white; }
+        .lab-btn-danger:hover { background: #dc2626; }
+        .lab-btn-secondary { background: var(--dl-bg-tertiary); color: var(--dl-text-secondary); border: 1px solid var(--dl-border-color); }
+        .lab-btn-secondary:hover { background: var(--dl-border-color); }
+        .lab-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Slider */
+        .lab-slider { appearance: none; width: 100%; height: 6px; border-radius: 3px; background: var(--dl-bg-tertiary); }
+        .lab-slider::-webkit-slider-thumb {
+            appearance: none; width: 16px; height: 16px;
+            border-radius: 50%; background: var(--dl-accent-blue); cursor: pointer;
+        }
+
+        /* Select */
+        .lab-select {
+            background: var(--dl-bg-tertiary); color: var(--dl-text-primary);
+            border: 1px solid var(--dl-border-color); border-radius: 0.5rem;
+            padding: 0.5rem 1rem; cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="px-6 py-4 border-b" style="background: var(--dl-bg-secondary); border-color: var(--dl-border-color);">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🧪</span>
+                <h1 class="text-xl font-bold dl-text-primary">Laboratoire Interactif</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <select id="taskSelect" class="lab-select">
+                    <option value="xor">XOR (Classification)</option>
+                    <option value="circle">Cercle (Classification)</option>
+                    <option value="sine">Sinus (Régression)</option>
+                    <option value="spiral">Spirale (Classification)</option>
+                </select>
+                <button id="resetBtn" class="lab-btn lab-btn-secondary">⟳ Reset</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="lab-container p-6 gap-6" style="background: var(--dl-bg-primary);">
+        <div class="grid lg:grid-cols-3 gap-6 flex-1">
+
+            <!-- Panneau gauche : Données -->
+            <div class="space-y-4">
+                <div class="stat-card">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm dl-text-muted">Espace des données</span>
+                        <button id="clearDataBtn" class="text-xs text-red-400 hover:text-red-300">Effacer</button>
+                    </div>
+                    <div id="canvas-container" class="aspect-square" style="background: var(--dl-bg-secondary);">
+                        <canvas id="dataCanvas" width="300" height="300" class="w-full h-full"></canvas>
+                    </div>
+                    <p class="text-xs dl-text-muted mt-2 text-center">Cliquez pour ajouter des points</p>
+                </div>
+
+                <div class="stat-card">
+                    <span class="text-sm dl-text-muted">Points d'entraînement</span>
+                    <div id="dataCount" class="stat-value text-blue-400">0</div>
+                </div>
+            </div>
+
+            <!-- Panneau central : Réseau -->
+            <div class="space-y-4">
+                <div class="stat-card">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-sm dl-text-muted">Architecture du réseau</span>
+                    </div>
+                    <div id="networkViz" class="flex justify-center items-center gap-6 py-4 min-h-[200px]">
+                        <!-- Généré dynamiquement -->
+                    </div>
+                    <p class="text-xs dl-text-muted text-center mt-2" id="archLabel">2 → 8 → 4 → 1</p>
+                </div>
+
+                <div class="stat-card">
+                    <label class="text-sm dl-text-muted block mb-2">Learning Rate: <span id="lrValue">0.05</span></label>
+                    <input type="range" id="lrSlider" class="lab-slider" min="-3" max="0" step="0.1" value="-1.3">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="stat-card">
+                        <span class="text-sm dl-text-muted">Epoch</span>
+                        <div id="epochCount" class="stat-value text-purple-400">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="text-sm dl-text-muted">Loss</span>
+                        <div id="lossValue" class="stat-value text-yellow-500">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panneau droit : Graphique -->
+            <div class="space-y-4">
+                <div class="stat-card flex-1">
+                    <span class="text-sm dl-text-muted block mb-3">Courbe de perte</span>
+                    <div class="h-64">
+                        <canvas id="lossChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="text-sm dl-text-muted block mb-3">Décision du réseau</span>
+                    <div id="prediction-container" class="aspect-square" style="background: var(--dl-bg-secondary); border-radius: 0.5rem;">
+                        <canvas id="predictionCanvas" width="150" height="150" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles -->
+        <div class="flex justify-center gap-4 pt-4 border-t" style="border-color: var(--dl-border-color);">
+            <button id="trainBtn" class="lab-btn lab-btn-primary px-8">▶ Entraîner</button>
+            <button id="stepBtn" class="lab-btn lab-btn-secondary">1 Epoch</button>
+            <button id="train100Btn" class="lab-btn lab-btn-secondary">100 Epochs</button>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        import { DeepNeuralNetwork, TASKS, shuffle } from '../../_shared/neural-network.js';
+
+        initSlide();
+
+        // État
+        let nn = null;
+        let dataset = [];
+        let epoch = 0;
+        let isTraining = false;
+        let trainInterval = null;
+        let lossHistory = [];
+        let currentTask = 'xor';
+
+        // Éléments DOM
+        const dataCanvas = document.getElementById('dataCanvas');
+        const dataCtx = dataCanvas.getContext('2d');
+        const predCanvas = document.getElementById('predictionCanvas');
+        const predCtx = predCanvas.getContext('2d');
+        const taskSelect = document.getElementById('taskSelect');
+        const lrSlider = document.getElementById('lrSlider');
+        const lrValue = document.getElementById('lrValue');
+        const epochCount = document.getElementById('epochCount');
+        const lossValueEl = document.getElementById('lossValue');
+        const dataCount = document.getElementById('dataCount');
+        const archLabel = document.getElementById('archLabel');
+        const networkViz = document.getElementById('networkViz');
+
+        // Chart.js
+        const lossChart = new Chart(document.getElementById('lossChart'), {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Loss',
+                    data: [],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { display: false },
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
+                },
+                plugins: { legend: { display: false } },
+                animation: { duration: 0 },
+            },
+        });
+
+        // Fonctions utilitaires
+        const getLR = () => Math.pow(10, parseFloat(lrSlider.value));
+
+        function initNetwork() {
+            const task = TASKS[currentTask];
+            nn = new DeepNeuralNetwork(task.arch, getLR());
+            dataset = task.gen();
+            epoch = 0;
+            lossHistory = [];
+            updateUI();
+            drawData();
+            drawPrediction();
+            renderNetworkViz();
+        }
+
+        function renderNetworkViz() {
+            const arch = nn.layerSizes;
+            archLabel.textContent = arch.join(' → ');
+
+            networkViz.innerHTML = arch.map((size, i) => {
+                const neurons = Array(Math.min(size, 8)).fill(0)
+                    .map(() => `<div class="neuron-viz"></div>`).join('');
+                const label = i === 0 ? 'Entrée' : i === arch.length - 1 ? 'Sortie' : `H${i}`;
+                const extra = size > 8 ? `<div class="text-xs dl-text-muted">+${size - 8}</div>` : '';
+                return `<div class="layer-viz"><div class="text-xs dl-text-muted mb-1">${label}</div>${neurons}${extra}</div>`;
+            }).join('<div class="text-2xl dl-text-muted">→</div>');
+        }
+
+        function updateUI() {
+            epochCount.textContent = epoch;
+            dataCount.textContent = dataset.length;
+            lrValue.textContent = getLR().toFixed(4);
+
+            if (lossHistory.length > 0) {
+                lossValueEl.textContent = lossHistory[lossHistory.length - 1].toFixed(4);
+            }
+
+            lossChart.data.labels = lossHistory.map((_, i) => i);
+            lossChart.data.datasets[0].data = lossHistory;
+            lossChart.update('none');
+        }
+
+        function drawData() {
+            const w = dataCanvas.width, h = dataCanvas.height;
+            dataCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--dl-bg-secondary').trim() || '#111827';
+            dataCtx.fillRect(0, 0, w, h);
+
+            // Axes
+            dataCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+            dataCtx.beginPath();
+            dataCtx.moveTo(w / 2, 0); dataCtx.lineTo(w / 2, h);
+            dataCtx.moveTo(0, h / 2); dataCtx.lineTo(w, h / 2);
+            dataCtx.stroke();
+
+            // Points
+            for (const d of dataset) {
+                const x = (d.i[0] + 1) / 2 * w;
+                const y = (1 - (d.i[1] + 1) / 2) * h;
+                dataCtx.fillStyle = d.t[0] > 0 ? '#3b82f6' : '#ef4444';
+                dataCtx.beginPath();
+                dataCtx.arc(x, y, 5, 0, Math.PI * 2);
+                dataCtx.fill();
+            }
+        }
+
+        function drawPrediction() {
+            if (!nn) return;
+            const w = predCanvas.width, h = predCanvas.height;
+            const res = 30;
+            const imgData = predCtx.createImageData(w, h);
+
+            for (let py = 0; py < h; py++) {
+                for (let px = 0; px < w; px++) {
+                    const x = (px / w) * 2 - 1;
+                    const y = 1 - (py / h) * 2;
+
+                    let out;
+                    if (TASKS[currentTask].arch[0] === 1) {
+                        out = nn.forward([x])[0];
+                    } else {
+                        out = nn.forward([x, y])[0];
+                    }
+
+                    const t = (out + 1) / 2;
+                    const i = (py * w + px) * 4;
+
+                    // Bleu → Rouge
+                    imgData.data[i] = Math.round(239 * t + 59 * (1 - t));
+                    imgData.data[i + 1] = Math.round(68 * t + 130 * (1 - t));
+                    imgData.data[i + 2] = Math.round(68 * t + 246 * (1 - t));
+                    imgData.data[i + 3] = 255;
+                }
+            }
+
+            predCtx.putImageData(imgData, 0, 0);
+        }
+
+        function trainEpoch() {
+            if (!nn || dataset.length === 0) return;
+
+            const shuffled = shuffle([...dataset]);
+            let totalLoss = 0;
+
+            for (const d of shuffled) {
+                totalLoss += nn.train(d.i, d.t);
+            }
+
+            epoch++;
+            lossHistory.push(totalLoss / shuffled.length);
+
+            if (epoch % 10 === 0) drawPrediction();
+            updateUI();
+        }
+
+        function startTraining() {
+            if (isTraining) {
+                stopTraining();
+                return;
+            }
+
+            isTraining = true;
+            document.getElementById('trainBtn').textContent = '⏸ Pause';
+
+            trainInterval = setInterval(() => {
+                trainEpoch();
+            }, 50);
+        }
+
+        function stopTraining() {
+            isTraining = false;
+            document.getElementById('trainBtn').textContent = '▶ Entraîner';
+            if (trainInterval) {
+                clearInterval(trainInterval);
+                trainInterval = null;
+            }
+        }
+
+        // Event listeners
+        taskSelect.addEventListener('change', (e) => {
+            stopTraining();
+            currentTask = e.target.value;
+            initNetwork();
+        });
+
+        lrSlider.addEventListener('input', () => {
+            nn.lr = getLR();
+            lrValue.textContent = getLR().toFixed(4);
+        });
+
+        document.getElementById('trainBtn').addEventListener('click', startTraining);
+
+        document.getElementById('stepBtn').addEventListener('click', () => {
+            stopTraining();
+            trainEpoch();
+            drawPrediction();
+        });
+
+        document.getElementById('train100Btn').addEventListener('click', () => {
+            stopTraining();
+            for (let i = 0; i < 100; i++) trainEpoch();
+            drawPrediction();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            stopTraining();
+            initNetwork();
+        });
+
+        document.getElementById('clearDataBtn').addEventListener('click', () => {
+            dataset = [];
+            drawData();
+            updateUI();
+        });
+
+        dataCanvas.addEventListener('click', (e) => {
+            const rect = dataCanvas.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            const y = 1 - ((e.clientY - rect.top) / rect.height) * 2;
+
+            // Alterner entre classes
+            const lastClass = dataset.length > 0 ? dataset[dataset.length - 1].t[0] : -0.9;
+            const newClass = lastClass > 0 ? -0.9 : 0.9;
+
+            dataset.push({ i: [x, y], t: [newClass] });
+            drawData();
+            updateUI();
+        });
+
+        // Init
+        initNetwork();
+    </script>
+
+</body>
+</html>

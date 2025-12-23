@@ -1,0 +1,8 @@
+{
+  "id": "03-forward-loss",
+  "title": "Forward & Loss",
+  "description": "Propagation avant et mesure de l'erreur",
+  "type": "page",
+  "icon": "➡️",
+  "duration": "5 min"
+}
