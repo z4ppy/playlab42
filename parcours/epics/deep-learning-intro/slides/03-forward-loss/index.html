@@ -32,12 +32,45 @@
             </div>
 
             <div class="prose-content dl-text-secondary">
-                <p class="mb-6">
-                    La <strong>propagation avant</strong> (forward propagation) est simplement le calcul de la sortie du réseau à partir d'une entrée. L'information "coule" de gauche à droite, couche par couche.
+
+                <!-- ACCROCHE -->
+                <p class="text-lg mb-6 dl-text-primary font-medium">
+                    Imaginez un voyage où la propagation avant trace votre trajectoire actuelle, tandis que la fonction de perte calcule la distance qui vous sépare de la destination. Le réseau a besoin de ces deux informations complémentaires : savoir <em>où il va</em> et mesurer <em>son égarement</em>. C'est cette boucle de rétroaction qui guide l'optimisation vers des prédictions toujours plus précises.
+                </p>
+
+                <h3 class="text-xl font-bold dl-text-primary mt-8 mb-4">Des fonctions composées</h3>
+
+                <p class="mb-4">
+                    La propagation avant est, d'un point de vue mathématique, d'une simplicité déconcertante. Il s'agit simplement d'évaluer une <strong>fonction composée</strong> — une succession de transformations appliquées les unes après les autres. Si vous avez déjà calculé \(f(g(x))\), vous savez faire de la propagation avant.
+                </p>
+
+                <p class="mb-4">
+                    Ce concept est aussi vieux que le calcul différentiel lui-même. Ce qui est nouveau, c'est de l'appliquer à des <strong>graphes de calcul</strong> comportant des millions de paramètres, où chaque nœud représente une opération mathématique simple.
                 </p>
 
                 <p class="mb-6">
-                    Pour chaque couche \(l\), on calcule :
+                    Pourquoi est-ce "trivial" mais fondamental ? Parce que les <strong>valeurs intermédiaires</strong> calculées lors de la propagation avant seront réutilisées par la rétropropagation. Sans ce stockage intelligent, l'entraînement serait des millions de fois plus lent.
+                </p>
+
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">L'atelier de sculpture</h3>
+
+                <p class="mb-4">
+                    Imaginez un atelier de sculpture où une dizaine d'artisans travaillent en chaîne sur un bloc de marbre brut. Le premier artisan reçoit le bloc et effectue les coupes grossières pour dégager la forme générale. Il passe ensuite sa création au suivant, qui affine les contours, ajoute des détails, ajuste les proportions.
+                </p>
+
+                <p class="mb-4">
+                    Chaque artisan successif reçoit une version de plus en plus raffinée, appliquant sa spécialité : l'un travaille les textures de surface, un autre les détails minutieux, jusqu'à ce que le dernier polisse l'œuvre finale. Chaque artisan transforme ce qu'il reçoit selon ses outils et son savoir-faire, dans un <strong>flux unidirectionnel</strong> qui métamorphose la matière brute en œuvre d'art.
+                </p>
+
+                <p class="mb-8 text-sm dl-text-muted italic">
+                    Dans un réseau de neurones, les données d'entrée (le bloc brut) traversent successivement chaque couche (chaque artisan). Les premières couches détectent des motifs simples — contours, couleurs. Les couches intermédiaires reconnaissent des formes plus complexes. Les dernières identifient des concepts de haut niveau. Cette cascade de transformations permet de construire une hiérarchie de représentations.
+                </p>
+
+                <!-- FORMULES -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Les formules</h3>
+
+                <p class="mb-4">
+                    Pour chaque couche \(l\) du réseau, on applique deux opérations :
                 </p>
 
                 <div class="math-block">
@@ -48,20 +81,34 @@
                 </div>
 
                 <p class="mb-6">
-                    Où \(a^{[0]} = x\) (l'entrée). On répète ce processus jusqu'à la dernière couche pour obtenir la prédiction \(\hat{y} = a^{[L]}\).
+                    On part de \(a^{[0]} = x\) (l'entrée) et on répète ce processus jusqu'à obtenir la prédiction finale \(\hat{y} = a^{[L]}\).
                 </p>
 
-                <div class="analogy-box">
-                    <div class="flex items-start gap-3">
-                        <span class="text-2xl">🏭</span>
-                        <div>
-                            <h4 class="font-bold text-green-400 mb-2">Analogie : La chaîne de production</h4>
-                            <p class="dl-text-secondary text-sm">
-                                Imaginez une usine avec plusieurs stations. La matière première (entrée) passe de station en station. Chaque station la transforme un peu (poids + activation). À la fin, vous obtenez le produit fini (prédiction). Si le produit est défectueux, vous devez remonter la chaîne pour trouver <em>quelle</em> station a fait une erreur.
-                            </p>
-                        </div>
+                <!-- PSEUDO-CODE -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Pseudo-code</h3>
+
+                <div class="dl-card rounded-xl border overflow-hidden mb-8">
+                    <div class="bg-slate-800 px-4 py-2 text-xs text-slate-400 border-b border-slate-700">
+                        forward.py
                     </div>
+                    <pre class="p-4 text-sm overflow-x-auto"><code class="text-slate-300"><span class="text-slate-500"># Entrée du réseau</span>
+<span class="text-purple-400">a</span> = x
+
+<span class="text-slate-500"># Traverser chaque couche</span>
+<span class="text-pink-400">pour</span> l <span class="text-pink-400">de</span> <span class="text-cyan-400">1</span> <span class="text-pink-400">à</span> L:
+    <span class="text-slate-500"># Somme pondérée</span>
+    z = W[l] @ a + b[l]
+
+    <span class="text-slate-500"># Activation</span>
+    a = activation(z)
+
+    <span class="text-slate-500"># Stocker pour la backprop</span>
+    cache[l] = (z, a)
+
+<span class="text-slate-500"># Prédiction finale</span>
+<span class="text-purple-400">y_pred</span> = a</code></pre>
                 </div>
+
             </div>
         </section>
 
@@ -73,20 +120,37 @@
             </div>
 
             <div class="prose-content dl-text-secondary">
-                <p class="mb-6">
-                    Une fois qu'on a une prédiction \(\hat{y}\), il faut mesurer <strong>à quel point elle est fausse</strong>. C'est le rôle de la <strong>fonction de perte</strong> (loss function).
+
+                <h3 class="text-xl font-bold dl-text-primary mt-8 mb-4">Le navigateur dans la brume</h3>
+
+                <p class="mb-4">
+                    Imaginez un navigateur du XVIIIe siècle tentant d'atteindre une île lointaine sans GPS, équipé uniquement d'un sextant et de cartes imparfaites. À chaque point de sa traversée, il mesure sa position actuelle, calcule la distance qui le sépare de sa destination, puis ajuste son cap en conséquence.
                 </p>
 
                 <p class="mb-4">
-                    La plus simple est l'<strong>Erreur Quadratique Moyenne</strong> (MSE) :
+                    Cette mesure d'écart entre <em>"où je suis"</em> et <em>"où je veux être"</em> est absolument cruciale : sans elle, le navigateur voguerait à l'aveugle, incapable de savoir s'il s'approche ou s'éloigne de son objectif. Plus l'écart est grand, plus la correction doit être significative ; plus il diminue, plus les ajustements deviennent subtils.
+                </p>
+
+                <p class="mb-6">
+                    La <strong>fonction de perte</strong> joue exactement ce rôle pour le réseau de neurones. Elle transforme la qualité des prédictions en un <strong>nombre unique</strong> : plus la perte est élevée, plus le réseau se trompe. C'est ce signal qui guidera la correction des poids lors de la rétropropagation.
+                </p>
+
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">L'Erreur Quadratique (MSE)</h3>
+
+                <p class="mb-4">
+                    La fonction de perte la plus intuitive est l'<strong>Erreur Quadratique Moyenne</strong> (Mean Squared Error). Son principe est simple : on calcule la différence entre la prédiction et la réalité, puis on l'élève au carré.
                 </p>
 
                 <div class="math-block text-center">
                     $$ L = \frac{1}{2}(y - \hat{y})^2 $$
                 </div>
 
-                <p class="mb-6">
-                    Le facteur \(\frac{1}{2}\) est une convention pour simplifier les dérivées. Plus cette valeur est grande, plus le réseau se trompe.
+                <p class="mb-4">
+                    Pourquoi le carré ? Deux raisons. D'abord, il <strong>pénalise fortement les grandes erreurs</strong> : se tromper de 2 coûte 4 fois plus cher que se tromper de 1. Ensuite, il rend la fonction <strong>dérivable partout</strong>, ce qui est essentiel pour calculer les gradients.
+                </p>
+
+                <p class="mb-6 text-sm dl-text-muted">
+                    Le facteur \(\frac{1}{2}\) est une convention : il simplifie les calculs lors de la dérivation, car \(\frac{d}{dx}\frac{1}{2}x^2 = x\).
                 </p>
 
                 <!-- Visualisation interactive MSE -->
@@ -247,20 +311,72 @@
                 })();
                 </script>
 
-                <div class="concept-box">
-                    <h4 class="font-bold text-blue-400 mb-3">L'Objectif de l'Entraînement</h4>
-                    <p class="dl-text-secondary text-sm">
-                        Trouver les valeurs de poids \(W\) et biais \(b\) qui <strong>minimisent</strong> la fonction de perte sur l'ensemble des données d'entraînement. C'est un problème d'<strong>optimisation</strong>.
-                    </p>
+                <!-- AUTRES FONCTIONS DE PERTE -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Choisir la bonne fonction de perte</h3>
+
+                <p class="mb-4">
+                    MSE n'est pas la seule option. Le choix de la fonction de perte est <strong>crucial</strong> car elle définit ce que le réseau va optimiser — et donc ce qu'il va apprendre.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4 my-6">
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-orange-400 mb-2">MSE — Régression</h4>
+                        <p class="text-sm dl-text-muted mb-2">
+                            \( L = \frac{1}{2}(y - \hat{y})^2 \)
+                        </p>
+                        <p class="text-xs dl-text-secondary">
+                            Idéale pour prédire des valeurs continues. Pénalise fortement les grandes erreurs. <span class="text-yellow-500">Sensible aux outliers.</span>
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-purple-400 mb-2">Cross-Entropy — Classification</h4>
+                        <p class="text-sm dl-text-muted mb-2">
+                            \( L = -y \log(\hat{y}) \)
+                        </p>
+                        <p class="text-xs dl-text-secondary">
+                            Pour les probabilités. Punit <strong>exponentiellement</strong> les prédictions confiantes mais fausses.
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-cyan-400 mb-2">MAE — Robuste</h4>
+                        <p class="text-sm dl-text-muted mb-2">
+                            \( L = |y - \hat{y}| \)
+                        </p>
+                        <p class="text-xs dl-text-secondary">
+                            Plus robuste aux outliers que MSE. Traite toutes les erreurs de façon équitable.
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-green-400 mb-2">Huber — Hybride</h4>
+                        <p class="text-sm dl-text-muted mb-2">
+                            MSE près de 0, MAE loin
+                        </p>
+                        <p class="text-xs dl-text-secondary">
+                            Le meilleur des deux mondes : gradients lisses pour les petites erreurs, robustesse pour les grandes.
+                        </p>
+                    </div>
                 </div>
 
-                <div class="analogy-box">
+                <div class="warning-box mt-8">
                     <div class="flex items-start gap-3">
-                        <span class="text-2xl">⛰️</span>
+                        <span class="text-2xl">⚠️</span>
                         <div>
-                            <h4 class="font-bold text-green-400 mb-2">Analogie : La montagne dans le brouillard</h4>
+                            <h4 class="font-bold text-yellow-500 mb-2">Le choix de la loss définit l'apprentissage</h4>
                             <p class="dl-text-secondary text-sm">
-                                Imaginez que vous êtes sur une montagne, les yeux bandés, et vous voulez descendre au point le plus bas (le minimum de la perte). Vous ne pouvez que <strong>tâter le sol autour de vous</strong> pour sentir la pente. À chaque pas, vous allez dans la direction qui descend le plus. C'est la <strong>descente de gradient</strong>.
+                                Utiliser MSE pour de la classification donne des gradients instables. Utiliser Cross-Entropy pour de la régression n'a pas de sens mathématique. La fonction de perte doit <strong>refléter ce qu'on veut vraiment optimiser</strong> — c'est elle qui guide 100% de l'apprentissage.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONCLUSION -->
+                <div class="concept-box mt-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🎯</span>
+                        <div>
+                            <h4 class="font-bold text-blue-400 mb-2">L'objectif de l'entraînement</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Trouver les valeurs de poids \(W\) et biais \(b\) qui <strong>minimisent</strong> la fonction de perte sur l'ensemble des données d'entraînement. C'est un problème d'<strong>optimisation</strong>. Le prochain slide explique comment y parvenir grâce à la rétropropagation.
                             </p>
                         </div>
                     </div>
