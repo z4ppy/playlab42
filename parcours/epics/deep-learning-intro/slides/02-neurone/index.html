@@ -26,13 +26,55 @@
             </div>
 
             <div class="prose-content dl-text-secondary">
-                <p class="mb-6">
-                    Un neurone artificiel est une unité de calcul très simple. Il reçoit des nombres en entrée, les combine, et produit un nombre en sortie. C'est la <strong>brique de base</strong> du Deep Learning.
+
+                <!-- INTRODUCTION NARRATIVE -->
+                <p class="text-lg mb-6 dl-text-primary font-medium">
+                    Le neurone artificiel est probablement l'algorithme le plus simple que vous verrez dans ce cours : une somme pondérée et une fonction d'activation. La vraie question n'est pas <em>"comment ça marche ?"</em> mais <em>"comment quelque chose d'aussi basique peut-il apprendre à conduire une voiture ou battre un champion du monde aux échecs ?"</em>
                 </p>
 
-                <!-- 1. VISUALISATION INTERACTIVE DU NEURONE -->
+                <h3 class="text-xl font-bold dl-text-primary mt-8 mb-4">Un peu d'histoire</h3>
+
+                <p class="mb-4">
+                    L'histoire du neurone artificiel commence en <strong>1943</strong>, quand Warren McCulloch et Walter Pitts proposent le premier modèle mathématique inspiré du cerveau. Leur idée est élégante : un neurone reçoit des signaux, les combine, et "s'active" si le total dépasse un seuil. Simple, mais révolutionnaire.
+                </p>
+
+                <p class="mb-4">
+                    En <strong>1958</strong>, Frank Rosenblatt concrétise cette vision avec le <strong>Perceptron</strong>, une machine capable d'<em>apprendre</em> en ajustant automatiquement ses paramètres. L'enthousiasme est immense... jusqu'en 1969, quand Minsky et Papert démontrent qu'un seul neurone ne peut pas résoudre des problèmes aussi simples que le XOR. C'est le premier "hiver de l'IA".
+                </p>
+
+                <p class="mb-6">
+                    Il faudra attendre <strong>1986</strong> et la popularisation de la <strong>rétropropagation</strong> pour que les réseaux multicouches prennent leur essor — et <strong>2012</strong> pour que le Deep Learning explose avec AlexNet. Mais au cœur de toutes ces avancées, la brique fondamentale reste la même : le neurone artificiel que nous allons explorer.
+                </p>
+
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">L'analogie du recruteur</h3>
+
+                <p class="mb-4">
+                    Pour comprendre intuitivement le fonctionnement d'un neurone, imaginons un <strong>recruteur</strong> qui doit décider s'il embauche un candidat.
+                </p>
+
+                <p class="mb-4">
+                    Le candidat arrive avec plusieurs <strong>compétences</strong> — disons un diplôme noté sur 10, des années d'expérience, et un score de motivation. Ce sont les <strong class="text-cyan-400">entrées</strong> du neurone, notées \(x_1, x_2, x_3\).
+                </p>
+
+                <p class="mb-4">
+                    Mais toutes les compétences ne se valent pas. Pour un poste technique, le diplôme compte peut-être plus que la motivation. Le recruteur attribue donc un <strong class="text-purple-400">poids</strong> à chaque critère : \(w_1 = 0.4\) pour le diplôme, \(w_2 = 0.35\) pour l'expérience, \(w_3 = 0.25\) pour la motivation.
+                </p>
+
+                <p class="mb-4">
+                    Le recruteur calcule ensuite un <strong>score total</strong> : il multiplie chaque compétence par son poids, puis additionne le tout. C'est la <em>somme pondérée</em>. Mais il ajoute aussi un <strong class="text-orange-400">biais</strong> \(b\), qui représente son niveau d'exigence global. Un biais très négatif ? Recruteur sévère. Un biais positif ? Facile à convaincre.
+                </p>
+
+                <p class="mb-6">
+                    Enfin, si le score dépasse un certain seuil, le neurone <strong class="text-green-400">"s'active"</strong> et transmet le signal. Sinon, il reste silencieux. C'est le rôle de la <em>fonction d'activation</em>.
+                </p>
+
+                <p class="mb-8 text-sm dl-text-muted italic">
+                    Manipulez la visualisation ci-dessous pour voir ce mécanisme en action. Ajustez les compétences du candidat et observez comment le neurone décide de s'activer — ou non.
+                </p>
+
+                <!-- VISUALISATION INTERACTIVE DU NEURONE -->
                 <div class="concept-box mb-8">
-                    <h4 class="font-bold text-blue-400 mb-3">Visualisation Interactive</h4>
+                    <h4 class="font-bold text-blue-400 mb-3">Expérimentez</h4>
                     <div class="my-4">
                         <canvas id="neuronCanvas" width="600" height="280" class="w-full rounded-lg" style="max-width: 600px; margin: 0 auto; display: block;"></canvas>
                         <p class="text-center text-xs dl-text-muted mt-2">Ajustez les curseurs pour voir l'effet sur la sortie</p>
@@ -232,26 +274,7 @@
                 })();
                 </script>
 
-                <!-- 2. ANALOGIE DU RECRUTEUR -->
-                <div class="analogy-box my-8">
-                    <div class="flex items-start gap-3">
-                        <span class="text-2xl">👔</span>
-                        <div>
-                            <h4 class="font-bold text-green-400 mb-3">Analogie : Le Recruteur</h4>
-                            <p class="dl-text-secondary text-sm mb-3">
-                                Imaginez qu'un neurone est un <strong>recruteur</strong> qui doit décider s'il embauche un candidat.
-                            </p>
-                            <ul class="text-sm space-y-2 dl-text-secondary">
-                                <li><strong class="text-cyan-400">Les Entrées (x<sub>i</sub>)</strong> : Les compétences du candidat (diplôme, expérience, motivation).</li>
-                                <li><strong class="text-purple-400">Les Poids (w<sub>i</sub>)</strong> : L'importance accordée à chaque compétence. Pour un poste technique, le poids du "diplôme" sera élevé.</li>
-                                <li><strong class="text-orange-400">Le Biais (b)</strong> : Le niveau d'exigence global. Un biais négatif = recruteur sévère. Positif = facile à convaincre.</li>
-                                <li><strong class="text-green-400">La Somme (z)</strong> : Le score total. Si ça dépasse un seuil, le dossier est transmis !</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. FORMULES -->
+                <!-- FORMULES -->
                 <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Les Formules</h3>
 
                 <div class="step-indicator">
@@ -510,7 +533,28 @@ z += biais
 <span class="text-pink-400">retourner</span> sortie</code></pre>
                 </div>
 
-                <!-- 6. POURQUOI C'EST IMPORTANT -->
+                <!-- LIMITES DE L'ANALOGIE BIOLOGIQUE -->
+                <div class="warning-box mt-10">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">⚠️</span>
+                        <div>
+                            <h4 class="font-bold text-yellow-500 mb-2">Attention à l'analogie biologique</h4>
+                            <p class="dl-text-secondary text-sm mb-3">
+                                Le terme "neurone" est trompeur. Les neurones artificiels sont une <em>simplification extrême</em> de leurs cousins biologiques :
+                            </p>
+                            <ul class="text-sm space-y-1 dl-text-muted">
+                                <li>• <strong>Timing</strong> : les vrais neurones communiquent par impulsions temporelles précises, pas par des valeurs continues</li>
+                                <li>• <strong>Chimie</strong> : neurotransmetteurs, récepteurs, plasticité synaptique — tout cela est ignoré</li>
+                                <li>• <strong>Énergie</strong> : votre cerveau consomme ~20W pour 86 milliards de neurones ; un GPU en consomme 300W pour quelques milliards d'opérations</li>
+                            </ul>
+                            <p class="dl-text-secondary text-sm mt-3">
+                                L'analogie reste utile pour l'intuition, mais gardez à l'esprit que les réseaux de neurones sont avant tout des <strong>outils mathématiques</strong>, pas des simulations du cerveau.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- POURQUOI LA NON-LINÉARITÉ -->
                 <div class="warning-box mt-8">
                     <div class="flex items-start gap-3">
                         <span class="text-2xl">💡</span>
