@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-23T17:17:53.156Z",
+  "generatedAt": "2025-12-23T18:54:14.053Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -147,7 +147,7 @@
           "optional": true
         }
       ],
-      "glossaryTermCount": 33
+      "glossaryTermCount": 34
     },
     {
       "id": "github-copilot-guide",
@@ -639,7 +639,7 @@
             "optional": true
           }
         ],
-        "glossaryTermCount": 33
+        "glossaryTermCount": 34
       },
       {
         "id": "github-copilot-guide",

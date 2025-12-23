@@ -127,6 +127,12 @@
       "see": ["epoch", "descente de gradient"],
       "category": "Apprentissage"
     },
+    "hyperparamètre": {
+      "short": "Paramètre fixé avant l'entraînement, non appris par le réseau",
+      "long": "Contrairement aux poids et biais (appris automatiquement), les hyperparamètres sont choisis par l'humain : learning rate, nombre de couches, taille des batches, epochs, architecture... Leur réglage (hyperparameter tuning) est souvent empirique : on essaie plusieurs valeurs et on garde la meilleure.",
+      "see": ["learning rate", "batch", "epoch"],
+      "category": "Apprentissage"
+    },
     "learning rate": {
       "short": "Hyperparamètre qui contrôle la taille des pas dans la descente de gradient",
       "long": "Le learning rate (η ou α) détermine l'amplitude des mises à jour des poids. Trop grand : oscillations, divergence. Trop petit : convergence très lente. Valeurs typiques : 0.001 à 0.1. Souvent décroissant au cours de l'entraînement.",
