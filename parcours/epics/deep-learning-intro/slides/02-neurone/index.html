@@ -27,15 +27,239 @@
 
             <div class="prose-content dl-text-secondary">
                 <p class="mb-6">
-                    Un neurone artificiel est une unité de calcul très simple. Il reçoit des nombres en entrée, les combine, et produit un nombre en sortie. Voici comment :
+                    Un neurone artificiel est une unité de calcul très simple. Il reçoit des nombres en entrée, les combine, et produit un nombre en sortie. C'est la <strong>brique de base</strong> du Deep Learning.
                 </p>
+
+                <!-- 1. ANALOGIE DU RECRUTEUR -->
+                <div class="analogy-box mb-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">👔</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-3">Analogie : Le Recruteur</h4>
+                            <p class="dl-text-secondary text-sm mb-3">
+                                Imaginez qu'un neurone est un <strong>recruteur</strong> qui doit décider s'il embauche un candidat.
+                            </p>
+                            <ul class="text-sm space-y-2 dl-text-secondary">
+                                <li><strong class="text-cyan-400">Les Entrées (x<sub>i</sub>)</strong> : Les compétences du candidat (diplôme, expérience, motivation).</li>
+                                <li><strong class="text-purple-400">Les Poids (w<sub>i</sub>)</strong> : L'importance accordée à chaque compétence. Pour un poste technique, le poids du "diplôme" sera élevé.</li>
+                                <li><strong class="text-orange-400">Le Biais (b)</strong> : Le niveau d'exigence global. Un biais négatif = recruteur sévère. Positif = facile à convaincre.</li>
+                                <li><strong class="text-green-400">La Somme (z)</strong> : Le score total. Si ça dépasse un seuil, le dossier est transmis !</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. VISUALISATION INTERACTIVE DU NEURONE -->
+                <div class="concept-box mb-8">
+                    <h4 class="font-bold text-blue-400 mb-3">Visualisation Interactive</h4>
+                    <div class="my-4">
+                        <canvas id="neuronCanvas" width="600" height="280" class="w-full rounded-lg" style="max-width: 600px; margin: 0 auto; display: block;"></canvas>
+                        <p class="text-center text-xs dl-text-muted mt-2">Ajustez les curseurs pour voir l'effet sur la sortie</p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                        <div class="text-center">
+                            <label class="text-xs dl-text-muted block mb-1">x₁ (Diplôme)</label>
+                            <input type="range" id="x1" min="0" max="10" value="7" class="w-full">
+                            <span id="x1Val" class="text-cyan-400 text-xs font-mono">7</span>
+                        </div>
+                        <div class="text-center">
+                            <label class="text-xs dl-text-muted block mb-1">x₂ (Expérience)</label>
+                            <input type="range" id="x2" min="0" max="10" value="5" class="w-full">
+                            <span id="x2Val" class="text-cyan-400 text-xs font-mono">5</span>
+                        </div>
+                        <div class="text-center">
+                            <label class="text-xs dl-text-muted block mb-1">x₃ (Motivation)</label>
+                            <input type="range" id="x3" min="0" max="10" value="8" class="w-full">
+                            <span id="x3Val" class="text-cyan-400 text-xs font-mono">8</span>
+                        </div>
+                        <div class="text-center">
+                            <label class="text-xs dl-text-muted block mb-1">Biais (b)</label>
+                            <input type="range" id="biasSlider" min="-5" max="5" step="0.5" value="-3" class="w-full">
+                            <span id="biasVal" class="text-orange-400 text-xs font-mono">-3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                (function() {
+                    const canvas = document.getElementById('neuronCanvas');
+                    const ctx = canvas.getContext('2d');
+                    const W = canvas.width, H = canvas.height;
+
+                    // Poids fixes (pour la démo)
+                    const weights = [0.4, 0.35, 0.25];
+                    const labels = ['Diplôme', 'Expérience', 'Motivation'];
+
+                    function relu(z) { return Math.max(0, z); }
+
+                    function draw() {
+                        const x1 = parseFloat(document.getElementById('x1').value);
+                        const x2 = parseFloat(document.getElementById('x2').value);
+                        const x3 = parseFloat(document.getElementById('x3').value);
+                        const bias = parseFloat(document.getElementById('biasSlider').value);
+
+                        document.getElementById('x1Val').textContent = x1;
+                        document.getElementById('x2Val').textContent = x2;
+                        document.getElementById('x3Val').textContent = x3;
+                        document.getElementById('biasVal').textContent = bias;
+
+                        const inputs = [x1, x2, x3];
+                        const z = inputs.reduce((s, x, i) => s + x * weights[i], 0) + bias;
+                        const output = relu(z);
+
+                        const isDark = document.documentElement.classList.contains('dark');
+                        const bgColor = isDark ? '#1a1a2e' : '#f8fafc';
+                        const textColor = isDark ? '#e2e8f0' : '#334155';
+                        const mutedColor = isDark ? '#64748b' : '#94a3b8';
+
+                        ctx.fillStyle = bgColor;
+                        ctx.fillRect(0, 0, W, H);
+
+                        // Positions
+                        const inputX = 80;
+                        const sumX = 280;
+                        const actX = 420;
+                        const outX = 540;
+                        const centerY = H / 2;
+                        const inputSpacing = 70;
+
+                        // Dessiner les entrées
+                        for (let i = 0; i < 3; i++) {
+                            const y = centerY + (i - 1) * inputSpacing;
+                            const weight = weights[i];
+                            const lineWidth = 1 + weight * 6;
+
+                            // Ligne vers somme
+                            ctx.strokeStyle = `rgba(168, 85, 247, ${0.3 + weight * 0.7})`;
+                            ctx.lineWidth = lineWidth;
+                            ctx.beginPath();
+                            ctx.moveTo(inputX + 30, y);
+                            ctx.lineTo(sumX - 35, centerY);
+                            ctx.stroke();
+
+                            // Cercle entrée
+                            ctx.fillStyle = '#22d3ee';
+                            ctx.beginPath();
+                            ctx.arc(inputX, y, 25, 0, Math.PI * 2);
+                            ctx.fill();
+
+                            // Valeur entrée
+                            ctx.fillStyle = '#0f172a';
+                            ctx.font = 'bold 14px monospace';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(inputs[i].toString(), inputX, y + 5);
+
+                            // Label
+                            ctx.fillStyle = mutedColor;
+                            ctx.font = '10px sans-serif';
+                            ctx.fillText(labels[i], inputX, y + 40);
+
+                            // Poids sur la ligne
+                            const midX = (inputX + 30 + sumX - 35) / 2;
+                            const midY = (y + centerY) / 2;
+                            ctx.fillStyle = '#a855f7';
+                            ctx.font = 'bold 11px monospace';
+                            ctx.fillText(`w=${weight}`, midX, midY - 5);
+                        }
+
+                        // Biais (flèche vers le haut)
+                        ctx.strokeStyle = '#f97316';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(sumX, centerY + 50);
+                        ctx.lineTo(sumX, centerY + 35);
+                        ctx.stroke();
+                        ctx.fillStyle = '#f97316';
+                        ctx.font = 'bold 11px monospace';
+                        ctx.fillText(`b=${bias}`, sumX, centerY + 65);
+
+                        // Cercle somme (Σ)
+                        ctx.fillStyle = isDark ? '#374151' : '#e2e8f0';
+                        ctx.beginPath();
+                        ctx.arc(sumX, centerY, 30, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = mutedColor;
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        ctx.fillStyle = textColor;
+                        ctx.font = 'bold 20px serif';
+                        ctx.fillText('Σ', sumX, centerY + 7);
+
+                        // Valeur z sous le cercle
+                        ctx.fillStyle = mutedColor;
+                        ctx.font = '11px monospace';
+                        ctx.fillText(`z = ${z.toFixed(1)}`, sumX, centerY - 40);
+
+                        // Ligne somme -> activation
+                        ctx.strokeStyle = mutedColor;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(sumX + 30, centerY);
+                        ctx.lineTo(actX - 35, centerY);
+                        ctx.stroke();
+
+                        // Cercle activation (σ)
+                        ctx.fillStyle = isDark ? '#374151' : '#e2e8f0';
+                        ctx.beginPath();
+                        ctx.arc(actX, centerY, 30, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = '#22c55e';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#22c55e';
+                        ctx.font = 'bold 16px serif';
+                        ctx.fillText('ReLU', actX, centerY + 6);
+
+                        // Ligne activation -> sortie
+                        const outputAlpha = Math.min(1, output / 10);
+                        ctx.strokeStyle = `rgba(34, 197, 94, ${0.3 + outputAlpha * 0.7})`;
+                        ctx.lineWidth = 2 + output / 2;
+                        ctx.beginPath();
+                        ctx.moveTo(actX + 30, centerY);
+                        ctx.lineTo(outX - 25, centerY);
+                        ctx.stroke();
+
+                        // Cercle sortie
+                        const outColor = output > 0 ? '#22c55e' : '#ef4444';
+                        ctx.fillStyle = outColor;
+                        ctx.beginPath();
+                        ctx.arc(outX, centerY, 25, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 14px monospace';
+                        ctx.fillText(output.toFixed(1), outX, centerY + 5);
+
+                        // Label sortie
+                        ctx.fillStyle = mutedColor;
+                        ctx.font = '10px sans-serif';
+                        ctx.fillText('Sortie', outX, centerY + 40);
+
+                        // Verdict
+                        ctx.font = 'bold 12px sans-serif';
+                        ctx.fillStyle = output > 0 ? '#22c55e' : '#ef4444';
+                        ctx.fillText(output > 0 ? '✓ Activé !' : '✗ Inactif', outX, centerY + 55);
+                    }
+
+                    ['x1', 'x2', 'x3', 'biasSlider'].forEach(id => {
+                        document.getElementById(id).addEventListener('input', draw);
+                    });
+                    new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+                    draw();
+                })();
+                </script>
+
+                <!-- 3. FORMULES -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Les Formules</h3>
 
                 <div class="step-indicator">
                     <span class="step-number">1</span>
                     <span class="dl-text-primary font-semibold">Somme pondérée</span>
                 </div>
                 <p class="mb-4 ml-10">
-                    Chaque entrée \(x_i\) est multipliée par un <strong>poids</strong> \(w_i\) (son "importance"), puis on additionne le tout avec un <strong>biais</strong> \(b\) :
+                    Chaque entrée \(x_i\) est multipliée par un <strong>poids</strong> \(w_i\), puis on additionne avec le <strong>biais</strong> \(b\) :
                 </p>
                 <div class="math-block text-center">
                     $$ z = w_1 x_1 + w_2 x_2 + ... + w_n x_n + b = \sum_{i=1}^{n} w_i x_i + b $$
@@ -46,10 +270,39 @@
                     <span class="dl-text-primary font-semibold">Fonction d'activation</span>
                 </div>
                 <p class="mb-4 ml-10">
-                    Cette somme passe dans une <strong>fonction d'activation</strong> qui introduit de la non-linéarité (sinon, empiler des couches ne servirait à rien !) :
+                    Cette somme passe dans une <strong>fonction d'activation</strong> qui introduit de la non-linéarité :
                 </p>
                 <div class="math-block text-center">
                     $$ a = \sigma(z) $$
+                </div>
+
+                <!-- 4. PSEUDO-CODE -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Pseudo-Code</h3>
+
+                <div class="dl-card rounded-xl border overflow-hidden">
+                    <div class="bg-slate-800 px-4 py-2 text-xs text-slate-400 border-b border-slate-700">
+                        neurone.py
+                    </div>
+                    <pre class="p-4 text-sm overflow-x-auto"><code class="text-slate-300"><span class="text-slate-500"># Entrées (ex: Diplôme=7, Expérience=5, Motivation=8)</span>
+<span class="text-purple-400">entrees</span> = [x1, x2, ..., xn]
+
+<span class="text-slate-500"># Paramètres du neurone</span>
+<span class="text-purple-400">poids</span> = [w1, w2, ..., wn]
+<span class="text-purple-400">biais</span> = b
+
+<span class="text-slate-500"># 1. Calcul de la somme pondérée</span>
+<span class="text-purple-400">z</span> = <span class="text-cyan-400">0</span>
+<span class="text-pink-400">pour</span> i <span class="text-pink-400">de</span> <span class="text-cyan-400">0</span> <span class="text-pink-400">à</span> n:
+    z += entrees[i] * poids[i]
+z += biais
+
+<span class="text-slate-500"># 2. Fonction d'activation (ReLU)</span>
+<span class="text-pink-400">si</span> z > <span class="text-cyan-400">0</span>:
+    <span class="text-purple-400">sortie</span> = z
+<span class="text-pink-400">sinon</span>:
+    <span class="text-purple-400">sortie</span> = <span class="text-cyan-400">0</span>
+
+<span class="text-pink-400">retourner</span> sortie</code></pre>
                 </div>
 
                 <div class="concept-box">
@@ -256,18 +509,7 @@
                 })();
                 </script>
 
-                <div class="analogy-box">
-                    <div class="flex items-start gap-3">
-                        <span class="text-2xl">🚰</span>
-                        <div>
-                            <h4 class="font-bold text-green-400 mb-2">Analogie : Le robinet et les tuyaux</h4>
-                            <p class="dl-text-secondary text-sm">
-                                Imaginez de l'eau qui coule dans des tuyaux. Les <strong>poids</strong> sont comme des vannes qui contrôlent le débit. Les <strong>biais</strong> ajoutent ou retirent un peu d'eau. La <strong>fonction d'activation</strong> est un filtre qui décide si l'eau passe ou non (et en quelle quantité).
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
+                <!-- 5. POURQUOI C'EST IMPORTANT -->
                 <div class="warning-box mt-8">
                     <div class="flex items-start gap-3">
                         <span class="text-2xl">💡</span>
@@ -275,6 +517,18 @@
                             <h4 class="font-bold text-yellow-500 mb-2">Pourquoi la non-linéarité ?</h4>
                             <p class="dl-text-secondary text-sm">
                                 Sans fonction d'activation, un réseau de 100 couches serait équivalent à... une seule couche ! La composition de fonctions linéaires reste linéaire. C'est la non-linéarité qui permet au réseau d'apprendre des patterns complexes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box mt-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🧱</span>
+                        <div>
+                            <h4 class="font-bold text-blue-400 mb-2">Pourquoi c'est important ?</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Cette structure est la <strong>brique de base</strong> du Deep Learning. En empilant des milliers de ces neurones, on crée des réseaux capables de reconnaître des visages ou de traduire des textes, simplement en ajustant les <strong>poids</strong> et les <strong>biais</strong> par l'entraînement.
                             </p>
                         </div>
                     </div>
