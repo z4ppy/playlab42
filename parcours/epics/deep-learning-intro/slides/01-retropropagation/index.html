@@ -8,8 +8,26 @@
     <!-- Thème Playlab42 -->
     <link rel="stylesheet" href="../../../../../lib/theme.css">
     <script type="module">
-        import { initTheme } from '../../../../../lib/theme.js';
-        initTheme();
+        import { initSlide, sendTOC, setupScrollHandler } from '../../../../../parcours/_shared/slide-utils.js';
+
+        // Initialiser la slide (thème, etc.)
+        initSlide();
+
+        // Configurer la réception des messages du viewer (scroll vers ancres)
+        setupScrollHandler();
+
+        // Envoyer la table des matières au viewer
+        sendTOC([
+            { id: 'intro', label: 'L\'Objectif', icon: '🎯' },
+            { id: 'neuron', label: 'Anatomie d\'un Neurone', icon: '⚡' },
+            { id: 'forward', label: 'Propagation Avant', icon: '➡️' },
+            { id: 'loss', label: 'Mesurer l\'Erreur', icon: '📏' },
+            { id: 'backprop', label: 'Rétropropagation', icon: '⬅️' },
+            { id: 'optimizer', label: 'Descente de Gradient', icon: '🔧' },
+            { id: 'history', label: 'Un Peu d\'Histoire', icon: '📜' },
+            { id: 'pitfalls', label: 'Pièges Classiques', icon: '⚠️' },
+            { id: 'simulation', label: 'Laboratoire', icon: '🧪' }
+        ]);
     </script>
 
     <!-- Dépendances pour le contenu interactif -->
@@ -281,28 +299,6 @@
     </style>
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white">
-
-    <!-- Navigation -->
-    <nav class="dl-nav sticky top-0 z-50 backdrop-blur-md border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                        <span class="text-xl">🧠</span>
-                    </div>
-                    <span class="nav-title font-bold text-xl">Deep Learning <span class="nav-accent">Introduction</span></span>
-                </div>
-                <div class="hidden md:flex space-x-6 text-sm font-medium">
-                    <a href="#intro" class="transition-colors">Introduction</a>
-                    <a href="#neuron" class="transition-colors">Le Neurone</a>
-                    <a href="#forward" class="transition-colors">Forward</a>
-                    <a href="#backprop" class="transition-colors">Backprop</a>
-                    <a href="#optimizer" class="transition-colors">Optimiseur</a>
-                    <a href="#simulation" class="active transition-colors font-semibold">Lab</a>
-                </div>
-            </div>
-        </div>
-    </nav>
 
     <!-- Hero Section -->
     <header class="hero-section relative py-20 overflow-hidden border-b">

@@ -1,7 +1,7 @@
 {
   "id": "deep-learning-intro",
-  "title": "Introduction au Deep Learning",
-  "description": "Cours interactif sur les fondamentaux du deep learning : neurones, propagation, rétropropagation et optimisation, avec un laboratoire de simulation en temps réel.",
+  "title": "Deep Learning pour l'impatient",
+  "description": "Comprendre les réseaux de neurones de zéro à expert : neurones, propagation, rétropropagation et optimisation Adam, avec un laboratoire interactif pour expérimenter en temps réel.",
   "hierarchy": ["ia"],
   "tags": ["ia", "deep-learning", "neural-network", "machine-learning", "interactif"],
   "metadata": {

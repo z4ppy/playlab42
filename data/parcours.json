@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-15T15:32:39.503Z",
+  "generatedAt": "2025-12-23T11:20:10.427Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -61,6 +61,39 @@
           "id": "06-perspectives-2026",
           "title": "Perspectives 2026",
           "icon": "🔮"
+        }
+      ]
+    },
+    {
+      "id": "deep-learning-intro",
+      "title": "Deep Learning pour l'impatient",
+      "description": "Comprendre les réseaux de neurones de zéro à expert : neurones, propagation, rétropropagation et optimisation Adam, avec un laboratoire interactif pour expérimenter en temps réel.",
+      "path": "./parcours/epics/deep-learning-intro",
+      "hierarchy": [
+        "ia"
+      ],
+      "tags": [
+        "ia",
+        "deep-learning",
+        "neural-network",
+        "machine-learning",
+        "interactif"
+      ],
+      "author": "cyrille",
+      "created": "2025-12-15",
+      "duration": "30 min",
+      "difficulty": "beginner",
+      "icon": "🧠",
+      "thumbnail": null,
+      "slideCount": 1,
+      "optionalSlideCount": 0,
+      "hasIndex": false,
+      "structure": [
+        {
+          "type": "slide",
+          "id": "01-retropropagation",
+          "title": "La Rétropropagation",
+          "icon": "🧠"
         }
       ]
     },
@@ -350,7 +383,7 @@
         "id": "autres",
         "label": "Autres",
         "icon": "📚",
-        "count": 5,
+        "count": 6,
         "thumbnail": null,
         "visible": true,
         "children": []
@@ -360,7 +393,7 @@
       {
         "id": "ia",
         "label": "Intelligence Artificielle",
-        "count": 3
+        "count": 4
       },
       {
         "id": "dev",
@@ -380,6 +413,26 @@
       {
         "id": "agent",
         "label": "Agents IA",
+        "count": 1
+      },
+      {
+        "id": "deep-learning",
+        "label": "deep-learning",
+        "count": 1
+      },
+      {
+        "id": "neural-network",
+        "label": "neural-network",
+        "count": 1
+      },
+      {
+        "id": "machine-learning",
+        "label": "machine-learning",
+        "count": 1
+      },
+      {
+        "id": "interactif",
+        "label": "interactif",
         "count": 1
       },
       {
@@ -451,6 +504,39 @@
   },
   "featured": {
     "recent": [
+      {
+        "id": "deep-learning-intro",
+        "title": "Deep Learning pour l'impatient",
+        "description": "Comprendre les réseaux de neurones de zéro à expert : neurones, propagation, rétropropagation et optimisation Adam, avec un laboratoire interactif pour expérimenter en temps réel.",
+        "path": "./parcours/epics/deep-learning-intro",
+        "hierarchy": [
+          "ia"
+        ],
+        "tags": [
+          "ia",
+          "deep-learning",
+          "neural-network",
+          "machine-learning",
+          "interactif"
+        ],
+        "author": "cyrille",
+        "created": "2025-12-15",
+        "duration": "30 min",
+        "difficulty": "beginner",
+        "icon": "🧠",
+        "thumbnail": null,
+        "slideCount": 1,
+        "optionalSlideCount": 0,
+        "hasIndex": false,
+        "structure": [
+          {
+            "type": "slide",
+            "id": "01-retropropagation",
+            "title": "La Rétropropagation",
+            "icon": "🧠"
+          }
+        ]
+      },
       {
         "id": "github-copilot-guide",
         "title": "GitHub Copilot — Guide du développeur",

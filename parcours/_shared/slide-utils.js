@@ -42,6 +42,106 @@ export function ready() {
   sendToViewer('slide:ready');
 }
 
+// ===========================================================================
+// API TOC (Table des Matières intra-slide)
+// ===========================================================================
+
+/**
+ * Envoie la table des matières interne au viewer.
+ * La TOC sera affichée dans le menu latéral comme enfants de la slide.
+ *
+ * @param {Array<{id: string, label: string, icon?: string, level?: number}>} items
+ *
+ * @example
+ * import { sendTOC } from '../../../../../parcours/_shared/slide-utils.js';
+ *
+ * sendTOC([
+ *   { id: 'intro', label: 'Introduction', icon: '🎯' },
+ *   { id: 'neuron', label: 'Le Neurone', icon: '⚡' },
+ *   { id: 'backprop', label: 'Backpropagation', icon: '⬅️', level: 2 },
+ *   { id: 'lab', label: 'Laboratoire', icon: '🧪' }
+ * ]);
+ */
+export function sendTOC(items) {
+  if (!Array.isArray(items)) {
+    console.warn('sendTOC: items doit être un tableau');
+    return;
+  }
+  sendToViewer('slide:toc', { items });
+}
+
+/**
+ * Efface la TOC du viewer.
+ * Appelé automatiquement au changement de slide par le viewer.
+ */
+export function clearTOC() {
+  sendToViewer('slide:toc:clear');
+}
+
+/**
+ * Détecte automatiquement la TOC depuis les headings de la page.
+ *
+ * @param {string} [selector='h2[id], h3[id]'] - Sélecteur CSS pour les headings
+ * @returns {Array<{id: string, label: string, level: number}>} Liste d'items détectés
+ *
+ * @example
+ * import { autoDetectTOC, sendTOC } from '...';
+ *
+ * // Détection automatique des h2/h3 avec id
+ * sendTOC(autoDetectTOC());
+ *
+ * // Ou avec un sélecteur custom
+ * sendTOC(autoDetectTOC('.section-title'));
+ */
+export function autoDetectTOC(selector = 'h2[id], h3[id]') {
+  const headings = document.querySelectorAll(selector);
+  const items = [];
+
+  headings.forEach((heading) => {
+    const id = heading.id;
+    if (!id) return;
+
+    const label = heading.textContent?.trim() || id;
+    const tagName = heading.tagName.toLowerCase();
+    const level = tagName === 'h3' ? 2 : 1;
+
+    items.push({ id, label, level });
+  });
+
+  return items;
+}
+
+/**
+ * Configure la réception des messages du viewer et le scroll vers les ancres.
+ * Doit être appelé une fois au chargement de la slide.
+ *
+ * @example
+ * import { initSlide, sendTOC, setupScrollHandler } from '...';
+ *
+ * initSlide();
+ * setupScrollHandler();
+ * sendTOC([...]);
+ */
+export function setupScrollHandler() {
+  onViewerMessage((data) => {
+    if (data.type === 'viewer:scroll-to' && data.anchor) {
+      scrollToAnchor(data.anchor);
+    }
+  });
+}
+
+/**
+ * Scrolle vers une ancre dans la page.
+ *
+ * @param {string} anchorId - ID de l'ancre (sans le #)
+ */
+export function scrollToAnchor(anchorId) {
+  const element = document.getElementById(anchorId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
 /**
  * Met en évidence un élément avec une animation
  * @param {string} selector - Sélecteur CSS
