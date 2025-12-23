@@ -30,26 +30,7 @@
                     Un neurone artificiel est une unité de calcul très simple. Il reçoit des nombres en entrée, les combine, et produit un nombre en sortie. C'est la <strong>brique de base</strong> du Deep Learning.
                 </p>
 
-                <!-- 1. ANALOGIE DU RECRUTEUR -->
-                <div class="analogy-box mb-8">
-                    <div class="flex items-start gap-3">
-                        <span class="text-2xl">👔</span>
-                        <div>
-                            <h4 class="font-bold text-green-400 mb-3">Analogie : Le Recruteur</h4>
-                            <p class="dl-text-secondary text-sm mb-3">
-                                Imaginez qu'un neurone est un <strong>recruteur</strong> qui doit décider s'il embauche un candidat.
-                            </p>
-                            <ul class="text-sm space-y-2 dl-text-secondary">
-                                <li><strong class="text-cyan-400">Les Entrées (x<sub>i</sub>)</strong> : Les compétences du candidat (diplôme, expérience, motivation).</li>
-                                <li><strong class="text-purple-400">Les Poids (w<sub>i</sub>)</strong> : L'importance accordée à chaque compétence. Pour un poste technique, le poids du "diplôme" sera élevé.</li>
-                                <li><strong class="text-orange-400">Le Biais (b)</strong> : Le niveau d'exigence global. Un biais négatif = recruteur sévère. Positif = facile à convaincre.</li>
-                                <li><strong class="text-green-400">La Somme (z)</strong> : Le score total. Si ça dépasse un seuil, le dossier est transmis !</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. VISUALISATION INTERACTIVE DU NEURONE -->
+                <!-- 1. VISUALISATION INTERACTIVE DU NEURONE -->
                 <div class="concept-box mb-8">
                     <h4 class="font-bold text-blue-400 mb-3">Visualisation Interactive</h4>
                     <div class="my-4">
@@ -251,6 +232,25 @@
                 })();
                 </script>
 
+                <!-- 2. ANALOGIE DU RECRUTEUR -->
+                <div class="analogy-box my-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">👔</span>
+                        <div>
+                            <h4 class="font-bold text-green-400 mb-3">Analogie : Le Recruteur</h4>
+                            <p class="dl-text-secondary text-sm mb-3">
+                                Imaginez qu'un neurone est un <strong>recruteur</strong> qui doit décider s'il embauche un candidat.
+                            </p>
+                            <ul class="text-sm space-y-2 dl-text-secondary">
+                                <li><strong class="text-cyan-400">Les Entrées (x<sub>i</sub>)</strong> : Les compétences du candidat (diplôme, expérience, motivation).</li>
+                                <li><strong class="text-purple-400">Les Poids (w<sub>i</sub>)</strong> : L'importance accordée à chaque compétence. Pour un poste technique, le poids du "diplôme" sera élevé.</li>
+                                <li><strong class="text-orange-400">Le Biais (b)</strong> : Le niveau d'exigence global. Un biais négatif = recruteur sévère. Positif = facile à convaincre.</li>
+                                <li><strong class="text-green-400">La Somme (z)</strong> : Le score total. Si ça dépasse un seuil, le dossier est transmis !</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 3. FORMULES -->
                 <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Les Formules</h3>
 
@@ -276,36 +276,8 @@
                     $$ a = \sigma(z) $$
                 </div>
 
-                <!-- 4. PSEUDO-CODE -->
-                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Pseudo-Code</h3>
-
-                <div class="dl-card rounded-xl border overflow-hidden">
-                    <div class="bg-slate-800 px-4 py-2 text-xs text-slate-400 border-b border-slate-700">
-                        neurone.py
-                    </div>
-                    <pre class="p-4 text-sm overflow-x-auto"><code class="text-slate-300"><span class="text-slate-500"># Entrées (ex: Diplôme=7, Expérience=5, Motivation=8)</span>
-<span class="text-purple-400">entrees</span> = [x1, x2, ..., xn]
-
-<span class="text-slate-500"># Paramètres du neurone</span>
-<span class="text-purple-400">poids</span> = [w1, w2, ..., wn]
-<span class="text-purple-400">biais</span> = b
-
-<span class="text-slate-500"># 1. Calcul de la somme pondérée</span>
-<span class="text-purple-400">z</span> = <span class="text-cyan-400">0</span>
-<span class="text-pink-400">pour</span> i <span class="text-pink-400">de</span> <span class="text-cyan-400">0</span> <span class="text-pink-400">à</span> n:
-    z += entrees[i] * poids[i]
-z += biais
-
-<span class="text-slate-500"># 2. Fonction d'activation (ReLU)</span>
-<span class="text-pink-400">si</span> z > <span class="text-cyan-400">0</span>:
-    <span class="text-purple-400">sortie</span> = z
-<span class="text-pink-400">sinon</span>:
-    <span class="text-purple-400">sortie</span> = <span class="text-cyan-400">0</span>
-
-<span class="text-pink-400">retourner</span> sortie</code></pre>
-                </div>
-
-                <div class="concept-box">
+                <!-- 4. FONCTIONS D'ACTIVATION -->
+                <div class="concept-box mt-8">
                     <h4 class="font-bold text-blue-400 mb-3">Fonctions d'Activation Courantes</h4>
 
                     <!-- Visualisation interactive -->
@@ -509,7 +481,36 @@ z += biais
                 })();
                 </script>
 
-                <!-- 5. POURQUOI C'EST IMPORTANT -->
+                <!-- 5. PSEUDO-CODE -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Pseudo-Code</h3>
+
+                <div class="dl-card rounded-xl border overflow-hidden">
+                    <div class="bg-slate-800 px-4 py-2 text-xs text-slate-400 border-b border-slate-700">
+                        neurone.py
+                    </div>
+                    <pre class="p-4 text-sm overflow-x-auto"><code class="text-slate-300"><span class="text-slate-500"># Entrées (ex: Diplôme=7, Expérience=5, Motivation=8)</span>
+<span class="text-purple-400">entrees</span> = [x1, x2, ..., xn]
+
+<span class="text-slate-500"># Paramètres du neurone</span>
+<span class="text-purple-400">poids</span> = [w1, w2, ..., wn]
+<span class="text-purple-400">biais</span> = b
+
+<span class="text-slate-500"># 1. Calcul de la somme pondérée</span>
+<span class="text-purple-400">z</span> = <span class="text-cyan-400">0</span>
+<span class="text-pink-400">pour</span> i <span class="text-pink-400">de</span> <span class="text-cyan-400">0</span> <span class="text-pink-400">à</span> n:
+    z += entrees[i] * poids[i]
+z += biais
+
+<span class="text-slate-500"># 2. Fonction d'activation (ReLU)</span>
+<span class="text-pink-400">si</span> z > <span class="text-cyan-400">0</span>:
+    <span class="text-purple-400">sortie</span> = z
+<span class="text-pink-400">sinon</span>:
+    <span class="text-purple-400">sortie</span> = <span class="text-cyan-400">0</span>
+
+<span class="text-pink-400">retourner</span> sortie</code></pre>
+                </div>
+
+                <!-- 6. POURQUOI C'EST IMPORTANT -->
                 <div class="warning-box mt-8">
                     <div class="flex items-start gap-3">
                         <span class="text-2xl">💡</span>
