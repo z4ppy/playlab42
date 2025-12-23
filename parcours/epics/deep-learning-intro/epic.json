@@ -27,8 +27,7 @@
         { "id": "07-optimisation" }
       ]
     },
-    { "id": "08-contexte", "optional": true },
-    { "id": "09-laboratoire" },
-    { "id": "10-glossaire", "type": "glossary", "optional": true }
+    { "id": "08-laboratoire" },
+    { "id": "09-glossaire", "type": "glossary", "optional": true }
   ]
 }

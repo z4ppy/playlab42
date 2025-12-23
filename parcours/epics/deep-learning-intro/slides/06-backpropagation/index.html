@@ -11,12 +11,15 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <script type="module">
-        import { initSlide, sendTOC, setupScrollHandler } from '../../../../../parcours/_shared/slide-utils.js';
+        import { initSlide, initGlossary, sendTOC, setupScrollHandler } from '../../../../../parcours/_shared/slide-utils.js';
         initSlide();
+        initGlossary();
         setupScrollHandler();
         sendTOC([
+            { id: 'history', label: 'Un Peu d\'Histoire', icon: '📜' },
             { id: 'chain-rule', label: 'Règle de la Chaîne', icon: '🔗' },
             { id: 'calcul', label: 'Calcul Étape par Étape', icon: '📝' },
+            { id: 'pitfalls', label: 'Pièges Classiques', icon: '⚠️' },
         ]);
     </script>
 </head>
@@ -31,6 +34,59 @@
             </div>
 
             <div class="prose-content dl-text-secondary">
+
+                <p class="text-lg mb-6 dl-text-primary font-medium">
+                    La <dfn>rétropropagation</dfn> est l'algorithme qui a rendu le Deep Learning possible. Son principe est simple : calculer comment chaque poids contribue à l'erreur finale, puis ajuster tous les poids simultanément pour réduire cette erreur.
+                </p>
+
+                <!-- HISTOIRE -->
+                <h3 id="history" class="text-xl font-bold dl-text-primary mt-10 mb-4 scroll-mt-24">Un peu d'histoire</h3>
+
+                <p class="mb-4">
+                    La rétropropagation n'est pas une invention soudaine, mais le fruit de décennies de recherche. Son histoire est jalonnée de redécouvertes et d'oublis — un rappel que les bonnes idées doivent parfois attendre leur moment.
+                </p>
+
+                <div class="space-y-4 my-6">
+                    <div class="history-card">
+                        <span class="text-cyan-400 font-mono text-xs mb-1 block">1970 - Différentiation Automatique</span>
+                        <h4 class="text-base font-semibold dl-text-primary">Seppo Linnainmaa</h4>
+                        <p class="dl-text-muted mt-1 text-sm">Dans sa thèse de master en Finlande, il formalise le "mode inverse" de la différentiation automatique. Tous les frameworks modernes (TensorFlow, PyTorch) reposent encore sur son algorithme de 1970.</p>
+                    </div>
+                    <div class="history-card">
+                        <span class="text-cyan-400 font-mono text-xs mb-1 block">1974 - La Thèse Oubliée</span>
+                        <h4 class="text-base font-semibold dl-text-primary">Paul Werbos</h4>
+                        <p class="dl-text-muted mt-1 text-sm">Dans sa thèse de PhD à Harvard, il propose explicitement d'appliquer la règle de la chaîne aux réseaux de neurones. Malheureusement, c'est l'époque du premier "hiver de l'IA" — personne n'y prête attention. Il recevra le IEEE Neural Network Pioneer Award en 1995.</p>
+                    </div>
+                    <div class="history-card">
+                        <span class="text-cyan-400 font-mono text-xs mb-1 block">1986 - Le Triomphe</span>
+                        <h4 class="text-base font-semibold dl-text-primary">Rumelhart, Hinton & Williams</h4>
+                        <p class="dl-text-muted mt-1 text-sm">Leur article dans <em>Nature</em> popularise enfin la technique. Ils montrent qu'un réseau peut apprendre des <strong>représentations internes</strong> dans ses couches cachées — résolvant enfin le problème XOR qui avait enterré le Perceptron.</p>
+                    </div>
+                    <div class="history-card">
+                        <span class="text-cyan-400 font-mono text-xs mb-1 block">1989 - Première Application Industrielle</span>
+                        <h4 class="text-base font-semibold dl-text-primary">Yann LeCun (Bell Labs)</h4>
+                        <p class="dl-text-muted mt-1 text-sm">Utilise des réseaux convolutionnels entraînés par rétropropagation pour lire les chèques manuscrits. Ce système traitera des millions de chèques aux États-Unis.</p>
+                    </div>
+                    <div class="history-card">
+                        <span class="text-cyan-400 font-mono text-xs mb-1 block">2012 - L'Été Sans Fin</span>
+                        <h4 class="text-base font-semibold dl-text-primary">AlexNet (Krizhevsky, Sutskever, Hinton)</h4>
+                        <p class="dl-text-muted mt-1 text-sm">Victoire écrasante sur ImageNet avec 2× moins d'erreurs que le second. 8 couches, 60 millions de paramètres, 6 jours d'entraînement sur 2 GPU. Le Deep Learning moderne est né.</p>
+                    </div>
+                </div>
+
+                <div class="warning-box mb-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">💡</span>
+                        <div>
+                            <h4 class="font-bold text-yellow-500 mb-2">Pourquoi 40 ans d'attente ?</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Les ingrédients manquaient : <strong>puissance de calcul</strong> (les GPU sont arrivés), <strong>données massives</strong> (ImageNet : 14 millions d'images), et <strong>astuces algorithmiques</strong> (ReLU, Dropout, BatchNorm). L'idée de 1974 avait juste besoin d'attendre son époque.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRINCIPE -->
                 <p class="mb-6">
                     Maintenant, la question clé : <strong>comment ajuster chaque poids pour réduire l'erreur ?</strong>
                 </p>
@@ -76,7 +132,7 @@
                     $$ \delta^{[l]} = \delta^{[l+1]} \cdot W^{[l+1]} \cdot \sigma'(z^{[l]}) $$
                 </div>
                 <p class="mb-4 ml-10 text-sm dl-text-muted">
-                    Où \(\sigma'(z)\) est la dérivée de la fonction d'activation. Pour tanh : \(\sigma'(z) = 1 - \tanh^2(z)\).
+                    Où \(\sigma'(z)\) est la dérivée de la fonction d'<dfn>activation</dfn>. Pour tanh : \(\sigma'(z) = 1 - \tanh^2(z)\).
                 </p>
 
                 <!-- Visualisation tanh et sa dérivée -->
@@ -243,7 +299,7 @@
 
                 <div class="step-indicator">
                     <span class="step-number">3</span>
-                    <span class="dl-text-primary font-semibold">Calcul des gradients</span>
+                    <span class="dl-text-primary font-semibold">Calcul des <dfn data-term="gradient">gradients</dfn></span>
                 </div>
                 <p class="mb-4 ml-10">
                     Maintenant qu'on a les \(\delta\) pour chaque couche, on calcule le gradient pour chaque poids :
@@ -269,7 +325,7 @@
 
                 <div class="warning-box">
                     <div class="flex items-start gap-3">
-                        <span class="text-2xl">⚠️</span>
+                        <span class="text-2xl">⚡</span>
                         <div>
                             <h4 class="font-bold text-yellow-500 mb-2">Pourquoi c'est efficace ?</h4>
                             <p class="dl-text-secondary text-sm">
@@ -278,13 +334,87 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- PIÈGES CLASSIQUES -->
+                <h3 id="pitfalls" class="text-xl font-bold dl-text-primary mt-12 mb-4 scroll-mt-24">Pièges Classiques</h3>
+
+                <p class="mb-6">
+                    La rétropropagation est puissante, mais elle a ses faiblesses. Voici les problèmes les plus courants et leurs solutions.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="card-hover dl-card p-5 rounded-xl border">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-red-500/20 flex items-center justify-center text-lg">📉</div>
+                            <h4 class="text-base font-bold dl-text-primary"><dfn data-term="vanishing gradient">Vanishing Gradient</dfn></h4>
+                        </div>
+                        <p class="text-sm dl-text-muted mb-3">
+                            Dans les réseaux profonds, les gradients se multiplient couche après couche. Si chaque dérivée est &lt; 1 (comme avec sigmoid/tanh aux extrémités), le gradient devient minuscule et les premières couches n'apprennent plus.
+                        </p>
+                        <div class="text-xs text-blue-400 font-mono">
+                            Solutions : ReLU, Batch Normalization, ResNets
+                        </div>
+                    </div>
+
+                    <div class="card-hover dl-card p-5 rounded-xl border">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-orange-500/20 flex items-center justify-center text-lg">💥</div>
+                            <h4 class="text-base font-bold dl-text-primary"><dfn data-term="exploding gradient">Exploding Gradient</dfn></h4>
+                        </div>
+                        <p class="text-sm dl-text-muted mb-3">
+                            L'inverse : les gradients deviennent énormes et font "exploser" les poids vers l'infini. La loss devient NaN et l'entraînement échoue.
+                        </p>
+                        <div class="text-xs text-orange-400 font-mono">
+                            Solutions : Gradient Clipping, Xavier/Kaiming Init
+                        </div>
+                    </div>
+
+                    <div class="card-hover dl-card p-5 rounded-xl border">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-yellow-500/20 flex items-center justify-center text-lg">📚</div>
+                            <h4 class="text-base font-bold dl-text-primary"><dfn>Overfitting</dfn></h4>
+                        </div>
+                        <p class="text-sm dl-text-muted mb-3">
+                            Le réseau "apprend par cœur" les données d'entraînement au lieu de généraliser. Il performe bien sur les données vues, mais mal sur les nouvelles.
+                        </p>
+                        <div class="text-xs text-yellow-500 font-mono">
+                            Solutions : Early Stopping, Dropout, Régularisation L2
+                        </div>
+                    </div>
+
+                    <div class="card-hover dl-card p-5 rounded-xl border">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-9 h-9 rounded-lg bg-purple-500/20 flex items-center justify-center text-lg">🎯</div>
+                            <h4 class="text-base font-bold dl-text-primary">Mauvais <dfn data-term="learning rate">Learning Rate</dfn></h4>
+                        </div>
+                        <p class="text-sm dl-text-muted mb-3">
+                            Trop élevé : l'entraînement oscille et ne converge pas. Trop bas : l'entraînement est extrêmement lent ou reste bloqué.
+                        </p>
+                        <div class="text-xs text-purple-400 font-mono">
+                            Solutions : Adam, Learning Rate Scheduling, Warmup
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-box mt-8">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🎯</span>
+                        <div>
+                            <h4 class="font-bold text-blue-400 mb-2">Le bon côté des choses</h4>
+                            <p class="dl-text-secondary text-sm">
+                                La crainte historique des <strong>minimums locaux</strong> s'est révélée moins problématique que prévu. En très haute dimension, la plupart des "mauvais" points critiques sont des <strong>points-selle</strong> dont on peut s'échapper. Les optimiseurs modernes comme Adam gèrent cela très bien.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
     </main>
 
     <footer class="dl-footer border-t py-8 text-center text-sm">
-        <p>Deep Learning pour l'impatient — Slide 5/8</p>
+        <p>Deep Learning pour l'impatient — Slide 6/9</p>
     </footer>
 
 </body>
