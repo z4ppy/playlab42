@@ -1,6 +1,6 @@
 {
   "id": "06-backpropagation",
-  "title": "Rétropropagation & Optimisation",
+  "title": "Rétropropagation",
   "description": "Calcul des gradients, descente de gradient et optimiseur Adam",
   "type": "page",
   "icon": "⬅️",
