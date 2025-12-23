@@ -114,19 +114,28 @@
 
                 <!-- Visualisation tanh et sa dérivée -->
                 <div class="my-6 p-4 dl-card rounded-xl border">
-                    <p class="text-center text-sm dl-text-secondary mb-3">La dérivée \(\sigma'(z)\) est cruciale — elle peut s'annuler aux extrémités (saturation)</p>
+                    <h4 class="font-bold text-orange-400 mb-2 text-sm text-center">Le Problème de la Saturation</h4>
+                    <p class="text-sm dl-text-secondary mb-3">
+                        Dans la formule, on <strong>multiplie par σ'(z)</strong> à chaque couche. Problème : quand un neurone est <em>saturé</em> (z très grand ou très petit), sa dérivée σ'(z) ≈ 0. Le gradient se retrouve multiplié par ~0 et <strong>disparaît</strong>.
+                    </p>
                     <div class="flex flex-col items-center">
                         <canvas id="tanhDerivCanvas" width="450" height="180" class="rounded-lg" style="max-width: 450px;"></canvas>
+                        <p class="text-xs dl-text-muted mt-2 italic">Survolez pour voir les valeurs. Notez que tanh'(z) → 0 aux extrémités.</p>
                         <div class="flex gap-6 mt-2">
                             <div class="flex items-center gap-2">
                                 <span class="inline-block w-4 h-1 rounded" style="background: #22d3ee;"></span>
-                                <span class="text-xs dl-text-secondary">tanh(z)</span>
+                                <span class="text-xs dl-text-secondary">tanh(z) — activation</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="inline-block w-4 h-1 rounded" style="background: #f97316;"></span>
-                                <span class="text-xs dl-text-secondary">tanh'(z)</span>
+                                <span class="text-xs dl-text-secondary">tanh'(z) — dérivée</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="mt-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg">
+                        <p class="text-xs dl-text-secondary">
+                            <strong class="text-red-400">Vanishing Gradient :</strong> avec 10 couches et σ'(z) ≈ 0.1 à chaque couche, le gradient est multiplié par 0.1<sup>10</sup> = <strong>0.0000000001</strong>. Les premières couches ne reçoivent plus aucun signal d'apprentissage.
+                        </p>
                     </div>
                 </div>
 
