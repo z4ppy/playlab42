@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossaire</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script type="module">
+        import { initSlide, initGlossary, getGlossary } from '../../../../../parcours/_shared/slide-utils.js';
+
+        initSlide();
+
+        // Charger et afficher le glossaire
+        async function loadGlossary() {
+            const glossary = await initGlossary();
+
+            if (!glossary || glossary.allTerms().length === 0) {
+                document.getElementById('glossary-content').innerHTML = `
+                    <div class="text-center py-12">
+                        <p class="text-lg text-gray-400">Aucun terme défini dans le glossaire.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Générer le HTML du glossaire
+            document.getElementById('glossary-content').innerHTML = glossary.generateGlossaryPage();
+        }
+
+        loadGlossary();
+    </script>
+
+    <style>
+        /* Styles spécifiques à la page glossaire */
+        .glossary-page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .glossary-category {
+            margin-bottom: 2rem;
+        }
+
+        .glossary-category-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-accent, #e94560);
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-accent, #e94560);
+        }
+
+        .glossary-list {
+            margin: 0;
+            padding: 0;
+        }
+
+        .glossary-entry {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--color-border, #333);
+        }
+
+        .glossary-entry:last-child {
+            border-bottom: none;
+        }
+
+        .glossary-term-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--color-text, #eee);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .glossary-definition {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .glossary-short {
+            margin: 0 0 0.5rem 0;
+            color: var(--color-text, #eee);
+            font-size: 0.9rem;
+        }
+
+        .glossary-long {
+            margin: 0 0 0.5rem 0;
+            color: var(--color-text-muted, #888);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .glossary-see {
+            margin: 0.5rem 0 0 0;
+            font-size: 0.8rem;
+            color: var(--color-text-muted, #888);
+        }
+
+        .glossary-link {
+            color: var(--color-accent, #e94560);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .glossary-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Animation au clic sur un lien interne */
+        .glossary-entry:target {
+            animation: highlight-entry 1s ease-out;
+        }
+
+        @keyframes highlight-entry {
+            0% { background-color: rgba(233, 69, 96, 0.3); }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body class="bg-[var(--color-bg,#1a1a2e)] text-[var(--color-text,#eee)] min-h-screen">
+
+    <main class="px-4 py-8">
+        <header class="max-w-4xl mx-auto mb-8">
+            <h1 class="text-3xl font-bold flex items-center gap-3">
+                <span class="text-4xl">📖</span>
+                Glossaire
+            </h1>
+            <p class="mt-2 text-gray-400">
+                Définitions des termes techniques utilisés dans ce parcours.
+            </p>
+        </header>
+
+        <div id="glossary-content">
+            <!-- Contenu généré dynamiquement -->
+            <div class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-gray-500 border-t-transparent"></div>
+                <p class="mt-4 text-gray-400">Chargement du glossaire...</p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

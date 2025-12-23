@@ -557,3 +557,195 @@
 [data-theme="dark"] .parcours-viewer.menu-open::before {
   background: rgba(0, 0, 0, 0.7);
 }
+
+/* ============================================
+ * GLOSSAIRE - Termes et Tooltips
+ * @see openspec/changes/add-glossary-system
+ * ============================================ */
+
+/* === Termes du glossaire (<dfn> ou .glossary-term) === */
+dfn,
+[data-term],
+.glossary-term {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--color-accent, #6366f1);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  cursor: help;
+  font-style: normal; /* Override défaut italique de <dfn> */
+  transition: text-decoration-color var(--transition-fast, 0.15s);
+}
+
+dfn:hover,
+[data-term]:hover,
+.glossary-term:hover {
+  text-decoration-color: var(--color-text, #1f2937);
+}
+
+dfn:focus,
+[data-term]:focus,
+.glossary-term:focus {
+  outline: 2px solid var(--color-accent, #6366f1);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* === Tooltip === */
+.glossary-tooltip {
+  position: absolute;
+  max-width: 320px;
+  min-width: 200px;
+  padding: 0;
+  background: var(--color-bg, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 0.5rem);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.glossary-tooltip[role="tooltip"] {
+  pointer-events: auto;
+}
+
+/* Header du tooltip */
+.glossary-tooltip-header {
+  padding: var(--space-sm, 0.5rem) var(--space-md, 0.75rem);
+  background: var(--color-bg-secondary, #f9fafb);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 0.5rem) var(--radius-md, 0.5rem) 0 0;
+  font-weight: 600;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-accent, #6366f1);
+}
+
+/* Contenu du tooltip */
+.glossary-tooltip-short {
+  margin: 0;
+  padding: var(--space-sm, 0.5rem) var(--space-md, 0.75rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.5;
+  color: var(--color-text, #1f2937);
+}
+
+/* Liens "Voir aussi" */
+.glossary-tooltip-see {
+  margin: 0;
+  padding: var(--space-xs, 0.25rem) var(--space-md, 0.75rem) var(--space-sm, 0.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #6b7280);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+/* Positionnement en-dessous (quand déborde en haut) */
+.glossary-tooltip--below::before {
+  top: -6px;
+  bottom: auto;
+  border-width: 0 6px 6px 6px;
+  border-color: transparent transparent var(--color-border, #e5e7eb) transparent;
+}
+
+/* === Page glossaire auto-générée === */
+.glossary-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-lg, 1.5rem);
+}
+
+.glossary-category {
+  margin-bottom: var(--space-xl, 2rem);
+}
+
+.glossary-category-title {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--color-accent, #6366f1);
+  margin: 0 0 var(--space-md, 0.75rem) 0;
+  padding-bottom: var(--space-xs, 0.25rem);
+  border-bottom: 2px solid var(--color-accent, #6366f1);
+}
+
+.glossary-list {
+  margin: 0;
+  padding: 0;
+}
+
+.glossary-entry {
+  padding: var(--space-md, 0.75rem) 0;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.glossary-entry:last-child {
+  border-bottom: none;
+}
+
+.glossary-term-title {
+  font-weight: 600;
+  font-size: var(--font-size-md, 1rem);
+  color: var(--color-text, #1f2937);
+  margin: 0 0 var(--space-xs, 0.25rem) 0;
+}
+
+.glossary-definition {
+  margin: 0;
+  padding-left: var(--space-md, 0.75rem);
+}
+
+.glossary-short {
+  margin: 0 0 var(--space-xs, 0.25rem) 0;
+  color: var(--color-text, #1f2937);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.glossary-long {
+  margin: 0 0 var(--space-xs, 0.25rem) 0;
+  color: var(--color-text-muted, #6b7280);
+  font-size: var(--font-size-sm, 0.875rem);
+  line-height: 1.6;
+}
+
+.glossary-see {
+  margin: var(--space-sm, 0.5rem) 0 0 0;
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #6b7280);
+}
+
+.glossary-link {
+  color: var(--color-accent, #6366f1);
+  text-decoration: none;
+}
+
+.glossary-link:hover {
+  text-decoration: underline;
+}
+
+/* === Animations accessibles === */
+@media (prefers-reduced-motion: reduce) {
+  .glossary-tooltip {
+    transition: opacity 0.1s;
+    transform: none !important;
+  }
+
+  dfn,
+  [data-term],
+  .glossary-term {
+    transition: none;
+  }
+}
+
+/* === Thème sombre === */
+[data-theme="dark"] .glossary-tooltip {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
+              0 8px 10px -6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] dfn:hover,
+[data-theme="dark"] [data-term]:hover,
+[data-theme="dark"] .glossary-term:hover {
+  text-decoration-color: var(--color-text, #f9fafb);
+}

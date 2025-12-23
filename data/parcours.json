@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-23T14:10:50.949Z",
+  "generatedAt": "2025-12-23T16:37:32.534Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -85,8 +85,8 @@
       "difficulty": "beginner",
       "icon": "🧠",
       "thumbnail": null,
-      "slideCount": 8,
-      "optionalSlideCount": 1,
+      "slideCount": 9,
+      "optionalSlideCount": 2,
       "hasIndex": false,
       "structure": [
         {
@@ -145,8 +145,16 @@
           "id": "08-laboratoire",
           "title": "Laboratoire",
           "icon": "🧪"
+        },
+        {
+          "type": "slide",
+          "id": "09-glossaire",
+          "title": "Glossaire",
+          "icon": "📖",
+          "optional": true
         }
-      ]
+      ],
+      "glossaryTermCount": 31
     },
     {
       "id": "github-copilot-guide",
@@ -576,8 +584,8 @@
         "difficulty": "beginner",
         "icon": "🧠",
         "thumbnail": null,
-        "slideCount": 8,
-        "optionalSlideCount": 1,
+        "slideCount": 9,
+        "optionalSlideCount": 2,
         "hasIndex": false,
         "structure": [
           {
@@ -636,8 +644,16 @@
             "id": "08-laboratoire",
             "title": "Laboratoire",
             "icon": "🧪"
+          },
+          {
+            "type": "slide",
+            "id": "09-glossaire",
+            "title": "Glossaire",
+            "icon": "📖",
+            "optional": true
           }
-        ]
+        ],
+        "glossaryTermCount": 31
       },
       {
         "id": "github-copilot-guide",

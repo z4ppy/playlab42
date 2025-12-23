@@ -2,102 +2,72 @@
 
 ## Phase 1 : Infrastructure
 
-- [ ] Définir le format JSON du glossaire (epic + global)
-- [ ] Mettre à jour la spec parcours avec la section glossaire
-- [ ] Créer le module `lib/parcours/ParcoursGlossary.js`
-  - [ ] Chargement du glossaire (epic + global)
-  - [ ] Fusion des définitions (epic override global)
-  - [ ] API pour récupérer une définition
+- [x] Définir le format JSON du glossaire (epic + global)
+- [x] Mettre à jour la spec parcours avec la section glossaire
+- [x] Créer le module `lib/parcours/ParcoursGlossary.js`
+  - [x] Chargement du glossaire (epic + global)
+  - [x] Fusion des définitions (epic override global)
+  - [x] API pour récupérer une définition
 
 ## Phase 2 : Affichage Tooltip
 
-- [ ] Créer les styles CSS pour les termes (`<dfn>`)
-  - [ ] Underline pointillé
-  - [ ] Curseur help
-  - [ ] Couleur distinctive (subtile)
-- [ ] Créer le composant tooltip
-  - [ ] Positionnement intelligent (éviter débordement)
-  - [ ] Animation d'apparition
-  - [ ] Support mobile (tap)
-- [ ] Intégrer dans le viewer parcours
-  - [ ] Injection du glossaire dans les slides
-  - [ ] Event listeners sur les termes
+- [x] Créer les styles CSS pour les termes (`<dfn>`)
+  - [x] Underline pointillé
+  - [x] Curseur help
+  - [x] Couleur distinctive (subtile)
+- [x] Créer le composant tooltip
+  - [x] Positionnement intelligent (éviter débordement)
+  - [x] Animation d'apparition
+  - [x] Support mobile (tap)
+- [x] Intégrer dans le viewer parcours
+  - [x] Injection du glossaire dans les slides
+  - [x] Event listeners sur les termes
 
 ## Phase 3 : Marquage des termes
 
-- [ ] Support HTML : `<dfn>` et `<dfn data-term="...">`
-- [ ] Support Markdown : syntaxe à définir
-- [ ] Helper dans `slide-utils.js` pour auto-marquage
-- [ ] Documentation d'utilisation
+- [x] Support HTML : `<dfn>` et `<dfn data-term="...">`
+- [x] Support Markdown : syntaxe `[[terme]]` et `[[terme|texte]]`
+- [x] Helper dans `slide-utils.js` pour auto-marquage
+- [x] Documentation d'utilisation (JSDoc)
 
 ## Phase 4 : Page glossaire auto-générée
 
-- [ ] Nouveau type de slide `glossary`
-- [ ] Template HTML pour la page glossaire
-- [ ] Génération au build (ou lazy à l'affichage)
-- [ ] Tri alphabétique des termes
-- [ ] Liens croisés ("voir aussi")
+- [x] Nouveau type de slide `glossary`
+- [x] Template HTML pour la page glossaire
+- [x] Génération lazy à l'affichage (via generateGlossaryPage)
+- [x] Tri alphabétique des termes
+- [x] Liens croisés ("voir aussi")
 
 ## Phase 5 : Build & Validation
 
-- [ ] Mise à jour `build-parcours.js`
-  - [ ] Chargement des fichiers glossaire
-  - [ ] Validation des termes référencés
-  - [ ] Warning si terme utilisé sans définition
-- [ ] Tests unitaires
-- [ ] Documentation
+- [x] Mise à jour `build-parcours.js`
+  - [x] Chargement des fichiers glossaire
+  - [x] Validation des termes référencés
+  - [x] Warning si terme dans `see` non défini
+- [ ] Tests unitaires (à faire dans une prochaine itération)
+- [x] Documentation (JSDoc complète)
 
 ## Phase 6 : Application au parcours deep-learning
 
-- [ ] Créer `glossary.json` pour deep-learning-intro
-- [ ] Définir les termes : régression, classification, gradient, etc.
-- [ ] Marquer les termes dans les slides existantes
-- [ ] Ajouter une slide glossaire optionnelle
+- [x] Créer `glossary.json` pour deep-learning-intro (31 termes)
+- [x] Définir les termes : régression, classification, gradient, etc.
+- [x] Marquer les termes dans les slides existantes (02-neurone, 04-forward-loss)
+- [x] Ajouter une slide glossaire optionnelle (09-glossaire)
 
 ---
 
-## Définitions à ajouter (deep-learning-intro)
+## Fichiers créés/modifiés
 
-### Termes généraux ML
-
-| Terme | Définition courte |
-|-------|-------------------|
-| régression | Prédire une valeur numérique continue |
-| classification | Prédire une catégorie parmi plusieurs |
-| overfitting | Modèle qui mémorise au lieu d'apprendre |
-| underfitting | Modèle trop simple pour capturer les patterns |
-| outlier | Valeur aberrante, éloignée de la distribution |
-
-### Termes réseaux de neurones
-
-| Terme | Définition courte |
-|-------|-------------------|
-| neurone | Unité de calcul : somme pondérée + activation |
-| poids | Paramètre appris qui pondère une entrée |
-| biais | Paramètre appris qui décale l'activation |
-| activation | Fonction non-linéaire appliquée à la somme pondérée |
-| couche | Ensemble de neurones au même niveau du réseau |
-
-### Termes apprentissage
-
-| Terme | Définition courte |
-|-------|-------------------|
-| propagation avant | Calcul de la prédiction de l'entrée vers la sortie |
-| rétropropagation | Calcul des gradients de la sortie vers l'entrée |
-| gradient | Direction et intensité de la pente de la fonction de perte |
-| descente de gradient | Algorithme d'optimisation qui suit le gradient |
-| fonction de perte | Mesure de l'écart entre prédiction et réalité |
-| epoch | Un passage complet sur toutes les données d'entraînement |
-| batch | Sous-ensemble de données traité ensemble |
-| learning rate | Taille du pas dans la descente de gradient |
-
-### Termes problèmes
-
-| Terme | Définition courte |
-|-------|-------------------|
-| vanishing gradient | Gradients qui deviennent trop petits dans les réseaux profonds |
-| exploding gradient | Gradients qui deviennent trop grands |
-| minimum local | Creux dans la fonction de perte qui n'est pas le minimum global |
+| Fichier | Action |
+|---------|--------|
+| `lib/parcours/ParcoursGlossary.js` | Créé - Module de gestion du glossaire |
+| `lib/parcours-viewer.css` | Modifié - Styles glossaire ajoutés |
+| `parcours/_shared/slide-utils.js` | Modifié - Fonctions initGlossary, transformWikiTerms, autoMarkTerms |
+| `parcours/_shared/templates/glossary-slide.html` | Créé - Template de slide glossaire |
+| `parcours/epics/deep-learning-intro/glossary.json` | Créé - 31 termes définis |
+| `parcours/epics/deep-learning-intro/slides/09-glossaire/` | Créé - Slide glossaire |
+| `parcours/epics/deep-learning-intro/epic.json` | Modifié - Ajout slide glossaire |
+| `scripts/build-parcours.js` | Modifié - Support glossaire dans le build |
 
 ---
 

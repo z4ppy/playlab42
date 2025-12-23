@@ -16,7 +16,7 @@ import {
   buildFeatured,
   validateEpicFields,
   convertMarkdown,
-  injectInTemplate
+  injectInTemplate,
 } from './parcours-utils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -26,6 +26,7 @@ const EPICS_DIR = join(PARCOURS_DIR, 'epics');
 const OUTPUT_FILE = join(ROOT, 'data', 'parcours.json');
 const CONFIG_FILE = join(PARCOURS_DIR, 'index.json');
 const SLIDE_TEMPLATE_FILE = join(PARCOURS_DIR, '_shared', 'slide-template.html');
+const GLOBAL_GLOSSARY_FILE = join(PARCOURS_DIR, 'glossary.json');
 
 // Statistiques
 const stats = {
@@ -33,8 +34,9 @@ const stats = {
   published: 0,
   drafts: 0,
   markdownConverted: 0,
+  glossaryTermsTotal: 0,
   errors: [],
-  warnings: []
+  warnings: [],
 };
 
 /**
@@ -47,6 +49,72 @@ function readJSON(path) {
     stats.errors.push(`Erreur lecture ${path}: ${err.message}`);
     return null;
   }
+}
+
+/**
+ * Charge et fusionne le glossaire pour un epic
+ * @param {string} epicDir - Chemin du dossier de l'epic
+ * @param {object|null} globalGlossary - Glossaire global
+ * @returns {object} Glossaire fusionné { terms, termCount }
+ */
+function loadEpicGlossary(epicDir, globalGlossary) {
+  // Charger le glossaire de l'epic (prioritaire)
+  const epicGlossaryPath = join(epicDir, 'glossary.json');
+  let epicGlossary = null;
+
+  if (existsSync(epicGlossaryPath)) {
+    try {
+      const data = JSON.parse(readFileSync(epicGlossaryPath, 'utf-8'));
+      // Support format { terms: {...} } ou directement {...}
+      epicGlossary = data.terms || data;
+    } catch (err) {
+      stats.warnings.push(`Erreur lecture glossaire ${epicGlossaryPath}: ${err.message}`);
+    }
+  }
+
+  // Fusionner : epic > global
+  const terms = { ...(globalGlossary || {}), ...(epicGlossary || {}) };
+  const termCount = Object.keys(terms).length;
+
+  if (termCount > 0) {
+    stats.glossaryTermsTotal += termCount;
+  }
+
+  return { terms, termCount };
+}
+
+/**
+ * Valide les termes du glossaire
+ * @param {object} terms - Termes du glossaire
+ * @param {string} epicId - ID de l'epic
+ */
+function validateGlossary(terms, epicId) {
+  const warnings = [];
+
+  for (const [term, entry] of Object.entries(terms)) {
+    // Vérifier que short est présent
+    if (!entry.short) {
+      stats.errors.push(`${epicId}: Glossaire - terme "${term}" sans définition courte (short)`);
+    }
+
+    // Warning si short trop long
+    if (entry.short && entry.short.length > 200) {
+      warnings.push(`Glossaire - terme "${term}" définition courte > 200 caractères`);
+    }
+
+    // Vérifier les termes liés
+    if (entry.see && Array.isArray(entry.see)) {
+      for (const relatedTerm of entry.see) {
+        if (!(relatedTerm.toLowerCase() in Object.fromEntries(
+          Object.keys(terms).map(t => [t.toLowerCase(), true]),
+        ))) {
+          warnings.push(`Glossaire - terme "${term}" référence "${relatedTerm}" non défini`);
+        }
+      }
+    }
+  }
+
+  return warnings;
 }
 
 /**
@@ -151,8 +219,9 @@ function validateEpic(epic, epicDir, template) {
  * Traite un epic et retourne son entrée pour le catalogue
  * @param {string} epicId - ID de l'epic
  * @param {string|null} template - Template HTML pour les slides Markdown
+ * @param {object|null} globalGlossary - Glossaire global
  */
-function processEpic(epicId, template) {
+function processEpic(epicId, template, globalGlossary) {
   const epicDir = join(EPICS_DIR, epicId);
   const epicJson = join(epicDir, 'epic.json');
 
@@ -162,7 +231,7 @@ function processEpic(epicId, template) {
 
   stats.found++;
   const epic = readJSON(epicJson);
-  if (!epic) return null;
+  if (!epic) {return null;}
 
   // Ignorer les brouillons
   if (epic.draft) {
@@ -180,6 +249,15 @@ function processEpic(epicId, template) {
   }
   if (validation.warnings.length > 0) {
     stats.warnings.push(`${epicId}: ${validation.warnings.join(', ')}`);
+  }
+
+  // Charger et valider le glossaire
+  const { terms: glossaryTerms, termCount: glossaryTermCount } = loadEpicGlossary(epicDir, globalGlossary);
+  if (glossaryTermCount > 0) {
+    const glossaryWarnings = validateGlossary(glossaryTerms, epicId);
+    if (glossaryWarnings.length > 0) {
+      stats.warnings.push(`${epicId}: ${glossaryWarnings.join(', ')}`);
+    }
   }
 
   // Compter les slides via l'utilitaire
@@ -209,11 +287,14 @@ function processEpic(epicId, template) {
     slideCount: total,
     optionalSlideCount: optional,
     hasIndex: !!epic.index,
-    structure: buildStructure(epic.content, getSlideData)
+    structure: buildStructure(epic.content, getSlideData),
+    // Glossaire
+    glossaryTermCount: glossaryTermCount > 0 ? glossaryTermCount : undefined,
   };
 
+  const glossaryInfo = glossaryTermCount > 0 ? `, ${glossaryTermCount} termes glossaire` : '';
   stats.published++;
-  console.log(`  [OK] ${epicId} (${total} slides)`);
+  console.log(`  [OK] ${epicId} (${total} slides${glossaryInfo})`);
   return entry;
 }
 
@@ -234,6 +315,18 @@ function main() {
     console.log('Template slides Markdown chargé');
   }
 
+  // Charger le glossaire global (optionnel)
+  let globalGlossary = null;
+  if (existsSync(GLOBAL_GLOSSARY_FILE)) {
+    try {
+      const data = JSON.parse(readFileSync(GLOBAL_GLOSSARY_FILE, 'utf-8'));
+      globalGlossary = data.terms || data;
+      console.log(`Glossaire global chargé: ${Object.keys(globalGlossary).length} termes`);
+    } catch (err) {
+      stats.warnings.push(`Erreur lecture glossaire global: ${err.message}`);
+    }
+  }
+
   // Scanner les epics
   console.log('\nScan des epics...');
   const epicDirs = existsSync(EPICS_DIR)
@@ -241,7 +334,7 @@ function main() {
     : [];
 
   const epics = epicDirs
-    .map(epicId => processEpic(epicId, slideTemplate))
+    .map(epicId => processEpic(epicId, slideTemplate, globalGlossary))
     .filter(Boolean);
 
   // Construire le catalogue
@@ -252,9 +345,9 @@ function main() {
     epics,
     taxonomy: {
       hierarchy: buildHierarchy(epics, config),
-      tags: aggregateTags(epics, config)
+      tags: aggregateTags(epics, config),
     },
-    featured: buildFeatured(epics, config)
+    featured: buildFeatured(epics, config),
   };
 
   // Écrire le fichier
@@ -269,6 +362,9 @@ function main() {
   console.log(`Tags uniques: ${catalogue.taxonomy.tags.length}`);
   if (stats.markdownConverted > 0) {
     console.log(`Slides Markdown converties: ${stats.markdownConverted}`);
+  }
+  if (stats.glossaryTermsTotal > 0) {
+    console.log(`Termes de glossaire: ${stats.glossaryTermsTotal}`);
   }
 
   if (stats.warnings.length > 0) {

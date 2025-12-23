@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossaire - Deep Learning</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/deep-learning.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script type="module">
+        import { initSlide, initGlossary, getGlossary } from '../../../../../parcours/_shared/slide-utils.js';
+
+        initSlide();
+
+        // Charger et afficher le glossaire
+        async function loadGlossary() {
+            const glossary = await initGlossary();
+
+            if (!glossary || glossary.allTerms().length === 0) {
+                document.getElementById('glossary-content').innerHTML = `
+                    <div class="text-center py-12">
+                        <p class="text-lg dl-text-muted">Aucun terme défini dans le glossaire.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Générer le HTML du glossaire
+            document.getElementById('glossary-content').innerHTML = glossary.generateGlossaryPage();
+
+            // Ajouter les styles personnalisés pour cette page
+            applyCustomStyles();
+        }
+
+        function applyCustomStyles() {
+            // Les éléments générés ont des classes CSS
+            // On peut personnaliser leur apparence ici
+            document.querySelectorAll('.glossary-category-title').forEach(el => {
+                el.classList.add('dl-text-accent');
+            });
+
+            document.querySelectorAll('.glossary-term-title').forEach(el => {
+                el.classList.add('dl-text-primary');
+            });
+
+            document.querySelectorAll('.glossary-short').forEach(el => {
+                el.classList.add('dl-text-secondary');
+            });
+
+            document.querySelectorAll('.glossary-long').forEach(el => {
+                el.classList.add('dl-text-muted');
+            });
+        }
+
+        loadGlossary();
+    </script>
+
+    <style>
+        /* Styles spécifiques à la page glossaire */
+        .glossary-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .glossary-category {
+            margin-bottom: 2.5rem;
+        }
+
+        .glossary-category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid;
+        }
+
+        .glossary-list {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0;
+        }
+
+        .glossary-entry {
+            padding: 1rem;
+            border-bottom: 1px solid var(--color-border, #333);
+            border-radius: 0;
+            transition: background-color 0.2s;
+        }
+
+        .glossary-entry:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .glossary-entry:last-child {
+            border-bottom: none;
+        }
+
+        .glossary-term-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .glossary-term-title::before {
+            content: '◆';
+            font-size: 0.6rem;
+            opacity: 0.5;
+        }
+
+        .glossary-definition {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .glossary-short {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .glossary-long {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .glossary-see {
+            margin: 0.75rem 0 0 0;
+            font-size: 0.85rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--color-border, #333);
+        }
+
+        .glossary-link {
+            color: var(--color-accent, #e94560);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .glossary-link:hover {
+            text-decoration: underline;
+            color: var(--color-accent-hover, #ff6b6b);
+        }
+
+        /* Animation au clic sur un lien interne */
+        .glossary-entry:target {
+            animation: highlight-entry 1.5s ease-out;
+        }
+
+        @keyframes highlight-entry {
+            0% {
+                background-color: rgba(233, 69, 96, 0.2);
+                transform: scale(1.01);
+            }
+            100% {
+                background-color: transparent;
+                transform: scale(1);
+            }
+        }
+
+        /* Statistiques */
+        .glossary-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-border, #333);
+        }
+
+        .glossary-stat {
+            text-align: center;
+        }
+
+        .glossary-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-accent, #e94560);
+        }
+
+        .glossary-stat-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* Navigation rapide */
+        .glossary-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .glossary-nav-link {
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--color-border, #333);
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            color: var(--color-text-muted, #888);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .glossary-nav-link:hover {
+            background: var(--color-accent, #e94560);
+            color: white;
+            border-color: var(--color-accent, #e94560);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white">
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <header class="mb-8">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="text-4xl">📖</span>
+                <h1 class="text-3xl font-bold dl-text-primary">Glossaire</h1>
+            </div>
+            <p class="dl-text-secondary text-lg">
+                Définitions des termes techniques utilisés dans ce parcours.
+                Cliquez sur un terme pour voir les concepts liés.
+            </p>
+        </header>
+
+        <div id="glossary-content">
+            <!-- Contenu généré dynamiquement -->
+            <div class="text-center py-16">
+                <div class="inline-block animate-spin rounded-full h-10 w-10 border-3 border-gray-600 border-t-[var(--color-accent)]"></div>
+                <p class="mt-4 dl-text-muted">Chargement du glossaire...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="max-w-4xl mx-auto px-4 py-6 text-center">
+        <p class="text-sm dl-text-muted">
+            Deep Learning : Introduction aux Réseaux de Neurones — Slide 9/9
+        </p>
+    </footer>
+
+</body>
+</html>

@@ -11,8 +11,9 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <script type="module">
-        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        import { initSlide, initGlossary } from '../../../../../parcours/_shared/slide-utils.js';
         initSlide();
+        initGlossary();
     </script>
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white">
@@ -43,7 +44,7 @@
                 </p>
 
                 <p class="mb-6">
-                    Il faudra attendre <strong>1986</strong> et la popularisation de la <strong>rétropropagation</strong> pour que les réseaux multicouches prennent leur essor — et <strong>2012</strong> pour que le Deep Learning explose avec AlexNet. Mais au cœur de toutes ces avancées, la brique fondamentale reste la même : le neurone artificiel que nous allons explorer.
+                    Il faudra attendre <strong>1986</strong> et la popularisation de la <dfn>rétropropagation</dfn> pour que les réseaux multicouches prennent leur essor — et <strong>2012</strong> pour que le Deep Learning explose avec AlexNet. Mais au cœur de toutes ces avancées, la brique fondamentale reste la même : le neurone artificiel que nous allons explorer.
                 </p>
 
                 <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">L'analogie du recruteur</h3>
@@ -57,15 +58,15 @@
                 </p>
 
                 <p class="mb-4">
-                    Mais toutes les compétences ne se valent pas. Pour un poste technique, le diplôme compte peut-être plus que la motivation. Le recruteur attribue donc un <strong class="text-purple-400">poids</strong> à chaque critère : \(w_1 = 0.4\) pour le diplôme, \(w_2 = 0.35\) pour l'expérience, \(w_3 = 0.25\) pour la motivation.
+                    Mais toutes les compétences ne se valent pas. Pour un poste technique, le diplôme compte peut-être plus que la motivation. Le recruteur attribue donc un <dfn class="text-purple-400">poids</dfn> à chaque critère : \(w_1 = 0.4\) pour le diplôme, \(w_2 = 0.35\) pour l'expérience, \(w_3 = 0.25\) pour la motivation.
                 </p>
 
                 <p class="mb-4">
-                    Le recruteur calcule ensuite un <strong>score total</strong> : il multiplie chaque compétence par son poids, puis additionne le tout. C'est la <em>somme pondérée</em>. Mais il ajoute aussi un <strong class="text-orange-400">biais</strong> \(b\), qui représente son niveau d'exigence global. Un biais très négatif ? Recruteur sévère. Un biais positif ? Facile à convaincre.
+                    Le recruteur calcule ensuite un <strong>score total</strong> : il multiplie chaque compétence par son poids, puis additionne le tout. C'est la <em>somme pondérée</em>. Mais il ajoute aussi un <dfn class="text-orange-400">biais</dfn> \(b\), qui représente son niveau d'exigence global. Un biais très négatif ? Recruteur sévère. Un biais positif ? Facile à convaincre.
                 </p>
 
                 <p class="mb-6">
-                    Enfin, si le score dépasse un certain seuil, le neurone <strong class="text-green-400">"s'active"</strong> et transmet le signal. Sinon, il reste silencieux. C'est le rôle de la <em>fonction d'activation</em>.
+                    Enfin, si le score dépasse un certain seuil, le neurone <strong class="text-green-400">"s'active"</strong> et transmet le signal. Sinon, il reste silencieux. C'est le rôle de la <dfn data-term="activation">fonction d'activation</dfn>.
                 </p>
 
                 <p class="mb-8 text-sm dl-text-muted italic">

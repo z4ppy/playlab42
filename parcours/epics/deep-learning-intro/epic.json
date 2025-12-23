@@ -27,6 +27,7 @@
       ]
     },
     { "id": "07-contexte", "optional": true },
-    { "id": "08-laboratoire" }
+    { "id": "08-laboratoire" },
+    { "id": "09-glossaire", "type": "glossary", "optional": true }
   ]
 }

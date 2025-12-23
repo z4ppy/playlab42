@@ -11,8 +11,9 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <script type="module">
-        import { initSlide, sendTOC, setupScrollHandler } from '../../../../../parcours/_shared/slide-utils.js';
+        import { initSlide, initGlossary, sendTOC, setupScrollHandler } from '../../../../../parcours/_shared/slide-utils.js';
         initSlide();
+        initGlossary();
         setupScrollHandler();
         sendTOC([
             { id: 'forward', label: 'Propagation Avant', icon: '➡️' },

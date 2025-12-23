@@ -1,6 +1,12 @@
 /**
  * Utilitaires pour les slides Parcours
+ * @see openspec/specs/parcours/spec.md
  */
+
+import { ParcoursGlossary } from '/lib/parcours/ParcoursGlossary.js';
+
+/** @type {ParcoursGlossary|null} Instance globale du glossaire pour la slide */
+let _glossaryInstance = null;
 
 /**
  * Initialise la slide avec le thème
@@ -9,6 +15,278 @@ export async function initSlide() {
   // Importer et initialiser le thème
   const { initTheme } = await import('/lib/theme.js');
   initTheme();
+}
+
+/**
+ * Initialise le glossaire pour la slide courante.
+ * Charge les définitions depuis l'epic et le glossaire global,
+ * puis attache les tooltips aux éléments <dfn>.
+ *
+ * @param {Object} [options] - Options de configuration
+ * @param {string} [options.container='body'] - Sélecteur du conteneur où attacher les tooltips
+ * @returns {Promise<ParcoursGlossary|null>} Instance du glossaire ou null si erreur
+ *
+ * @example
+ * import { initSlide, initGlossary } from '../../../../../parcours/_shared/slide-utils.js';
+ *
+ * initSlide();
+ * await initGlossary();
+ */
+export async function initGlossary(options = {}) {
+  try {
+    // Déterminer le chemin de l'epic à partir de l'URL de la slide
+    // URL typique : /parcours/epics/mon-epic/slides/01-intro/index.html
+    const pathMatch = window.location.pathname.match(/\/parcours\/epics\/([^/]+)\//);
+    if (!pathMatch) {
+      console.warn('[Glossary] Impossible de déterminer l\'epic depuis l\'URL');
+      return null;
+    }
+
+    const epicId = pathMatch[1];
+    // Chemin relatif vers le dossier de l'epic depuis la slide
+    // Une slide est dans /parcours/epics/<epic>/slides/<slide>/
+    // L'epic est dans /parcours/epics/<epic>/
+    const epicPath = '../../'; // Chemin relatif depuis la slide vers l'epic
+
+    // Créer et charger le glossaire
+    _glossaryInstance = new ParcoursGlossary(epicId, epicPath);
+    await _glossaryInstance.load();
+
+    // Attacher les tooltips au conteneur spécifié
+    const container = document.querySelector(options.container || 'body');
+    if (container) {
+      _glossaryInstance.attachTooltips(container);
+    }
+
+    return _glossaryInstance;
+  } catch (error) {
+    console.error('[Glossary] Erreur d\'initialisation:', error);
+    return null;
+  }
+}
+
+/**
+ * Récupère l'instance du glossaire initialisée.
+ * @returns {ParcoursGlossary|null}
+ */
+export function getGlossary() {
+  return _glossaryInstance;
+}
+
+/**
+ * Nettoie le glossaire (à appeler avant de quitter la slide si nécessaire).
+ */
+export function cleanupGlossary() {
+  if (_glossaryInstance) {
+    _glossaryInstance.detachTooltips();
+    _glossaryInstance = null;
+  }
+}
+
+/**
+ * Transforme la syntaxe wiki `[[terme]]` en balises `<dfn>` dans le contenu HTML.
+ * Utile pour convertir du contenu Markdown transformé contenant cette syntaxe.
+ *
+ * Syntaxe supportée :
+ * - `[[terme]]` → `<dfn>terme</dfn>`
+ * - `[[terme|texte affiché]]` → `<dfn data-term="terme">texte affiché</dfn>`
+ *
+ * @param {HTMLElement|string} containerOrSelector - Élément ou sélecteur CSS
+ * @returns {number} Nombre de termes transformés
+ *
+ * @example
+ * // Dans une slide, après le chargement du contenu Markdown
+ * import { initSlide, initGlossary, transformWikiTerms } from '...';
+ *
+ * initSlide();
+ * transformWikiTerms('.prose-content'); // Transforme [[terme]] en <dfn>
+ * await initGlossary(); // Attache les tooltips
+ */
+export function transformWikiTerms(containerOrSelector) {
+  const container = typeof containerOrSelector === 'string'
+    ? document.querySelector(containerOrSelector)
+    : containerOrSelector;
+
+  if (!container) {
+    console.warn('[Glossary] Conteneur non trouvé:', containerOrSelector);
+    return 0;
+  }
+
+  let count = 0;
+
+  // Regex pour [[terme]] ou [[terme|texte]]
+  // Groupe 1: terme, Groupe 2: texte affiché (optionnel)
+  const wikiTermRegex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
+
+  // Parcourir tous les nœuds texte du conteneur
+  const walker = document.createTreeWalker(
+    container,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode: (node) => {
+        // Ignorer les nœuds dans script, style, code, pre, dfn
+        const parent = node.parentElement;
+        if (!parent) {return NodeFilter.FILTER_REJECT;}
+        const tag = parent.tagName.toLowerCase();
+        if (['script', 'style', 'code', 'pre', 'dfn', 'textarea'].includes(tag)) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        // Accepter si contient le pattern
+        if (wikiTermRegex.test(node.textContent)) {
+          return NodeFilter.FILTER_ACCEPT;
+        }
+        return NodeFilter.FILTER_REJECT;
+      },
+    },
+  );
+
+  const nodesToProcess = [];
+  let node;
+  while ((node = walker.nextNode())) {
+    nodesToProcess.push(node);
+  }
+
+  // Traiter les nœuds (en sens inverse pour ne pas invalider les références)
+  nodesToProcess.forEach((textNode) => {
+    const text = textNode.textContent;
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+
+    // Reset regex state
+    wikiTermRegex.lastIndex = 0;
+
+    let match;
+    while ((match = wikiTermRegex.exec(text)) !== null) {
+      // Ajouter le texte avant le match
+      if (match.index > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+
+      // Créer l'élément dfn
+      const term = match[1].trim();
+      const displayText = match[2]?.trim() || term;
+
+      const dfn = document.createElement('dfn');
+      if (match[2]) {
+        dfn.setAttribute('data-term', term);
+      }
+      dfn.textContent = displayText;
+      fragment.appendChild(dfn);
+
+      lastIndex = match.index + match[0].length;
+      count++;
+    }
+
+    // Ajouter le reste du texte
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    // Remplacer le nœud texte par le fragment
+    textNode.parentNode.replaceChild(fragment, textNode);
+  });
+
+  return count;
+}
+
+/**
+ * Marque automatiquement les occurrences de termes du glossaire dans le contenu.
+ * Seule la première occurrence de chaque terme est marquée.
+ *
+ * ⚠️ À utiliser avec précaution : peut créer des faux positifs.
+ * Préférer le marquage explicite avec `<dfn>` ou `[[terme]]`.
+ *
+ * @param {HTMLElement|string} containerOrSelector - Élément ou sélecteur CSS
+ * @param {string[]} terms - Liste des termes à marquer
+ * @param {Object} [options] - Options
+ * @param {boolean} [options.firstOnly=true] - Marquer uniquement la première occurrence
+ * @returns {number} Nombre de termes marqués
+ */
+export function autoMarkTerms(containerOrSelector, terms, options = {}) {
+  const { firstOnly = true } = options;
+
+  const container = typeof containerOrSelector === 'string'
+    ? document.querySelector(containerOrSelector)
+    : containerOrSelector;
+
+  if (!container || !terms?.length) {return 0;}
+
+  let count = 0;
+  const markedTerms = new Set();
+
+  // Trier les termes par longueur décroissante pour éviter les chevauchements
+  const sortedTerms = [...terms].sort((a, b) => b.length - a.length);
+
+  // Créer un pattern pour tous les termes (insensible à la casse)
+  const escapedTerms = sortedTerms.map((t) =>
+    t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+  );
+  const pattern = new RegExp(`\\b(${escapedTerms.join('|')})\\b`, 'gi');
+
+  const walker = document.createTreeWalker(
+    container,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode: (node) => {
+        const parent = node.parentElement;
+        if (!parent) {return NodeFilter.FILTER_REJECT;}
+        const tag = parent.tagName.toLowerCase();
+        if (['script', 'style', 'code', 'pre', 'dfn', 'textarea'].includes(tag)) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        if (pattern.test(node.textContent)) {
+          return NodeFilter.FILTER_ACCEPT;
+        }
+        return NodeFilter.FILTER_REJECT;
+      },
+    },
+  );
+
+  const nodesToProcess = [];
+  let node;
+  while ((node = walker.nextNode())) {
+    nodesToProcess.push(node);
+  }
+
+  nodesToProcess.forEach((textNode) => {
+    const text = textNode.textContent;
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+
+    pattern.lastIndex = 0;
+
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      const matchedTerm = match[1].toLowerCase();
+
+      // Si firstOnly et déjà marqué, ignorer
+      if (firstOnly && markedTerms.has(matchedTerm)) {
+        continue;
+      }
+
+      if (match.index > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+
+      const dfn = document.createElement('dfn');
+      dfn.textContent = match[1];
+      fragment.appendChild(dfn);
+
+      lastIndex = match.index + match[0].length;
+      markedTerms.add(matchedTerm);
+      count++;
+    }
+
+    if (lastIndex > 0 && lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    if (lastIndex > 0) {
+      textNode.parentNode.replaceChild(fragment, textNode);
+    }
+  });
+
+  return count;
 }
 
 /**
@@ -99,7 +377,7 @@ export function autoDetectTOC(selector = 'h2[id], h3[id]') {
 
   headings.forEach((heading) => {
     const id = heading.id;
-    if (!id) return;
+    if (!id) {return;}
 
     const label = heading.textContent?.trim() || id;
     const tagName = heading.tagName.toLowerCase();
@@ -183,7 +461,7 @@ export async function copyToClipboard(text) {
 export function addCopyButtons() {
   document.querySelectorAll('pre code').forEach((codeBlock) => {
     const pre = codeBlock.parentElement;
-    if (pre.querySelector('.copy-btn')) return; // Déjà ajouté
+    if (pre.querySelector('.copy-btn')) {return;} // Déjà ajouté
 
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
@@ -233,3 +511,108 @@ copyBtnStyle.textContent = `
   }
 `;
 document.head.appendChild(copyBtnStyle);
+
+// ===========================================================================
+// Styles Glossaire (injectés dynamiquement)
+// @see openspec/changes/add-glossary-system
+// ===========================================================================
+const glossaryStyle = document.createElement('style');
+glossaryStyle.textContent = `
+  /* Termes du glossaire (<dfn> ou .glossary-term) */
+  dfn,
+  [data-term],
+  .glossary-term {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: var(--color-accent, #e94560);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+    cursor: help;
+    font-style: normal;
+    transition: text-decoration-color 0.15s;
+  }
+
+  dfn:hover,
+  [data-term]:hover,
+  .glossary-term:hover {
+    text-decoration-color: var(--color-text, #eee);
+  }
+
+  dfn:focus,
+  [data-term]:focus,
+  .glossary-term:focus {
+    outline: 2px solid var(--color-accent, #e94560);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Tooltip */
+  .glossary-tooltip {
+    position: absolute;
+    max-width: 320px;
+    min-width: 200px;
+    padding: 0;
+    background: var(--color-bg, #1a1a2e);
+    border: 1px solid var(--color-border, #333);
+    border-radius: var(--radius-md, 0.5rem);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3),
+                0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    z-index: 1100;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .glossary-tooltip[role="tooltip"] {
+    pointer-events: auto;
+  }
+
+  .glossary-tooltip-header {
+    padding: var(--space-sm, 0.5rem) var(--space-md, 0.75rem);
+    background: var(--color-bg-secondary, #16213e);
+    border-bottom: 1px solid var(--color-border, #333);
+    border-radius: var(--radius-md, 0.5rem) var(--radius-md, 0.5rem) 0 0;
+    font-weight: 600;
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--color-accent, #e94560);
+  }
+
+  .glossary-tooltip-short {
+    margin: 0;
+    padding: var(--space-sm, 0.5rem) var(--space-md, 0.75rem);
+    font-size: var(--font-size-sm, 0.875rem);
+    line-height: 1.5;
+    color: var(--color-text, #eee);
+  }
+
+  .glossary-tooltip-see {
+    margin: 0;
+    padding: var(--space-xs, 0.25rem) var(--space-md, 0.75rem) var(--space-sm, 0.5rem);
+    font-size: var(--font-size-xs, 0.75rem);
+    color: var(--color-text-muted, #888);
+    border-top: 1px solid var(--color-border, #333);
+  }
+
+  .glossary-tooltip--below::before {
+    top: -6px;
+    bottom: auto;
+    border-width: 0 6px 6px 6px;
+    border-color: transparent transparent var(--color-border, #333) transparent;
+  }
+
+  /* Animation accessible */
+  @media (prefers-reduced-motion: reduce) {
+    .glossary-tooltip {
+      transition: opacity 0.1s;
+      transform: none !important;
+    }
+
+    dfn,
+    [data-term],
+    .glossary-term {
+      transition: none;
+    }
+  }
+`;
+document.head.appendChild(glossaryStyle);
