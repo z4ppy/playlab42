@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-23T13:45:51.860Z",
+  "generatedAt": "2025-12-23T14:01:40.228Z",
   "epics": [
     {
       "id": "coding-agents-2025",
@@ -85,7 +85,7 @@
       "difficulty": "beginner",
       "icon": "🧠",
       "thumbnail": null,
-      "slideCount": 7,
+      "slideCount": 8,
       "optionalSlideCount": 1,
       "hasIndex": false,
       "structure": [
@@ -109,19 +109,25 @@
             },
             {
               "type": "slide",
-              "id": "03-forward-loss",
+              "id": "03-reseaux",
+              "title": "Les Réseaux",
+              "icon": "🔗"
+            },
+            {
+              "type": "slide",
+              "id": "04-forward-loss",
               "title": "Forward & Loss",
               "icon": "➡️"
             },
             {
               "type": "slide",
-              "id": "04-backpropagation",
+              "id": "05-backpropagation",
               "title": "Rétropropagation",
               "icon": "⬅️"
             },
             {
               "type": "slide",
-              "id": "05-optimisation",
+              "id": "06-optimisation",
               "title": "Optimisation",
               "icon": "🔧"
             }
@@ -129,14 +135,14 @@
         },
         {
           "type": "slide",
-          "id": "06-contexte",
+          "id": "07-contexte",
           "title": "Contexte",
           "icon": "📜",
           "optional": true
         },
         {
           "type": "slide",
-          "id": "07-laboratoire",
+          "id": "08-laboratoire",
           "title": "Laboratoire",
           "icon": "🧪"
         }
@@ -570,7 +576,7 @@
         "difficulty": "beginner",
         "icon": "🧠",
         "thumbnail": null,
-        "slideCount": 7,
+        "slideCount": 8,
         "optionalSlideCount": 1,
         "hasIndex": false,
         "structure": [
@@ -594,19 +600,25 @@
               },
               {
                 "type": "slide",
-                "id": "03-forward-loss",
+                "id": "03-reseaux",
+                "title": "Les Réseaux",
+                "icon": "🔗"
+              },
+              {
+                "type": "slide",
+                "id": "04-forward-loss",
                 "title": "Forward & Loss",
                 "icon": "➡️"
               },
               {
                 "type": "slide",
-                "id": "04-backpropagation",
+                "id": "05-backpropagation",
                 "title": "Rétropropagation",
                 "icon": "⬅️"
               },
               {
                 "type": "slide",
-                "id": "05-optimisation",
+                "id": "06-optimisation",
                 "title": "Optimisation",
                 "icon": "🔧"
               }
@@ -614,14 +626,14 @@
           },
           {
             "type": "slide",
-            "id": "06-contexte",
+            "id": "07-contexte",
             "title": "Contexte",
             "icon": "📜",
             "optional": true
           },
           {
             "type": "slide",
-            "id": "07-laboratoire",
+            "id": "08-laboratoire",
             "title": "Laboratoire",
             "icon": "🧪"
           }

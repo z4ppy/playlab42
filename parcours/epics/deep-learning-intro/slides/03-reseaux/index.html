@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Réseaux - Deep Learning</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/deep-learning.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white">
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <section id="networks" class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🔗</span>
+                <h2 class="text-3xl font-bold dl-text-primary">Des Neurones aux Réseaux</h2>
+            </div>
+
+            <div class="prose-content dl-text-secondary">
+
+                <!-- INTRODUCTION -->
+                <p class="text-lg mb-6 dl-text-primary font-medium">
+                    Un neurone seul ne peut résoudre que des problèmes linéairement séparables. En 1969, Minsky et Papert ont démontré qu'un Perceptron unique ne peut même pas apprendre la fonction XOR. La solution ? <strong>Connecter des neurones en couches</strong> pour créer des réseaux capables d'approximer n'importe quelle fonction.
+                </p>
+
+                <!-- VISUALISATION INTERACTIVE -->
+                <div class="concept-box mb-8">
+                    <h4 class="font-bold text-blue-400 mb-3">Explorez un Réseau de Neurones</h4>
+                    <div class="my-4">
+                        <canvas id="networkCanvas" width="700" height="350" class="w-full rounded-lg" style="max-width: 700px; margin: 0 auto; display: block;"></canvas>
+                        <p class="text-center text-xs dl-text-muted mt-2">Survolez les neurones pour voir leurs valeurs • Cliquez sur une entrée pour la modifier</p>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-4 mt-4">
+                        <div class="text-center">
+                            <label class="text-xs dl-text-muted block mb-1">Entrée x₁</label>
+                            <input type="range" id="input1" min="-1" max="1" step="0.1" value="0.5" class="w-24">
+                            <span id="input1Val" class="text-cyan-400 text-xs font-mono block">0.5</span>
+                        </div>
+                        <div class="text-center">
+                            <label class="text-xs dl-text-muted block mb-1">Entrée x₂</label>
+                            <input type="range" id="input2" min="-1" max="1" step="0.1" value="-0.3" class="w-24">
+                            <span id="input2Val" class="text-cyan-400 text-xs font-mono block">-0.3</span>
+                        </div>
+                        <div class="text-center">
+                            <label class="text-xs dl-text-muted block mb-1">Entrée x₃</label>
+                            <input type="range" id="input3" min="-1" max="1" step="0.1" value="0.8" class="w-24">
+                            <span id="input3Val" class="text-cyan-400 text-xs font-mono block">0.8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                (function() {
+                    const canvas = document.getElementById('networkCanvas');
+                    const ctx = canvas.getContext('2d');
+                    const W = canvas.width, H = canvas.height;
+
+                    // Architecture : 3 entrées → 4 hidden → 4 hidden → 2 sorties
+                    const layers = [3, 4, 4, 2];
+                    const layerNames = ['Entrée', 'Cachée 1', 'Cachée 2', 'Sortie'];
+
+                    // Poids aléatoires (fixes pour la démo)
+                    const weights = [];
+                    const biases = [];
+                    for (let l = 1; l < layers.length; l++) {
+                        const layerWeights = [];
+                        const layerBiases = [];
+                        for (let j = 0; j < layers[l]; j++) {
+                            const neuronWeights = [];
+                            for (let i = 0; i < layers[l-1]; i++) {
+                                // Poids pseudo-aléatoires mais déterministes
+                                neuronWeights.push(Math.sin(l * 7 + j * 13 + i * 17) * 0.8);
+                            }
+                            layerWeights.push(neuronWeights);
+                            layerBiases.push(Math.cos(l * 11 + j * 19) * 0.3);
+                        }
+                        weights.push(layerWeights);
+                        biases.push(layerBiases);
+                    }
+
+                    // Positions des neurones
+                    const neuronPositions = [];
+                    const margin = { left: 80, right: 80, top: 50, bottom: 50 };
+                    const plotW = W - margin.left - margin.right;
+                    const plotH = H - margin.top - margin.bottom;
+
+                    for (let l = 0; l < layers.length; l++) {
+                        const x = margin.left + (l / (layers.length - 1)) * plotW;
+                        const layerPositions = [];
+                        for (let n = 0; n < layers[l]; n++) {
+                            const y = margin.top + ((n + 0.5) / layers[l]) * plotH;
+                            layerPositions.push({ x, y });
+                        }
+                        neuronPositions.push(layerPositions);
+                    }
+
+                    let activations = [];
+                    let hoveredNeuron = null;
+
+                    function tanh(x) { return Math.tanh(x); }
+
+                    function forwardPass(inputs) {
+                        activations = [inputs];
+                        let current = inputs;
+
+                        for (let l = 0; l < weights.length; l++) {
+                            const next = [];
+                            for (let j = 0; j < weights[l].length; j++) {
+                                let sum = biases[l][j];
+                                for (let i = 0; i < current.length; i++) {
+                                    sum += current[i] * weights[l][j][i];
+                                }
+                                next.push(tanh(sum));
+                            }
+                            activations.push(next);
+                            current = next;
+                        }
+                        return current;
+                    }
+
+                    function getColor(value, alpha = 1) {
+                        // Bleu pour positif, orange pour négatif
+                        if (value >= 0) {
+                            const intensity = Math.min(1, value);
+                            return `rgba(34, 211, 238, ${alpha * (0.3 + intensity * 0.7)})`;
+                        } else {
+                            const intensity = Math.min(1, -value);
+                            return `rgba(249, 115, 22, ${alpha * (0.3 + intensity * 0.7)})`;
+                        }
+                    }
+
+                    function draw() {
+                        const x1 = parseFloat(document.getElementById('input1').value);
+                        const x2 = parseFloat(document.getElementById('input2').value);
+                        const x3 = parseFloat(document.getElementById('input3').value);
+
+                        document.getElementById('input1Val').textContent = x1.toFixed(1);
+                        document.getElementById('input2Val').textContent = x2.toFixed(1);
+                        document.getElementById('input3Val').textContent = x3.toFixed(1);
+
+                        forwardPass([x1, x2, x3]);
+
+                        const isDark = document.documentElement.classList.contains('dark');
+                        const bgColor = isDark ? '#1a1a2e' : '#f8fafc';
+                        const textColor = isDark ? '#e2e8f0' : '#334155';
+                        const mutedColor = isDark ? '#64748b' : '#94a3b8';
+
+                        ctx.fillStyle = bgColor;
+                        ctx.fillRect(0, 0, W, H);
+
+                        // Dessiner les connexions
+                        for (let l = 0; l < weights.length; l++) {
+                            for (let j = 0; j < weights[l].length; j++) {
+                                for (let i = 0; i < weights[l][j].length; i++) {
+                                    const weight = weights[l][j][i];
+                                    const fromPos = neuronPositions[l][i];
+                                    const toPos = neuronPositions[l + 1][j];
+
+                                    ctx.strokeStyle = getColor(weight, 0.6);
+                                    ctx.lineWidth = 0.5 + Math.abs(weight) * 2;
+                                    ctx.beginPath();
+                                    ctx.moveTo(fromPos.x + 18, fromPos.y);
+                                    ctx.lineTo(toPos.x - 18, toPos.y);
+                                    ctx.stroke();
+                                }
+                            }
+                        }
+
+                        // Dessiner les neurones
+                        for (let l = 0; l < layers.length; l++) {
+                            for (let n = 0; n < layers[l]; n++) {
+                                const pos = neuronPositions[l][n];
+                                const activation = activations[l][n];
+
+                                // Cercle du neurone
+                                const isHovered = hoveredNeuron && hoveredNeuron.layer === l && hoveredNeuron.neuron === n;
+                                const radius = isHovered ? 22 : 18;
+
+                                ctx.fillStyle = getColor(activation);
+                                ctx.beginPath();
+                                ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+                                ctx.fill();
+
+                                ctx.strokeStyle = isHovered ? '#fff' : mutedColor;
+                                ctx.lineWidth = isHovered ? 2 : 1;
+                                ctx.stroke();
+
+                                // Valeur dans le neurone
+                                ctx.fillStyle = Math.abs(activation) > 0.5 ? '#fff' : textColor;
+                                ctx.font = 'bold 10px monospace';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillText(activation.toFixed(2), pos.x, pos.y);
+                            }
+                        }
+
+                        // Labels des couches
+                        ctx.font = '11px sans-serif';
+                        ctx.fillStyle = mutedColor;
+                        ctx.textAlign = 'center';
+                        for (let l = 0; l < layers.length; l++) {
+                            const x = neuronPositions[l][0].x;
+                            ctx.fillText(layerNames[l], x, H - 15);
+                            ctx.fillText(`(${layers[l]} neurones)`, x, H - 3);
+                        }
+
+                        // Légende
+                        ctx.font = '10px sans-serif';
+                        ctx.textAlign = 'left';
+
+                        ctx.fillStyle = '#22d3ee';
+                        ctx.fillRect(10, 10, 12, 12);
+                        ctx.fillStyle = textColor;
+                        ctx.fillText('Valeur positive', 26, 19);
+
+                        ctx.fillStyle = '#f97316';
+                        ctx.fillRect(10, 26, 12, 12);
+                        ctx.fillStyle = textColor;
+                        ctx.fillText('Valeur négative', 26, 35);
+
+                        // Tooltip si neurone survolé
+                        if (hoveredNeuron) {
+                            const pos = neuronPositions[hoveredNeuron.layer][hoveredNeuron.neuron];
+                            const activation = activations[hoveredNeuron.layer][hoveredNeuron.neuron];
+
+                            ctx.fillStyle = isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+                            ctx.strokeStyle = mutedColor;
+                            ctx.lineWidth = 1;
+
+                            const tooltipX = pos.x + 30;
+                            const tooltipY = pos.y - 30;
+
+                            ctx.beginPath();
+                            ctx.roundRect(tooltipX, tooltipY, 100, 40, 5);
+                            ctx.fill();
+                            ctx.stroke();
+
+                            ctx.fillStyle = textColor;
+                            ctx.font = 'bold 10px sans-serif';
+                            ctx.textAlign = 'left';
+                            ctx.fillText(`Couche ${hoveredNeuron.layer}`, tooltipX + 8, tooltipY + 14);
+                            ctx.font = '10px monospace';
+                            ctx.fillText(`Activation: ${activation.toFixed(4)}`, tooltipX + 8, tooltipY + 28);
+                        }
+                    }
+
+                    // Gestion du survol
+                    canvas.addEventListener('mousemove', (e) => {
+                        const rect = canvas.getBoundingClientRect();
+                        const mx = (e.clientX - rect.left) * (W / rect.width);
+                        const my = (e.clientY - rect.top) * (H / rect.height);
+
+                        hoveredNeuron = null;
+                        for (let l = 0; l < layers.length; l++) {
+                            for (let n = 0; n < layers[l]; n++) {
+                                const pos = neuronPositions[l][n];
+                                const dist = Math.sqrt((mx - pos.x) ** 2 + (my - pos.y) ** 2);
+                                if (dist < 20) {
+                                    hoveredNeuron = { layer: l, neuron: n };
+                                    break;
+                                }
+                            }
+                            if (hoveredNeuron) break;
+                        }
+                        draw();
+                    });
+
+                    canvas.addEventListener('mouseleave', () => {
+                        hoveredNeuron = null;
+                        draw();
+                    });
+
+                    ['input1', 'input2', 'input3'].forEach(id => {
+                        document.getElementById(id).addEventListener('input', draw);
+                    });
+
+                    new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+                    draw();
+                })();
+                </script>
+
+                <!-- LES COUCHES -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">L'Architecture en Couches</h3>
+
+                <p class="mb-6">
+                    Un réseau de neurones s'organise en <strong>couches successives</strong>, chacune avec un rôle précis :
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-4 my-6">
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-cyan-400 mb-2">Couche d'Entrée</h4>
+                        <p class="text-sm dl-text-muted">
+                            Reçoit les données brutes (pixels, valeurs numériques, etc.). Ne fait aucun calcul — elle transmet simplement les features à la couche suivante.
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-purple-400 mb-2">Couches Cachées</h4>
+                        <p class="text-sm dl-text-muted">
+                            Le cœur du réseau. Chaque couche transforme les données en appliquant poids, biais et activation. Les couches basses capturent des patterns simples, les couches hautes des concepts abstraits.
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-green-400 mb-2">Couche de Sortie</h4>
+                        <p class="text-sm dl-text-muted">
+                            Produit la prédiction finale. Pour une classification, chaque neurone représente une classe. Pour une régression, un seul neurone donne une valeur continue.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- DEEP = PROFONDEUR -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Qu'est-ce qui rend un réseau "Deep" ?</h3>
+
+                <p class="mb-4">
+                    Le terme <strong>"Deep Learning"</strong> fait référence à la <em>profondeur</em> du réseau — c'est-à-dire son nombre de couches cachées. Un réseau avec une seule couche cachée est dit <strong>shallow</strong> (peu profond). À partir de <strong>2 couches cachées ou plus</strong>, on parle de réseau profond.
+                </p>
+
+                <div class="concept-box mb-6">
+                    <h4 class="font-bold text-blue-400 mb-3">Pourquoi la profondeur compte</h4>
+                    <p class="text-sm dl-text-secondary mb-3">
+                        En théorie, un réseau à une seule couche cachée (suffisamment large) peut approximer n'importe quelle fonction. Mais en pratique :
+                    </p>
+                    <ul class="text-sm space-y-2 dl-text-muted">
+                        <li>• <strong>Efficacité</strong> : un réseau profond avec 100 neurones peut exprimer des fonctions qui nécessiteraient des millions de neurones en une seule couche</li>
+                        <li>• <strong>Hiérarchie</strong> : les couches successives apprennent des représentations de plus en plus abstraites</li>
+                        <li>• <strong>Généralisation</strong> : les réseaux profonds généralisent souvent mieux sur des données nouvelles</li>
+                    </ul>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 my-6">
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-yellow-400 mb-2">Largeur (Width)</h4>
+                        <p class="text-sm dl-text-muted mb-2">
+                            Nombre de neurones par couche. Plus de neurones = plus de paramètres à ajuster, plus de capacité d'expression.
+                        </p>
+                        <p class="text-xs dl-text-secondary italic">
+                            Risque : overfitting si trop large pour les données
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-pink-400 mb-2">Profondeur (Depth)</h4>
+                        <p class="text-sm dl-text-muted mb-2">
+                            Nombre de couches. Plus de couches = apprentissage hiérarchique, patterns complexes.
+                        </p>
+                        <p class="text-xs dl-text-secondary italic">
+                            Risque : vanishing gradient si trop profond sans techniques adaptées
+                        </p>
+                    </div>
+                </div>
+
+                <!-- TYPES DE CONNEXIONS -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Types de Connexions</h3>
+
+                <p class="mb-4">
+                    Dans un réseau <strong>fully connected</strong> (ou "dense"), chaque neurone d'une couche est connecté à <em>tous</em> les neurones de la couche suivante. C'est l'architecture la plus simple, mais pas toujours la plus efficace.
+                </p>
+
+                <div class="warning-box mb-6">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">📊</span>
+                        <div>
+                            <h4 class="font-bold text-yellow-500 mb-2">Explosion des paramètres</h4>
+                            <p class="dl-text-secondary text-sm">
+                                Un réseau dense de 1000 → 1000 → 1000 neurones contient environ <strong>2 millions de poids</strong>. C'est pourquoi des architectures comme les CNN (convolutions locales) ou les Transformers (attention sélective) sont souvent préférées pour des données volumineuses.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ARCHITECTURES MODERNES -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Panorama des Architectures (2025)</h3>
+
+                <p class="mb-4">
+                    Le MLP (Multi-Layer Perceptron) que nous étudions reste la brique fondamentale. Mais selon le type de données, d'autres architectures ont émergé :
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-4 my-6">
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-blue-400 mb-2">CNN — Vision</h4>
+                        <p class="text-sm dl-text-muted">
+                            <strong>Réseaux convolutifs</strong>. Exploitent la structure spatiale des images avec des filtres locaux. Efficaces et toujours très utilisés pour la vision embarquée.
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-purple-400 mb-2">Transformers — Texte & Vision</h4>
+                        <p class="text-sm dl-text-muted">
+                            Architecture dominante depuis 2017. Le mécanisme d'<strong>attention</strong> permet de capturer les relations entre tous les éléments d'une séquence simultanément.
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-green-400 mb-2">RNN/LSTM — Séquences</h4>
+                        <p class="text-sm dl-text-muted">
+                            <strong>Réseaux récurrents</strong>. Traitent les données séquentiellement, avec une "mémoire". Moins utilisés depuis les Transformers, mais pertinents pour le temps réel.
+                        </p>
+                    </div>
+                    <div class="dl-card p-4 rounded-xl border">
+                        <h4 class="font-bold text-orange-400 mb-2">Mamba/SSM — Émergent</h4>
+                        <p class="text-sm dl-text-muted">
+                            <strong>State Space Models</strong>. Alternative récente aux Transformers avec complexité linéaire. Prometteur pour les très longues séquences.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- NOTATION MATHÉMATIQUE -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Notation Mathématique</h3>
+
+                <p class="mb-4">
+                    Pour un réseau à \(L\) couches, on note \(a^{(l)}\) le vecteur d'activations de la couche \(l\). Le passage d'une couche à la suivante s'écrit :
+                </p>
+
+                <div class="math-block text-center mb-4">
+                    $$ z^{(l)} = W^{(l)} \cdot a^{(l-1)} + b^{(l)} $$
+                </div>
+                <div class="math-block text-center mb-6">
+                    $$ a^{(l)} = \sigma(z^{(l)}) $$
+                </div>
+
+                <p class="text-sm dl-text-muted mb-6">
+                    Où \(W^{(l)}\) est la matrice de poids, \(b^{(l)}\) le vecteur de biais, et \(\sigma\) la fonction d'activation.
+                </p>
+
+                <!-- PSEUDO-CODE -->
+                <h3 class="text-xl font-bold dl-text-primary mt-10 mb-4">Pseudo-Code : Propagation dans un Réseau</h3>
+
+                <div class="dl-card rounded-xl border overflow-hidden">
+                    <div class="bg-slate-800 px-4 py-2 text-xs text-slate-400 border-b border-slate-700">
+                        network.py
+                    </div>
+                    <pre class="p-4 text-sm overflow-x-auto"><code class="text-slate-300"><span class="text-slate-500"># Architecture : [3, 4, 4, 2]</span>
+<span class="text-purple-400">couches</span> = [3, 4, 4, 2]
+
+<span class="text-slate-500"># Initialisation des poids et biais</span>
+<span class="text-pink-400">pour</span> l <span class="text-pink-400">de</span> <span class="text-cyan-400">1</span> <span class="text-pink-400">à</span> nb_couches:
+    <span class="text-purple-400">W[l]</span> = matrice_aleatoire(couches[l], couches[l-1])
+    <span class="text-purple-400">b[l]</span> = vecteur_zeros(couches[l])
+
+<span class="text-slate-500"># Propagation avant (forward pass)</span>
+<span class="text-pink-400">fonction</span> forward(entree):
+    <span class="text-purple-400">a</span> = entree
+    <span class="text-pink-400">pour</span> l <span class="text-pink-400">de</span> <span class="text-cyan-400">1</span> <span class="text-pink-400">à</span> nb_couches:
+        <span class="text-purple-400">z</span> = W[l] · a + b[l]    <span class="text-slate-500"># Produit matriciel + biais</span>
+        <span class="text-purple-400">a</span> = activation(z)      <span class="text-slate-500"># tanh, ReLU, etc.</span>
+    <span class="text-pink-400">retourner</span> a</code></pre>
+                </div>
+
+                <!-- CE QU'IL FAUT RETENIR -->
+                <div class="concept-box mt-10">
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">🎯</span>
+                        <div>
+                            <h4 class="font-bold text-blue-400 mb-2">Ce qu'il faut retenir</h4>
+                            <ul class="text-sm space-y-2 dl-text-muted">
+                                <li>• Un réseau = des neurones organisés en <strong>couches successives</strong></li>
+                                <li>• "Deep" signifie <strong>≥ 2 couches cachées</strong></li>
+                                <li>• La profondeur permet un <strong>apprentissage hiérarchique</strong> des features</li>
+                                <li>• Les données traversent le réseau de l'entrée vers la sortie : c'est la <strong>propagation avant</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="dl-footer border-t py-8 text-center text-sm">
+        <p>Deep Learning pour l'impatient — Slide 3/8</p>
+    </footer>
+
+</body>
+</html>

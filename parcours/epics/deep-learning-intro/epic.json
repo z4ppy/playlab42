@@ -20,12 +20,13 @@
       "content": [
         { "id": "01-introduction" },
         { "id": "02-neurone" },
-        { "id": "03-forward-loss" },
-        { "id": "04-backpropagation" },
-        { "id": "05-optimisation" }
+        { "id": "03-reseaux" },
+        { "id": "04-forward-loss" },
+        { "id": "05-backpropagation" },
+        { "id": "06-optimisation" }
       ]
     },
-    { "id": "06-contexte", "optional": true },
-    { "id": "07-laboratoire" }
+    { "id": "07-contexte", "optional": true },
+    { "id": "08-laboratoire" }
   ]
 }
