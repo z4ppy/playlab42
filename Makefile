@@ -158,7 +158,7 @@ security-audit:
 	@docker compose exec dev npm audit --audit-level=moderate || true
 	@echo ""
 	@echo "2/5 - ESLint Security..."
-	@docker compose exec dev sh -c "npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized && npx eslint lib/ src/ games/ --plugin security --plugin no-unsanitized --rule 'security/detect-unsafe-regex: error' --rule 'no-unsanitized/method: error' --rule 'no-unsanitized/property: error' --format compact && npm uninstall --no-save eslint-plugin-security eslint-plugin-no-unsanitized" || true
+	@docker compose exec dev sh -c "npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized && npx eslint lib/ portal/ scripts/ games/ --plugin security --plugin no-unsanitized --rule 'security/detect-unsafe-regex: error' --rule 'no-unsanitized/method: error' --rule 'no-unsanitized/property: error' --format compact && npm uninstall --no-save eslint-plugin-security eslint-plugin-no-unsanitized" || true
 	@echo ""
 	@echo "3/5 - Validation YAML..."
 	@docker compose exec dev python3 -c "import yaml; import sys; files = ['.github/workflows/security-audit.yml', '.github/workflows/ci.yml', '.github/workflows/deploy.yml', '.github/dependabot.yml']; errors = []; [print(f'✓ {f}') if yaml.safe_load(open(f)) or True else errors.append(f) for f in files]; sys.exit(1 if errors else 0)"
@@ -179,7 +179,7 @@ security-npm:
 # Analyse statique ESLint avec règles de sécurité
 security-eslint:
 	@echo "🔍 ESLint Security - Analyse statique du code"
-	@docker compose exec dev sh -c "npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized && npx eslint lib/ src/ games/ app.js --plugin security --plugin no-unsanitized --rule 'security/detect-object-injection: warn' --rule 'security/detect-unsafe-regex: error' --rule 'security/detect-eval-with-expression: error' --rule 'no-unsanitized/method: error' --rule 'no-unsanitized/property: error' && npm uninstall --no-save eslint-plugin-security eslint-plugin-no-unsanitized"
+	@docker compose exec dev sh -c "npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized && npx eslint lib/ portal/ scripts/ games/ --plugin security --plugin no-unsanitized --rule 'security/detect-object-injection: warn' --rule 'security/detect-unsafe-regex: error' --rule 'security/detect-eval-with-expression: error' --rule 'no-unsanitized/method: error' --rule 'no-unsanitized/property: error' && npm uninstall --no-save eslint-plugin-security eslint-plugin-no-unsanitized"
 
 # Validation syntaxe YAML
 security-yaml:

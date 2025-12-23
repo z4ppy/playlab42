@@ -12,7 +12,7 @@ import {
   buildFeatured,
   validateEpicFields,
   convertMarkdown,
-  injectInTemplate
+  injectInTemplate,
 } from './parcours-utils.js';
 
 describe('parcours-utils', () => {
@@ -25,13 +25,13 @@ describe('parcours-utils', () => {
       const content = [
         { id: '01-intro' },
         { id: '02-setup' },
-        { id: '03-conclusion' }
+        { id: '03-conclusion' },
       ];
 
       expect(extractSlideIds(content)).toEqual([
         '01-intro',
         '02-setup',
-        '03-conclusion'
+        '03-conclusion',
       ]);
     });
 
@@ -42,16 +42,16 @@ describe('parcours-utils', () => {
           title: 'Section 1',
           content: [
             { id: '01-slide' },
-            { id: '02-slide' }
-          ]
+            { id: '02-slide' },
+          ],
         },
-        { id: '03-standalone' }
+        { id: '03-standalone' },
       ];
 
       expect(extractSlideIds(content)).toEqual([
         '01-slide',
         '02-slide',
-        '03-standalone'
+        '03-standalone',
       ]);
     });
 
@@ -63,11 +63,11 @@ describe('parcours-utils', () => {
             {
               id: 'section-1-1',
               content: [
-                { id: 'deep-slide' }
-              ]
-            }
-          ]
-        }
+                { id: 'deep-slide' },
+              ],
+            },
+          ],
+        },
       ];
 
       expect(extractSlideIds(content)).toEqual(['deep-slide']);
@@ -81,7 +81,7 @@ describe('parcours-utils', () => {
       const content = [
         { id: '01-valid' },
         { title: 'invalid' },
-        { id: '02-valid' }
+        { id: '02-valid' },
       ];
 
       expect(extractSlideIds(content)).toEqual(['01-valid', '02-valid']);
@@ -96,7 +96,7 @@ describe('parcours-utils', () => {
       const content = [
         { id: '01' },
         { id: '02' },
-        { id: '03' }
+        { id: '03' },
       ];
 
       expect(countSlides(content)).toEqual({ total: 3, optional: 0 });
@@ -108,10 +108,10 @@ describe('parcours-utils', () => {
           id: 'section',
           content: [
             { id: '01' },
-            { id: '02' }
-          ]
+            { id: '02' },
+          ],
         },
-        { id: '03' }
+        { id: '03' },
       ];
 
       expect(countSlides(content)).toEqual({ total: 3, optional: 0 });
@@ -121,7 +121,7 @@ describe('parcours-utils', () => {
       const content = [
         { id: '01' },
         { id: '02', optional: true },
-        { id: '03', optional: true }
+        { id: '03', optional: true },
       ];
 
       expect(countSlides(content)).toEqual({ total: 3, optional: 2 });
@@ -134,10 +134,10 @@ describe('parcours-utils', () => {
           optional: true,
           content: [
             { id: '01' },
-            { id: '02' }
-          ]
+            { id: '02' },
+          ],
         },
-        { id: '03' }
+        { id: '03' },
       ];
 
       expect(countSlides(content)).toEqual({ total: 3, optional: 2 });
@@ -149,9 +149,9 @@ describe('parcours-utils', () => {
           id: 'section',
           optional: true,
           content: [
-            { id: '01', optional: true }
-          ]
-        }
+            { id: '01', optional: true },
+          ],
+        },
       ];
 
       expect(countSlides(content)).toEqual({ total: 1, optional: 1 });
@@ -169,19 +169,19 @@ describe('parcours-utils', () => {
     it('construit la structure pour des slides simples', () => {
       const content = [
         { id: '01-intro' },
-        { id: '02-setup' }
+        { id: '02-setup' },
       ];
 
       const getSlideData = (id) => ({
         id,
-        title: id === '01-intro' ? 'Introduction' : 'Setup'
+        title: id === '01-intro' ? 'Introduction' : 'Setup',
       });
 
       const result = buildStructure(content, getSlideData);
 
       expect(result).toEqual([
         { type: 'slide', id: '01-intro', title: 'Introduction', icon: undefined, optional: undefined },
-        { type: 'slide', id: '02-setup', title: 'Setup', icon: undefined, optional: undefined }
+        { type: 'slide', id: '02-setup', title: 'Setup', icon: undefined, optional: undefined },
       ]);
     });
 
@@ -192,9 +192,9 @@ describe('parcours-utils', () => {
           title: 'Les bases',
           icon: '📚',
           content: [
-            { id: '01-intro' }
-          ]
-        }
+            { id: '01-intro' },
+          ],
+        },
       ];
 
       const getSlideData = () => ({ title: 'Intro' });
@@ -209,9 +209,9 @@ describe('parcours-utils', () => {
           icon: '📚',
           optional: undefined,
           children: [
-            { type: 'slide', id: '01-intro', title: 'Intro', icon: undefined, optional: undefined }
-          ]
-        }
+            { type: 'slide', id: '01-intro', title: 'Intro', icon: undefined, optional: undefined },
+          ],
+        },
       ]);
     });
 
@@ -226,7 +226,7 @@ describe('parcours-utils', () => {
 
     it('préserve le flag optional', () => {
       const content = [
-        { id: '01', optional: true }
+        { id: '01', optional: true },
       ];
 
       const result = buildStructure(content, () => ({ title: 'Test' }));
@@ -245,9 +245,9 @@ describe('parcours-utils', () => {
         hierarchy: [
           { id: 'tutorials', label: 'Tutoriels', icon: '📖' },
           { id: 'guides', label: 'Guides', icon: '📘' },
-          { id: 'autres', label: 'Autres', icon: '📁' }
-        ]
-      }
+          { id: 'autres', label: 'Autres', icon: '📁' },
+        ],
+      },
     };
 
     it('compte les epics par catégorie', () => {
@@ -255,7 +255,7 @@ describe('parcours-utils', () => {
         { hierarchy: ['tutorials'], tags: [] },
         { hierarchy: ['tutorials'], tags: [] },
         { hierarchy: ['tutorials'], tags: [] },
-        { hierarchy: ['guides'], tags: [] }
+        { hierarchy: ['guides'], tags: [] },
       ];
 
       const result = buildHierarchy(epics, baseConfig);
@@ -270,7 +270,7 @@ describe('parcours-utils', () => {
         { hierarchy: ['tutorials'], tags: [] },
         { hierarchy: ['tutorials'], tags: [] },
         { hierarchy: ['guides'], tags: [] },
-        { hierarchy: ['guides'], tags: [] }
+        { hierarchy: ['guides'], tags: [] },
       ];
 
       const result = buildHierarchy(epics, baseConfig);
@@ -291,7 +291,7 @@ describe('parcours-utils', () => {
     it('absorbe les catégories sous le threshold dans autres', () => {
       const epics = [
         { hierarchy: ['guides'], tags: [] },
-        { hierarchy: ['guides'], tags: [] }
+        { hierarchy: ['guides'], tags: [] },
       ];
 
       const result = buildHierarchy(epics, baseConfig);
@@ -304,7 +304,7 @@ describe('parcours-utils', () => {
       const epics = [
         { hierarchy: ['tutorials'], tags: [], thumbnail: null },
         { hierarchy: ['tutorials'], tags: [], thumbnail: '/path/to/thumb.png' },
-        { hierarchy: ['tutorials'], tags: [], thumbnail: '/other/thumb.png' }
+        { hierarchy: ['tutorials'], tags: [], thumbnail: '/other/thumb.png' },
       ];
 
       const result = buildHierarchy(epics, baseConfig);
@@ -322,7 +322,7 @@ describe('parcours-utils', () => {
       const epics = [
         { tags: ['javascript', 'beginner'] },
         { tags: ['javascript', 'advanced'] },
-        { tags: ['python'] }
+        { tags: ['python'] },
       ];
 
       const result = aggregateTags(epics, {});
@@ -337,7 +337,7 @@ describe('parcours-utils', () => {
         { tags: ['rare'] },
         { tags: ['common', 'rare'] },
         { tags: ['common'] },
-        { tags: ['common'] }
+        { tags: ['common'] },
       ];
 
       const result = aggregateTags(epics, {});
@@ -352,8 +352,8 @@ describe('parcours-utils', () => {
       const epics = [{ tags: ['js'] }];
       const config = {
         taxonomy: {
-          tagLabels: { js: 'JavaScript' }
-        }
+          tagLabels: { js: 'JavaScript' },
+        },
       };
 
       const result = aggregateTags(epics, config);
@@ -387,15 +387,15 @@ describe('parcours-utils', () => {
     it('retourne les epics récents', () => {
       const epics = [
         { id: 'recent', created: '2025-06-01', tags: [] },
-        { id: 'old', created: '2024-01-01', tags: [] }
+        { id: 'old', created: '2024-01-01', tags: [] },
       ];
 
       const config = {
         featured: {
           showRecent: true,
           recentCount: 5,
-          recentMonths: 6
-        }
+          recentMonths: 6,
+        },
       };
 
       const result = buildFeatured(epics, config, now);
@@ -407,15 +407,15 @@ describe('parcours-utils', () => {
     it('préfère updated à created pour le tri', () => {
       const epics = [
         { id: 'updated', created: '2025-01-01', updated: '2025-06-10', tags: [] },
-        { id: 'new', created: '2025-06-05', tags: [] }
+        { id: 'new', created: '2025-06-05', tags: [] },
       ];
 
       const config = {
         featured: {
           showRecent: true,
           recentCount: 5,
-          recentMonths: 6
-        }
+          recentMonths: 6,
+        },
       };
 
       const result = buildFeatured(epics, config, now);
@@ -427,15 +427,15 @@ describe('parcours-utils', () => {
       const epics = Array.from({ length: 10 }, (_, i) => ({
         id: `epic-${i}`,
         created: '2025-06-01',
-        tags: []
+        tags: [],
       }));
 
       const config = {
         featured: {
           showRecent: true,
           recentCount: 3,
-          recentMonths: 6
-        }
+          recentMonths: 6,
+        },
       };
 
       const result = buildFeatured(epics, config, now);
@@ -470,9 +470,9 @@ describe('parcours-utils', () => {
       tags: ['test'],
       metadata: {
         author: 'Test Author',
-        created: '2025-01-01'
+        created: '2025-01-01',
       },
-      content: []
+      content: [],
     };
 
     it('valide un epic complet sans erreurs', () => {
@@ -498,7 +498,7 @@ describe('parcours-utils', () => {
     it('détecte metadata.author manquant', () => {
       const epic = {
         ...validEpic,
-        metadata: { created: '2025-01-01' }
+        metadata: { created: '2025-01-01' },
       };
 
       const result = validateEpicFields(epic);
@@ -509,7 +509,7 @@ describe('parcours-utils', () => {
     it('détecte metadata.created manquant', () => {
       const epic = {
         ...validEpic,
-        metadata: { author: 'Test' }
+        metadata: { author: 'Test' },
       };
 
       const result = validateEpicFields(epic);

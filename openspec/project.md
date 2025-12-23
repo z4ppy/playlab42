@@ -114,20 +114,30 @@ make serve
 
 ```
 playlab42/
-├── index.html               # Portail principal
-├── style.css                # Styles du portail
-├── app.js                   # Logique du portail
+├── index.html               # Portail principal (reste à la racine pour GitHub Pages)
+├── portal/                  # Sources du portail
+│   ├── app.js               # Point d'entrée du portail
+│   ├── style.css            # Styles du portail
+│   └── modules/             # Modules JS du portail
+│       ├── state.js         # État global
+│       ├── catalogue.js     # Gestion catalogue
+│       └── ...              # Autres modules
 ├── .claude/                 # Configuration Claude Code
-├── lib/                     # Bibliothèques partagées
+├── lib/                     # Bibliothèques partagées (portail + games + tools)
 │   ├── gamekit.js           # SDK pour les jeux
+│   ├── theme.js             # Gestion thème clair/sombre
 │   └── seeded-random.js     # PRNG déterministe
+├── scripts/                 # Scripts de build
+│   ├── build-catalogue.js   # Génère catalogue.json
+│   ├── build-parcours.js    # Génère parcours.json
+│   └── build-bookmarks.js   # Génère bookmarks.json
 ├── tools/                   # Outils HTML standalone
 │   └── [tool-name].html     # Un fichier = un outil
 ├── games/                   # Jeux autonomes
 │   └── [game-id]/
 │       ├── index.html       # Point d'entrée standalone
-│       ├── engine.ts        # Moteur isomorphe (optionnel si inline)
-│       ├── bot.ts           # Bot exemple (optionnel)
+│       ├── engine.js        # Moteur isomorphe (optionnel si inline)
+│       ├── bot.js           # Bot exemple (optionnel)
 │       └── game.json        # Manifest
 ├── parcours/                # Parcours pédagogiques
 │   ├── index.json           # Configuration des parcours
@@ -138,14 +148,10 @@ playlab42/
 ├── data/                    # Données générées
 │   ├── catalogue.json       # DB des tools/games
 │   └── parcours.json        # DB des parcours
-├── src/
-│   └── scripts/             # Scripts de build
-│       ├── build-catalogue.ts
-│       └── build-parcours.js
 └── docs/                    # Documentation
 ```
 
-**Note** : Les tools et games sont en dehors de `src/` car ce sont des apps autonomes.
+**Note** : Les tools et games sont en dehors de `portal/` car ce sont des apps autonomes. `lib/` est partagé entre le portail, les games et les tools.
 
 ## Types de jeux supportés
 

@@ -4,18 +4,18 @@
  * @see openspec/specs/portal/spec.md
  *
  * Ce fichier orchestre l'initialisation de l'application.
- * La logique métier est répartie dans les modules du dossier app/.
+ * La logique métier est répartie dans les modules du dossier modules/.
  */
 
-import { state } from './app/state.js';
-import { loadPreferences } from './app/storage.js';
-import { updateTabUI } from './app/tabs.js';
-import { setupEventListeners } from './app/events.js';
-import { loadCatalogue } from './app/catalogue.js';
-import { loadParcoursCatalogue, renderParcours } from './app/parcours.js';
-import { loadBookmarksCatalogue, renderBookmarks } from './app/bookmarks.js';
-import { updateSoundButton } from './app/game-loader.js';
-import { initRouter } from './app/router.js';
+import { state } from './modules/state.js';
+import { loadPreferences } from './modules/storage.js';
+import { updateTabUI } from './modules/tabs.js';
+import { setupEventListeners } from './modules/events.js';
+import { loadCatalogue } from './modules/catalogue.js';
+import { loadParcoursCatalogue, renderParcours } from './modules/parcours.js';
+import { loadBookmarksCatalogue, renderBookmarks } from './modules/bookmarks.js';
+import { updateSoundButton } from './modules/game-loader.js';
+import { initRouter } from './modules/router.js';
 
 /**
  * Initialise l'application

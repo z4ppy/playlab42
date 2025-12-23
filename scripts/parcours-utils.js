@@ -8,7 +8,7 @@ import { marked } from 'marked';
 // Configuration de marked pour GitHub Flavored Markdown
 marked.setOptions({
   gfm: true,
-  breaks: false
+  breaks: false,
 });
 
 /**
@@ -48,7 +48,7 @@ export function countSlides(content) {
       } else if (item.id) {
         // Slide
         total++;
-        if (isOptional) optional++;
+        if (isOptional) {optional++;}
       }
     }
   }
@@ -75,7 +75,7 @@ export function buildStructure(content, getSlideData) {
         title: item.title,
         icon: item.icon,
         optional: item.optional,
-        children: buildStructure(item.content, getSlideData)
+        children: buildStructure(item.content, getSlideData),
       });
     } else if (item.id) {
       // Slide
@@ -85,7 +85,7 @@ export function buildStructure(content, getSlideData) {
         id: item.id,
         title: slideData.title || item.id,
         icon: slideData.icon,
-        optional: item.optional
+        optional: item.optional,
       });
     }
   }
@@ -126,7 +126,7 @@ export function buildHierarchy(epics, config) {
       count,
       thumbnail: firstEpic?.thumbnail || null,
       visible,
-      children: []
+      children: [],
     });
   }
 
@@ -168,7 +168,7 @@ export function aggregateTags(epics, config) {
     .map(([id, count]) => ({
       id,
       label: tagLabels[id] || id,
-      count
+      count,
     }))
     .sort((a, b) => b.count - a.count);
 }
@@ -228,8 +228,8 @@ export function validateEpicFields(epic) {
 
   // Métadonnées requises
   if (epic.metadata) {
-    if (!epic.metadata.author) errors.push('metadata.author requis');
-    if (!epic.metadata.created) errors.push('metadata.created requis');
+    if (!epic.metadata.author) {errors.push('metadata.author requis');}
+    if (!epic.metadata.created) {errors.push('metadata.created requis');}
   }
 
   return { errors, warnings };

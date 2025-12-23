@@ -7,8 +7,8 @@
 
 import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
-import { on, delegate, debounce } from '../lib/dom.js';
-import { THEMES } from '../lib/theme.js';
+import { on, delegate, debounce } from '../../lib/dom.js';
+import { THEMES } from '../../lib/theme.js';
 
 import { switchTab, registerRenderCallbacks } from './tabs.js';
 import { renderCatalogue } from './catalogue.js';

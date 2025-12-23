@@ -60,16 +60,38 @@ The system SHALL use Docker for all development tools.
 
 ```
 playlab42/
-├── index.html                # Portail principal
-├── style.css                 # Styles du portail
-├── app.js                    # Logique du portail
+├── index.html                # Portail principal (reste à la racine pour GitHub Pages)
+├── portal/                   # Sources du portail
+│   ├── app.js                # Point d'entrée du portail
+│   ├── style.css             # Styles du portail
+│   └── modules/              # Modules JS du portail
+│       ├── state.js          # État global
+│       ├── catalogue.js      # Gestion catalogue
+│       ├── bookmarks.js      # Gestion bookmarks
+│       ├── parcours.js       # Gestion parcours
+│       ├── events.js         # Événements et bindings
+│       ├── settings.js       # Paramètres utilisateur
+│       ├── storage.js        # Persistence localStorage
+│       ├── tabs.js           # Navigation par onglets
+│       ├── router.js         # Routage interne
+│       ├── dom-cache.js      # Cache éléments DOM
+│       └── game-loader.js    # Chargement des jeux
 ├── .claude/                  # Configuration Claude Code
 ├── assets/                   # Assets du portail
 │   └── default-thumb.png     # Vignette par défaut
-├── lib/                      # Bibliothèques partagées
+├── lib/                      # Bibliothèques partagées (portail + games + tools)
 │   ├── gamekit.js            # SDK pour les jeux
-│   ├── assets.js             # Loader d'assets
+│   ├── dom.js                # Utilitaires DOM
+│   ├── theme.js              # Gestion thème clair/sombre
+│   ├── router.js             # Hash router
+│   ├── parcours-viewer.js    # Viewer de parcours
 │   └── seeded-random.js      # PRNG déterministe
+├── scripts/                  # Scripts de build
+│   ├── build-catalogue.js    # Génère catalogue.json
+│   ├── build-parcours.js     # Génère parcours.json
+│   ├── build-bookmarks.js    # Génère bookmarks.json
+│   ├── parcours-utils.js     # Utilitaires parcours
+│   └── og-fetcher.js         # Fetch Open Graph
 ├── tools/                    # Outils HTML standalone
 │   ├── [tool-name].html      # Un fichier = un outil
 │   └── [tool-name].json      # Manifest
@@ -79,7 +101,7 @@ playlab42/
 │       ├── game.js           # Code du jeu
 │       ├── game.json         # Manifest
 │       ├── thumb.png         # Vignette (200x200)
-│       ├── engine.ts         # Moteur isomorphe (optionnel)
+│       ├── engine.js         # Moteur isomorphe (optionnel)
 │       └── bots/             # Bots IA (optionnel)
 │           └── random.js
 ├── parcours/                 # Parcours pédagogiques
@@ -90,11 +112,8 @@ playlab42/
 │           └── slides/       # Slides de l'epic
 ├── data/                     # Données générées
 │   ├── catalogue.json        # DB des tools/games
-│   └── parcours.json         # DB des parcours
-├── src/
-│   └── scripts/              # Scripts de build
-│       ├── build-catalogue.ts
-│       └── build-parcours.js
+│   ├── parcours.json         # DB des parcours
+│   └── bookmarks.json        # DB des bookmarks
 ├── docs/                     # Documentation
 ├── openspec/                 # Specs et proposals
 ├── Dockerfile
@@ -123,7 +142,7 @@ make build:catalogue   # Alias pour build
 
 ### Génération du Catalogue
 
-Le script `build-catalogue.ts` :
+Le script `scripts/build-catalogue.js` :
 
 1. Scanne `tools/` pour les fichiers `*.json` (manifests)
 2. Scanne `games/*/` pour les fichiers `game.json`

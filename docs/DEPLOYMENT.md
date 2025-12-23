@@ -121,25 +121,27 @@ git push origin feature/ma-fonctionnalite
 ```
 /
 ├── index.html           # Portail principal
-├── style.css           # Styles globaux
-├── app.js              # Logique du portail
+├── portal/              # Sources du portail
+│   ├── app.js           # Point d'entrée
+│   ├── style.css        # Styles
+│   └── modules/         # Modules JS
 ├── favicon.ico
-├── assets/             # Images, icônes
-├── lib/                # Bibliothèques (gamekit.js, etc.)
-├── tools/              # Tous les outils HTML
+├── assets/              # Images, icônes
+├── lib/                 # Bibliothèques (gamekit.js, etc.)
+├── tools/               # Tous les outils HTML
 │   └── [tool-name]/
 │       ├── index.html
 │       └── tool.json
-├── games/              # Tous les jeux
+├── games/               # Tous les jeux
 │   └── [game-id]/
 │       ├── index.html
 │       ├── game.js
 │       ├── game.json
 │       └── assets/
-├── parcours/           # Contenus pédagogiques
+├── parcours/            # Contenus pédagogiques
 │   └── epics/
 │       └── [epic-id]/
-└── data/               # Catalogues générés (build)
+└── data/                # Catalogues générés (build)
     ├── catalogue.json
     ├── parcours.json
     └── bookmarks.json
@@ -152,7 +154,7 @@ Le workflow exécute `npm run build`, qui génère :
 1. **data/catalogue.json** :
    - Liste de tous les tools et games
    - Métadonnées (titre, description, tags, etc.)
-   - Script : `src/scripts/build-catalogue.js`
+   - Script : `scripts/build-catalogue.js`
 
 2. **data/parcours.json** :
    - Liste des parcours pédagogiques (epics)

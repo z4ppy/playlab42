@@ -16,7 +16,7 @@ import {
   buildFeatured,
   validateEpicFields,
   convertMarkdown,
-  injectInTemplate
+  injectInTemplate,
 } from './parcours-utils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -34,7 +34,7 @@ const stats = {
   drafts: 0,
   markdownConverted: 0,
   errors: [],
-  warnings: []
+  warnings: [],
 };
 
 /**
@@ -162,7 +162,7 @@ function processEpic(epicId, template) {
 
   stats.found++;
   const epic = readJSON(epicJson);
-  if (!epic) return null;
+  if (!epic) {return null;}
 
   // Ignorer les brouillons
   if (epic.draft) {
@@ -209,7 +209,7 @@ function processEpic(epicId, template) {
     slideCount: total,
     optionalSlideCount: optional,
     hasIndex: !!epic.index,
-    structure: buildStructure(epic.content, getSlideData)
+    structure: buildStructure(epic.content, getSlideData),
   };
 
   stats.published++;
@@ -252,9 +252,9 @@ function main() {
     epics,
     taxonomy: {
       hierarchy: buildHierarchy(epics, config),
-      tags: aggregateTags(epics, config)
+      tags: aggregateTags(epics, config),
     },
-    featured: buildFeatured(epics, config)
+    featured: buildFeatured(epics, config),
   };
 
   // Écrire le fichier
