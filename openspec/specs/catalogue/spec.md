@@ -7,6 +7,8 @@ The catalogue provides a centralized registry of all available tools and games i
 ## Overview
 
 Le catalogue est une base de données JSON statique qui référence tous les tools et games disponibles. Il est généré au moment du build en scannant les manifests (`tool.json`, `game.json`).
+
+**Note** : Le fichier `data/catalogue.json` est dans `.gitignore` et régénéré automatiquement lors du build et du déploiement CI/CD.
 ## Requirements
 ### Requirement: Build-time Generation
 

@@ -62,7 +62,7 @@ make build-catalogue    # Génère data/catalogue.json
 make build-parcours     # Génère data/parcours.json
 
 # Linting et qualité
-make lint               # Vérifie lib/, src/, games/
+make lint               # Vérifie lib/, games/, scripts/, etc.
 make test               # Lance les tests Jest
 make test-watch         # Mode watch
 
@@ -153,10 +153,16 @@ playlab42/
 │           ├── epic.json     # Manifest de l'epic
 │           ├── thumbnail.svg # Vignette
 │           └── slides/       # Slides HTML
-├── data/                     # Données générées (par build)
+├── data/                     # Données générées (par build, non versionnées)
 │   ├── catalogue.json        # DB des tools/games
-│   └── parcours.json         # DB des parcours
+│   ├── parcours.json         # DB des parcours
+│   └── bookmarks.json        # DB des bookmarks
 ├── scripts/                  # Scripts de build
+│   ├── build-catalogue.js    # Génère catalogue.json
+│   ├── build-parcours.js     # Génère parcours.json
+│   ├── build-bookmarks.js    # Génère bookmarks.json
+│   └── lib/                  # Utilitaires partagés
+│       └── build-utils.js    # Fonctions communes aux scripts
 ├── docs/                     # Documentation
 └── openspec/                 # Spécifications et proposals
     ├── specs/                # Specs techniques
@@ -185,6 +191,7 @@ Les specs détaillées sont dans `openspec/specs/` :
 
 - `docs/FEATURES.md` - Liste des features MVP par phase
 - `docs/CONCEPTS.md` - Définitions et glossaire
+- `docs/CATALOGUE-BUILD.md` - Workflow de build des catalogues
 - `openspec/project.md` - Conventions du projet
 
 ## Guidelines pour agents IA
@@ -224,7 +231,8 @@ git push -u origin feature/ma-feature
 
 ### Points d'attention
 
-- Les fichiers `data/*.json` sont générés, ne pas les modifier manuellement
+- Les fichiers `data/*.json` sont générés au build et **non versionnés** (dans `.gitignore`)
+- Toujours lancer `npm run build` ou `make build` pour régénérer les catalogues
 - Les parcours utilisent un système de taxonomie avec threshold (min 3 epics par catégorie)
 - Les moteurs de jeux doivent être déterministes (utiliser SeededRandom)
 - Le projet est 100% statique, pas de backend requis

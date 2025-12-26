@@ -88,13 +88,16 @@ playlab42/
 │       └── [epic-id]/
 │           ├── epic.json     # Manifest de l'epic
 │           └── slides/       # Slides de l'epic
-├── data/                     # Données générées
+├── data/                     # Données générées (non versionnées)
 │   ├── catalogue.json        # DB des tools/games
-│   └── parcours.json         # DB des parcours
-├── src/
-│   └── scripts/              # Scripts de build
-│       ├── build-catalogue.ts
-│       └── build-parcours.js
+│   ├── parcours.json         # DB des parcours
+│   └── bookmarks.json        # DB des bookmarks
+├── scripts/                  # Scripts de build
+│   ├── build-catalogue.js    # Génère catalogue.json
+│   ├── build-parcours.js     # Génère parcours.json
+│   ├── build-bookmarks.js    # Génère bookmarks.json
+│   └── lib/                  # Utilitaires partagés
+│       └── build-utils.js    # Fonctions communes
 ├── docs/                     # Documentation
 ├── openspec/                 # Specs et proposals
 ├── Dockerfile
@@ -121,20 +124,30 @@ make build             # Génère catalogue.json
 make build:catalogue   # Alias pour build
 ```
 
-### Génération du Catalogue
+### Génération des Catalogues
 
-Le script `build-catalogue.ts` :
+Les scripts dans `scripts/` génèrent les fichiers `data/*.json` :
 
-1. Scanne `tools/` pour les fichiers `*.json` (manifests)
-2. Scanne `games/*/` pour les fichiers `game.json`
-3. Valide les manifests
-4. Génère `data/catalogue.json`
+| Script | Entrée | Sortie |
+|--------|--------|--------|
+| `build-catalogue.js` | `tools/*.json`, `games/*/game.json` | `data/catalogue.json` |
+| `build-parcours.js` | `parcours/epics/*/epic.json` | `data/parcours.json` |
+| `build-bookmarks.js` | `bookmarks/*.json`, manifests | `data/bookmarks.json` |
+
+Les scripts partagent des utilitaires via `scripts/lib/build-utils.js`.
+
+**Important** : Les fichiers `data/*.json` sont dans `.gitignore` et régénérés au build/déploiement.
 
 ```bash
-# Exécution
-make build:catalogue
+# Build complet
+make build
 # ou
+npm run build
+
+# Build individuel
 npm run build:catalogue
+npm run build:parcours
+npm run build:bookmarks
 ```
 
 ## Hébergement

@@ -5,12 +5,14 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import { fetchOGMetadata, loadCache, saveCache } from './og-fetcher.js';
+import {
+  getRootDir,
+  extractDomain,
+} from './lib/build-utils.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..');
+const ROOT = getRootDir(import.meta.url);
 const BOOKMARKS_DIR = join(ROOT, 'bookmarks');
 const TOOLS_DIR = join(ROOT, 'tools');
 const GAMES_DIR = join(ROOT, 'games');
@@ -39,17 +41,6 @@ function readJSON(path) {
   } catch (err) {
     stats.errors.push(`Erreur lecture ${path}: ${err.message}`);
     return null;
-  }
-}
-
-/**
- * Extrait le domaine d'une URL
- */
-function extractDomain(url) {
-  try {
-    return new URL(url).hostname.replace(/^www\./, '');
-  } catch {
-    return url;
   }
 }
 

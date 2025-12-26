@@ -7,57 +7,23 @@
  * @see openspec/specs/catalogue/spec.md
  */
 
-import { readdir, readFile, writeFile, access } from 'fs/promises';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readdir, writeFile } from 'fs/promises';
+import { join } from 'path';
+import {
+  colors,
+  getRootDir,
+  fileExistsAsync,
+  readJSONAsync,
+  isValidId,
+} from './lib/build-utils.js';
 
 // Obtenir le répertoire racine du projet
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT_DIR = join(__dirname, '../..');
+const ROOT_DIR = getRootDir(import.meta.url);
 
 // Configuration
 const TOOLS_DIR = join(ROOT_DIR, 'tools');
 const GAMES_DIR = join(ROOT_DIR, 'games');
 const OUTPUT_FILE = join(ROOT_DIR, 'data/catalogue.json');
-
-// Couleurs pour la console
-const colors = {
-  reset: '\x1b[0m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  cyan: '\x1b[36m',
-  dim: '\x1b[2m',
-};
-
-/**
- * Vérifie si un fichier existe
- * @param {string} path
- * @returns {Promise<boolean>}
- */
-async function fileExists(path) {
-  try {
-    await access(path);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Lit et parse un fichier JSON
- * @param {string} path
- * @returns {Promise<object|null>}
- */
-async function readJSON(path) {
-  try {
-    const content = await readFile(path, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Valide un manifest de tool
@@ -76,7 +42,7 @@ function validateToolManifest(manifest) {
   }
 
   // Valider le format de l'id (seulement si présent pour éviter erreur double)
-  if (manifest.id && !/^[a-z0-9-]+$/.test(manifest.id)) {
+  if (manifest.id && !isValidId(manifest.id)) {
     errors.push("'id' must be kebab-case (lowercase letters, numbers, hyphens)");
   }
 
@@ -105,7 +71,7 @@ function validateGameManifest(manifest) {
   }
 
   // Valider le format de l'id (seulement si présent pour éviter erreur double)
-  if (manifest.id && !/^[a-z0-9-]+$/.test(manifest.id)) {
+  if (manifest.id && !isValidId(manifest.id)) {
     errors.push("'id' must be kebab-case (lowercase letters, numbers, hyphens)");
   }
 
@@ -143,7 +109,7 @@ async function scanTools() {
   const tools = [];
   const errors = [];
 
-  if (!(await fileExists(TOOLS_DIR))) {
+  if (!(await fileExistsAsync(TOOLS_DIR))) {
     console.log(`${colors.dim}  tools/ directory not found, skipping${colors.reset}`);
     return { tools, errors };
   }
@@ -153,7 +119,7 @@ async function scanTools() {
 
   for (const jsonFile of jsonFiles) {
     const manifestPath = join(TOOLS_DIR, jsonFile);
-    const manifest = await readJSON(manifestPath);
+    const manifest = await readJSONAsync(manifestPath);
 
     if (!manifest) {
       errors.push(`${jsonFile}: Invalid JSON`);
@@ -170,7 +136,7 @@ async function scanTools() {
     const htmlFile = jsonFile.replace('.json', '.html');
     const htmlPath = join(TOOLS_DIR, htmlFile);
 
-    if (!(await fileExists(htmlPath))) {
+    if (!(await fileExistsAsync(htmlPath))) {
       console.log(`${colors.yellow}  ⚠ ${jsonFile}: No ${htmlFile} found, skipping${colors.reset}`);
       continue;
     }
@@ -200,7 +166,7 @@ async function scanGames() {
   const games = [];
   const errors = [];
 
-  if (!(await fileExists(GAMES_DIR))) {
+  if (!(await fileExistsAsync(GAMES_DIR))) {
     console.log(`${colors.dim}  games/ directory not found, skipping${colors.reset}`);
     return { games, errors };
   }
@@ -212,12 +178,12 @@ async function scanGames() {
     const gameDir = join(GAMES_DIR, dir.name);
     const manifestPath = join(gameDir, 'game.json');
 
-    if (!(await fileExists(manifestPath))) {
+    if (!(await fileExistsAsync(manifestPath))) {
       console.log(`${colors.dim}  ${dir.name}/: No game.json found, skipping${colors.reset}`);
       continue;
     }
 
-    const manifest = await readJSON(manifestPath);
+    const manifest = await readJSONAsync(manifestPath);
 
     if (!manifest) {
       errors.push(`${dir.name}/game.json: Invalid JSON`);
@@ -232,7 +198,7 @@ async function scanGames() {
 
     // Vérifier que index.html existe
     const indexPath = join(gameDir, 'index.html');
-    if (!(await fileExists(indexPath))) {
+    if (!(await fileExistsAsync(indexPath))) {
       errors.push(`${dir.name}/game.json: No index.html found`);
       continue;
     }

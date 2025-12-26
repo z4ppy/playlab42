@@ -5,8 +5,8 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
+import { getRootDir } from './lib/build-utils.js';
 import {
   extractSlideIds,
   countSlides,
@@ -19,8 +19,7 @@ import {
   injectInTemplate,
 } from './parcours-utils.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, '..');
+const ROOT = getRootDir(import.meta.url);
 const PARCOURS_DIR = join(ROOT, 'parcours');
 const EPICS_DIR = join(PARCOURS_DIR, 'epics');
 const OUTPUT_FILE = join(ROOT, 'data', 'parcours.json');

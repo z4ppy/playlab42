@@ -1,0 +1,8 @@
+{
+  "id": "01-article",
+  "title": "Le Paradigme As-Code",
+  "description": "De l'artisanat à l'automatisation : histoire, outils, GitOps et tendances. Disponible en 3 modes de lecture.",
+  "type": "article",
+  "icon": "📜",
+  "duration": "15 min"
+}

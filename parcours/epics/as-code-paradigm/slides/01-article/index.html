@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Paradigme As-Code — De l'Artisanat à l'Automatisation</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Styles du projet -->
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+
+    <script type="module">
+        import { initSlide, sendTOC } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+
+        // Envoyer la TOC au viewer
+        sendTOC([
+            { id: 'section-intro', label: 'La Révolution Silencieuse', icon: '🎯' },
+            { id: 'section-history', label: 'Les Racines d\'Oslo', icon: '🌿' },
+            { id: 'section-tools', label: 'Outils Modernes', icon: '🛠️' },
+            { id: 'section-gitops', label: 'GitOps', icon: '🔄' },
+            { id: 'section-taxonomy', label: 'La Galaxie As-Code', icon: '🌌' },
+            { id: 'section-catalog', label: 'Catalog-as-Code', icon: '📚' },
+            { id: 'section-benefits', label: 'Lumières et Ombres', icon: '⚖️' },
+            { id: 'section-trends', label: 'Tendances 2024-2025', icon: '📈' }
+        ]);
+    </script>
+</head>
+<body class="mode-literary">
+
+    <!-- Mode Selector -->
+    <nav class="mode-selector">
+        <button class="mode-btn active" data-mode="literary">Littéraire</button>
+        <button class="mode-btn" data-mode="scientific">Scientifique</button>
+        <button class="mode-btn" data-mode="practical">Pratique</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center; position: relative; z-index: 10;">
+            <h1>Le Paradigme <span class="accent">As-Code</span></h1>
+            <p class="subtitle">
+                Comment une idée née dans un département de physique d'Oslo
+                a transformé la façon dont nous construisons et gérons les systèmes informatiques.
+            </p>
+            <div class="hero-meta">
+                <span>Mini-formation</span>
+                <span>15 min de lecture</span>
+                <span>2025</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="content">
+
+        <!-- Table of Contents - Scientific Mode -->
+        <div class="toc scientific-only">
+            <h3>Sommaire</h3>
+            <ol>
+                <li><a href="#section-intro">Introduction et définitions</a></li>
+                <li><a href="#section-history">Genèse historique (1993-2009)</a></li>
+                <li><a href="#section-tools">Outils déclaratifs modernes</a></li>
+                <li><a href="#section-gitops">GitOps et versionnement</a></li>
+                <li><a href="#section-taxonomy">Taxonomie des variantes</a></li>
+                <li><a href="#section-catalog">Catalog-as-Code</a></li>
+                <li><a href="#section-benefits">Avantages et limitations</a></li>
+                <li><a href="#section-trends">Tendances 2024-2025</a></li>
+            </ol>
+        </div>
+
+        <!-- Quick Summary - Practical Mode -->
+        <div class="summary-box practical-only">
+            <h3>L'essentiel en 30 secondes</h3>
+            <ul>
+                <li>As-Code = décrire l'infrastructure/config dans des fichiers versionnés</li>
+                <li>Outils clés : Terraform, Ansible, Kubernetes, ArgoCD</li>
+                <li>77% des organisations utilisent GitOps en 2025</li>
+                <li>Avantages : traçabilité, reproductibilité, collaboration</li>
+                <li>Catalog-as-Code étend ces principes aux inventaires</li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <section id="section-intro">
+            <h2>La Révolution Silencieuse</h2>
+
+            <p class="drop-cap literary-only">
+                Il est des révolutions qui se font dans le fracas des foules, et d'autres qui se propagent dans le silence des terminaux. La transformation "as-code" appartient à cette seconde catégorie : une métamorphose profonde de notre rapport aux systèmes informatiques, née non pas d'un coup d'éclat médiatique, mais d'une intuition pragmatique dans les couloirs d'une université norvégienne.
+            </p>
+
+            <p class="scientific-only">
+                Le paradigme "as-code" constitue une révolution méthodologique qui transforme la gestion des systèmes informatiques en substituant des définitions déclaratives versionnées aux interventions manuelles. Cette approche, initiée en 1993 avec CFEngine, s'est progressivement étendue à l'infrastructure (IaC), la configuration, les politiques, la documentation et les catalogues.
+            </p>
+
+            <p class="practical-only">
+                <strong>Qu'est-ce que l'as-code ?</strong> C'est simple : au lieu de cliquer dans des interfaces pour créer des serveurs ou modifier des configurations, vous écrivez des fichiers de définition. Ces fichiers sont versionnés avec Git, revus en équipe, et appliqués automatiquement.
+            </p>
+
+            <div class="illustration">
+                <div class="illustration-title">Le principe fondamental</div>
+                <div class="flow-diagram">
+                    <div class="flow-node">Fichier YAML/HCL</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-node">Git commit</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-node">CI/CD Pipeline</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-node highlight">Infrastructure déployée</div>
+                </div>
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-box">
+                    <div class="number">77%</div>
+                    <div class="label">des organisations utilisent GitOps</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">1993</div>
+                    <div class="label">année de création de CFEngine</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">+31%</div>
+                    <div class="label">croissance CI/CD cloud-native</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: History -->
+        <section id="section-history">
+            <h2>Les Racines d'Oslo</h2>
+
+            <p class="literary-only">
+                L'histoire commence en 1993, dans le département de physique théorique de l'Université d'Oslo. Mark Burgess, confronté à l'épineuse tâche de maintenir un parc hétérogène de stations Unix, conçoit CFEngine — non pas comme un simple outil, mais comme une philosophie. L'idée est audacieuse pour l'époque : et si l'on pouvait <em>décrire</em> l'état souhaité d'un système plutôt que les étapes pour y parvenir ?
+            </p>
+
+            <p class="scientific-only">
+                L'histoire du paradigme as-code débute à l'Université d'Oslo en 1993 avec la création de CFEngine par Mark Burgess. Cette innovation introduit trois concepts fondamentaux : (1) l'abstraction des différences de plateformes via un langage dédié, (2) la convergence des systèmes vers un état conforme, et (3) l'idempotence des opérations.
+            </p>
+
+            <p class="practical-only">
+                <strong>1993 : CFEngine</strong> — Premier outil de configuration automatisée. Concept clé : l'idempotence (exécuter 10 fois = même résultat).
+            </p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">1993</div>
+                    <div class="timeline-title">CFEngine — L'origine</div>
+                    <p>Mark Burgess crée le premier outil de gestion de configuration déclarative à l'Université d'Oslo. Introduction de l'idempotence.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2005</div>
+                    <div class="timeline-title">Puppet — L'industrialisation</div>
+                    <p>Luke Kanies apporte un DSL déclaratif et une architecture client-serveur qui séduit le Fortune 100.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2008-2009</div>
+                    <div class="timeline-title">DevOps — La culture</div>
+                    <p>Patrick Debois organise les premiers DevOpsDays à Gand. Le terme "DevOps" naît sur Twitter.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2009</div>
+                    <div class="timeline-title">"10+ Deploys a Day"</div>
+                    <p>Présentation emblématique de Flickr à Velocity : la preuve que Dev et Ops peuvent collaborer.</p>
+                </div>
+            </div>
+
+            <blockquote class="literary-only">
+                <p>« Ce n'est plus l'administrateur qui dicte les actions à la machine, mais la machine qui converge vers l'état décrit par l'administrateur. »</p>
+                <cite>— Principe fondateur de la Promise Theory, 2004</cite>
+            </blockquote>
+
+            <h3>La Promise Theory</h3>
+
+            <p class="literary-only">
+                En 2004-2005, Burgess présente la <em>Promise Theory</em> à la conférence DSOM de Barcelone. Cette théorie, qui modélise la coopération d'agents autonomes distribués, deviendra le socle conceptuel de CFEngine 3.x. L'idée est élégante : plutôt que d'ordonner, on promet. Chaque composant du système s'engage à maintenir un état, créant une symphonie de promesses mutuelles.
+            </p>
+
+            <p class="scientific-only">
+                La Promise Theory (Burgess, DSOM Barcelone 2004-2005) modélise la coopération d'agents autonomes distribués. Cette formalisation théorique devient le socle de CFEngine 3.x (2008) et influence la conception des systèmes déclaratifs modernes.
+            </p>
+
+            <p class="practical-only">
+                <strong>Promise Theory</strong> = chaque composant "promet" de maintenir un état. Pas de commandes, mais des engagements. Résultat : systèmes auto-réparateurs.
+            </p>
+        </section>
+
+        <!-- Section 3: Modern Tools -->
+        <section id="section-tools">
+            <h2>L'Essor des Outils Modernes</h2>
+
+            <p class="literary-only">
+                L'année 2011 marque un tournant décisif. Le 25 février, AWS dévoile CloudFormation. Le lendemain, un jeune développeur nommé Mitchell Hashimoto publie son souhait d'une alternative open-source et multi-cloud. Ce vœu se réalisera trois ans plus tard avec Terraform, un outil qui allait redéfinir les standards de l'industrie.
+            </p>
+
+            <p class="scientific-only">
+                AWS CloudFormation (25 février 2011) déclenche le développement de Terraform (juillet 2014) par Mitchell Hashimoto. L'introduction du HashiCorp Configuration Language (HCL) et du modèle de providers extensible établit un nouveau paradigme. Après 18 mois de stagnation, l'adoption s'accélère pour atteindre 750 contributeurs en 2016.
+            </p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-card-icon">Tf</div>
+                    <span class="year">2014</span>
+                    <h4>Terraform</h4>
+                    <p>Infrastructure multi-cloud avec HCL et providers extensibles.</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">An</div>
+                    <span class="year">2012</span>
+                    <h4>Ansible</h4>
+                    <p>Configuration agentless via SSH avec playbooks YAML.</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Do</div>
+                    <span class="year">2013</span>
+                    <h4>Docker</h4>
+                    <p>Conteneurisation et infrastructure immuable.</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">K8</div>
+                    <span class="year">2014</span>
+                    <h4>Kubernetes</h4>
+                    <p>Orchestration déclarative avec manifestes YAML.</p>
+                </div>
+            </div>
+
+            <div class="code-block practical-only" data-lang="HCL">
+<code><span class="comment"># Exemple Terraform simple</span>
+<span class="keyword">resource</span> <span class="string">"aws_instance"</span> <span class="string">"web"</span> {
+  <span class="property">ami</span>           = <span class="string">"ami-0c55b159cbfafe1f0"</span>
+  <span class="property">instance_type</span> = <span class="string">"t2.micro"</span>
+
+  <span class="property">tags</span> = {
+    <span class="property">Name</span> = <span class="string">"HelloWorld"</span>
+  }
+}</code>
+            </div>
+
+            <h3 class="literary-hide">Cattle vs Pets</h3>
+
+            <p class="literary-only">
+                Une métaphore capture parfaitement ce changement de paradigme : <em>Cattle vs Pets</em>. Formulée par Bill Baker de Microsoft et popularisée par Randy Bias en 2011-2012, elle illustre le passage des serveurs-animaux-de-compagnie — irremplaçables, nommés avec affection — aux serveurs-bétail, interchangeables et sacrifiables. Ce n'est plus le serveur qui compte, mais sa description.
+            </p>
+
+            <p class="scientific-only">
+                La métaphore "Cattle vs Pets" (Baker/Microsoft, popularisée par Bias/Cloudscaling 2011-2012) capture la transition vers l'infrastructure immuable : les serveurs passent d'entités irremplaçables (pets) à des instances interchangeables (cattle) reconstituables depuis leur définition.
+            </p>
+
+            <div class="illustration scientific-only">
+                <div class="illustration-title">Évolution des outils as-code</div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Génération</th>
+                            <th>Période</th>
+                            <th>Outils</th>
+                            <th>Paradigme</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1ère</td>
+                            <td>1993-2004</td>
+                            <td>CFEngine</td>
+                            <td>Configuration automatisée</td>
+                        </tr>
+                        <tr>
+                            <td>2ème</td>
+                            <td>2005-2011</td>
+                            <td>Puppet, Chef</td>
+                            <td>DSL déclaratifs</td>
+                        </tr>
+                        <tr>
+                            <td>3ème</td>
+                            <td>2012-2017</td>
+                            <td>Terraform, Ansible, Docker</td>
+                            <td>Multi-cloud, containers</td>
+                        </tr>
+                        <tr>
+                            <td>4ème</td>
+                            <td>2017+</td>
+                            <td>ArgoCD, Flux, Crossplane</td>
+                            <td>GitOps, Kubernetes-native</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 4: GitOps -->
+        <section id="section-gitops">
+            <h2>GitOps : Git Comme Source de Vérité</h2>
+
+            <p class="literary-only">
+                Mars 2017. Après une panne suivie d'une récupération remarquablement rapide, Alexis Richardson de Weaveworks publie un article intitulé « Operations by Pull Request ». Le terme GitOps entre dans le vocabulaire de l'industrie. L'idée est limpide : Git n'est plus seulement le gardien du code applicatif, mais le dépositaire de <em>toute</em> la vérité sur l'état du système.
+            </p>
+
+            <p class="scientific-only">
+                Le terme "GitOps" est forgé par Alexis Richardson (Weaveworks) en mars 2017 dans l'article "Operations by Pull Request". Weaveworks, pionnière de Kubernetes en production depuis 2014, formalise quatre principes fondamentaux : (1) ressources déclaratives, (2) état versionné dans Git, (3) changements via pull requests, (4) réconciliation automatique.
+            </p>
+
+            <p class="practical-only">
+                <strong>GitOps = Git + Infrastructure</strong><br>
+                Tout changement passe par un commit Git. Un agent (ArgoCD, Flux) surveille le repo et applique automatiquement les modifications.
+            </p>
+
+            <div class="illustration">
+                <div class="illustration-title">Workflow GitOps</div>
+                <div class="flow-diagram">
+                    <div class="flow-node">Développeur</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-node">Pull Request</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-node">Review + Merge</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-node highlight">Agent GitOps</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-node">Cluster K8s</div>
+                </div>
+            </div>
+
+            <div class="code-block" data-lang="YAML">
+<code><span class="comment"># Exemple de déploiement Kubernetes</span>
+<span class="property">apiVersion</span>: apps/v1
+<span class="property">kind</span>: Deployment
+<span class="property">metadata</span>:
+  <span class="property">name</span>: my-app
+<span class="property">spec</span>:
+  <span class="property">replicas</span>: <span class="value">3</span>
+  <span class="property">selector</span>:
+    <span class="property">matchLabels</span>:
+      <span class="property">app</span>: my-app
+  <span class="property">template</span>:
+    <span class="property">spec</span>:
+      <span class="property">containers</span>:
+      - <span class="property">name</span>: my-app
+        <span class="property">image</span>: <span class="string">my-app:v1.2.3</span></code>
+            </div>
+
+            <blockquote class="scientific-only">
+                <p>« The entire system is described declaratively, the canonical desired system state is versioned in Git, approved changes are applied automatically, and software agents ensure correctness. »</p>
+                <cite>— CNCF GitOps Working Group, 2021</cite>
+            </blockquote>
+        </section>
+
+        <!-- Section 5: Taxonomy -->
+        <section id="section-taxonomy">
+            <h2>La Galaxie As-Code</h2>
+
+            <p class="literary-only">
+                Le paradigme as-code s'est ramifié en une constellation de pratiques spécialisées. Chacune transpose la même philosophie fondamentale — définir plutôt qu'agir, versionner plutôt qu'oublier — à un domaine particulier. De l'infrastructure aux politiques, de la documentation aux diagrammes, tout devient code.
+            </p>
+
+            <p class="scientific-only">
+                Le paradigme as-code s'est différencié en plusieurs sous-domaines : Infrastructure-as-Code (IaC), Configuration-as-Code, Policy-as-Code, Documentation-as-Code, Diagrams-as-Code, Pipelines-as-Code, et Catalog-as-Code. Chaque variante applique les principes de déclarativité, versionnement et automatisation à un domaine spécifique.
+            </p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-card-icon">Ia</div>
+                    <h4>Infrastructure-as-Code</h4>
+                    <p>Terraform, Pulumi, CloudFormation, Crossplane</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Cf</div>
+                    <h4>Configuration-as-Code</h4>
+                    <p>Ansible, NixOS, Salt, Chef</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Po</div>
+                    <h4>Policy-as-Code</h4>
+                    <p>OPA/Rego, Kyverno, Sentinel, Checkov</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Dc</div>
+                    <h4>Docs-as-Code</h4>
+                    <p>Sphinx, MkDocs, Docusaurus</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Dg</div>
+                    <h4>Diagrams-as-Code</h4>
+                    <p>Mermaid, PlantUML, Structurizr, D2</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Pi</div>
+                    <h4>Pipelines-as-Code</h4>
+                    <p>GitHub Actions, GitLab CI, Tekton</p>
+                </div>
+            </div>
+
+            <h3>Policy-as-Code : La Gouvernance Automatisée</h3>
+
+            <p>
+                Le Policy-as-Code codifie les règles organisationnelles pour une application automatique.
+                Open Policy Agent (OPA) utilise le langage Rego pour définir des politiques applicables
+                à Kubernetes, aux API ou aux pipelines CI/CD.
+            </p>
+
+            <div class="code-block practical-only" data-lang="Rego">
+<code><span class="comment"># Politique OPA : interdire les pods en mode privilégié</span>
+<span class="keyword">package</span> kubernetes.admission
+
+<span class="keyword">deny</span>[msg] {
+  input.request.kind.kind == <span class="string">"Pod"</span>
+  container := input.request.object.spec.containers[_]
+  container.securityContext.privileged == <span class="value">true</span>
+  msg := <span class="string">"Containers must not run in privileged mode"</span>
+}</code>
+            </div>
+        </section>
+
+        <!-- Section 6: Catalog-as-Code -->
+        <section id="section-catalog">
+            <h2>Catalog-as-Code : L'Aboutissement</h2>
+
+            <p class="literary-only">
+                Le catalog-as-code représente peut-être l'aboutissement le plus élégant de cette philosophie. L'idée : gérer des inventaires — logiciels, contenus, composants — avec la même rigueur que le code applicatif. Fini les feuilles de calcul orphelines et les wikis délaissés. Place aux fichiers YAML versionnés, aux pull requests pour ajouter un nouvel outil, aux pipelines pour valider la cohérence.
+            </p>
+
+            <p class="scientific-only">
+                Le catalog-as-code applique les principes as-code à la gestion de catalogues : inventaires logiciels (software catalogs), collections de contenus (content catalogs), registres de packages et listes curées (awesome lists). Les données résident dans des fichiers versionnés, la contribution passe par des workflows Git, et le rendu est généralement statique.
+            </p>
+
+            <p class="practical-only">
+                <strong>Catalog-as-Code</strong> = gérer vos inventaires comme du code.
+                Cas d'usage : liste d'outils internes, catalogue de services, documentation structurée.
+            </p>
+
+            <h3>Backstage : Le Standard CNCF</h3>
+
+            <p>
+                Open-sourcé par Spotify et projet CNCF en incubation, Backstage implémente un Software Catalog
+                utilisant des fichiers <code>catalog-info.yaml</code> inspirés de la structure Kubernetes.
+            </p>
+
+            <div class="code-block" data-lang="YAML">
+<code><span class="comment"># catalog-info.yaml — Backstage</span>
+<span class="property">apiVersion</span>: backstage.io/v1alpha1
+<span class="property">kind</span>: Component
+<span class="property">metadata</span>:
+  <span class="property">name</span>: payment-service
+  <span class="property">description</span>: Service de paiement principal
+  <span class="property">tags</span>:
+    - python
+    - payments
+<span class="property">spec</span>:
+  <span class="property">type</span>: service
+  <span class="property">lifecycle</span>: production
+  <span class="property">owner</span>: team-payments
+  <span class="property">dependsOn</span>:
+    - component:user-service</code>
+            </div>
+
+            <div class="illustration">
+                <div class="illustration-title">Architectures de catalogues</div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Approche</th>
+                            <th>Avantages</th>
+                            <th>Inconvénients</th>
+                            <th>Exemples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Fichier unique</strong></td>
+                            <td>Source de vérité unique, requêtes simples</td>
+                            <td>Conflits de merge fréquents</td>
+                            <td>CNCF Landscape</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Distribué</strong></td>
+                            <td>Édition parallèle, propriété claire</td>
+                            <td>Découverte plus complexe</td>
+                            <td>Backstage, npm</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Markdown</strong></td>
+                            <td>Ultra simple, familier</td>
+                            <td>Validation limitée</td>
+                            <td>Awesome Lists</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 7: Benefits & Limitations -->
+        <section id="section-benefits">
+            <h2>Lumières et Ombres</h2>
+
+            <p class="literary-only">
+                Comme toute révolution, le paradigme as-code apporte son lot de promesses tenues et de défis inattendus. La balance penche nettement du côté des bénéfices, mais ignorer les difficultés serait faire preuve d'une naïveté dangereuse.
+            </p>
+
+            <div class="summary-box">
+                <h3>Les Avantages Consolidés</h3>
+                <ul>
+                    <li><strong>Traçabilité complète</strong> — Chaque changement est attribué, daté, expliqué</li>
+                    <li><strong>Collaboration native</strong> — Pull requests, reviews, discussions</li>
+                    <li><strong>Reproductibilité</strong> — Reconstruire l'infra complète en 1-2 heures</li>
+                    <li><strong>Automatisation CI/CD</strong> — Détection d'erreurs avant déploiement</li>
+                    <li><strong>Disaster recovery</strong> — RTO drastiquement réduit</li>
+                </ul>
+            </div>
+
+            <div class="caution-box">
+                <h4>Les Défis Persistants</h4>
+                <p>
+                    <strong>Courbe d'apprentissage</strong> — Workflows Git, syntaxe YAML, pensée déclarative demandent du temps.<br><br>
+                    <strong>Complexité d'outillage</strong> — L'intégration de multiples outils (Terraform, Ansible, OPA...) pose des problèmes de compatibilité.<br><br>
+                    <strong>Gestion du drift</strong> — Les modifications manuelles contournant les workflows créent des divergences dangereuses.<br><br>
+                    <strong>Scalabilité</strong> — Les approches Git-based ne conviennent pas à des centaines de ressources fréquemment mises à jour.
+                </p>
+            </div>
+
+            <h3>Anti-Patterns à Éviter</h3>
+
+            <p class="practical-only">
+                <strong>YAML Sprawl</strong> — Prolifération de milliers de fichiers YAML non maintenus.<br>
+                <strong>Sur-abstraction</strong> — Templates sur templates, perte du sens.<br>
+                <strong>Copy-paste</strong> — Configurations dupliquées, dette de maintenance.<br>
+                <strong>Ignorance de l'état</strong> — Mauvaise gestion des fichiers tfstate.
+            </p>
+
+            <blockquote class="literary-only">
+                <p>« L'as-code requiert beaucoup de travail pour être correctement mis en œuvre. C'est un investissement, pas une solution magique. »</p>
+                <cite>— CloudBees, State of DevOps Report</cite>
+            </blockquote>
+        </section>
+
+        <!-- Section 8: Trends -->
+        <section id="section-trends">
+            <h2>Tendances 2024-2025</h2>
+
+            <p class="literary-only">
+                L'avenir du paradigme as-code se dessine à l'intersection de l'intelligence artificielle et de l'expérience développeur. Les LLMs transforment la maintenance des catalogues, les portails internes deviennent le point d'entrée unifié vers les plateformes, et les architectures hybrides réconcilient les avantages de Git avec les besoins de temps réel.
+            </p>
+
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-card-icon">AI</div>
+                    <h4>IA pour les métadonnées</h4>
+                    <p>Génération automatique de descriptions, tagging par LLM. 87% des descriptions générées acceptées telles quelles.</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Pt</div>
+                    <h4>Portails développeurs</h4>
+                    <p>Backstage, Port.io, Humanitec. Point d'entrée unifié vers la plateforme.</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Fd</div>
+                    <h4>Catalogues fédérés</h4>
+                    <p>Représentation stateful multi-domaines. Convergence vers des "plateformes de plateformes".</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-card-icon">Hy</div>
+                    <h4>Hybride Git + API</h4>
+                    <p>TinaCMS, Decap CMS. Stockage Git avec édition visuelle et livraison temps réel.</p>
+                </div>
+            </div>
+
+            <h3>Quand Choisir Catalog-as-Code ?</h3>
+
+            <div class="illustration">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Critère</th>
+                            <th>Catalog-as-Code</th>
+                            <th>Alternative</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Équipe</td>
+                            <td>Développeurs familiers Git</td>
+                            <td>Éditeurs non-techniques</td>
+                        </tr>
+                        <tr>
+                            <td>Mises à jour</td>
+                            <td>Peu fréquentes</td>
+                            <td>Temps réel requis</td>
+                        </tr>
+                        <tr>
+                            <td>Versioning</td>
+                            <td>Exigences fortes</td>
+                            <td>Optionnel</td>
+                        </tr>
+                        <tr>
+                            <td>Volume</td>
+                            <td>Modéré (&lt;1000 items)</td>
+                            <td>Très grand</td>
+                        </tr>
+                        <tr>
+                            <td>Budget</td>
+                            <td>Sensible (open-source)</td>
+                            <td>Flexible</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section id="section-conclusion">
+            <h2>Conclusion : Une Maturité Inégale</h2>
+
+            <p class="literary-only drop-cap">
+                Trente-deux ans après les travaux pionniers de Mark Burgess, le paradigme as-code a atteint une maturité variable selon les domaines. L'Infrastructure-as-Code domine un marché stabilisé. Le Policy-as-Code et le GitOps connaissent une adoption rapide. Le Catalog-as-Code émerge comme l'application naturelle de ces principes aux inventaires.
+            </p>
+
+            <p class="scientific-only">
+                Le paradigme as-code présente une maturité différenciée : l'IaC est stabilisé (Terraform dominant), Policy-as-Code/GitOps en adoption rapide (77% GitOps), Catalog-as-Code émergent (Backstage référence). Les tendances 2025 convergent vers l'enrichissement IA des métadonnées, les portails développeurs internes comme point d'entrée unifié, et les architectures hybrides Git+API.
+            </p>
+
+            <p class="practical-only">
+                <strong>En résumé :</strong> L'as-code n'est pas une solution universelle mais un choix contextuel. Évaluez votre maturité Git, vos besoins de collaboration et votre tolérance à la complexité technique. Pour les équipes techniques gérant des inventaires, l'approche offre un équilibre convaincant entre rigueur, reproductibilité et collaboration.
+            </p>
+
+            <p class="literary-only">
+                Le catalog-as-code ne constitue pas une solution universelle mais un choix contextuel. Les organisations doivent évaluer leur maturité Git, leurs besoins de collaboration, leurs contraintes de mise à jour et leur tolérance à la complexité technique. Pour les équipes techniques gérant des inventaires logiciels, des collections de ressources ou des registres de composants, l'approche as-code offre un équilibre convaincant entre rigueur, reproductibilité et collaboration — les mêmes bénéfices qui ont transformé la gestion d'infrastructure depuis les travaux pionniers de Mark Burgess dans les couloirs d'Oslo, il y a plus de trois décennies.
+            </p>
+
+            <div class="footnote scientific-only">
+                <p>
+                    <sup>1</sup> CNCF Annual Survey 2024 (689 répondants, déc. 2024) — <a href="https://www.cncf.io/reports/cncf-annual-survey-2024/" target="_blank">cncf.io</a><br>
+                    <sup>2</sup> CFEngine créé en 1993 par Mark Burgess, Université d'Oslo — <a href="https://cfengine.com/" target="_blank">cfengine.com</a><br>
+                    <sup>3</sup> Promise Theory présentée à DSOM Barcelone 2005 — <a href="https://markburgess.org/promises.html" target="_blank">markburgess.org</a><br>
+                    <sup>4</sup> Terraform publié le 28 juillet 2014 par Mitchell Hashimoto — <a href="https://www.hashicorp.com/en/products/terraform" target="_blank">hashicorp.com</a><br>
+                    <sup>5</sup> GitOps forgé par Alexis Richardson (Weaveworks) en mars 2017 — <a href="https://opengitops.dev/" target="_blank">opengitops.dev</a><br>
+                    <sup>6</sup> DevOpsDays initiés par Patrick Debois à Gand, oct. 2009 — <a href="https://devopsdays.org/" target="_blank">devopsdays.org</a><br>
+                    <sup>7</sup> Backstage open-sourcé par Spotify le 16 mars 2020, CNCF Incubating — <a href="https://backstage.io/" target="_blank">backstage.io</a>
+                </p>
+            </div>
+
+            <!-- Section Références pour tous les modes -->
+            <div class="illustration" style="margin-top: 40px;">
+                <div class="illustration-title">Sources et Références</div>
+                <div class="tool-grid">
+                    <div class="tool-card">
+                        <div class="tool-card-icon">📊</div>
+                        <h4>CNCF Annual Survey 2024</h4>
+                        <p>77% d'adoption GitOps, +31% CI/CD cloud-native</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-card-icon">🔧</div>
+                        <h4>CFEngine (1993)</h4>
+                        <p>Mark Burgess, Univ. Oslo, Promise Theory</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-card-icon">📖</div>
+                        <h4>OpenGitOps</h4>
+                        <p>4 principes officiels GitOps par la CNCF</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-card-icon">🎤</div>
+                        <h4>Velocity 2009</h4>
+                        <p>"10+ Deploys Per Day" — Flickr</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="ac-footer">
+        <p data-slide-footer>Le Paradigme As-Code — De l'Artisanat à l'Automatisation</p>
+    </footer>
+
+    <!-- Mode Switching Script -->
+    <script>
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        const body = document.body;
+
+        const modeColors = {
+            literary: '#8b4513',
+            scientific: '#1e5f74',
+            practical: '#2d5a27'
+        };
+
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode;
+
+                // Mettre à jour la classe du body
+                body.className = `mode-${mode}`;
+
+                // Mettre à jour le bouton actif
+                modeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Scroll en haut
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+
+</body>
+</html>

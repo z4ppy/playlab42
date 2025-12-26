@@ -1,0 +1,118 @@
+{
+  "id": "as-code-paradigm",
+  "title": "Le Paradigme As-Code",
+  "description": "De l'artisanat à l'automatisation : comment une idée née dans un département de physique d'Oslo a transformé la gestion des systèmes informatiques. Infrastructure, Configuration, Policy, GitOps et Catalog-as-Code.",
+  "hierarchy": ["ia"],
+  "tags": ["devops", "infrastructure", "gitops", "iac", "automation", "terraform", "kubernetes"],
+  "metadata": {
+    "author": "cyrille",
+    "created": "2025-12-26",
+    "duration": "15 min",
+    "difficulty": "beginner",
+    "language": "fr"
+  },
+  "icon": "📜",
+  "content": [
+    { "id": "01-article" }
+  ],
+  "bookmarks": [
+    {
+      "url": "https://cfengine.com/",
+      "title": "CFEngine",
+      "description": "Premier outil de gestion de configuration (1993), créé par Mark Burgess",
+      "icon": "🔧",
+      "tags": ["cfengine", "configuration", "historique"]
+    },
+    {
+      "url": "https://www.hashicorp.com/en/products/terraform",
+      "title": "Terraform",
+      "description": "Infrastructure as Code multi-cloud par HashiCorp",
+      "icon": "🏗️",
+      "tags": ["terraform", "iac", "hashicorp"]
+    },
+    {
+      "url": "https://developer.hashicorp.com/terraform",
+      "title": "Terraform Documentation",
+      "description": "Documentation officielle Terraform",
+      "icon": "📚",
+      "tags": ["terraform", "documentation"]
+    },
+    {
+      "url": "https://www.ansible.com/",
+      "title": "Ansible",
+      "description": "Automatisation IT agentless par Red Hat",
+      "icon": "⚙️",
+      "tags": ["ansible", "configuration", "redhat"]
+    },
+    {
+      "url": "https://kubernetes.io/",
+      "title": "Kubernetes",
+      "description": "Orchestration de conteneurs, projet CNCF",
+      "icon": "☸️",
+      "tags": ["kubernetes", "containers", "cncf"]
+    },
+    {
+      "url": "https://argoproj.github.io/cd/",
+      "title": "Argo CD",
+      "description": "Outil GitOps pour Kubernetes, projet CNCF",
+      "icon": "🔄",
+      "tags": ["argocd", "gitops", "kubernetes"]
+    },
+    {
+      "url": "https://fluxcd.io/",
+      "title": "Flux CD",
+      "description": "GitOps toolkit pour Kubernetes, projet CNCF Graduated",
+      "icon": "🌊",
+      "tags": ["flux", "gitops", "cncf"]
+    },
+    {
+      "url": "https://opengitops.dev/",
+      "title": "OpenGitOps",
+      "description": "Définition officielle des 4 principes GitOps par la CNCF",
+      "icon": "📖",
+      "tags": ["gitops", "cncf", "standards"]
+    },
+    {
+      "url": "https://backstage.io/",
+      "title": "Backstage",
+      "description": "Portail développeur open-source par Spotify, projet CNCF Incubating",
+      "icon": "🎭",
+      "tags": ["backstage", "catalog", "spotify"]
+    },
+    {
+      "url": "https://www.openpolicyagent.org/",
+      "title": "Open Policy Agent",
+      "description": "Policy as Code avec le langage Rego",
+      "icon": "🛡️",
+      "tags": ["opa", "policy", "rego"]
+    },
+    {
+      "url": "https://devopsdays.org/",
+      "title": "DevOpsDays",
+      "description": "Conférences DevOps mondiales, initiées par Patrick Debois en 2009",
+      "icon": "🎤",
+      "tags": ["devops", "conference", "community"]
+    },
+    {
+      "url": "https://www.cncf.io/reports/cncf-annual-survey-2024/",
+      "title": "CNCF Annual Survey 2024",
+      "description": "Rapport officiel avec les statistiques d'adoption GitOps (77%)",
+      "icon": "📊",
+      "tags": ["cncf", "survey", "statistics"]
+    },
+    {
+      "url": "https://markburgess.org/promises.html",
+      "title": "Promise Theory",
+      "description": "Site de Mark Burgess sur la Promise Theory",
+      "icon": "🤝",
+      "tags": ["promise-theory", "burgess", "theory"]
+    },
+    {
+      "url": "https://www.weave.works/blog/gitops-operations-by-pull-request",
+      "title": "GitOps - Operations by Pull Request",
+      "description": "Article fondateur de GitOps par Weaveworks (2017)",
+      "icon": "📝",
+      "tags": ["gitops", "weaveworks", "article"]
+    }
+  ]
+}

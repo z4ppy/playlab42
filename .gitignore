@@ -36,6 +36,13 @@ coverage/
 tmp/
 temp/
 
+# Fichiers générés au build (régénérés par npm run build)
+data/catalogue.json
+data/parcours.json
+data/bookmarks.json
+data/bookmarks-cache.json
+data/bookmarks-images/
+
 # Security audit artifacts
 npm-audit-results.json
 eslint-security-results.json
