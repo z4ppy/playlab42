@@ -3,6 +3,7 @@
   "title": "Bienvenue sur PlayLab42",
   "description": "Découvrez la plateforme, ses objectifs pédagogiques et comment contribuer.",
   "hierarchy": ["playlab42"],
+  "order": 1,
   "tags": ["howto", "debutant", "ia", "dev"],
   "metadata": {
     "author": "PlayLab42",

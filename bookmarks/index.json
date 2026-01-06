@@ -1,8 +1,14 @@
 {
   "categories": [
-    { "id": "llm-ia", "label": "LLM & IA", "icon": "🤖", "order": 1 },
-    { "id": "developpement", "label": "Développement", "icon": "🛠️", "order": 2 },
-    { "id": "documentation", "label": "Documentation", "icon": "📚", "order": 3 },
+    { "id": "coding-tools", "label": "Outils de Coding IA", "icon": "🛠️", "order": 1 },
+    { "id": "models-apis", "label": "Modèles & APIs IA", "icon": "🧠", "order": 2 },
+    { "id": "mcp-protocols", "label": "MCP & Protocoles", "icon": "🔌", "order": 3 },
+    { "id": "prompt-engineering", "label": "Prompt Engineering", "icon": "📝", "order": 4 },
+    { "id": "methodologies", "label": "Vibe Coding & Méthodologies", "icon": "🎵", "order": 5 },
+    { "id": "benchmarks", "label": "Benchmarks & Évaluations", "icon": "📊", "order": 6 },
+    { "id": "resources", "label": "Ressources & Formation", "icon": "📚", "order": 7 },
+    { "id": "security", "label": "Sécurité & Bonnes Pratiques", "icon": "🔒", "order": 8 },
+    { "id": "communities", "label": "Communautés", "icon": "👥", "order": 9 },
     { "id": "modules", "label": "Depuis les modules", "icon": "📦", "order": 99 }
   ]
 }

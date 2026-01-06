@@ -1,0 +1,47 @@
+{
+  "category": "communities",
+  "bookmarks": [
+    {
+      "url": "https://discord.gg/anthropic",
+      "title": "Anthropic Discord",
+      "description": "Serveur Discord officiel Anthropic",
+      "icon": "💬",
+      "tags": ["discord", "anthropic", "communauté"]
+    },
+    {
+      "url": "https://community.openai.com",
+      "title": "OpenAI Community",
+      "description": "Forum communautaire OpenAI",
+      "icon": "🗣️",
+      "tags": ["forum", "openai", "communauté"]
+    },
+    {
+      "url": "https://www.reddit.com/r/LocalLLaMA/",
+      "title": "r/LocalLLaMA",
+      "description": "Subreddit sur les LLMs locaux",
+      "icon": "🦙",
+      "tags": ["reddit", "local", "llm"]
+    },
+    {
+      "url": "https://www.reddit.com/r/ChatGPTCoding/",
+      "title": "r/ChatGPTCoding",
+      "description": "Subreddit sur le coding avec ChatGPT",
+      "icon": "💻",
+      "tags": ["reddit", "chatgpt", "coding"]
+    },
+    {
+      "url": "https://discord.gg/cursor",
+      "title": "Cursor Discord",
+      "description": "Serveur Discord de Cursor",
+      "icon": "🖱️",
+      "tags": ["discord", "cursor", "communauté"]
+    },
+    {
+      "url": "https://github.com/topics/ai-coding",
+      "title": "GitHub: AI Coding Topic",
+      "description": "Projets GitHub tagués AI Coding",
+      "icon": "🐙",
+      "tags": ["github", "projets", "open-source"]
+    }
+  ]
+}

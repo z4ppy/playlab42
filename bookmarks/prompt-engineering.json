@@ -1,0 +1,54 @@
+{
+  "category": "prompt-engineering",
+  "bookmarks": [
+    {
+      "url": "https://www.promptingguide.ai",
+      "title": "Prompt Engineering Guide",
+      "description": "Guide complet de prompt engineering par DAIR.AI",
+      "icon": "📖",
+      "tags": ["guide", "dair-ai", "techniques"]
+    },
+    {
+      "url": "https://github.com/dair-ai/Prompt-Engineering-Guide",
+      "title": "Prompt Engineering Guide - GitHub",
+      "description": "Dépôt GitHub du guide DAIR.AI",
+      "icon": "🐙",
+      "tags": ["guide", "github", "open-source"]
+    },
+    {
+      "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview",
+      "title": "Claude Prompting Guide",
+      "description": "Guide officiel de prompting pour Claude",
+      "icon": "🟣",
+      "tags": ["guide", "anthropic", "claude"]
+    },
+    {
+      "url": "https://platform.openai.com/docs/guides/prompt-engineering",
+      "title": "OpenAI Prompt Engineering Guide",
+      "description": "Guide de prompting OpenAI",
+      "icon": "🔵",
+      "tags": ["guide", "openai", "gpt"]
+    },
+    {
+      "url": "https://arxiv.org/abs/2402.07927",
+      "title": "Survey: Prompt Engineering in LLMs",
+      "description": "Article de recherche sur le prompt engineering",
+      "icon": "📄",
+      "tags": ["recherche", "arxiv", "survey"]
+    },
+    {
+      "url": "https://arxiv.org/abs/2310.14735",
+      "title": "Unleashing Prompt Engineering Potential",
+      "description": "Article sur le potentiel du prompt engineering",
+      "icon": "📄",
+      "tags": ["recherche", "arxiv", "techniques"]
+    },
+    {
+      "url": "https://www.promptingguide.ai/papers",
+      "title": "Research Papers on Prompting",
+      "description": "Collection d'articles de recherche sur le prompting",
+      "icon": "📚",
+      "tags": ["recherche", "papers", "collection"]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "category": "mcp-protocols",
+  "bookmarks": [
+    {
+      "url": "https://modelcontextprotocol.io",
+      "title": "Model Context Protocol",
+      "description": "Site officiel du protocole MCP",
+      "icon": "🔌",
+      "tags": ["mcp", "protocole", "standard"]
+    },
+    {
+      "url": "https://www.anthropic.com/news/model-context-protocol",
+      "title": "Annonce MCP",
+      "description": "Annonce officielle MCP par Anthropic",
+      "icon": "📢",
+      "tags": ["mcp", "anthropic", "annonce"]
+    },
+    {
+      "url": "https://github.com/modelcontextprotocol",
+      "title": "MCP GitHub Organization",
+      "description": "Organisation GitHub du protocole MCP",
+      "icon": "🐙",
+      "tags": ["mcp", "github", "open-source"]
+    },
+    {
+      "url": "https://www.anthropic.com/engineering/code-execution-with-mcp",
+      "title": "Code Execution with MCP",
+      "description": "Exécution de code sécurisée avec MCP",
+      "icon": "▶️",
+      "tags": ["mcp", "execution", "sécurité"]
+    },
+    {
+      "url": "https://anthropic.skilljar.com/introduction-to-model-context-protocol",
+      "title": "MCP Course - Anthropic Academy",
+      "description": "Formation officielle MCP",
+      "icon": "🎓",
+      "tags": ["mcp", "formation", "anthropic"]
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+      "title": "MCP - Wikipedia",
+      "description": "Article Wikipedia sur le protocole MCP",
+      "icon": "📚",
+      "tags": ["mcp", "wikipedia", "référence"]
+    }
+  ]
+}

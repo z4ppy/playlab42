@@ -4,13 +4,13 @@
  * Supporte les 3 modes de lecture : littéraire, scientifique, pratique
  */
 
-/* === Variables du thème (dark par défaut) === */
+/* === Variables locales mappées sur le thème global === */
 :root {
-    /* Backgrounds */
-    --ac-bg-primary: #0f0f1a;
-    --ac-bg-secondary: #1a1a2e;
-    --ac-bg-tertiary: #252545;
-    --ac-bg-card: #1e1e35;
+    /* Backgrounds - mappés sur theme.css */
+    --ac-bg-primary: var(--color-bg);
+    --ac-bg-secondary: var(--color-bg-secondary);
+    --ac-bg-tertiary: var(--color-bg-card);
+    --ac-bg-card: var(--color-bg-secondary);
 
     /* Couleurs d'accent par mode */
     --ac-accent-literary: #8b4513;
@@ -18,62 +18,40 @@
     --ac-accent-practical: #2d5a27;
     --ac-accent-current: var(--ac-accent-literary);
 
-    /* Couleurs sémantiques */
-    --ac-accent-red: #c44536;
-    --ac-accent-green: #50fa7b;
-    --ac-accent-yellow: #f4b752;
-    --ac-accent-blue: #4fc3f7;
+    /* Couleurs sémantiques - mappées sur theme.css */
+    --ac-accent-red: var(--color-accent);
+    --ac-accent-green: var(--color-success);
+    --ac-accent-yellow: var(--color-warning);
+    --ac-accent-blue: var(--color-info);
     --ac-accent-purple: #bd93f9;
     --ac-accent-cyan: #06b6d4;
 
-    /* Texte */
-    --ac-text-primary: #f8f8f2;
-    --ac-text-secondary: #cbd5e1;
-    --ac-text-muted: #94a3b8;
+    /* Texte - mappé sur theme.css */
+    --ac-text-primary: var(--color-text);
+    --ac-text-secondary: var(--color-text);
+    --ac-text-muted: var(--color-text-muted);
 
-    /* Bordures */
-    --ac-border-color: #374151;
+    /* Bordures - mappé sur theme.css */
+    --ac-border-color: var(--color-border);
 
-    /* Code */
-    --ac-code-bg: #2d2d2d;
-    --ac-code-text: #f8f8f2;
+    /* Code - fond sombre conservé pour meilleure lisibilité */
+    --ac-code-bg: var(--color-bg-secondary);
+    --ac-code-text: var(--color-text);
 }
 
-/* Support du thème light */
-[data-theme="light"] {
-    --ac-bg-primary: #faf8f5;
-    --ac-bg-secondary: #f0ebe4;
-    --ac-bg-tertiary: #e8e3db;
-    --ac-bg-card: #ffffff;
-
-    --ac-text-primary: #1a1a1a;
-    --ac-text-secondary: #334155;
-    --ac-text-muted: #64748b;
-
-    --ac-border-color: #e0dcd4;
-
-    --ac-code-bg: #1e1e1e;
-    --ac-code-text: #f8f8f2;
-
-    --ac-accent-red: #c44536;
-}
+/* Couleurs de syntaxe adaptées au thème */
+[data-theme="light"] .code-block .comment { color: #6a737d; }
+[data-theme="light"] .code-block .keyword { color: #d73a49; }
+[data-theme="light"] .code-block .string { color: #22863a; }
+[data-theme="light"] .code-block .property { color: #005cc5; }
+[data-theme="light"] .code-block .value { color: #6f42c1; }
 
 @media (prefers-color-scheme: light) {
-    :root:not([data-theme]) {
-        --ac-bg-primary: #faf8f5;
-        --ac-bg-secondary: #f0ebe4;
-        --ac-bg-tertiary: #e8e3db;
-        --ac-bg-card: #ffffff;
-
-        --ac-text-primary: #1a1a1a;
-        --ac-text-secondary: #334155;
-        --ac-text-muted: #64748b;
-
-        --ac-border-color: #e0dcd4;
-
-        --ac-code-bg: #1e1e1e;
-        --ac-code-text: #f8f8f2;
-    }
+    :root:not([data-theme]) .code-block .comment { color: #6a737d; }
+    :root:not([data-theme]) .code-block .keyword { color: #d73a49; }
+    :root:not([data-theme]) .code-block .string { color: #22863a; }
+    :root:not([data-theme]) .code-block .property { color: #005cc5; }
+    :root:not([data-theme]) .code-block .value { color: #6f42c1; }
 }
 
 /* === Base === */

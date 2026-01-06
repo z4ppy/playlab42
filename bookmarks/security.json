@@ -1,0 +1,26 @@
+{
+  "category": "security",
+  "bookmarks": [
+    {
+      "url": "https://snyk.io",
+      "title": "Snyk",
+      "description": "Plateforme de sécurité pour développeurs",
+      "icon": "🛡️",
+      "tags": ["sécurité", "vulnérabilités", "devsecops"]
+    },
+    {
+      "url": "https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk",
+      "title": "Building Agents with Claude Agent SDK",
+      "description": "Guide de création d'agents sécurisés",
+      "icon": "🤖",
+      "tags": ["agents", "sdk", "anthropic"]
+    },
+    {
+      "url": "https://simonwillison.net/2025/Oct/20/claude-code-for-web/",
+      "title": "Claude Code for Web - Security & Sandboxing",
+      "description": "Analyse de sécurité et sandboxing",
+      "icon": "🔒",
+      "tags": ["sécurité", "sandboxing", "analyse"]
+    }
+  ]
+}

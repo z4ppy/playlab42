@@ -1,0 +1,173 @@
+{
+  "category": "coding-tools",
+  "bookmarks": [
+    {
+      "url": "https://cursor.com",
+      "title": "Cursor",
+      "description": "Éditeur de code IA-native basé sur VS Code",
+      "icon": "🖱️",
+      "tags": ["ide", "ia-native", "vscode"]
+    },
+    {
+      "url": "https://codeium.com/windsurf",
+      "title": "Windsurf",
+      "description": "IDE IA par Codeium avec agents intégrés",
+      "icon": "🏄",
+      "tags": ["ide", "ia-native", "codeium"]
+    },
+    {
+      "url": "https://zed.dev",
+      "title": "Zed",
+      "description": "Éditeur haute performance avec IA intégrée",
+      "icon": "⚡",
+      "tags": ["ide", "ia-native", "performance"]
+    },
+    {
+      "url": "https://www.jetbrains.com/ai/",
+      "title": "JetBrains AI Assistant",
+      "description": "Assistant IA pour les IDE JetBrains",
+      "icon": "🧠",
+      "tags": ["ide", "jetbrains", "extension"]
+    },
+    {
+      "url": "https://replit.com",
+      "title": "Replit",
+      "description": "Développement IA dans le navigateur",
+      "icon": "🌐",
+      "tags": ["ide", "cloud", "ia-native"]
+    },
+    {
+      "url": "https://idx.google.com",
+      "title": "Project IDX",
+      "description": "IDE cloud IA de Google",
+      "icon": "🔷",
+      "tags": ["ide", "google", "cloud"]
+    },
+    {
+      "url": "https://github.com/features/copilot",
+      "title": "GitHub Copilot",
+      "description": "Assistant de code IA par GitHub/Microsoft",
+      "icon": "🤖",
+      "tags": ["extension", "copilot", "github"]
+    },
+    {
+      "url": "https://www.tabnine.com",
+      "title": "Tabnine",
+      "description": "Assistant de code IA avec support entreprise",
+      "icon": "📑",
+      "tags": ["extension", "autocompletion", "entreprise"]
+    },
+    {
+      "url": "https://aws.amazon.com/q/developer/",
+      "title": "Amazon Q Developer",
+      "description": "Assistant IA AWS pour développeurs",
+      "icon": "☁️",
+      "tags": ["extension", "aws", "amazon"]
+    },
+    {
+      "url": "https://www.qodo.ai",
+      "title": "Qodo (ex-Codium)",
+      "description": "Assistant IA focalisé qualité du code",
+      "icon": "✅",
+      "tags": ["extension", "qualité", "tests"]
+    },
+    {
+      "url": "https://sourcegraph.com/cody",
+      "title": "Sourcegraph Cody",
+      "description": "Assistant IA avec contexte codebase complet",
+      "icon": "🔍",
+      "tags": ["extension", "contexte", "sourcegraph"]
+    },
+    {
+      "url": "https://pieces.app",
+      "title": "Pieces for Developers",
+      "description": "Assistant IA avec gestion de snippets",
+      "icon": "🧩",
+      "tags": ["extension", "snippets", "productivité"]
+    },
+    {
+      "url": "https://www.augmentcode.com",
+      "title": "Augment Code",
+      "description": "Assistant IA pour grandes bases de code",
+      "icon": "🔭",
+      "tags": ["extension", "entreprise", "contexte"]
+    },
+    {
+      "url": "https://www.anthropic.com/claude-code",
+      "title": "Claude Code",
+      "description": "Agent de coding CLI par Anthropic",
+      "icon": "🟣",
+      "tags": ["cli", "agent", "anthropic"]
+    },
+    {
+      "url": "https://docs.anthropic.com/en/docs/claude-code",
+      "title": "Claude Code Documentation",
+      "description": "Documentation officielle Claude Code",
+      "icon": "📖",
+      "tags": ["cli", "documentation", "anthropic"]
+    },
+    {
+      "url": "https://github.com/anthropics/claude-code",
+      "title": "Claude Code GitHub",
+      "description": "Dépôt GitHub de Claude Code",
+      "icon": "🐙",
+      "tags": ["cli", "github", "anthropic"]
+    },
+    {
+      "url": "https://www.anthropic.com/engineering/claude-code-best-practices",
+      "title": "Claude Code Best Practices",
+      "description": "Bonnes pratiques d'utilisation de Claude Code",
+      "icon": "📋",
+      "tags": ["cli", "best-practices", "anthropic"]
+    },
+    {
+      "url": "https://aider.chat",
+      "title": "Aider",
+      "description": "Pair programming IA en terminal, open-source",
+      "icon": "💬",
+      "tags": ["cli", "open-source", "terminal"]
+    },
+    {
+      "url": "https://github.com/paul-gauthier/aider",
+      "title": "Aider GitHub",
+      "description": "Dépôt GitHub d'Aider",
+      "icon": "🐙",
+      "tags": ["cli", "github", "open-source"]
+    },
+    {
+      "url": "https://openai.com/index/introducing-codex/",
+      "title": "OpenAI Codex CLI",
+      "description": "Agent de coding CLI par OpenAI",
+      "icon": "🔵",
+      "tags": ["cli", "agent", "openai"]
+    },
+    {
+      "url": "https://v0.dev",
+      "title": "V0 by Vercel",
+      "description": "Générateur d'interfaces UI par IA",
+      "icon": "🎨",
+      "tags": ["no-code", "ui", "vercel"]
+    },
+    {
+      "url": "https://lovable.dev",
+      "title": "Lovable.dev",
+      "description": "Constructeur d'apps full-stack par IA",
+      "icon": "💜",
+      "tags": ["no-code", "full-stack", "apps"]
+    },
+    {
+      "url": "https://bolt.new",
+      "title": "Bolt.new",
+      "description": "Développement full-stack IA instantané",
+      "icon": "⚡",
+      "tags": ["no-code", "full-stack", "stackblitz"]
+    },
+    {
+      "url": "https://www.builder.io",
+      "title": "Builder.io",
+      "description": "Développement visuel assisté par IA",
+      "icon": "🏗️",
+      "tags": ["no-code", "visual", "cms"]
+    }
+  ]
+}

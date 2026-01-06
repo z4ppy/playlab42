@@ -1,0 +1,110 @@
+{
+  "category": "models-apis",
+  "bookmarks": [
+    {
+      "url": "https://www.anthropic.com",
+      "title": "Anthropic",
+      "description": "Créateur de Claude, IA constitutionnelle",
+      "icon": "🟣",
+      "tags": ["fournisseur", "claude", "api"]
+    },
+    {
+      "url": "https://docs.anthropic.com",
+      "title": "Anthropic Documentation",
+      "description": "Documentation API Anthropic",
+      "icon": "📖",
+      "tags": ["documentation", "api", "anthropic"]
+    },
+    {
+      "url": "https://openai.com/api",
+      "title": "OpenAI API",
+      "description": "API GPT-4, DALL-E, Whisper",
+      "icon": "🔵",
+      "tags": ["fournisseur", "gpt", "api"]
+    },
+    {
+      "url": "https://platform.openai.com/docs",
+      "title": "OpenAI Documentation",
+      "description": "Documentation API OpenAI",
+      "icon": "📖",
+      "tags": ["documentation", "api", "openai"]
+    },
+    {
+      "url": "https://ai.google.dev",
+      "title": "Google AI (Gemini)",
+      "description": "API Gemini et outils Google AI",
+      "icon": "✨",
+      "tags": ["fournisseur", "gemini", "google"]
+    },
+    {
+      "url": "https://deepseek.com",
+      "title": "DeepSeek",
+      "description": "Modèles IA chinois performants",
+      "icon": "🔍",
+      "tags": ["fournisseur", "api", "chinois"]
+    },
+    {
+      "url": "https://mistral.ai",
+      "title": "Mistral AI",
+      "description": "IA française, modèles open-weight",
+      "icon": "🌀",
+      "tags": ["fournisseur", "français", "open-weight"]
+    },
+    {
+      "url": "https://www.together.ai",
+      "title": "Together AI",
+      "description": "Plateforme d'inférence multi-modèles",
+      "icon": "🤝",
+      "tags": ["fournisseur", "inference", "multi-modèles"]
+    },
+    {
+      "url": "https://groq.com",
+      "title": "Groq",
+      "description": "Inférence ultra-rapide sur LPU",
+      "icon": "⚡",
+      "tags": ["fournisseur", "inference", "rapide"]
+    },
+    {
+      "url": "https://huggingface.co",
+      "title": "Hugging Face",
+      "description": "Hub de modèles et datasets ML",
+      "icon": "🤗",
+      "tags": ["open-source", "hub", "modèles"]
+    },
+    {
+      "url": "https://ollama.ai",
+      "title": "Ollama",
+      "description": "Exécuter des LLMs localement",
+      "icon": "🦙",
+      "tags": ["open-source", "local", "llm"]
+    },
+    {
+      "url": "https://lmstudio.ai",
+      "title": "LM Studio",
+      "description": "Interface graphique pour LLMs locaux",
+      "icon": "🎛️",
+      "tags": ["open-source", "local", "gui"]
+    },
+    {
+      "url": "https://github.com/QwenLM/Qwen2.5-Coder",
+      "title": "Qwen 2.5 Coder",
+      "description": "Modèle de code open-source Alibaba",
+      "icon": "🇨🇳",
+      "tags": ["open-source", "code", "alibaba"]
+    },
+    {
+      "url": "https://github.com/deepseek-ai/DeepSeek-Coder",
+      "title": "DeepSeek Coder",
+      "description": "Modèle de code open-source DeepSeek",
+      "icon": "💻",
+      "tags": ["open-source", "code", "deepseek"]
+    },
+    {
+      "url": "https://codestral.mistral.ai",
+      "title": "Codestral",
+      "description": "Modèle de code par Mistral",
+      "icon": "🌀",
+      "tags": ["open-source", "code", "mistral"]
+    }
+  ]
+}

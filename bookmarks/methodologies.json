@@ -1,0 +1,47 @@
+{
+  "category": "methodologies",
+  "bookmarks": [
+    {
+      "url": "https://en.wikipedia.org/wiki/Vibe_coding",
+      "title": "Vibe Coding - Wikipedia",
+      "description": "Définition et histoire du vibe coding",
+      "icon": "📚",
+      "tags": ["vibe-coding", "définition", "wikipedia"]
+    },
+    {
+      "url": "https://www.ibm.com/think/topics/vibe-coding",
+      "title": "What is Vibe Coding? - IBM",
+      "description": "Explication du vibe coding par IBM",
+      "icon": "🔷",
+      "tags": ["vibe-coding", "ibm", "explication"]
+    },
+    {
+      "url": "https://cloud.google.com/discover/what-is-vibe-coding",
+      "title": "Vibe Coding Explained - Google Cloud",
+      "description": "Le vibe coding expliqué par Google",
+      "icon": "☁️",
+      "tags": ["vibe-coding", "google", "explication"]
+    },
+    {
+      "url": "https://simonwillison.net/2025/Mar/19/vibe-coding/",
+      "title": "Not all AI-assisted programming is vibe coding",
+      "description": "Analyse nuancée par Simon Willison",
+      "icon": "💭",
+      "tags": ["vibe-coding", "analyse", "simon-willison"]
+    },
+    {
+      "url": "https://arxiv.org/html/2510.12399v2",
+      "title": "A Survey of Vibe Coding with LLMs",
+      "description": "Étude académique sur le vibe coding",
+      "icon": "📄",
+      "tags": ["vibe-coding", "recherche", "arxiv"]
+    },
+    {
+      "url": "https://www.technologyreview.com/2025/11/05/1127477/from-vibe-coding-to-context-engineering-2025-in-software-development/",
+      "title": "From Vibe Coding to Context Engineering",
+      "description": "Évolution des pratiques - MIT Tech Review",
+      "icon": "📰",
+      "tags": ["vibe-coding", "context-engineering", "tendances"]
+    }
+  ]
+}

@@ -2,7 +2,8 @@
   "id": "as-code-paradigm",
   "title": "Le Paradigme As-Code",
   "description": "De l'artisanat à l'automatisation : comment une idée née dans un département de physique d'Oslo a transformé la gestion des systèmes informatiques. Infrastructure, Configuration, Policy, GitOps et Catalog-as-Code.",
-  "hierarchy": ["ia"],
+  "hierarchy": ["playlab42"],
+  "order": 4,
   "tags": ["devops", "infrastructure", "gitops", "iac", "automation", "terraform", "kubernetes"],
   "metadata": {
     "author": "cyrille",
@@ -12,6 +13,7 @@
     "language": "fr"
   },
   "icon": "📜",
+  "thumbnail": "thumbnail.jpg",
   "content": [
     { "id": "01-article" }
   ],

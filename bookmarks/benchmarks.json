@@ -1,0 +1,61 @@
+{
+  "category": "benchmarks",
+  "bookmarks": [
+    {
+      "url": "https://github.com/SWE-bench/SWE-bench",
+      "title": "SWE-bench GitHub",
+      "description": "Benchmark de résolution d'issues GitHub",
+      "icon": "🐙",
+      "tags": ["swe-bench", "github", "benchmark"]
+    },
+    {
+      "url": "https://scale.com/leaderboard/swe_bench_pro_public",
+      "title": "SWE-Bench Pro Leaderboard",
+      "description": "Classement des modèles sur SWE-Bench Pro",
+      "icon": "🏆",
+      "tags": ["swe-bench", "leaderboard", "scale-ai"]
+    },
+    {
+      "url": "https://scale.com/blog/swe-bench-pro",
+      "title": "SWE-Bench Pro: Raising the Bar",
+      "description": "Présentation de SWE-Bench Pro",
+      "icon": "📈",
+      "tags": ["swe-bench", "scale-ai", "annonce"]
+    },
+    {
+      "url": "https://openai.com/index/introducing-swe-bench-verified/",
+      "title": "SWE-bench Verified - OpenAI",
+      "description": "Version vérifiée de SWE-bench par OpenAI",
+      "icon": "✅",
+      "tags": ["swe-bench", "openai", "verified"]
+    },
+    {
+      "url": "https://epoch.ai/benchmarks/swe-bench-verified",
+      "title": "SWE-bench Verified - Epoch AI",
+      "description": "Analyse SWE-bench par Epoch AI",
+      "icon": "📊",
+      "tags": ["swe-bench", "epoch-ai", "analyse"]
+    },
+    {
+      "url": "https://aws.amazon.com/blogs/devops/amazon-introduces-swe-polybench-a-multi-lingual-benchmark-for-ai-coding-agents/",
+      "title": "SWE-PolyBench - Amazon",
+      "description": "Benchmark multi-langages par Amazon",
+      "icon": "🌐",
+      "tags": ["benchmark", "amazon", "multi-langages"]
+    },
+    {
+      "url": "https://llm-stats.com/benchmarks/swe-bench-verified",
+      "title": "SWE-Bench Verified Leaderboard",
+      "description": "Classement complet SWE-bench verified",
+      "icon": "📋",
+      "tags": ["swe-bench", "leaderboard", "statistiques"]
+    },
+    {
+      "url": "https://aider.chat/docs/leaderboards/",
+      "title": "Aider LLM Leaderboard",
+      "description": "Classement des LLMs pour le coding par Aider",
+      "icon": "🥇",
+      "tags": ["aider", "leaderboard", "comparatif"]
+    }
+  ]
+}
