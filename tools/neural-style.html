@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Style Transfer - Playlab42</title>
+  <link rel="stylesheet" href="../lib/theme.css">
+  <script src="https://cdn.jsdelivr.net/npm/@magenta/image@0.2.1"></script>
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .image-zone {
+      aspect-ratio: 1;
+      border: 2px dashed var(--color-bg-card);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      overflow: hidden;
+      position: relative;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .image-zone:hover {
+      border-color: var(--color-accent);
+      background: rgba(233, 69, 96, 0.05);
+    }
+
+    .image-zone.has-image {
+      border-style: solid;
+      border-color: var(--color-bg-card);
+    }
+
+    .image-zone img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .image-zone .placeholder {
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+
+    .image-zone .placeholder .icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .result-zone {
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    #resultCanvas {
+      max-width: 100%;
+      max-height: 100%;
+      display: none;
+    }
+
+    .result-placeholder {
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    button {
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: var(--radius-lg);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    button:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    button:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: var(--color-bg-card);
+    }
+
+    .status {
+      text-align: center;
+      padding: 1rem;
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+    }
+
+    .status.loading {
+      color: var(--color-accent);
+    }
+
+    .status.error {
+      color: #ff6b6b;
+    }
+
+    .status.success {
+      color: #51cf66;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--color-bg-card);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .progress-bar.active {
+      display: block;
+    }
+
+    .progress-bar .fill {
+      height: 100%;
+      background: var(--color-accent);
+      width: 0%;
+      transition: width 0.3s;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .credits {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .credits h3 {
+      color: var(--color-text);
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .credits ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .credits a {
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+
+    .credits a:hover {
+      text-decoration: underline;
+    }
+
+    .style-gallery {
+      margin-top: 1.5rem;
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .style-gallery h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sample-styles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+    }
+
+    .style-card {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .style-card:hover {
+      border-color: var(--color-accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(233, 69, 96, 0.25);
+    }
+
+    .style-card.selected {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.3);
+    }
+
+    .style-card img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+    }
+
+    .style-card .style-info {
+      padding: 0.6rem 0.8rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .style-card .style-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 0.1rem;
+    }
+
+    .style-card .style-artist {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+
+    .style-card.loading img {
+      opacity: 0.5;
+    }
+
+    .style-card.loading::after {
+      content: '⏳';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+    }
+
+    /* Curseur cliquable sur le canvas résultat */
+    #resultCanvas {
+      cursor: pointer;
+    }
+
+    /* Curseur sablier pendant le traitement */
+    body.processing,
+    body.processing * {
+      cursor: wait !important;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: var(--z-modal, 200);
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      position: relative;
+      max-width: 95vw;
+      max-height: 95vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -3rem;
+      right: 0;
+      background: transparent;
+      border: none;
+      color: var(--color-text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .lightbox-close:hover {
+      opacity: 1;
+    }
+
+    .lightbox img {
+      max-width: 100%;
+      max-height: calc(95vh - 5rem);
+      object-fit: contain;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-actions {
+      display: flex;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span>🎨</span> Neural Style Transfer</h1>
+      <p class="subtitle">Appliquez le style artistique d'une image sur une autre grâce au deep learning<br><small style="opacity: 0.7">Images automatiquement redimensionnées à 512px max pour la compatibilité GPU</small></p>
+    </header>
+
+    <div class="main-grid">
+      <!-- Image de contenu -->
+      <div class="card">
+        <h2>Image de contenu</h2>
+        <div class="image-zone" id="contentZone" onclick="document.getElementById('contentInput').click()">
+          <div class="placeholder">
+            <div class="icon">📷</div>
+            <div>Cliquez pour charger une image</div>
+          </div>
+        </div>
+        <input type="file" id="contentInput" accept="image/*">
+      </div>
+
+      <!-- Image de style -->
+      <div class="card">
+        <h2>Image de style</h2>
+        <div class="image-zone" id="styleZone" onclick="document.getElementById('styleInput').click()">
+          <div class="placeholder">
+            <div class="icon">🖼️</div>
+            <div>Cliquez pour charger un style</div>
+          </div>
+        </div>
+        <input type="file" id="styleInput" accept="image/*">
+      </div>
+
+      <!-- Résultat -->
+      <div class="card">
+        <h2>Résultat</h2>
+        <div class="result-zone" id="resultZone">
+          <canvas id="resultCanvas"></canvas>
+          <div class="result-placeholder" id="resultPlaceholder">
+            <div class="icon" style="font-size: 3rem; margin-bottom: 0.5rem;">✨</div>
+            <div>Le résultat apparaîtra ici</div>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="stylizeBtn" disabled>Styliser</button>
+          <button id="downloadBtn" class="secondary" disabled>Télécharger</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Galerie de styles -->
+    <div class="style-gallery">
+      <h2>🎨 Galerie de styles artistiques</h2>
+      <div class="sample-styles" id="sampleStyles">
+        <!-- Les styles d'exemple seront ajoutés ici -->
+      </div>
+    </div>
+
+    <div class="status" id="status">
+      Chargement du modèle IA (~12 Mo)...
+    </div>
+    <div class="progress-bar active" id="progressBar">
+      <div class="fill" id="progressFill"></div>
+    </div>
+
+    <div class="credits">
+      <h3>Crédits et ressources</h3>
+      <ul>
+        <li>Modèle : <a href="https://arxiv.org/abs/1705.06830" target="_blank">Ghiasi et al., 2017</a></li>
+        <li>Bibliothèque : <a href="https://github.com/magenta/magenta-js/tree/master/image" target="_blank">@magenta/image</a></li>
+        <li>Port TensorFlow.js : <a href="https://github.com/reiinakano/arbitrary-image-stylization-tfjs" target="_blank">reiinakano</a></li>
+        <li>Projet : <a href="https://magenta.tensorflow.org/" target="_blank">Google Magenta</a></li>
+      </ul>
+    </div>
+
+    <!-- Lightbox pour afficher l'image en grand -->
+    <div class="lightbox" id="lightbox">
+      <div class="lightbox-content">
+        <button class="lightbox-close" id="lightboxClose" title="Fermer (Échap)">✕</button>
+        <img id="lightboxImage" alt="Résultat en grand">
+        <div class="lightbox-actions">
+          <button class="primary" id="lightboxDownload">📥 Télécharger</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Éléments DOM
+    const contentZone = document.getElementById('contentZone');
+    const styleZone = document.getElementById('styleZone');
+    const contentInput = document.getElementById('contentInput');
+    const styleInput = document.getElementById('styleInput');
+    const resultCanvas = document.getElementById('resultCanvas');
+    const resultPlaceholder = document.getElementById('resultPlaceholder');
+    const stylizeBtn = document.getElementById('stylizeBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const statusEl = document.getElementById('status');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const lightboxDownload = document.getElementById('lightboxDownload');
+
+    // État
+    let contentImg = null;
+    let styleImg = null;
+    let model = null;
+    let isProcessing = false;
+
+    // Taille maximale des images (pour éviter les problèmes de mémoire GPU)
+    const MAX_IMAGE_SIZE = 512;
+
+    // Styles d'exemple (images libres de droits - URLs vérifiées)
+    const sampleStyles = [
+      // === CLASSIQUES ===
+      { name: 'Starry Night', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/300px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg' },
+      { name: 'The Scream', artist: 'Munch', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/300px-The_Scream.jpg' },
+      { name: 'Sunflowers', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Vincent_Willem_van_Gogh_127.jpg/300px-Vincent_Willem_van_Gogh_127.jpg' },
+      { name: 'Water Lilies', artist: 'Monet', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg/400px-Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg' },
+      { name: 'Impression Sunrise', artist: 'Monet', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Monet_-_Impression%2C_Sunrise.jpg/400px-Monet_-_Impression%2C_Sunrise.jpg' },
+      { name: 'The Kiss', artist: 'Klimt', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg/300px-The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg' },
+      { name: 'Starry Rhine', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Starry_Night_Over_the_Rhone.jpg/400px-Starry_Night_Over_the_Rhone.jpg' },
+      { name: 'Irises', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Irises-Vincent_van_Gogh.jpg/350px-Irises-Vincent_van_Gogh.jpg' },
+
+      // === ART JAPONAIS (Ukiyo-e) ===
+      { name: 'Great Wave', artist: 'Hokusai', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/400px-Tsunami_by_hokusai_19th_century.jpg' },
+      { name: 'Plum Garden', artist: 'Hiroshige', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Ando_Hiroshige_-_Plum_Garden%2C_Kameido_-_Google_Art_Project.jpg/400px-Ando_Hiroshige_-_Plum_Garden%2C_Kameido_-_Google_Art_Project.jpg' },
+
+      // === ABSTRAIT ===
+      { name: 'Composition VII', artist: 'Kandinsky', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Vassily_Kandinsky%2C_1913_-_Composition_7.jpg/400px-Vassily_Kandinsky%2C_1913_-_Composition_7.jpg' },
+      { name: 'Yellow Red Blue', artist: 'Kandinsky', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Kandinsky_-_Jaune_Rouge_Bleu.jpg/400px-Kandinsky_-_Jaune_Rouge_Bleu.jpg' },
+      { name: 'Broadway Boogie', artist: 'Mondrian', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Piet_Mondrian%2C_1942_-_Broadway_Boogie_Woogie.jpg/300px-Piet_Mondrian%2C_1942_-_Broadway_Boogie_Woogie.jpg' },
+
+      // === POINTILLISME ===
+      { name: 'Sunday Afternoon', artist: 'Seurat', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/A_Sunday_on_La_Grande_Jatte%2C_Georges_Seurat%2C_1884.jpg/400px-A_Sunday_on_La_Grande_Jatte%2C_Georges_Seurat%2C_1884.jpg' },
+      { name: 'Circus', artist: 'Seurat', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Georges_Seurat_-_The_Circus_-_Google_Art_Project.jpg/330px-Georges_Seurat_-_The_Circus_-_Google_Art_Project.jpg' },
+
+      // === STREET ART / GRAFFITI ===
+      { name: 'Graffiti Brazil', artist: 'Street Art', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Graffiti_in_Brazil.JPG/400px-Graffiti_in_Brazil.JPG' },
+      { name: 'Mural Etnias', artist: 'Eduardo Kobra', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Mural_Etnias%2C_Panorama_%28Eduardo_Kobra%29.jpg/400px-Mural_Etnias%2C_Panorama_%28Eduardo_Kobra%29.jpg' },
+
+      // === BD / COMICS ===
+      { name: 'Vintage Comics', artist: 'Comics', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Adventures_Into_the_Unknown_No_1.jpg/300px-Adventures_Into_the_Unknown_No_1.jpg' },
+
+      // === RENAISSANCE & BAROQUE ===
+      { name: 'Girl with Pearl', artist: 'Vermeer', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/300px-1665_Girl_with_a_Pearl_Earring.jpg' },
+      { name: 'Birth of Venus', artist: 'Botticelli', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/400px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg' },
+
+      // === ROMANTISME ===
+      { name: 'Wanderer', artist: 'Friedrich', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg/300px-Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg' },
+      { name: 'Almond Blossoms', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg/400px-Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg' },
+
+      // === POST-IMPRESSIONNISME ===
+      { name: 'Bedroom', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Vincent_van_Gogh_-_De_slaapkamer_-_Google_Art_Project.jpg/400px-Vincent_van_Gogh_-_De_slaapkamer_-_Google_Art_Project.jpg' },
+
+      // === EXPRESSIONNISME ===
+      { name: 'Blue Horse', artist: 'Franz Marc', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Marc%2C_Franz_-_Blue_Horse_I_-_Google_Art_Project.jpg/300px-Marc%2C_Franz_-_Blue_Horse_I_-_Google_Art_Project.jpg' },
+    ];
+
+    /**
+     * Met à jour le statut affiché
+     * @param {string} message - Message à afficher
+     * @param {string} type - Type de statut (loading, error, success, ou vide)
+     */
+    function setStatus(message, type = '') {
+      statusEl.textContent = message;
+      statusEl.className = 'status' + (type ? ' ' + type : '');
+    }
+
+    /**
+     * Charge une image depuis un fichier
+     * @param {File} file - Fichier image
+     * @returns {Promise<HTMLImageElement>}
+     */
+    function loadImageFromFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /**
+     * Charge une image depuis une URL
+     * @param {string} url - URL de l'image
+     * @returns {Promise<HTMLImageElement>}
+     */
+    function loadImageFromUrl(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
+    /**
+     * Redimensionne une image si elle dépasse la taille maximale
+     * Retourne un canvas avec l'image redimensionnée convertie en élément image
+     * @param {HTMLImageElement} img - Image source
+     * @param {number} maxSize - Taille maximale (largeur ou hauteur)
+     * @returns {Promise<HTMLImageElement>} - Image redimensionnée
+     */
+    function resizeImage(img, maxSize = MAX_IMAGE_SIZE) {
+      return new Promise((resolve) => {
+        const { width, height } = img;
+
+        // Si l'image est déjà assez petite, la retourner telle quelle
+        if (width <= maxSize && height <= maxSize) {
+          resolve(img);
+          return;
+        }
+
+        // Calculer les nouvelles dimensions en conservant le ratio
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        const newWidth = Math.round(width * ratio);
+        const newHeight = Math.round(height * ratio);
+
+        // Créer un canvas pour redimensionner
+        const canvas = document.createElement('canvas');
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+        // Convertir le canvas en image
+        const resizedImg = new Image();
+        resizedImg.onload = () => resolve(resizedImg);
+        resizedImg.src = canvas.toDataURL('image/jpeg', 0.9);
+      });
+    }
+
+    /**
+     * Affiche une image dans une zone
+     * @param {HTMLElement} zone - Zone d'affichage
+     * @param {HTMLImageElement} img - Image à afficher
+     */
+    function displayImage(zone, img) {
+      zone.innerHTML = '';
+      const displayImg = img.cloneNode();
+      displayImg.style.maxWidth = '100%';
+      displayImg.style.maxHeight = '100%';
+      zone.appendChild(displayImg);
+      zone.classList.add('has-image');
+    }
+
+    /**
+     * Vérifie si on peut lancer la stylisation
+     */
+    function updateStylizeButton() {
+      stylizeBtn.disabled = !contentImg || !styleImg || !model || isProcessing;
+    }
+
+    /**
+     * Initialise les styles d'exemple avec des cartes interactives
+     */
+    function initSampleStyles() {
+      const container = document.getElementById('sampleStyles');
+
+      sampleStyles.forEach((style) => {
+        // Créer la carte
+        const card = document.createElement('div');
+        card.className = 'style-card';
+        card.title = `${style.name} - ${style.artist}`;
+
+        // Image de la carte
+        const img = document.createElement('img');
+        img.src = style.url;
+        img.alt = style.name;
+        img.loading = 'lazy';
+
+        // Info overlay
+        const info = document.createElement('div');
+        info.className = 'style-info';
+        info.innerHTML = `
+          <div class="style-name">${style.name}</div>
+          <div class="style-artist">${style.artist}</div>
+        `;
+
+        card.appendChild(img);
+        card.appendChild(info);
+
+        // Gestion du clic
+        card.onclick = async () => {
+          if (card.classList.contains('loading')) return;
+
+          // Marquer comme loading
+          document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('loading');
+
+          try {
+            setStatus(`Chargement de "${style.name}"...`, 'loading');
+            const originalImg = await loadImageFromUrl(style.url);
+            styleImg = await resizeImage(originalImg);
+            displayImage(styleZone, styleImg);
+
+            card.classList.remove('loading');
+            card.classList.add('selected');
+            setStatus(`Style "${style.name}" sélectionné`, 'success');
+            updateStylizeButton();
+          } catch (err) {
+            card.classList.remove('loading');
+            setStatus(`Erreur: impossible de charger "${style.name}"`, 'error');
+            console.error(err);
+          }
+        };
+
+        container.appendChild(card);
+      });
+    }
+
+    /**
+     * Effectue le transfert de style
+     */
+    async function stylize() {
+      if (!contentImg || !styleImg || !model || isProcessing) return;
+
+      isProcessing = true;
+      stylizeBtn.disabled = true;
+      document.body.classList.add('processing');
+      progressBar.classList.add('active');
+      progressFill.style.width = '30%';
+
+      try {
+        setStatus('Stylisation en cours...', 'loading');
+        progressFill.style.width = '60%';
+
+        // Effectuer le transfert de style
+        const result = await model.stylize(contentImg, styleImg);
+
+        progressFill.style.width = '90%';
+
+        // Afficher le résultat sur le canvas
+        resultCanvas.width = result.width;
+        resultCanvas.height = result.height;
+        resultCanvas.getContext('2d').putImageData(result, 0, 0);
+        resultCanvas.style.display = 'block';
+        resultPlaceholder.style.display = 'none';
+
+        downloadBtn.disabled = false;
+        progressFill.style.width = '100%';
+        setStatus('Stylisation terminée !', 'success');
+      } catch (err) {
+        // Message d'erreur plus explicite pour les problèmes WebGL
+        const isWebGLError = err.message.includes('shader') ||
+                            err.message.includes('WebGL') ||
+                            err.message.includes('texture');
+        if (isWebGLError) {
+          setStatus('Erreur GPU : essayez de recharger la page ou réduire la taille des images', 'error');
+        } else {
+          setStatus(`Erreur: ${err.message}`, 'error');
+        }
+        console.error(err);
+      } finally {
+        isProcessing = false;
+        document.body.classList.remove('processing');
+        updateStylizeButton();
+        setTimeout(() => {
+          progressBar.classList.remove('active');
+          progressFill.style.width = '0%';
+        }, 500);
+      }
+    }
+
+    /**
+     * Télécharge le résultat ou ouvre la lightbox si sandboxé
+     */
+    function download() {
+      if (!resultCanvas.width || !resultCanvas.height) {
+        setStatus('Aucune image à télécharger', 'error');
+        return;
+      }
+
+      const dataUrl = resultCanvas.toDataURL('image/png');
+
+      // Tenter le téléchargement direct
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'neural-style-result.png';
+      link.click();
+
+      // Vérifier si le téléchargement a fonctionné (heuristique : si sandboxé, ouvrir lightbox)
+      if (window.self !== window.top) {
+        // On est dans une iframe, le téléchargement a probablement échoué
+        openLightbox();
+        setStatus('Clic droit sur l\'image → "Enregistrer sous..."', 'success');
+      } else {
+        setStatus('Image téléchargée !', 'success');
+      }
+    }
+
+    /**
+     * Récupère l'URL data du canvas résultat pour la lightbox
+     * @returns {string|null} URL data de l'image ou null si le canvas est vide
+     */
+    function getResultDataUrl() {
+      if (!resultCanvas.width || !resultCanvas.height) {
+        return null;
+      }
+      return resultCanvas.toDataURL('image/png');
+    }
+
+    /**
+     * Ouvre la lightbox avec l'image résultat
+     */
+    function openLightbox() {
+      const dataUrl = getResultDataUrl();
+      if (!dataUrl) return;
+      lightboxImage.src = dataUrl;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Ferme la lightbox
+     */
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    /**
+     * Initialise l'application
+     */
+    async function init() {
+      // Gestionnaires d'événements pour le chargement d'images
+      contentInput.addEventListener('change', async (e) => {
+        if (e.target.files[0]) {
+          try {
+            setStatus('Chargement et redimensionnement...', 'loading');
+            const originalImg = await loadImageFromFile(e.target.files[0]);
+            contentImg = await resizeImage(originalImg);
+            displayImage(contentZone, contentImg);
+            const resized = originalImg.width !== contentImg.width;
+            setStatus(resized
+              ? `Image redimensionnée à ${contentImg.width}x${contentImg.height}px`
+              : 'Image chargée', 'success');
+            updateStylizeButton();
+          } catch (err) {
+            setStatus(`Erreur de chargement: ${err.message}`, 'error');
+          }
+        }
+      });
+
+      styleInput.addEventListener('change', async (e) => {
+        if (e.target.files[0]) {
+          try {
+            setStatus('Chargement du style...', 'loading');
+            const originalImg = await loadImageFromFile(e.target.files[0]);
+            styleImg = await resizeImage(originalImg);
+            displayImage(styleZone, styleImg);
+            document.querySelectorAll('.style-card').forEach(s => s.classList.remove('selected'));
+            setStatus('Style chargé', 'success');
+            updateStylizeButton();
+          } catch (err) {
+            setStatus(`Erreur de chargement: ${err.message}`, 'error');
+          }
+        }
+      });
+
+      stylizeBtn.addEventListener('click', stylize);
+      downloadBtn.addEventListener('click', download);
+
+      // Lightbox : clic sur le canvas pour agrandir
+      resultCanvas.addEventListener('click', openLightbox);
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightboxDownload.addEventListener('click', download);
+
+      // Fermer la lightbox en cliquant sur le fond
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+      });
+
+      // Fermer avec la touche Échap
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+          closeLightbox();
+        }
+      });
+
+      // Initialiser les styles d'exemple
+      initSampleStyles();
+
+      // Charger le modèle
+      try {
+        progressFill.style.width = '20%';
+        model = new mi.ArbitraryStyleTransferNetwork();
+        progressFill.style.width = '50%';
+        await model.initialize();
+        progressFill.style.width = '100%';
+        setStatus('Modèle chargé ! Sélectionnez vos images.', 'success');
+        progressBar.classList.remove('active');
+        updateStylizeButton();
+      } catch (err) {
+        setStatus(`Erreur de chargement du modèle: ${err.message}`, 'error');
+        progressBar.classList.remove('active');
+        console.error(err);
+      }
+    }
+
+    // Démarrer l'application
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "id": "neural-style",
+  "name": "Neural Style Transfer",
+  "description": "Applique le style artistique d'une image sur une autre grâce à l'IA (TensorFlow.js)",
+  "tags": ["ia", "image", "art", "deep-learning"],
+  "author": "Playlab42 (basé sur Google Magenta)",
+  "icon": "🎨",
+  "version": "1.0.0"
+}
