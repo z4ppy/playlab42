@@ -3,6 +3,7 @@
   "title": "OpenSpec — Guide d'utilisation pour Playlab42",
   "description": "Maîtrisez le workflow spec-driven development avec OpenSpec : créer des proposals, implémenter des changements, archiver les modifications. Guide complet pour contribuer à Playlab42 avec rigueur et clarté.",
   "hierarchy": ["playlab42"],
+  "order": 3,
   "tags": ["openspec", "workflow", "dev", "guide", "contribution", "specs"],
   "metadata": {
     "author": "Playlab42",

@@ -275,6 +275,7 @@ function processEpic(epicId, template, globalGlossary) {
     description: epic.description,
     path: `./parcours/epics/${epicId}`,
     hierarchy: epic.hierarchy || ['autres'],
+    order: epic.order,
     tags: epic.tags || [],
     author: epic.metadata?.author || 'Anonyme',
     created: epic.metadata?.created,
@@ -334,7 +335,8 @@ function main() {
 
   const epics = epicDirs
     .map(epicId => processEpic(epicId, slideTemplate, globalGlossary))
-    .filter(Boolean);
+    .filter(Boolean)
+    .sort((a, b) => (a.order || 999) - (b.order || 999));
 
   // Construire le catalogue
   console.log('\nConstruction du catalogue...');

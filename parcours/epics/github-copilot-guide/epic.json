@@ -2,7 +2,8 @@
   "id": "github-copilot-guide",
   "title": "GitHub Copilot — Guide du développeur",
   "description": "Guide complet pour maîtriser GitHub Copilot : présentation du service, autocomplétion, configuration projet, agents spécialisés, techniques de prompting, MCP et bonnes pratiques.",
-  "hierarchy": ["ia-dev"],
+  "hierarchy": ["playlab42"],
+  "order": 2,
   "tags": ["copilot", "ia", "productivité", "ide", "guide", "mcp"],
   "metadata": {
     "author": "Playlab42",
