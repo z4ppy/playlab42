@@ -12,6 +12,7 @@
     "language": "fr"
   },
   "icon": "📜",
+  "thumbnail": "thumbnail.jpg",
   "content": [
     { "id": "01-article" }
   ],

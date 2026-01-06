@@ -11,7 +11,7 @@
     "difficulty": "intermediate"
   },
   "icon": "📋",
-  "thumbnail": "assets/banner.svg",
+  "thumbnail": "thumbnail.jpg",
   "content": [
     { "id": "00-presentation" },
     { "id": "01-introduction" },
