@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go 9x9 - Playlab42</title>
-    <link rel="stylesheet" href="/lib/theme.css">
+    <link rel="stylesheet" href="../../lib/theme.css">
     <style>
         :root {
             --board-size: min(80vmin, 720px);
@@ -232,7 +232,7 @@
         }
     </style>
     <script type="module">
-        import { initTheme } from '/lib/theme.js';
+        import { initTheme } from '../../lib/theme.js';
         initTheme();
     </script>
 </head>
@@ -286,8 +286,8 @@
     </div>
 
     <script type="module">
-        import { $, on } from '/lib/dom.js';
-        import { SeededRandom } from '/lib/seeded-random.js';
+        import { $, on } from '../../lib/dom.js';
+        import { SeededRandom } from '../../lib/seeded-random.js';
         import { Go9x9Engine } from './engine.js';
         import { RandomBot } from './bots/random.js';
         import { GreedyBot } from './bots/greedy.js';
