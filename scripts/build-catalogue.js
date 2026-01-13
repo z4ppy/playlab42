@@ -25,6 +25,9 @@ const TOOLS_DIR = join(ROOT_DIR, 'tools');
 const GAMES_DIR = join(ROOT_DIR, 'games');
 const OUTPUT_FILE = join(ROOT_DIR, 'data/catalogue.json');
 
+// Pattern semver pour validation du champ version (optionnel)
+const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/;
+
 /**
  * Valide un manifest de tool
  * @param {object} manifest
@@ -49,6 +52,11 @@ function validateToolManifest(manifest) {
   // Valider le type du champ tags
   if (manifest.tags && !Array.isArray(manifest.tags)) {
     errors.push("'tags' must be an array");
+  }
+
+  // Valider le format de version si présent (optionnel, doit être semver)
+  if (manifest.version && !SEMVER_PATTERN.test(manifest.version)) {
+    errors.push("'version' must be semver format (e.g., '1.0.0')");
   }
 
   return { valid: errors.length === 0, errors };
@@ -98,14 +106,20 @@ function validateGameManifest(manifest) {
     errors.push("'tags' must be an array");
   }
 
+  // Valider le format de version si présent (optionnel, doit être semver)
+  if (manifest.version && !SEMVER_PATTERN.test(manifest.version)) {
+    errors.push("'version' must be semver format (e.g., '1.0.0')");
+  }
+
   return { valid: errors.length === 0, errors };
 }
 
 /**
- * Scanne le dossier tools/ pour les manifests
+ * Scanne le dossier tools/ pour les manifests simples (fichiers plats)
+ * Format : tools/[id].json + tools/[id].html
  * @returns {Promise<{tools: object[], errors: string[]}>}
  */
-async function scanTools() {
+async function scanSimpleTools() {
   const tools = [];
   const errors = [];
 
@@ -148,11 +162,75 @@ async function scanTools() {
       description: manifest.description,
       path: `tools/${htmlFile}`,
       tags: manifest.tags || [],
+      ...(manifest.version && { version: manifest.version }),
       ...(manifest.author && { author: manifest.author }),
       ...(manifest.icon && { icon: manifest.icon }),
     });
 
     console.log(`${colors.green}  ✓ ${manifest.name}${colors.reset}`);
+  }
+
+  return { tools, errors };
+}
+
+/**
+ * Scanne le dossier tools/ pour les manifests complexes (dossiers)
+ * Format : tools/[id]/tool.json + tools/[id]/index.html
+ * @returns {Promise<{tools: object[], errors: string[]}>}
+ */
+async function scanComplexTools() {
+  const tools = [];
+  const errors = [];
+
+  if (!(await fileExistsAsync(TOOLS_DIR))) {
+    return { tools, errors };
+  }
+
+  const entries = await readdir(TOOLS_DIR, { withFileTypes: true });
+  const dirs = entries.filter(e => e.isDirectory());
+
+  for (const dir of dirs) {
+    const toolDir = join(TOOLS_DIR, dir.name);
+    const manifestPath = join(toolDir, 'tool.json');
+
+    // Ignorer les dossiers sans tool.json
+    if (!(await fileExistsAsync(manifestPath))) {
+      continue;
+    }
+
+    const manifest = await readJSONAsync(manifestPath);
+
+    if (!manifest) {
+      errors.push(`${dir.name}/tool.json: Invalid JSON`);
+      continue;
+    }
+
+    const validation = validateToolManifest(manifest);
+    if (!validation.valid) {
+      errors.push(`${dir.name}/tool.json: ${validation.errors.join(', ')}`);
+      continue;
+    }
+
+    // Vérifier que index.html existe
+    const indexPath = join(toolDir, 'index.html');
+    if (!(await fileExistsAsync(indexPath))) {
+      errors.push(`${dir.name}/tool.json: No index.html found`);
+      continue;
+    }
+
+    // Ajouter au catalogue (noter le path différent)
+    tools.push({
+      id: manifest.id,
+      name: manifest.name,
+      description: manifest.description,
+      path: `tools/${dir.name}/index.html`,
+      tags: manifest.tags || [],
+      ...(manifest.version && { version: manifest.version }),
+      ...(manifest.author && { author: manifest.author }),
+      ...(manifest.icon && { icon: manifest.icon }),
+    });
+
+    console.log(`${colors.green}  ✓ ${manifest.name} (complex)${colors.reset}`);
   }
 
   return { tools, errors };
@@ -212,6 +290,7 @@ async function scanGames() {
       players: manifest.players,
       tags: manifest.tags || [],
       type: manifest.type,
+      ...(manifest.version && { version: manifest.version }),
       ...(manifest.author && { author: manifest.author }),
       ...(manifest.icon && { icon: manifest.icon }),
     });
@@ -228,13 +307,29 @@ async function scanGames() {
 async function main() {
   console.log(`\n${colors.cyan}Building catalogue...${colors.reset}\n`);
 
-  console.log('Scanning tools/');
-  const { tools, errors: toolErrors } = await scanTools();
+  console.log('Scanning tools/ (simple)');
+  const { tools: simpleTools, errors: simpleToolErrors } = await scanSimpleTools();
+
+  console.log('\nScanning tools/ (complex)');
+  const { tools: complexTools, errors: complexToolErrors } = await scanComplexTools();
 
   console.log('\nScanning games/');
   const { games, errors: gameErrors } = await scanGames();
 
-  const allErrors = [...toolErrors, ...gameErrors];
+  // Fusionner les tools
+  const tools = [...simpleTools, ...complexTools];
+
+  // Vérifier les doublons d'ID
+  const toolIds = new Set();
+  const duplicateErrors = [];
+  for (const tool of tools) {
+    if (toolIds.has(tool.id)) {
+      duplicateErrors.push(`Duplicate tool id: '${tool.id}'`);
+    }
+    toolIds.add(tool.id);
+  }
+
+  const allErrors = [...simpleToolErrors, ...complexToolErrors, ...gameErrors, ...duplicateErrors];
 
   // Si des erreurs critiques, afficher et quitter
   if (allErrors.length > 0) {

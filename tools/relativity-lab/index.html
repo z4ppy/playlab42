@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relativity Lab 3D - Playlab42</title>
+
+  <!-- Import du thème Playlab42 -->
+  <link rel="stylesheet" href="../../lib/theme.css">
+
+  <!-- Styles spécifiques au Relativity Lab -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+
+    .app-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      touch-action: none; /* Empêche les gestes natifs qui bloquent le zoom */
+    }
+
+    /* === Styles communs aux panneaux déplaçables === */
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: calc(-1 * var(--space-md));
+      margin-bottom: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-bg);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      border-bottom: 1px solid var(--color-border);
+      user-select: none;
+    }
+
+    .panel-title {
+      font-weight: bold;
+      font-size: var(--font-size-sm);
+    }
+
+    .panel-close {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-lg);
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .panel-close:hover {
+      color: var(--color-accent);
+    }
+
+    /* Curseur grab pour tous les headers déplaçables */
+    [data-drag-handle] {
+      cursor: grab;
+    }
+
+    [data-drag-handle]:active {
+      cursor: grabbing;
+    }
+
+    /* HUD Styles - Vue "Je suis..." */
+    .hud {
+      position: absolute;
+      top: var(--space-md);
+      left: var(--space-md);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      min-width: 200px;
+      max-width: 260px;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      z-index: 100;
+      box-shadow: 0 4px 12px var(--color-shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      pointer-events: auto;
+    }
+
+    .hud-state {
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+      font-size: var(--font-size-xs);
+    }
+
+    .hud-state--running {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .hud-section {
+      margin-bottom: var(--space-sm);
+    }
+
+    .hud-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .hud-divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: var(--space-sm) 0;
+    }
+
+    .hud-select {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text);
+      font-family: var(--font-family);
+      font-size: var(--font-size-md);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .hud-select:hover {
+      border-color: var(--color-accent);
+    }
+
+    .hud-select:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+
+    .hud-my-name {
+      font-size: var(--font-size-xl);
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+
+    .hud-my-tau {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xl);
+      font-weight: bold;
+    }
+
+    .hud-my-emissions {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    .hud-emission {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+    }
+
+    .hud-emission--h {
+      background: rgba(255, 107, 107, 0.15);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+
+    .hud-emission--v {
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .hud-emission-label {
+      font-weight: bold;
+      font-size: var(--font-size-md);
+    }
+
+    .hud-emission--h .hud-emission-label {
+      color: #ff6b6b;
+    }
+
+    .hud-emission--v .hud-emission-label {
+      color: #4ade80;
+    }
+
+    .hud-emission-value {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+    }
+
+    .hud-my-cmb, .hud-my-mass {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-md);
+      font-weight: 600;
+    }
+
+    /* Ce que j'ai reçu - version compacte */
+    .hud-received-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hud-no-received {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    .hud-received-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 4px 8px;
+      background: var(--color-bg);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+    }
+
+    .hud-received-name {
+      font-weight: 600;
+      min-width: 50px;
+    }
+
+    .hud-received-ticks {
+      display: flex;
+      gap: 4px;
+      font-family: var(--font-mono);
+    }
+
+    .hud-tick {
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    .hud-tick--h {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.15);
+    }
+
+    .hud-tick--v {
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.15);
+    }
+
+    .hud-received-distance {
+      font-family: var(--font-mono);
+      color: var(--color-text-muted);
+      margin-left: auto;
+    }
+
+    .hud-inferred-gamma {
+      color: var(--color-warning);
+      background: rgba(251, 191, 36, 0.15);
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+    }
+
+    .hud-row {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    .hud-row > div {
+      flex: 1;
+    }
+
+    .hud-help {
+      margin-top: var(--space-sm);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      opacity: 0.7;
+    }
+
+    /* === Vue cockpit (ObserverView) === */
+    .observer-view {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      min-width: 220px;
+      max-width: 280px;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      z-index: 100;
+      box-shadow: 0 4px 12px var(--color-shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      pointer-events: auto;
+    }
+
+    .observer-view-header {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-sm);
+    }
+
+    .observer-view-title {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .observer-view-name {
+      font-size: var(--font-size-lg);
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+
+    .observer-view-section {
+      margin-bottom: var(--space-sm);
+    }
+
+    .observer-view-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .observer-view-tau {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xl);
+      font-weight: bold;
+    }
+
+    .observer-view-clocks {
+      display: flex;
+      gap: var(--space-md);
+    }
+
+    .observer-view-divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: var(--space-sm) 0;
+    }
+
+    .observer-view-received {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .ov-clock {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+    }
+
+    .ov-clock--h {
+      background: rgba(255, 107, 107, 0.15);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+
+    .ov-clock--v {
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .ov-clock-icon {
+      font-weight: bold;
+      font-size: var(--font-size-sm);
+    }
+
+    .ov-clock--h .ov-clock-icon {
+      color: #ff6b6b;
+    }
+
+    .ov-clock--v .ov-clock-icon {
+      color: #4ade80;
+    }
+
+    .ov-clock-value {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+    }
+
+    .ov-clock--small {
+      padding: 3px 8px;
+    }
+
+    .ov-clock--small .ov-clock-icon {
+      font-size: var(--font-size-xs);
+    }
+
+    .ov-clock--small .ov-clock-value {
+      font-size: var(--font-size-sm);
+    }
+
+    .ov-received-observer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--color-bg);
+      border-radius: var(--radius-sm);
+    }
+
+    .ov-received-observer--empty {
+      opacity: 0.5;
+    }
+
+    .ov-received-name {
+      font-weight: 600;
+      font-size: var(--font-size-sm);
+    }
+
+    .ov-received-clocks {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    .ov-no-data {
+      font-style: italic;
+      color: var(--color-text-muted);
+      font-size: var(--font-size-xs);
+    }
+
+    /* === Gros bouton Play/Stop === */
+    .play-button {
+      position: absolute;
+      bottom: var(--space-lg);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-xl);
+      background: var(--color-accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-family);
+      font-size: var(--font-size-lg);
+      font-weight: bold;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      box-shadow: 0 4px 20px rgba(233, 69, 96, 0.4);
+    }
+
+    .play-button:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 6px 24px rgba(233, 69, 96, 0.5);
+    }
+
+    .play-button:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    .play-button--running {
+      background: var(--color-warning);
+      box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    .play-button--running:hover {
+      box-shadow: 0 6px 24px rgba(251, 191, 36, 0.5);
+    }
+
+    .play-button-icon {
+      font-size: 1.5em;
+    }
+
+    /* Bouton Reset à côté */
+    .reset-button {
+      position: absolute;
+      bottom: var(--space-lg);
+      left: calc(50% + 100px);
+      z-index: 200;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--color-bg-secondary);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-md);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+
+    .reset-button:hover {
+      background: var(--color-bg-hover);
+      border-color: var(--color-accent);
+    }
+
+    /* lil-gui customisation pour s'intégrer au thème */
+    .lil-gui {
+      --background-color: var(--color-bg-secondary);
+      --text-color: var(--color-text);
+      --title-background-color: var(--color-bg);
+      --title-text-color: var(--color-text);
+      --widget-color: var(--color-bg);
+      --hover-color: var(--color-bg-hover);
+      --focus-color: var(--color-accent);
+      --number-color: var(--color-accent);
+      --string-color: var(--color-success);
+      font-family: var(--font-family) !important;
+    }
+
+    .lil-gui .title {
+      font-weight: 600;
+    }
+
+    /* Loading state */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      font-size: var(--font-size-lg);
+      color: var(--color-text-muted);
+    }
+
+    .loading::after {
+      content: '';
+      width: 24px;
+      height: 24px;
+      margin-left: var(--space-sm);
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* === Panneau Moteur === */
+    .motor-panel {
+      position: absolute;
+      bottom: calc(var(--space-lg) + 60px);
+      right: var(--space-md);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      width: 280px;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      z-index: 100;
+      box-shadow: 0 4px 12px var(--color-shadow);
+      backdrop-filter: blur(8px);
+      pointer-events: auto;
+    }
+
+    .motor-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+    }
+
+    .motor-panel-title {
+      font-weight: bold;
+      font-size: var(--font-size-md);
+    }
+
+    .motor-panel-status {
+      font-size: var(--font-size-xs);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+    }
+
+    .motor-panel-status--burning {
+      background: var(--color-warning);
+      color: white;
+      animation: pulse 0.5s infinite;
+    }
+
+    .motor-panel-status--success {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .motor-panel-status--error {
+      background: var(--color-error);
+      color: white;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .motor-panel-section {
+      margin-bottom: var(--space-sm);
+    }
+
+    .motor-panel-section--small {
+      margin-bottom: var(--space-xs);
+    }
+
+    .motor-panel-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .motor-panel-mass {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--space-xs);
+    }
+
+    .motor-mass-value {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-lg);
+      font-weight: bold;
+    }
+
+    .motor-mass-unit {
+      color: var(--color-text-muted);
+    }
+
+    .motor-mass-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--color-bg);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .motor-mass-fill {
+      height: 100%;
+      background: var(--color-success);
+      transition: width 0.2s, background 0.2s;
+    }
+
+    .motor-direction-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .motor-direction-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .motor-direction-row label {
+      width: 20px;
+      font-family: var(--font-mono);
+      font-weight: bold;
+    }
+
+    .motor-direction-row input[type="range"] {
+      flex: 1;
+      height: 4px;
+    }
+
+    .motor-direction-row span {
+      width: 30px;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+    }
+
+    .motor-direction-presets {
+      display: flex;
+      gap: var(--space-xs);
+      margin-top: var(--space-xs);
+    }
+
+    .motor-preset {
+      flex: 1;
+      padding: 4px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: var(--font-size-md);
+    }
+
+    .motor-preset:hover {
+      background: var(--color-bg-hover);
+      border-color: var(--color-accent);
+    }
+
+    .motor-impulse-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .motor-impulse-controls input[type="range"] {
+      flex: 1;
+    }
+
+    .motor-impulse-controls span {
+      font-family: var(--font-mono);
+      min-width: 50px;
+    }
+
+    .motor-impulse-info {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .motor-impulse-info span:last-child {
+      font-family: var(--font-mono);
+      color: var(--color-accent);
+    }
+
+    .motor-thrust-controls {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    .motor-thrust-btn {
+      flex: 1;
+      padding: var(--space-xs) var(--space-sm);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-size: var(--font-size-xs);
+      font-weight: bold;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .motor-thrust-btn--forward {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .motor-thrust-btn--backward {
+      background: var(--color-warning);
+      color: white;
+    }
+
+    .motor-thrust-btn--fire {
+      background: var(--color-accent);
+      color: white;
+    }
+
+    .motor-thrust-btn:hover {
+      transform: scale(1.02);
+      filter: brightness(1.1);
+    }
+
+    .motor-thrust-btn:active {
+      transform: scale(0.98);
+    }
+
+    .motor-history {
+      max-height: 80px;
+      overflow-y: auto;
+      font-size: var(--font-size-xs);
+    }
+
+    .motor-history-empty {
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    .motor-history-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+      border-bottom: 1px solid var(--color-border);
+      font-family: var(--font-mono);
+    }
+
+    .motor-history-tau {
+      color: var(--color-text-muted);
+    }
+
+    .motor-history-dv {
+      color: var(--color-success);
+    }
+
+    .motor-history-mass {
+      color: var(--color-warning);
+    }
+
+    /* Ajustement HUD pour nouvelle info */
+    .hud-observer-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .hud-meta-item {
+      font-family: var(--font-mono);
+    }
+
+    /* === Graphique Doppler === */
+    .doppler-graph {
+      position: absolute;
+      bottom: calc(var(--space-lg) + 60px);
+      left: var(--space-md);
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+      width: 320px;
+      height: 180px;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      z-index: 100;
+      box-shadow: 0 4px 12px var(--color-shadow);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      pointer-events: auto;
+    }
+
+    .doppler-graph-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-xs);
+      flex-shrink: 0;
+    }
+
+    .doppler-graph-title {
+      font-weight: bold;
+      font-size: var(--font-size-sm);
+    }
+
+    .doppler-graph-timewindow {
+      padding: 2px 6px;
+      font-size: var(--font-size-xs);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text);
+      cursor: pointer;
+    }
+
+    .doppler-graph-timewindow:hover {
+      border-color: var(--color-accent);
+    }
+
+    .doppler-graph-legend {
+      display: flex;
+      gap: var(--space-xs);
+      font-size: var(--font-size-xs);
+      margin-bottom: var(--space-xs);
+    }
+
+    .doppler-legend-item {
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    .doppler-legend--red {
+      background: rgba(255, 107, 107, 0.3);
+      color: #ff6b6b;
+    }
+
+    .doppler-legend--green {
+      background: rgba(74, 222, 128, 0.3);
+      color: #4ade80;
+    }
+
+    .doppler-legend--blue {
+      background: rgba(74, 179, 247, 0.3);
+      color: #4ab3f7;
+    }
+
+    .doppler-graph-canvas-wrapper {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    .doppler-graph-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-sm);
+    }
+
+    /* === Panneau Oscilloscope === */
+    .clock-panel {
+      position: absolute;
+      top: var(--space-md);
+      left: 280px;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-sm);
+      width: 380px;
+      height: 260px;
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      z-index: 100;
+      box-shadow: 0 4px 12px var(--color-shadow);
+      backdrop-filter: blur(8px);
+      pointer-events: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .clock-panel .panel-header {
+      margin: calc(-1 * var(--space-sm));
+      margin-bottom: var(--space-xs);
+      padding: var(--space-xs) var(--space-sm);
+      flex-shrink: 0;
+    }
+
+    .oscillo-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .oscillo-select {
+      padding: 2px 6px;
+      font-size: var(--font-size-xs);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text);
+      cursor: pointer;
+    }
+
+    .oscillo-select:hover {
+      border-color: var(--color-accent);
+    }
+
+    .oscillo-hint {
+      font-size: 10px;
+      color: var(--color-text-muted);
+      margin-bottom: 4px;
+      flex-shrink: 0;
+    }
+
+    .oscillo-canvas-wrapper {
+      flex: 1 1 auto;
+      min-height: 100px;
+      position: relative;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .oscillo-canvas-wrapper canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .oscillo-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .oscillo-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      background: var(--color-bg);
+      border-radius: var(--radius-sm);
+      border-left: 2px solid;
+    }
+
+    .oscillo-legend-color {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+  </style>
+
+  <!-- Initialisation du thème (le plus tôt possible) -->
+  <script type="module">
+    import { initTheme } from '../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Conteneur pour le canvas Three.js -->
+    <div id="canvas-container">
+      <div class="loading">Chargement</div>
+    </div>
+
+    <!-- HUD (Head-Up Display) -->
+    <div id="hud" class="hud"></div>
+
+    <!-- Panneau des horloges lumineuses -->
+    <div id="clock-panel" class="clock-panel"></div>
+
+    <!-- Vue cockpit depuis l'observateur de référence -->
+    <div id="observer-view" class="observer-view"></div>
+
+    <!-- Panneau de contrôle du moteur -->
+    <div id="motor-panel" class="motor-panel"></div>
+
+    <!-- Graphique Doppler -->
+    <div id="doppler-graph" class="doppler-graph"></div>
+
+    <!-- Gros bouton Play/Pause -->
+    <button id="play-button" class="play-button" title="Play/Pause (Espace)">
+      <span class="play-button-icon">▶</span>
+      <span class="play-button-text">Play</span>
+    </button>
+
+    <!-- Bouton Reset -->
+    <button id="reset-button" class="reset-button" title="Reset (R)">
+      ↺ Reset
+    </button>
+  </div>
+
+  <!-- Import Map pour les dépendances CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "lil-gui": "https://unpkg.com/lil-gui@0.19.2/dist/lil-gui.esm.js"
+      }
+    }
+  </script>
+
+  <!-- Point d'entrée de l'application -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
