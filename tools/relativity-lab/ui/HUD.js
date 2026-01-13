@@ -98,7 +98,7 @@ export class HUD {
 
     // Trouver MOI (l'observateur de référence)
     const me = data.observers.find(o => o.id === data.referenceId);
-    if (!me) return;
+    if (!me) {return;}
 
     // Mon nom
     this.container.querySelector('#hud-my-name').textContent = me.name;
@@ -128,7 +128,7 @@ export class HUD {
     // Ne reconstruire que si nécessaire
     if (select.options.length !== observers.length) {
       select.innerHTML = observers.map(o =>
-        `<option value="${o.id}">${this.#escapeHtml(o.name)}</option>`
+        `<option value="${o.id}">${this.#escapeHtml(o.name)}</option>`,
       ).join('');
     }
 

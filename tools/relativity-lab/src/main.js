@@ -55,7 +55,9 @@ class App {
 
   /**
    * Initialise l'application
+   * @returns {Promise<void>}
    */
+  // eslint-disable-next-line require-await
   async init() {
     // Récupérer les conteneurs DOM
     const canvasContainer = document.getElementById('canvas-container');
@@ -215,7 +217,7 @@ class App {
       'Lab',
       new THREE.Vector3(0, 0, 0),
       new THREE.Vector3(0, 0, 0),
-      { id: 'lab', color: 0xffffff }
+      { id: 'lab', color: 0xffffff },
     );
 
     // Alice : mouvement transversal sur l'axe Y
@@ -223,7 +225,7 @@ class App {
       'Alice',
       new THREE.Vector3(-2, 0, 0),
       new THREE.Vector3(0, 0.3, 0),  // 30% c transversal
-      { color: 0xff6b6b }  // Rouge
+      { color: 0xff6b6b },  // Rouge
     );
 
     // Bob : mouvement longitudinal sur l'axe X
@@ -231,7 +233,7 @@ class App {
       'Bob',
       new THREE.Vector3(3, 0, 0),
       new THREE.Vector3(0.5, 0, 0),  // 50% c longitudinal
-      { color: 0x4fc3f7 }  // Bleu
+      { color: 0x4fc3f7 },  // Bleu
     );
 
     // Charlie : mouvement orthogonal sur l'axe Z
@@ -239,7 +241,7 @@ class App {
       'Charlie',
       new THREE.Vector3(0, 0, 3),
       new THREE.Vector3(0, 0, 0.4),  // 40% c orthogonal
-      { color: 0x4ade80 }  // Vert
+      { color: 0x4ade80 },  // Vert
     );
 
     // Définir Lab comme référentiel par défaut
@@ -274,19 +276,19 @@ class App {
    */
   #updatePlayButton(playing) {
     const playBtn = document.getElementById('play-button');
-    if (!playBtn) return;
+    if (!playBtn) {return;}
 
     const icon = playBtn.querySelector('.play-button-icon');
     const text = playBtn.querySelector('.play-button-text');
 
     if (playing) {
       playBtn.classList.add('play-button--running');
-      if (icon) icon.textContent = '⏸';
-      if (text) text.textContent = 'Pause';
+      if (icon) {icon.textContent = '⏸';}
+      if (text) {text.textContent = 'Pause';}
     } else {
       playBtn.classList.remove('play-button--running');
-      if (icon) icon.textContent = '▶';
-      if (text) text.textContent = 'Play';
+      if (icon) {icon.textContent = '▶';}
+      if (text) {text.textContent = 'Play';}
     }
   }
 
@@ -318,7 +320,7 @@ class App {
         case 'Digit2':
         case 'Digit3':
         case 'Digit4':
-        case 'Digit5':
+        case 'Digit5': {
           // Changer de référentiel avec les touches 1-5
           const index = parseInt(e.code.replace('Digit', '')) - 1;
           const frames = this.simulation.getAvailableFrames();
@@ -326,6 +328,7 @@ class App {
             this.simulation.setReferenceFrame(frames[index].id);
           }
           break;
+        }
 
         case 'KeyG':
           // Basculer la grille
@@ -351,7 +354,7 @@ class App {
 
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme']
+      attributeFilter: ['data-theme'],
     });
 
     // Écouter aussi les changements de media query
@@ -365,7 +368,7 @@ class App {
    * Démarre la boucle de rendu
    */
   start() {
-    if (this.#isRunning) return;
+    if (this.#isRunning) {return;}
     this.#isRunning = true;
     this.#lastTime = performance.now();
     this.#animate();
@@ -375,7 +378,7 @@ class App {
    * Boucle d'animation
    */
   #animate = () => {
-    if (!this.#isRunning) return;
+    if (!this.#isRunning) {return;}
 
     requestAnimationFrame(this.#animate);
 

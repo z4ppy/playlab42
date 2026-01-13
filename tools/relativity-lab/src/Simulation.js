@@ -10,8 +10,7 @@
 
 import * as THREE from 'three';
 import { Observer } from './Observer.js';
-import { PhotonBroadcast, PhotonPool } from './PhotonBroadcast.js';
-import * as Physics from './Physics.js';
+import { PhotonPool } from './PhotonBroadcast.js';
 
 /**
  * États possibles de la simulation
@@ -117,10 +116,10 @@ export class Simulation {
    */
   removeObserver(observerId) {
     // Empêcher la suppression du Lab
-    if (observerId === 'lab') return;
+    if (observerId === 'lab') {return;}
 
     const index = this.observers.findIndex(o => o.id === observerId);
-    if (index === -1) return;
+    if (index === -1) {return;}
 
     const observer = this.observers[index];
     this.scene.remove(observer.mesh);
@@ -273,7 +272,7 @@ export class Simulation {
    * @param {number} deltaTime - Delta temps réel en secondes
    */
   update(deltaTime) {
-    if (this.state !== SimulationState.RUNNING) return;
+    if (this.state !== SimulationState.RUNNING) {return;}
 
     // Calculer le delta temps lab
     const dtLab = deltaTime * this.timeScale;
@@ -344,7 +343,7 @@ export class Simulation {
    */
   #checkReceptions() {
     for (const signal of this.signals) {
-      if (!signal.active) continue;
+      if (!signal.active) {continue;}
 
       for (const observer of this.observers) {
         const received = signal.checkReception(observer.id, observer.position);
@@ -366,7 +365,7 @@ export class Simulation {
             signal.tickNumber,
             dopplerFactor,
             signal.emissionProperTime,
-            lightTravelTime
+            lightTravelTime,
           );
 
           const reception = {

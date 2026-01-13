@@ -164,7 +164,7 @@ export class SceneManager {
     canvas.height = 64;
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = '#' + color.toString(16).padStart(6, '0');
+    ctx.fillStyle = `#${  color.toString(16).padStart(6, '0')}`;
     ctx.font = 'bold 48px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -237,7 +237,7 @@ export class SceneManager {
       const width = this.container.clientWidth;
       const height = this.container.clientHeight;
 
-      if (width === 0 || height === 0) return;
+      if (width === 0 || height === 0) {return;}
 
       this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
@@ -293,7 +293,7 @@ export class SceneManager {
    * Met à jour la position de la cible (suivi lissé de l'observateur)
    */
   #updateTargetFollow() {
-    if (!this.#targetPosition) return;
+    if (!this.#targetPosition) {return;}
 
     const smoothFactor = 0.08;
 

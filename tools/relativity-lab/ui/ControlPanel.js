@@ -39,7 +39,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
     showAxes: true,
 
     // Nouvel observateur
-    newObsName: 'Obs-' + (simulation.observers.length + 1),
+    newObsName: `Obs-${  simulation.observers.length + 1}`,
     newObsPosX: 5,
     newObsPosY: 0,
     newObsPosZ: 0,
@@ -88,7 +88,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
       params.playing = false;
       onPlayToggle(false);
       gui.controllersRecursive().forEach(c => c.updateDisplay());
-    }
+    },
   }, 'reset').name('↺ Reset');
 
   // === Dossier Visualisation ===
@@ -188,12 +188,12 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
       const position = new THREE.Vector3(
         params.newObsPosX,
         params.newObsPosY,
-        params.newObsPosZ
+        params.newObsPosZ,
       );
       const velocity = new THREE.Vector3(
         params.newObsVelX,
         params.newObsVelY,
-        params.newObsVelZ
+        params.newObsVelZ,
       );
 
       if (velocity.length() >= 1) {
@@ -203,7 +203,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
 
       simulation.addObserver(params.newObsName, position, velocity);
 
-      params.newObsName = 'Obs-' + (simulation.observers.length + 1);
+      params.newObsName = `Obs-${  simulation.observers.length + 1}`;
       params.newObsPosX += 2;
 
       updateFrameOptions();
@@ -211,7 +211,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
       buildObserverControls();
 
       gui.controllersRecursive().forEach(c => c.updateDisplay());
-    }
+    },
   }, 'add').name('➕ Ajouter');
 
   // === Dossier Observateurs existants ===
@@ -264,7 +264,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
             updateFrameOptions();
             buildSourcesControls();
             buildObserverControls();
-          }
+          },
         }, 'remove').name('🗑️ Supprimer');
       }
     }
@@ -282,7 +282,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
     if (params.playing !== (simulation.state === 'running')) {
       params.playing = simulation.state === 'running';
       gui.controllersRecursive().forEach(c => {
-        if (c.property === 'playing') c.updateDisplay();
+        if (c.property === 'playing') {c.updateDisplay();}
       });
       onPlayToggle(params.playing);
     }

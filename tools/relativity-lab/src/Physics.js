@@ -362,7 +362,7 @@ export function betaFromRapidity(phi) {
  * @returns {number} Delta-v en fraction de c
  */
 export function photonRocketDeltaV(m0, m1) {
-  if (m1 >= m0 || m1 <= 0) return 0;
+  if (m1 >= m0 || m1 <= 0) {return 0;}
   const rapidityGain = Math.log(m0 / m1);
   return Math.tanh(rapidityGain);
 }
@@ -377,7 +377,7 @@ export function photonRocketDeltaV(m0, m1) {
  * @returns {number} Masse finale requise
  */
 export function photonRocketMassRequired(m0, deltaV) {
-  if (Math.abs(deltaV) >= 1) return 0;
+  if (Math.abs(deltaV) >= 1) {return 0;}
   const rapidityNeeded = Math.atanh(deltaV);
   return m0 * Math.exp(-rapidityNeeded);
 }

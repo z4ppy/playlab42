@@ -129,7 +129,7 @@ export class DopplerGraph {
    */
   #resize() {
     const wrapper = this.container.querySelector('.doppler-graph-canvas-wrapper');
-    if (!wrapper) return;
+    if (!wrapper) {return;}
 
     const rect = wrapper.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
@@ -153,7 +153,7 @@ export class DopplerGraph {
   update(displayData, allObservers) {
     // Trouver l'observateur de référence
     const me = allObservers.find(o => o.id === displayData.referenceId);
-    if (!me) return;
+    if (!me) {return;}
 
     // Mettre à jour les infos des sources
     this.sourceInfo.clear();
@@ -199,9 +199,9 @@ export class DopplerGraph {
   /**
    * Dessine le graphique
    * @param {object} me - Données de l'observateur de référence
-   * @param {string} referenceId - ID de référence
+   * @param {string} _referenceId - ID de référence (non utilisé, conservé pour signature)
    */
-  #draw(me, referenceId) {
+  #draw(me, _referenceId) {
     const ctx = this.ctx;
     const w = this.width;
     const h = this.height;
@@ -237,7 +237,7 @@ export class DopplerGraph {
 
     // Obtenir les sources uniques
     const sources = [...this.sourceInfo.keys()];
-    if (sources.length === 0) return;
+    if (sources.length === 0) {return;}
 
     const rowHeight = graphH / sources.length;
 
@@ -291,11 +291,11 @@ export class DopplerGraph {
     // Dessiner les réceptions
     for (const event of receptionHistory) {
       // Vérifier si dans la fenêtre de temps
-      if (event.tau < tauMin || event.tau > tauMax) continue;
+      if (event.tau < tauMin || event.tau > tauMax) {continue;}
 
       // Trouver l'index de la source
       const sourceIndex = sources.indexOf(event.sourceId);
-      if (sourceIndex === -1) continue;
+      if (sourceIndex === -1) {continue;}
 
       // Position
       const x = marginLeft + ((event.tau - tauMin) / timeRange) * graphW;

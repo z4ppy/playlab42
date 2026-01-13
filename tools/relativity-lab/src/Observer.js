@@ -136,7 +136,6 @@ class LightClock {
    * @returns {boolean} True si un tick a été accompli
    */
   update(dtProper) {
-    const previousPhase = this.phase;
     this.phase += dtProper / this.period;
 
     let ticked = false;
@@ -396,7 +395,7 @@ export class Observer {
     ctx.fill();
 
     // Texte
-    ctx.fillStyle = '#' + this.color.toString(16).padStart(6, '0');
+    ctx.fillStyle = `#${  this.color.toString(16).padStart(6, '0')}`;
     ctx.font = 'bold 32px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -862,7 +861,7 @@ export class Observer {
   dispose() {
     // Dispose des géométries et matériaux
     this.mesh.traverse((obj) => {
-      if (obj.geometry) obj.geometry.dispose();
+      if (obj.geometry) {obj.geometry.dispose();}
       if (obj.material) {
         if (Array.isArray(obj.material)) {
           obj.material.forEach(m => m.dispose());

@@ -153,12 +153,12 @@ export class PhotonBroadcast {
     // Vérifier le rayon maximum
     if (age < 0 || this.radius > this.maxRadius) {
       this.active = false;
-      if (this.mesh) this.mesh.visible = false;
+      if (this.mesh) {this.mesh.visible = false;}
       return;
     }
 
     // En mode léger, pas de mise à jour visuelle
-    if (this.lightweight) return;
+    if (this.lightweight) {return;}
 
     this.mesh.scale.setScalar(Math.max(0.001, this.radius));
   }
@@ -237,8 +237,8 @@ export class PhotonBroadcast {
    */
   dispose() {
     if (this.mesh) {
-      if (this.mesh.geometry) this.mesh.geometry.dispose();
-      if (this.mesh.material) this.mesh.material.dispose();
+      if (this.mesh.geometry) {this.mesh.geometry.dispose();}
+      if (this.mesh.material) {this.mesh.material.dispose();}
     }
   }
 }

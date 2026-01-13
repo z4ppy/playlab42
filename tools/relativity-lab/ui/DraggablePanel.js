@@ -30,7 +30,7 @@ export function makeDraggable(element, storageKey = null) {
         element.style.top = `${top}px`;
         element.style.right = 'auto';
         element.style.bottom = 'auto';
-      } catch (e) {
+      } catch {
         // Ignorer les erreurs de parsing
       }
     }
@@ -62,7 +62,7 @@ export function makeDraggable(element, storageKey = null) {
   };
 
   const onMouseMove = (e) => {
-    if (!isDragging) return;
+    if (!isDragging) {return;}
 
     const deltaX = e.clientX - startX;
     const deltaY = e.clientY - startY;
@@ -84,7 +84,7 @@ export function makeDraggable(element, storageKey = null) {
   };
 
   const onMouseUp = () => {
-    if (!isDragging) return;
+    if (!isDragging) {return;}
 
     isDragging = false;
     handle.style.cursor = 'grab';
@@ -95,20 +95,20 @@ export function makeDraggable(element, storageKey = null) {
       const rect = element.getBoundingClientRect();
       localStorage.setItem(storageKey, JSON.stringify({
         left: rect.left,
-        top: rect.top
+        top: rect.top,
       }));
     }
   };
 
   // Touch support
   const onTouchStart = (e) => {
-    if (e.touches.length !== 1) return;
+    if (e.touches.length !== 1) {return;}
     const touch = e.touches[0];
     onMouseDown({ clientX: touch.clientX, clientY: touch.clientY, target: e.target, preventDefault: () => e.preventDefault() });
   };
 
   const onTouchMove = (e) => {
-    if (!isDragging || e.touches.length !== 1) return;
+    if (!isDragging || e.touches.length !== 1) {return;}
     const touch = e.touches[0];
     onMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
     e.preventDefault();

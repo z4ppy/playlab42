@@ -86,11 +86,11 @@ export class ClockPanel {
 
   #resizeCanvas() {
     const wrapper = this.container.querySelector('.oscillo-canvas-wrapper');
-    if (!wrapper) return;
+    if (!wrapper) {return;}
 
     // Forcer un reflow pour obtenir les bonnes dimensions
     const rect = wrapper.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
+    if (rect.width === 0 || rect.height === 0) {return;}
 
     const dpr = window.devicePixelRatio || 1;
 
@@ -124,7 +124,7 @@ export class ClockPanel {
    */
   #recordPhases(data) {
     const me = data.observers.find(o => o.id === data.referenceId);
-    if (!me) return;
+    if (!me) {return;}
 
     const refTime = me.properTime;
 
@@ -144,7 +144,7 @@ export class ClockPanel {
         refTime,
         phaseH,
         phaseV,
-        properTime: obs.properTime
+        properTime: obs.properTime,
       });
 
       // Garder seulement les points récents
@@ -159,7 +159,7 @@ export class ClockPanel {
    */
   #updateLegend(data) {
     const legend = this.container.querySelector('#oscillo-legend');
-    if (!legend || !data.observers) return;
+    if (!legend || !data.observers) {return;}
 
     legend.innerHTML = data.observers.map((obs, i) => {
       const color = this.#getObserverColor(i);
@@ -195,7 +195,7 @@ export class ClockPanel {
 
     // Trouver le temps de référence actuel
     const me = this.currentData.observers.find(o => o.id === this.currentData.referenceId);
-    if (!me) return;
+    if (!me) {return;}
 
     const currentRefTime = me.properTime;
     // Échelle temporelle FIXE : timeWindow secondes = largeur totale
@@ -217,7 +217,7 @@ export class ClockPanel {
 
     observers.forEach((obs, i) => {
       const history = this.phaseHistory.get(obs.id);
-      if (!history || history.length < 2) return;
+      if (!history || history.length < 2) {return;}
 
       const y0 = margin + i * traceHeight;
       const color = this.#getObserverColor(i);
@@ -315,8 +315,8 @@ export class ClockPanel {
 
     for (const point of history) {
       // Ne pas dessiner les points avant t=0 ou hors fenêtre
-      if (point.refTime < 0 || point.refTime < startTime) continue;
-      if (point.refTime > endTime) continue;
+      if (point.refTime < 0 || point.refTime < startTime) {continue;}
+      if (point.refTime > endTime) {continue;}
 
       const x = ((point.refTime - startTime) / timeSpan) * w;
       // Convertir la phase (0-1) en onde triangulaire (photon qui rebondit)

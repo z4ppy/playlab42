@@ -233,7 +233,7 @@ export class MotorPanel {
     const direction = new THREE.Vector3(
       this.config.directionX,
       this.config.directionY,
-      this.config.directionZ
+      this.config.directionZ,
     );
 
     if (direction.lengthSq() < 0.01) {
@@ -279,15 +279,15 @@ export class MotorPanel {
    * @returns {{direction: THREE.Vector3, deltaMass: number}|null}
    */
   getContinuousThrust() {
-    if (!this.isBurning || !this.burnDirection) return null;
+    if (!this.isBurning || !this.burnDirection) {return null;}
 
-    let direction = new THREE.Vector3(
+    const direction = new THREE.Vector3(
       this.config.directionX,
       this.config.directionY,
-      this.config.directionZ
+      this.config.directionZ,
     );
 
-    if (direction.lengthSq() < 0.01) return null;
+    if (direction.lengthSq() < 0.01) {return null;}
 
     direction.normalize();
 
@@ -323,7 +323,7 @@ export class MotorPanel {
    * @param {object} observerData - Données de l'observateur de référence
    */
   update(observerData) {
-    if (!observerData) return;
+    if (!observerData) {return;}
 
     // Masse
     const massEl = this.container.querySelector('#motor-mass');

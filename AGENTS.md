@@ -119,6 +119,35 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 | Hébergement | GitHub Pages |
 | Workflow | OpenSpec |
 
+## Conventions de tests
+
+### Patterns de fichiers
+
+| Type | Pattern | Exemple |
+|------|---------|---------|
+| Lib simple | `lib/module.test.js` | `lib/seeded-random.test.js` |
+| Lib complexe | `lib/module/__tests__/*.test.js` | `lib/parcours/__tests__/progress.test.js` |
+| Games | `games/[id]/engine.test.js` | `games/tictactoe/engine.test.js` |
+| Tools complexes | `tools/[id]/__tests__/*.test.js` | `tools/relativity-lab/__tests__/Physics.test.js` |
+| Scripts | `scripts/*.test.js` | `scripts/parcours-utils.test.js` |
+
+### Mocks pour les dépendances CDN
+
+Les tools peuvent utiliser des librairies CDN (Three.js, lil-gui...). Les mocks sont dans `tools/__mocks__/` :
+
+- `three.js` - Mock minimal de Three.js (Vector3, Color, Scene...)
+- `three-addons.js` - Mock des addons (OrbitControls...)
+- `lil-gui.js` - Mock de lil-gui
+
+Ces mocks sont automatiquement utilisés par Jest via `moduleNameMapper` dans `jest.config.js`.
+
+### Bonnes pratiques
+
+- Nommer les tests en français avec des descriptions claires
+- Inclure la formule/comportement attendu dans les commentaires
+- Utiliser `describe` pour grouper les tests par fonction/comportement
+- Prévoir les cas limites (valeurs extrêmes, erreurs...)
+
 ## Structure du projet
 
 ```
