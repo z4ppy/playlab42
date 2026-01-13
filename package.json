@@ -12,8 +12,8 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "lint": "eslint lib/ games/ app.js app/ scripts/ parcours/",
-    "lint:fix": "eslint lib/ games/ app.js app/ scripts/ parcours/ --fix"
+    "lint": "eslint lib/ games/ tools/ app.js app/ scripts/ parcours/",
+    "lint:fix": "eslint lib/ games/ tools/ app.js app/ scripts/ parcours/ --fix"
   },
   "keywords": [
     "games",

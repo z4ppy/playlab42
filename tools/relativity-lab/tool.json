@@ -1,0 +1,9 @@
+{
+  "id": "relativity-lab",
+  "name": "Relativity Lab 3D",
+  "description": "Simulateur 3D de relativité restreinte avec horloges à photon et dilatation temporelle",
+  "tags": ["physics", "simulation", "3d", "education"],
+  "author": "Cyrille",
+  "icon": "🚀",
+  "version": "1.0.0"
+}
