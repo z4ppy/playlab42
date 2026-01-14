@@ -279,6 +279,37 @@
               <button class="piano-octave-btn" id="piano-octave-up">+</button>
             </div>
           </div>
+
+          <!-- Effets -->
+          <div class="piano-control-group piano-effects-group">
+            <label class="piano-control-label">Effets</label>
+            <div class="piano-effects">
+              <!-- Reverb -->
+              <div class="piano-effect">
+                <label class="piano-effect-toggle">
+                  <input type="checkbox" id="piano-fx-reverb">
+                  <span>Reverb</span>
+                </label>
+                <input type="range" id="piano-fx-reverb-amount" min="0" max="100" value="30" class="piano-effect-slider">
+              </div>
+              <!-- Delay -->
+              <div class="piano-effect">
+                <label class="piano-effect-toggle">
+                  <input type="checkbox" id="piano-fx-delay">
+                  <span>Delay</span>
+                </label>
+                <input type="range" id="piano-fx-delay-time" min="10" max="500" value="200" class="piano-effect-slider">
+              </div>
+              <!-- Filter -->
+              <div class="piano-effect">
+                <label class="piano-effect-toggle">
+                  <input type="checkbox" id="piano-fx-filter">
+                  <span>Filter</span>
+                </label>
+                <input type="range" id="piano-fx-filter-freq" min="200" max="8000" value="2000" class="piano-effect-slider">
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="piano-note-display" id="piano-note-display">-</div>

@@ -532,6 +532,54 @@ html, body {
   font-size: var(--font-size-lg);
 }
 
+/* Effets du piano */
+.piano-effects-group {
+  flex: 1 1 100%;
+  margin-top: var(--space-xs);
+}
+
+.piano-effects {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.piano-effect {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: 1;
+  min-width: 120px;
+}
+
+.piano-effect-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.piano-effect-toggle input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.piano-effect-slider {
+  flex: 1;
+  min-width: 60px;
+  height: 4px;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+
+.piano-effect-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .piano-help {
   padding: var(--space-sm);
   text-align: center;

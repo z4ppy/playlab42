@@ -1960,6 +1960,9 @@ export class App {
     // Générer les boutons de presets
     this._renderPianoPresets();
 
+    // Initialiser les contrôles d'effets
+    this._initPianoEffects();
+
     // Sélecteur d'instrument (synchronisé avec le panneau synthé)
     const instrumentSelector = document.getElementById('piano-instrument-selector');
     if (instrumentSelector) {
@@ -2033,6 +2036,150 @@ export class App {
 
       container.appendChild(btn);
     });
+  }
+
+  /**
+   * Initialise les contrôles d'effets du piano (synchronisés avec le panneau synthé).
+   */
+  _initPianoEffects() {
+    const config = this._synthConfig?.effects || {
+      reverb: { enabled: false, amount: 0.3 },
+      delay: { enabled: false, time: 0.2 },
+      filter: { enabled: false, frequency: 2000 },
+    };
+
+    // Reverb
+    const reverbCheckbox = document.getElementById('piano-fx-reverb');
+    const reverbSlider = document.getElementById('piano-fx-reverb-amount');
+    if (reverbCheckbox && reverbSlider) {
+      reverbCheckbox.checked = config.reverb.enabled;
+      reverbSlider.value = config.reverb.amount * 100;
+      reverbSlider.disabled = !config.reverb.enabled;
+
+      reverbCheckbox.addEventListener('change', () => {
+        reverbSlider.disabled = !reverbCheckbox.checked;
+        this._updateEffect('reverb', { enabled: reverbCheckbox.checked });
+        this._syncSynthEffectsUI();
+      });
+
+      reverbSlider.addEventListener('input', () => {
+        this._updateEffect('reverb', { amount: reverbSlider.value / 100 });
+        this._syncSynthEffectsUI();
+      });
+    }
+
+    // Delay
+    const delayCheckbox = document.getElementById('piano-fx-delay');
+    const delaySlider = document.getElementById('piano-fx-delay-time');
+    if (delayCheckbox && delaySlider) {
+      delayCheckbox.checked = config.delay.enabled;
+      delaySlider.value = config.delay.time * 1000;
+      delaySlider.disabled = !config.delay.enabled;
+
+      delayCheckbox.addEventListener('change', () => {
+        delaySlider.disabled = !delayCheckbox.checked;
+        this._updateEffect('delay', { enabled: delayCheckbox.checked });
+        this._syncSynthEffectsUI();
+      });
+
+      delaySlider.addEventListener('input', () => {
+        this._updateEffect('delay', { time: delaySlider.value / 1000 });
+        this._syncSynthEffectsUI();
+      });
+    }
+
+    // Filter
+    const filterCheckbox = document.getElementById('piano-fx-filter');
+    const filterSlider = document.getElementById('piano-fx-filter-freq');
+    if (filterCheckbox && filterSlider) {
+      filterCheckbox.checked = config.filter.enabled;
+      filterSlider.value = config.filter.frequency;
+      filterSlider.disabled = !config.filter.enabled;
+
+      filterCheckbox.addEventListener('change', () => {
+        filterSlider.disabled = !filterCheckbox.checked;
+        this._updateEffect('filter', { enabled: filterCheckbox.checked });
+        this._syncSynthEffectsUI();
+      });
+
+      filterSlider.addEventListener('input', () => {
+        this._updateEffect('filter', { frequency: parseInt(filterSlider.value) });
+        this._syncSynthEffectsUI();
+      });
+    }
+  }
+
+  /**
+   * Synchronise l'UI des effets du panneau synthé avec les valeurs actuelles.
+   */
+  _syncSynthEffectsUI() {
+    const config = this._synthConfig?.effects;
+    if (!config) {return;}
+
+    // Reverb
+    const synthReverbEnabled = document.getElementById('fx-reverb-enabled');
+    const synthReverbAmount = document.getElementById('fx-reverb-amount');
+    const synthReverbValue = document.getElementById('fx-reverb-amount-value');
+    if (synthReverbEnabled) {synthReverbEnabled.checked = config.reverb.enabled;}
+    if (synthReverbAmount) {synthReverbAmount.value = config.reverb.amount * 100;}
+    if (synthReverbValue) {synthReverbValue.textContent = `${Math.round(config.reverb.amount * 100)}%`;}
+
+    // Delay
+    const synthDelayEnabled = document.getElementById('fx-delay-enabled');
+    const synthDelayTime = document.getElementById('fx-delay-time');
+    const synthDelayValue = document.getElementById('fx-delay-time-value');
+    if (synthDelayEnabled) {synthDelayEnabled.checked = config.delay.enabled;}
+    if (synthDelayTime) {synthDelayTime.value = config.delay.time * 1000;}
+    if (synthDelayValue) {synthDelayValue.textContent = `${config.delay.time.toFixed(2)}s`;}
+
+    // Filter
+    const synthFilterEnabled = document.getElementById('fx-filter-enabled');
+    const synthFilterFreq = document.getElementById('fx-filter-frequency');
+    const synthFilterValue = document.getElementById('fx-filter-frequency-value');
+    if (synthFilterEnabled) {synthFilterEnabled.checked = config.filter.enabled;}
+    if (synthFilterFreq) {synthFilterFreq.value = config.filter.frequency;}
+    if (synthFilterValue) {synthFilterValue.textContent = `${config.filter.frequency} Hz`;}
+  }
+
+  /**
+   * Synchronise l'UI des effets du piano avec les valeurs actuelles.
+   */
+  _syncPianoEffectsUI() {
+    const config = this._synthConfig?.effects;
+    if (!config) {return;}
+
+    // Reverb
+    const pianoReverbEnabled = document.getElementById('piano-fx-reverb');
+    const pianoReverbAmount = document.getElementById('piano-fx-reverb-amount');
+    if (pianoReverbEnabled) {
+      pianoReverbEnabled.checked = config.reverb.enabled;
+      if (pianoReverbAmount) {
+        pianoReverbAmount.value = config.reverb.amount * 100;
+        pianoReverbAmount.disabled = !config.reverb.enabled;
+      }
+    }
+
+    // Delay
+    const pianoDelayEnabled = document.getElementById('piano-fx-delay');
+    const pianoDelayTime = document.getElementById('piano-fx-delay-time');
+    if (pianoDelayEnabled) {
+      pianoDelayEnabled.checked = config.delay.enabled;
+      if (pianoDelayTime) {
+        pianoDelayTime.value = config.delay.time * 1000;
+        pianoDelayTime.disabled = !config.delay.enabled;
+      }
+    }
+
+    // Filter
+    const pianoFilterEnabled = document.getElementById('piano-fx-filter');
+    const pianoFilterFreq = document.getElementById('piano-fx-filter-freq');
+    if (pianoFilterEnabled) {
+      pianoFilterEnabled.checked = config.filter.enabled;
+      if (pianoFilterFreq) {
+        pianoFilterFreq.value = config.filter.frequency;
+        pianoFilterFreq.disabled = !config.filter.enabled;
+      }
+    }
   }
 
   /**
@@ -2451,6 +2598,9 @@ export class App {
 
     this._synthConfig = this.audioEngine.getSettings();
     this._saveSynthSettings();
+
+    // Synchroniser l'UI du piano si les contrôles existent
+    this._syncPianoEffectsUI();
   }
 
   /**
