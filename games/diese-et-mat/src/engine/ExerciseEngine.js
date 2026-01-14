@@ -176,7 +176,7 @@ export class ExerciseEngine {
         });
 
       default:
-        return this.generator.generateNote();
+        throw new Error(`Mode d'exercice non supporté: ${mode}`);
     }
   }
 

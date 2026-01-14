@@ -73,7 +73,7 @@ const FRENCH_NAMES = {
  */
 const DEGREE_NAMES = {
   1: 'tonique',
-  2: 'sutonique',
+  2: 'sus-tonique',
   3: 'médiante',
   4: 'sous-dominante',
   5: 'dominante',

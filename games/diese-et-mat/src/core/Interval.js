@@ -102,7 +102,8 @@ export class Interval {
     }
 
     // Vérifier la cohérence qualité/numéro
-    const simpleNumber = ((number - 1) % 7) + 1;
+    // Calcul du numéro simple : 9→2, 10→3, ..., 15→8 (même formule que le getter)
+    const simpleNumber = number <= 8 ? number : ((number - 2) % 7) + 2;
     const isPerfectInterval = PERFECT_INTERVALS.includes(simpleNumber);
 
     if (isPerfectInterval && (quality === 'major' || quality === 'minor')) {
