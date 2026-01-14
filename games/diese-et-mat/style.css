@@ -88,6 +88,46 @@ html, body {
 }
 
 /* ============================================================================
+   Bouton Retour
+   ============================================================================ */
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-back:hover {
+  background: var(--color-accent-hover, var(--color-accent));
+  transform: translateX(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-back:active {
+  transform: translateX(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-back .btn-back-icon {
+  font-size: 1.2em;
+  transition: transform var(--transition-fast);
+}
+
+.btn-back:hover .btn-back-icon {
+  transform: translateX(-3px);
+}
+
+/* ============================================================================
    Memo Popup
    ============================================================================ */
 

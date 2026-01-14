@@ -1739,13 +1739,10 @@ export class App {
       <div style="padding: var(--space-lg); max-width: 600px; margin: 0 auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
           <h2>Ma progression</h2>
-          <button onclick="app.showView('menu')" style="
-            padding: var(--space-xs) var(--space-sm);
-            background: var(--color-bg-secondary);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-          ">← Retour</button>
+          <button onclick="app.showView('menu')" class="btn-back">
+            <span class="btn-back-icon">←</span>
+            <span>Retour</span>
+          </button>
         </div>
 
         <!-- Niveau global -->
@@ -1827,13 +1824,10 @@ export class App {
       <div style="padding: var(--space-lg); max-width: 600px; margin: 0 auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
           <h2>Paramètres</h2>
-          <button onclick="app.showView('menu')" style="
-            padding: var(--space-xs) var(--space-sm);
-            background: var(--color-bg-secondary);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-          ">← Retour</button>
+          <button onclick="app.showView('menu')" class="btn-back">
+            <span class="btn-back-icon">←</span>
+            <span>Retour</span>
+          </button>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: var(--space-md);">
