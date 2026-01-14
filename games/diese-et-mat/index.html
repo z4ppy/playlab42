@@ -259,9 +259,41 @@
           <span class="piano-title">🎹 Clavier</span>
           <button class="piano-close" id="piano-close">&times;</button>
         </div>
+
+        <!-- Contrôles -->
+        <div class="piano-controls">
+          <!-- Sélecteur d'instrument -->
+          <div class="piano-control-group">
+            <label class="piano-control-label">Instrument</label>
+            <div class="piano-instrument-selector" id="piano-instrument-selector">
+              <button class="piano-instrument-btn active" data-preset="piano">🎹 Piano</button>
+              <button class="piano-instrument-btn" data-preset="organ">🎵 Orgue</button>
+              <button class="piano-instrument-btn" data-preset="synthLead">🎛️ Synth</button>
+              <button class="piano-instrument-btn" data-preset="electricPiano">⚡ Élec.</button>
+              <button class="piano-instrument-btn" data-preset="bell">🔔 Cloche</button>
+              <button class="piano-instrument-btn" data-preset="retro8bit">👾 8-bit</button>
+            </div>
+          </div>
+
+          <!-- Contrôle d'octave -->
+          <div class="piano-control-group">
+            <label class="piano-control-label">Octave</label>
+            <div class="piano-octave-control">
+              <button class="piano-octave-btn" id="piano-octave-down">−</button>
+              <span class="piano-octave-value" id="piano-octave-value">4</span>
+              <button class="piano-octave-btn" id="piano-octave-up">+</button>
+            </div>
+          </div>
+        </div>
+
         <div class="piano-note-display" id="piano-note-display">-</div>
         <div class="piano-keyboard" id="piano-keyboard">
           <!-- Les touches sont générées par JavaScript -->
+        </div>
+
+        <!-- Aide clavier -->
+        <div class="piano-help">
+          Utilisez les touches <kbd>Q</kbd><kbd>S</kbd><kbd>D</kbd><kbd>F</kbd>... pour jouer
         </div>
       </div>
     </div>

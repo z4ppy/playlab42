@@ -444,6 +444,114 @@ html, body {
   color: var(--color-accent);
 }
 
+/* Contrôles du piano */
+.piano-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.piano-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.piano-control-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.piano-instrument-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.piano-instrument-btn {
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.piano-instrument-btn:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-accent);
+}
+
+.piano-instrument-btn.active {
+  background: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+.piano-octave-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.piano-octave-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.piano-octave-btn:hover {
+  background: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+.piano-octave-btn:active {
+  transform: scale(0.95);
+}
+
+.piano-octave-value {
+  min-width: 24px;
+  text-align: center;
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+}
+
+.piano-help {
+  padding: var(--space-sm);
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+.piano-help kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 0 2px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
 /* ============================================================================
    Rhythm Exercise
    ============================================================================ */

@@ -1932,6 +1932,7 @@ export class App {
     if (this.elements.pianoOverlay) {
       this.elements.pianoOverlay.classList.add('visible');
       this._initPianoKeyboard();
+      this._initPianoControls();
     }
   }
 
@@ -1942,6 +1943,65 @@ export class App {
     if (this.elements.pianoOverlay) {
       this.elements.pianoOverlay.classList.remove('visible');
     }
+  }
+
+  /**
+   * Initialise les contrôles du piano (instrument, octave).
+   */
+  _initPianoControls() {
+    if (this._pianoControlsInitialized) {return;}
+
+    // État du piano
+    this._pianoState = {
+      preset: 'piano',
+      baseOctave: 4,
+    };
+
+    // Sélecteur d'instrument (synchronisé avec le panneau synthé)
+    const instrumentSelector = document.getElementById('piano-instrument-selector');
+    if (instrumentSelector) {
+      instrumentSelector.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.piano-instrument-btn');
+        if (!btn) {return;}
+
+        const preset = btn.dataset.preset;
+        // Utiliser la méthode centralisée pour synchroniser piano et synthé
+        await this._selectPreset(preset);
+      });
+    }
+
+    // Contrôle d'octave
+    const octaveDown = document.getElementById('piano-octave-down');
+    const octaveUp = document.getElementById('piano-octave-up');
+    const octaveValue = document.getElementById('piano-octave-value');
+
+    if (octaveDown && octaveUp && octaveValue) {
+      octaveDown.addEventListener('click', () => {
+        if (this._pianoState.baseOctave > 1) {
+          this._pianoState.baseOctave--;
+          octaveValue.textContent = this._pianoState.baseOctave;
+          this._rebuildPianoKeyboard();
+        }
+      });
+
+      octaveUp.addEventListener('click', () => {
+        if (this._pianoState.baseOctave < 6) {
+          this._pianoState.baseOctave++;
+          octaveValue.textContent = this._pianoState.baseOctave;
+          this._rebuildPianoKeyboard();
+        }
+      });
+    }
+
+    this._pianoControlsInitialized = true;
+  }
+
+  /**
+   * Reconstruit le clavier piano avec la nouvelle octave.
+   */
+  _rebuildPianoKeyboard() {
+    this._pianoInitialized = false;
+    this._initPianoKeyboard();
   }
 
   /**
@@ -2251,13 +2311,23 @@ export class App {
   }
 
   /**
-   * Sélectionne un preset.
+   * Sélectionne un preset (synchronise piano et panneau synthé).
    */
   async _selectPreset(presetName) {
-    // Mettre à jour l'UI
+    // Mettre à jour l'UI du panneau synthé
     document.querySelectorAll('.synth-preset-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.preset === presetName);
     });
+
+    // Mettre à jour l'UI du piano
+    document.querySelectorAll('.piano-instrument-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.preset === presetName);
+    });
+
+    // Mettre à jour l'état du piano
+    if (this._pianoState) {
+      this._pianoState.preset = presetName;
+    }
 
     // Appliquer au moteur audio
     if (!this.audioEngine) {
@@ -3219,32 +3289,37 @@ export class App {
   _initPianoKeyboard() {
     if (!this.elements.pianoKeyboard || this._pianoInitialized) {return;}
 
-    // Définition des notes sur 2 octaves (C4-B5)
+    // Octave de base (peut être modifiée par les contrôles)
+    const baseOctave = this._pianoState?.baseOctave || 4;
+    const octave1 = baseOctave;
+    const octave2 = baseOctave + 1;
+
+    // Définition des notes sur 2 octaves
     const notes = [
-      { note: 'C4', isBlack: false, label: 'Q' },
-      { note: 'C#4', isBlack: true, label: '2' },
-      { note: 'D4', isBlack: false, label: 'S' },
-      { note: 'D#4', isBlack: true, label: '3' },
-      { note: 'E4', isBlack: false, label: 'D' },
-      { note: 'F4', isBlack: false, label: 'F' },
-      { note: 'F#4', isBlack: true, label: '5' },
-      { note: 'G4', isBlack: false, label: 'G' },
-      { note: 'G#4', isBlack: true, label: '6' },
-      { note: 'A4', isBlack: false, label: 'H' },
-      { note: 'A#4', isBlack: true, label: '7' },
-      { note: 'B4', isBlack: false, label: 'J' },
-      { note: 'C5', isBlack: false, label: 'K' },
-      { note: 'C#5', isBlack: true, label: '9' },
-      { note: 'D5', isBlack: false, label: 'L' },
-      { note: 'D#5', isBlack: true, label: '0' },
-      { note: 'E5', isBlack: false, label: 'M' },
-      { note: 'F5', isBlack: false, label: 'W' },
-      { note: 'F#5', isBlack: true, label: '' },
-      { note: 'G5', isBlack: false, label: 'X' },
-      { note: 'G#5', isBlack: true, label: '' },
-      { note: 'A5', isBlack: false, label: 'C' },
-      { note: 'A#5', isBlack: true, label: '' },
-      { note: 'B5', isBlack: false, label: 'V' },
+      { note: `C${octave1}`, isBlack: false, label: 'Q' },
+      { note: `C#${octave1}`, isBlack: true, label: '2' },
+      { note: `D${octave1}`, isBlack: false, label: 'S' },
+      { note: `D#${octave1}`, isBlack: true, label: '3' },
+      { note: `E${octave1}`, isBlack: false, label: 'D' },
+      { note: `F${octave1}`, isBlack: false, label: 'F' },
+      { note: `F#${octave1}`, isBlack: true, label: '5' },
+      { note: `G${octave1}`, isBlack: false, label: 'G' },
+      { note: `G#${octave1}`, isBlack: true, label: '6' },
+      { note: `A${octave1}`, isBlack: false, label: 'H' },
+      { note: `A#${octave1}`, isBlack: true, label: '7' },
+      { note: `B${octave1}`, isBlack: false, label: 'J' },
+      { note: `C${octave2}`, isBlack: false, label: 'K' },
+      { note: `C#${octave2}`, isBlack: true, label: '9' },
+      { note: `D${octave2}`, isBlack: false, label: 'L' },
+      { note: `D#${octave2}`, isBlack: true, label: '0' },
+      { note: `E${octave2}`, isBlack: false, label: 'M' },
+      { note: `F${octave2}`, isBlack: false, label: 'W' },
+      { note: `F#${octave2}`, isBlack: true, label: '' },
+      { note: `G${octave2}`, isBlack: false, label: 'X' },
+      { note: `G#${octave2}`, isBlack: true, label: '' },
+      { note: `A${octave2}`, isBlack: false, label: 'C' },
+      { note: `A#${octave2}`, isBlack: true, label: '' },
+      { note: `B${octave2}`, isBlack: false, label: 'V' },
     ];
 
     // Mapping clavier AZERTY -> note
@@ -3336,13 +3411,17 @@ export class App {
       try {
         await this.audioEngine.start();
         this.audioReady = true;
+
+        // Appliquer le preset sélectionné au démarrage
+        const preset = this._pianoState?.preset || 'piano';
+        this.audioEngine.setPreset(preset);
       } catch {
         console.warn('Impossible de démarrer l\'audio');
         return;
       }
     }
 
-    // Utiliser le synthé piano dédié (son propre, sans effets)
+    // Jouer via le synthé partagé (preset appliqué automatiquement)
     this.audioEngine.playPianoNote(note, 0.5);
   }
 
@@ -3688,12 +3767,12 @@ export class App {
       }
     }
 
-    // Utiliser le son neutre (pianoSynth) pour les exercices
+    // Jouer via le synthé partagé
     this.audioEngine.playPianoNote(pitch, 0.8);
   }
 
   /**
-   * Joue un accord avec l'audio (son neutre pour exercices).
+   * Joue un accord avec l'audio.
    * @param {import('./core/Pitch.js').Pitch[]} pitches - Notes de l'accord
    */
   async playChordAudio(pitches) {
@@ -3714,7 +3793,7 @@ export class App {
       }
     }
 
-    // Utiliser le son neutre (pianoSynth) pour les exercices
+    // Jouer via le synthé partagé
     this.audioEngine.playPianoChord(pitches, 1);
   }
 }
