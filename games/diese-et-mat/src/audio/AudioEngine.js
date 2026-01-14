@@ -38,6 +38,21 @@ const SYNTH_PRESETS = {
     oscillator: { type: 'sine' },
     envelope: { attack: 0.01, decay: 0.01, sustain: 0.9, release: 0.3 },
   },
+  guitarClassic: {
+    name: 'Guitare Class.',
+    oscillator: { type: 'triangle' },
+    envelope: { attack: 0.01, decay: 0.3, sustain: 0.2, release: 0.5 },
+  },
+  guitarFolk: {
+    name: 'Guitare Folk',
+    oscillator: { type: 'sawtooth' },
+    envelope: { attack: 0.005, decay: 0.4, sustain: 0.15, release: 0.4 },
+  },
+  guitarElectric: {
+    name: 'Guitare Élec.',
+    oscillator: { type: 'sawtooth' },
+    envelope: { attack: 0.01, decay: 0.2, sustain: 0.6, release: 0.3 },
+  },
   synthLead: {
     name: 'Synth Lead',
     oscillator: { type: 'sawtooth' },
@@ -52,6 +67,16 @@ const SYNTH_PRESETS = {
     name: 'Cloche',
     oscillator: { type: 'sine' },
     envelope: { attack: 0.001, decay: 0.8, sustain: 0.1, release: 1.2 },
+  },
+  percDrum: {
+    name: 'Tambour',
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.001, decay: 0.2, sustain: 0.0, release: 0.1 },
+  },
+  percWood: {
+    name: 'Wood Block',
+    oscillator: { type: 'triangle' },
+    envelope: { attack: 0.001, decay: 0.08, sustain: 0.0, release: 0.05 },
   },
   retro8bit: {
     name: '8-bit',

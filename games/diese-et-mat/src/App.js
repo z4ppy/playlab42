@@ -2019,9 +2019,14 @@ export class App {
     const icons = {
       piano: '🎹',
       organ: '🎵',
+      guitarClassic: '🎸',
+      guitarFolk: '🪕',
+      guitarElectric: '🎸',
       synthLead: '🎛️',
       electricPiano: '⚡',
       bell: '🔔',
+      percDrum: '🥁',
+      percWood: '🪵',
       retro8bit: '👾',
     };
 
