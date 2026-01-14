@@ -8,3 +8,4 @@
 
 export { AudioEngine } from './AudioEngine.js';
 export { Metronome } from './Metronome.js';
+export { SynthManager } from './SynthManager.js';

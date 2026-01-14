@@ -9,8 +9,11 @@
 import GameKit from '../../../lib/gamekit.js';
 import { ExerciseEngine } from './engine/ExerciseEngine.js';
 import { StaffRenderer } from './renderer/StaffRenderer.js';
-import { AudioEngine } from './audio/AudioEngine.js';
-import { Metronome } from './audio/Metronome.js';
+import { SynthManager } from './audio/index.js';
+import { TunerController } from './controllers/TunerController.js';
+import { MetronomeController } from './controllers/MetronomeController.js';
+import { SynthController } from './controllers/SynthController.js';
+import { PianoController } from './controllers/PianoController.js';
 
 // ============================================================================
 // Classe App
@@ -45,14 +48,32 @@ export class App {
     /** @type {Object|null} Données des exercices */
     this.exercisesData = null;
 
-    /** @type {AudioEngine|null} Moteur audio */
-    this.audioEngine = null;
+    /** @type {TunerController|null} Contrôleur de l'accordeur */
+    this.tunerController = null;
 
-    /** @type {Metronome|null} Métronome */
-    this.metronome = null;
+    /** @type {MetronomeController|null} Contrôleur du métronome */
+    this.metronomeController = null;
+
+    /** @type {SynthManager|null} Gestionnaire centralisé du synthétiseur */
+    this.synthManager = null;
+
+    /** @type {SynthController|null} Contrôleur du panneau synthétiseur */
+    this.synthController = null;
+
+    /** @type {PianoController|null} Contrôleur du piano virtuel */
+    this.pianoController = null;
 
     /** @type {Object|null} État du mode rythme */
     this.rhythmState = null;
+
+    /** @type {Function|null} Handler pour keydown global */
+    this._keydownHandler = null;
+
+    /** @type {Function|null} Handler pour keyup global */
+    this._keyupHandler = null;
+
+    /** @type {boolean} Flag pour éviter les appels concurrents à startExercise */
+    this._startingExercise = false;
 
     /** @type {Object} Paramètres utilisateur */
     this.settings = {
@@ -88,6 +109,9 @@ export class App {
   init() {
     // Cacher le loading et récupérer les références DOM
     this.cacheElements();
+
+    // Initialiser les controllers
+    this._initControllers();
 
     // Charger la progression et les paramètres sauvegardés
     this.loadProgress();
@@ -161,6 +185,76 @@ export class App {
   }
 
   /**
+   * Initialise les controllers.
+   * @private
+   */
+  _initControllers() {
+    // Gestionnaire centralisé du synthétiseur (partagé entre piano et panneau synthé)
+    this.synthManager = new SynthManager();
+
+    // Controller de l'accordeur
+    this.tunerController = new TunerController({
+      overlay: this.elements.tunerOverlay,
+      toggle: this.elements.tunerToggle,
+      note: this.elements.tunerNote,
+      octave: this.elements.tunerOctave,
+      frequency: this.elements.tunerFrequency,
+      cents: this.elements.tunerCents,
+      indicator: this.elements.tunerIndicator,
+      status: this.elements.tunerStatus,
+      graph: this.elements.tunerGraph,
+      graphRange: this.elements.tunerGraphRange,
+      history: this.elements.tunerHistory,
+      liveDot: this.elements.tunerLiveDot,
+    }, {
+      formatNote: (note, includeOctave, octave) => this.formatNote(note, includeOctave, octave),
+    });
+
+    // Controller du métronome
+    this.metronomeController = new MetronomeController({
+      overlay: this.elements.metronomeOverlay,
+      bpmValue: this.elements.metronomeBpmValue,
+      beats: this.elements.metronomeBeats,
+      tempoSlider: this.elements.metronomeTempoSlider,
+      timeSignature: this.elements.metronomeTimeSignature,
+      playBtn: this.elements.metronomePlayBtn,
+    }, {
+      getAudioEngine: () => this.synthManager?.audioEngine,
+      ensureAudioReady: () => this.synthManager?.ensureAudioReady(),
+    });
+
+    // Controller du panneau synthétiseur
+    this.synthController = new SynthController({
+      overlay: this.elements.synthOverlay,
+      presetsContainer: this.elements.synthPresets,
+      oscillatorsContainer: this.elements.synthOscillators,
+      typeTabs: document.getElementById('synth-type-tabs'),
+      typeInfo: document.getElementById('synth-type-info'),
+      testBtn: this.elements.synthTestBtn,
+    }, {
+      synthManager: this.synthManager,
+    });
+
+    // Controller du piano virtuel
+    this.pianoController = new PianoController({
+      overlay: this.elements.pianoOverlay,
+      keyboard: this.elements.pianoKeyboard,
+      noteDisplay: this.elements.pianoNoteDisplay,
+      presetsContainer: document.getElementById('piano-instrument-selector'),
+    }, {
+      synthManager: this.synthManager,
+    });
+  }
+
+  /**
+   * Accès au métronome (via le controller).
+   * @returns {import('./audio/Metronome.js').Metronome|null}
+   */
+  get metronome() {
+    return this.metronomeController?.metronome || null;
+  }
+
+  /**
    * Configure les écouteurs d'événements.
    */
   setupEventListeners() {
@@ -224,33 +318,33 @@ export class App {
       this._testSynthSound();
     });
 
-    // Bouton métronome
+    // Bouton métronome (délégué au MetronomeController)
     this.elements.btnMetronome?.addEventListener('click', () => {
-      this.showMetronome();
+      this.metronomeController?.show();
     });
 
     this.elements.metronomeClose?.addEventListener('click', () => {
-      this.hideMetronome();
+      this.metronomeController?.hide();
     });
 
     this.elements.metronomeOverlay?.addEventListener('click', (e) => {
       if (e.target === this.elements.metronomeOverlay) {
-        this.hideMetronome();
+        this.metronomeController?.hide();
       }
     });
 
-    // Bouton accordeur
+    // Bouton accordeur (délégué au TunerController)
     this.elements.btnTuner?.addEventListener('click', () => {
-      this.showTuner();
+      this.tunerController?.show();
     });
 
     this.elements.tunerClose?.addEventListener('click', () => {
-      this.hideTuner();
+      this.tunerController?.hide();
     });
 
     this.elements.tunerOverlay?.addEventListener('click', (e) => {
       if (e.target === this.elements.tunerOverlay) {
-        this.hideTuner();
+        this.tunerController?.hide();
       }
     });
 
@@ -277,14 +371,12 @@ export class App {
     document.addEventListener('keydown', initAudioOnFirstClick, { once: true });
 
     // Raccourcis clavier globaux
-    document.addEventListener('keydown', (e) => {
-      this.handleKeydown(e);
-    });
+    this._keydownHandler = (e) => this.handleKeydown(e);
+    document.addEventListener('keydown', this._keydownHandler);
 
     // Relâchement des touches (pour sustain prolongé)
-    document.addEventListener('keyup', (e) => {
-      this.handleKeyup(e);
-    });
+    this._keyupHandler = (e) => this.handleKeyup(e);
+    document.addEventListener('keyup', this._keyupHandler);
   }
 
   /**
@@ -552,21 +644,29 @@ export class App {
    * @param {string} exerciseId - ID de l'exercice
    */
   async startExercise(exerciseId) {
-    // Charger les données d'exercices si pas encore fait
-    if (!this.exercisesData) {
-      try {
+    // Protection contre les appels concurrents (double-clic rapide)
+    if (this._startingExercise) {
+      return;
+    }
+    this._startingExercise = true;
+
+    try {
+      // Charger les données d'exercices si pas encore fait
+      if (!this.exercisesData) {
         const response = await fetch('./data/exercises.json');
         this.exercisesData = await response.json();
-      } catch (error) {
-        console.error('Erreur chargement exercises.json:', error);
-        return;
       }
+    } catch (error) {
+      console.error('Erreur chargement exercises.json:', error);
+      this._startingExercise = false;
+      return;
     }
 
     // Trouver l'exercice
     const exercise = this.exercisesData.exercises.find(e => e.id === exerciseId);
     if (!exercise) {
       console.error('Exercice non trouvé:', exerciseId);
+      this._startingExercise = false;
       return;
     }
 
@@ -580,6 +680,9 @@ export class App {
     // Démarrer la session
     const firstQuestion = this.engine.startSession(exercise);
     this.showQuestion(firstQuestion);
+
+    // Réinitialiser le flag après le démarrage réussi
+    this._startingExercise = false;
   }
 
   /**
@@ -1172,23 +1275,15 @@ export class App {
     const startBtn = document.getElementById('btn-start-rhythm');
     if (startBtn) {startBtn.style.display = 'none';}
 
-    // Initialiser l'audio
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-
+    // Initialiser l'audio et le métronome
     try {
-      await this.audioEngine.start();
+      await this._ensureAudioReady();
 
-      // Créer/configurer le métronome
-      if (!this.metronome) {
-        this.metronome = new Metronome(this.audioEngine, {
-          tempo: this.rhythmState.tempo,
-          timeSignature: { beats: this.rhythmState.beatsPerMeasure, beatValue: 4 },
-        });
-      } else {
-        this.metronome.setTempo(this.rhythmState.tempo);
-        this.metronome.setTimeSignature(this.rhythmState.beatsPerMeasure, 4);
+      // S'assurer que le métronome est prêt via le controller
+      const metronome = await this.metronomeController?.ensureReady();
+      if (metronome) {
+        metronome.setTempo(this.rhythmState.tempo);
+        metronome.setTimeSignature(this.rhythmState.beatsPerMeasure, 4);
       }
     } catch {
       console.warn('Audio non disponible, mode silencieux');
@@ -1934,2011 +2029,28 @@ export class App {
    * Affiche le clavier piano.
    */
   showPiano() {
-    if (this.elements.pianoOverlay) {
-      this.elements.pianoOverlay.classList.add('visible');
-      this._initPianoKeyboard();
-      this._initPianoControls();
-    }
+    this.pianoController?.show();
   }
 
   /**
    * Cache le clavier piano.
    */
   hidePiano() {
-    if (this.elements.pianoOverlay) {
-      this.elements.pianoOverlay.classList.remove('visible');
-    }
-  }
-
-  /**
-   * Initialise les contrôles du piano (instrument, octave).
-   */
-  _initPianoControls() {
-    if (this._pianoControlsInitialized) {return;}
-
-    // Charger les réglages sauvegardés (partagés avec le panneau synthé)
-    this._loadSynthSettings();
-
-    // État du piano (utiliser le preset actuel du synthé)
-    this._pianoState = {
-      preset: this._synthConfig?.preset || 'piano',
-      baseOctave: 4,
-    };
-
-    // Générer les boutons de presets
-    this._renderPianoPresets();
-
-    // Initialiser les contrôles d'effets
-    this._initPianoEffects();
-
-    // Sélecteur d'instrument (synchronisé avec le panneau synthé)
-    const instrumentSelector = document.getElementById('piano-instrument-selector');
-    if (instrumentSelector) {
-      instrumentSelector.addEventListener('click', async (e) => {
-        const btn = e.target.closest('.piano-instrument-btn');
-        if (!btn) {return;}
-
-        const preset = btn.dataset.preset;
-        // Utiliser la méthode centralisée pour synchroniser piano et synthé
-        await this._selectPreset(preset);
-      });
-    }
-
-    // Contrôle d'octave
-    const octaveDown = document.getElementById('piano-octave-down');
-    const octaveUp = document.getElementById('piano-octave-up');
-    const octaveValue = document.getElementById('piano-octave-value');
-
-    if (octaveDown && octaveUp && octaveValue) {
-      octaveDown.addEventListener('click', () => {
-        if (this._pianoState.baseOctave > 1) {
-          this._pianoState.baseOctave--;
-          octaveValue.textContent = this._pianoState.baseOctave;
-          this._rebuildPianoKeyboard();
-        }
-      });
-
-      octaveUp.addEventListener('click', () => {
-        if (this._pianoState.baseOctave < 6) {
-          this._pianoState.baseOctave++;
-          octaveValue.textContent = this._pianoState.baseOctave;
-          this._rebuildPianoKeyboard();
-        }
-      });
-    }
-
-    this._pianoControlsInitialized = true;
-  }
-
-  /**
-   * Génère les boutons de presets du piano (identiques au panneau synthé).
-   */
-  _renderPianoPresets() {
-    const container = document.getElementById('piano-instrument-selector');
-    if (!container) {return;}
-
-    const presets = AudioEngine.getPresets();
-    const currentPreset = this._pianoState?.preset || this._synthConfig?.preset || 'piano';
-
-    // Icônes pour chaque preset
-    const icons = {
-      piano: '🎹',
-      electricPiano: '⚡',
-      organ: '🎵',
-      guitarClassic: '🎸',
-      guitarFolk: '🪕',
-      guitarElectric: '🎸',
-      synthLead: '🎛️',
-      retro8bit: '👾',
-      bell: '🔔',
-      percKick: '🥁',
-      percTom: '🪘',
-      percWood: '🪵',
-      percHihat: '🔔',
-      percCymbal: '🥏',
-    };
-
-    container.innerHTML = '';
-
-    Object.entries(presets).forEach(([key, preset]) => {
-      const btn = document.createElement('button');
-      btn.className = 'piano-instrument-btn';
-      btn.dataset.preset = key;
-      btn.textContent = `${icons[key] || '🎵'} ${preset.name}`;
-
-      if (currentPreset === key) {
-        btn.classList.add('active');
-      }
-
-      container.appendChild(btn);
-    });
-  }
-
-  /**
-   * Initialise les contrôles d'effets du piano (synchronisés avec le panneau synthé).
-   */
-  _initPianoEffects() {
-    const config = this._synthConfig?.effects || {
-      reverb: { enabled: false, amount: 0.3 },
-      delay: { enabled: false, time: 0.2 },
-      filter: { enabled: false, frequency: 2000 },
-    };
-
-    // Reverb
-    const reverbCheckbox = document.getElementById('piano-fx-reverb');
-    const reverbSlider = document.getElementById('piano-fx-reverb-amount');
-    if (reverbCheckbox && reverbSlider) {
-      reverbCheckbox.checked = config.reverb.enabled;
-      reverbSlider.value = config.reverb.amount * 100;
-      reverbSlider.disabled = !config.reverb.enabled;
-
-      reverbCheckbox.addEventListener('change', () => {
-        reverbSlider.disabled = !reverbCheckbox.checked;
-        this._updateEffect('reverb', { enabled: reverbCheckbox.checked });
-        this._syncSynthEffectsUI();
-      });
-
-      reverbSlider.addEventListener('input', () => {
-        this._updateEffect('reverb', { amount: reverbSlider.value / 100 });
-        this._syncSynthEffectsUI();
-      });
-    }
-
-    // Delay
-    const delayCheckbox = document.getElementById('piano-fx-delay');
-    const delaySlider = document.getElementById('piano-fx-delay-time');
-    if (delayCheckbox && delaySlider) {
-      delayCheckbox.checked = config.delay.enabled;
-      delaySlider.value = config.delay.time * 1000;
-      delaySlider.disabled = !config.delay.enabled;
-
-      delayCheckbox.addEventListener('change', () => {
-        delaySlider.disabled = !delayCheckbox.checked;
-        this._updateEffect('delay', { enabled: delayCheckbox.checked });
-        this._syncSynthEffectsUI();
-      });
-
-      delaySlider.addEventListener('input', () => {
-        this._updateEffect('delay', { time: delaySlider.value / 1000 });
-        this._syncSynthEffectsUI();
-      });
-    }
-
-    // Filter
-    const filterCheckbox = document.getElementById('piano-fx-filter');
-    const filterSlider = document.getElementById('piano-fx-filter-freq');
-    if (filterCheckbox && filterSlider) {
-      filterCheckbox.checked = config.filter.enabled;
-      filterSlider.value = config.filter.frequency;
-      filterSlider.disabled = !config.filter.enabled;
-
-      filterCheckbox.addEventListener('change', () => {
-        filterSlider.disabled = !filterCheckbox.checked;
-        this._updateEffect('filter', { enabled: filterCheckbox.checked });
-        this._syncSynthEffectsUI();
-      });
-
-      filterSlider.addEventListener('input', () => {
-        this._updateEffect('filter', { frequency: parseInt(filterSlider.value) });
-        this._syncSynthEffectsUI();
-      });
-    }
-  }
-
-  /**
-   * Synchronise l'UI des effets du panneau synthé avec les valeurs actuelles.
-   */
-  _syncSynthEffectsUI() {
-    const config = this._synthConfig?.effects;
-    if (!config) {return;}
-
-    // Reverb
-    const synthReverbEnabled = document.getElementById('fx-reverb-enabled');
-    const synthReverbAmount = document.getElementById('fx-reverb-amount');
-    const synthReverbValue = document.getElementById('fx-reverb-amount-value');
-    if (synthReverbEnabled) {synthReverbEnabled.checked = config.reverb.enabled;}
-    if (synthReverbAmount) {synthReverbAmount.value = config.reverb.amount * 100;}
-    if (synthReverbValue) {synthReverbValue.textContent = `${Math.round(config.reverb.amount * 100)}%`;}
-
-    // Delay
-    const synthDelayEnabled = document.getElementById('fx-delay-enabled');
-    const synthDelayTime = document.getElementById('fx-delay-time');
-    const synthDelayValue = document.getElementById('fx-delay-time-value');
-    if (synthDelayEnabled) {synthDelayEnabled.checked = config.delay.enabled;}
-    if (synthDelayTime) {synthDelayTime.value = config.delay.time * 1000;}
-    if (synthDelayValue) {synthDelayValue.textContent = `${config.delay.time.toFixed(2)}s`;}
-
-    // Filter
-    const synthFilterEnabled = document.getElementById('fx-filter-enabled');
-    const synthFilterFreq = document.getElementById('fx-filter-frequency');
-    const synthFilterValue = document.getElementById('fx-filter-frequency-value');
-    if (synthFilterEnabled) {synthFilterEnabled.checked = config.filter.enabled;}
-    if (synthFilterFreq) {synthFilterFreq.value = config.filter.frequency;}
-    if (synthFilterValue) {synthFilterValue.textContent = `${config.filter.frequency} Hz`;}
-  }
-
-  /**
-   * Synchronise l'UI des effets du piano avec les valeurs actuelles.
-   */
-  _syncPianoEffectsUI() {
-    const config = this._synthConfig?.effects;
-    if (!config) {return;}
-
-    // Reverb
-    const pianoReverbEnabled = document.getElementById('piano-fx-reverb');
-    const pianoReverbAmount = document.getElementById('piano-fx-reverb-amount');
-    if (pianoReverbEnabled) {
-      pianoReverbEnabled.checked = config.reverb.enabled;
-      if (pianoReverbAmount) {
-        pianoReverbAmount.value = config.reverb.amount * 100;
-        pianoReverbAmount.disabled = !config.reverb.enabled;
-      }
-    }
-
-    // Delay
-    const pianoDelayEnabled = document.getElementById('piano-fx-delay');
-    const pianoDelayTime = document.getElementById('piano-fx-delay-time');
-    if (pianoDelayEnabled) {
-      pianoDelayEnabled.checked = config.delay.enabled;
-      if (pianoDelayTime) {
-        pianoDelayTime.value = config.delay.time * 1000;
-        pianoDelayTime.disabled = !config.delay.enabled;
-      }
-    }
-
-    // Filter
-    const pianoFilterEnabled = document.getElementById('piano-fx-filter');
-    const pianoFilterFreq = document.getElementById('piano-fx-filter-freq');
-    if (pianoFilterEnabled) {
-      pianoFilterEnabled.checked = config.filter.enabled;
-      if (pianoFilterFreq) {
-        pianoFilterFreq.value = config.filter.frequency;
-        pianoFilterFreq.disabled = !config.filter.enabled;
-      }
-    }
-  }
-
-  /**
-   * Reconstruit le clavier piano avec la nouvelle octave.
-   */
-  _rebuildPianoKeyboard() {
-    this._pianoInitialized = false;
-    this._initPianoKeyboard();
+    this.pianoController?.hide();
   }
 
   /**
    * Affiche le panel synthétiseur.
    */
   showSynth() {
-    if (this.elements.synthOverlay) {
-      this.elements.synthOverlay.classList.add('visible');
-      this._initSynthPanel();
-    }
+    this.synthController?.show();
   }
 
   /**
    * Cache le panel synthétiseur.
    */
   hideSynth() {
-    if (this.elements.synthOverlay) {
-      this.elements.synthOverlay.classList.remove('visible');
-    }
-  }
-
-  /**
-   * Initialise le panel synthétiseur.
-   */
-  _initSynthPanel() {
-    if (this._synthPanelInitialized) {
-      return;
-    }
-
-    // Charger les réglages sauvegardés
-    this._loadSynthSettings();
-
-    // Générer les boutons de presets
-    this._renderSynthPresets();
-
-    // Configurer les onglets de type de synthé
-    this._setupSynthTypeTabs();
-
-    // Générer les boutons d'oscillateurs
-    this._renderSynthOscillators();
-
-    // Configurer les sliders ADSR
-    this._setupADSRSliders();
-
-    // Configurer les sliders des paramètres spécifiques (FM, Pluck, etc.)
-    this._setupSynthTypeSliders();
-
-    // Configurer les contrôles d'effets
-    this._setupEffectsControls();
-
-    // Mettre à jour les sections selon le type actuel
-    this._updateSynthSections();
-
-    this._synthPanelInitialized = true;
-  }
-
-  /**
-   * Charge les réglages du synthé depuis le stockage.
-   */
-  _loadSynthSettings() {
-    try {
-      const saved = localStorage.getItem('diese-synth-config');
-      if (saved) {
-        this._synthConfig = JSON.parse(saved);
-      }
-    } catch {
-      console.warn('Erreur chargement config synthé');
-    }
-
-    // Config par défaut si pas de sauvegarde
-    if (!this._synthConfig) {
-      this._synthConfig = {
-        preset: 'piano',
-        oscillator: 'triangle',
-        envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 },
-        effects: {
-          reverb: { enabled: false, amount: 0.3 },
-          delay: { enabled: false, time: 0.2, feedback: 0.3 },
-          filter: { enabled: false, frequency: 2000 },
-        },
-      };
-    }
-  }
-
-  /**
-   * Sauvegarde les réglages du synthé.
-   */
-  _saveSynthSettings() {
-    if (this.audioEngine) {
-      this._synthConfig = this.audioEngine.getSettings();
-    }
-    try {
-      localStorage.setItem('diese-synth-config', JSON.stringify(this._synthConfig));
-    } catch {
-      console.warn('Erreur sauvegarde config synthé');
-    }
-  }
-
-  /**
-   * Génère les boutons de presets.
-   */
-  _renderSynthPresets() {
-    const container = this.elements.synthPresets;
-    if (!container) {
-      return;
-    }
-
-    const presets = AudioEngine.getPresets();
-    container.innerHTML = '';
-
-    Object.entries(presets).forEach(([key, preset]) => {
-      const btn = document.createElement('button');
-      btn.className = 'synth-preset-btn';
-      btn.dataset.preset = key;
-      btn.textContent = preset.name;
-
-      if (this._synthConfig.preset === key) {
-        btn.classList.add('active');
-      }
-
-      btn.addEventListener('click', () => {
-        this._selectPreset(key);
-      });
-
-      container.appendChild(btn);
-    });
-  }
-
-  /**
-   * Génère les boutons d'oscillateurs.
-   */
-  _renderSynthOscillators() {
-    const container = this.elements.synthOscillators;
-    if (!container) {
-      return;
-    }
-
-    const oscillators = AudioEngine.getOscillatorTypes();
-    const icons = {
-      sine: '∿',
-      triangle: '△',
-      square: '⊓',
-      sawtooth: '⋀',
-    };
-
-    container.innerHTML = '';
-
-    oscillators.forEach((type) => {
-      const btn = document.createElement('button');
-      btn.className = 'synth-osc-btn';
-      btn.dataset.oscillator = type;
-      btn.innerHTML = `
-        <span class="synth-osc-icon">${icons[type] || '~'}</span>
-        <span>${type}</span>
-      `;
-
-      if (this._synthConfig.oscillator === type) {
-        btn.classList.add('active');
-      }
-
-      btn.addEventListener('click', () => {
-        this._selectOscillator(type);
-      });
-
-      container.appendChild(btn);
-    });
-  }
-
-  /**
-   * Configure les onglets de type de synthèse.
-   */
-  _setupSynthTypeTabs() {
-    const tabsContainer = document.getElementById('synth-type-tabs');
-    if (!tabsContainer) {return;}
-
-    // Descriptions des types de synthèse
-    const typeDescriptions = {
-      poly: 'Synthèse soustractive classique avec oscillateur et enveloppe ADSR.',
-      fm: 'Synthèse FM (modulation de fréquence) pour sons riches type DX7.',
-      pluck: 'Modèle physique de cordes pincées (algorithme Karplus-Strong).',
-      membrane: 'Modèle physique de membranes (percussions à peau).',
-      metal: 'Modèle physique de surfaces métalliques (cymbales, cloches).',
-      noise: 'Générateur de bruit filtré (caisse claire, percussions).',
-    };
-
-    tabsContainer.addEventListener('click', (e) => {
-      const tab = e.target.closest('.synth-type-tab');
-      if (!tab) {return;}
-
-      const synthType = tab.dataset.type;
-      this._selectSynthType(synthType);
-
-      // Mettre à jour la description
-      const infoEl = document.getElementById('synth-type-info');
-      if (infoEl) {
-        infoEl.textContent = typeDescriptions[synthType] || '';
-      }
-    });
-
-    // Afficher la description initiale
-    const currentType = this._getCurrentSynthType();
-    const infoEl = document.getElementById('synth-type-info');
-    if (infoEl) {
-      infoEl.textContent = typeDescriptions[currentType] || '';
-    }
-  }
-
-  /**
-   * Retourne le type de synthé actuel depuis le preset ou la config.
-   */
-  _getCurrentSynthType() {
-    const presets = AudioEngine.getPresets();
-    const preset = presets[this._synthConfig?.preset];
-    return preset?.synthType || 'poly';
-  }
-
-  /**
-   * Sélectionne un type de synthèse.
-   */
-  async _selectSynthType(synthType) {
-    // Mettre à jour l'UI des onglets
-    document.querySelectorAll('.synth-type-tab').forEach((tab) => {
-      tab.classList.toggle('active', tab.dataset.type === synthType);
-    });
-
-    // Mettre à jour les sections actives/inactives
-    this._updateSynthSections(synthType);
-
-    // Appliquer au moteur audio
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-    if (!this.audioEngine.started) {
-      await this.audioEngine.start();
-    }
-
-    // Changer le type de synthé dans l'AudioEngine
-    this.audioEngine.setSynthType(synthType);
-    this._synthConfig = this.audioEngine.getSettings();
-    this._saveSynthSettings();
-
-    // Mettre à jour l'UI des presets (marquer comme custom)
-    this._updatePresetButtons();
-  }
-
-  /**
-   * Met à jour l'affichage des sections selon le type de synthé.
-   */
-  _updateSynthSections(synthType) {
-    const currentType = synthType || this._getCurrentSynthType();
-
-    // Mettre à jour les onglets
-    document.querySelectorAll('.synth-type-tab').forEach((tab) => {
-      tab.classList.toggle('active', tab.dataset.type === currentType);
-    });
-
-    // Mettre à jour les sections
-    document.querySelectorAll('.synth-section-typed').forEach((section) => {
-      const types = section.dataset.types?.split(',') || [];
-      const isActive = types.includes(currentType);
-      section.classList.toggle('active', isActive);
-      section.classList.toggle('inactive', !isActive);
-
-      // Activer/désactiver les inputs
-      section.querySelectorAll('input, button').forEach((input) => {
-        input.disabled = !isActive;
-      });
-    });
-  }
-
-  /**
-   * Configure les sliders des paramètres spécifiques (FM, Pluck, Membrane, Metal).
-   */
-  _setupSynthTypeSliders() {
-    // Paramètres FM
-    this._setupParamSlider('fm-harmonicity', {
-      min: 1, max: 10, step: 0.1,
-      getValue: () => this._synthConfig.fm?.harmonicity || 3,
-      toDisplay: (v) => v.toFixed(1),
-      onChange: (v) => this._updateSynthParam('fm', 'harmonicity', v),
-    });
-    this._setupParamSlider('fm-modulation-index', {
-      min: 1, max: 30,
-      getValue: () => this._synthConfig.fm?.modulationIndex || 10,
-      toDisplay: (v) => Math.round(v).toString(),
-      onChange: (v) => this._updateSynthParam('fm', 'modulationIndex', v),
-    });
-
-    // Paramètres Pluck
-    this._setupParamSlider('pluck-attack-noise', {
-      min: 1, max: 50,
-      getValue: () => (this._synthConfig.pluck?.attackNoise || 1) * 10,
-      toDisplay: (v) => (v / 10).toFixed(1),
-      onChange: (v) => this._updateSynthParam('pluck', 'attackNoise', v / 10),
-    });
-    this._setupParamSlider('pluck-resonance', {
-      min: 80, max: 99,
-      getValue: () => (this._synthConfig.pluck?.resonance || 0.96) * 100,
-      toDisplay: (v) => (v / 100).toFixed(2),
-      onChange: (v) => this._updateSynthParam('pluck', 'resonance', v / 100),
-    });
-    this._setupParamSlider('pluck-dampening', {
-      min: 1000, max: 8000,
-      getValue: () => this._synthConfig.pluck?.dampening || 4000,
-      toDisplay: (v) => `${Math.round(v)} Hz`,
-      onChange: (v) => this._updateSynthParam('pluck', 'dampening', v),
-    });
-
-    // Paramètres Membrane
-    this._setupParamSlider('membrane-pitch-decay', {
-      min: 1, max: 100,
-      getValue: () => (this._synthConfig.membrane?.pitchDecay || 0.02) * 1000,
-      toDisplay: (v) => `${(v / 1000).toFixed(2)}s`,
-      onChange: (v) => this._updateSynthParam('membrane', 'pitchDecay', v / 1000),
-    });
-    this._setupParamSlider('membrane-octaves', {
-      min: 1, max: 8,
-      getValue: () => this._synthConfig.membrane?.octaves || 4,
-      toDisplay: (v) => Math.round(v).toString(),
-      onChange: (v) => this._updateSynthParam('membrane', 'octaves', v),
-    });
-
-    // Paramètres Metal
-    this._setupParamSlider('metal-frequency', {
-      min: 100, max: 1000,
-      getValue: () => this._synthConfig.metal?.frequency || 200,
-      toDisplay: (v) => `${Math.round(v)} Hz`,
-      onChange: (v) => this._updateSynthParam('metal', 'frequency', v),
-    });
-    this._setupParamSlider('metal-harmonicity', {
-      min: 1, max: 10, step: 0.1,
-      getValue: () => this._synthConfig.metal?.harmonicity || 5,
-      toDisplay: (v) => v.toFixed(1),
-      onChange: (v) => this._updateSynthParam('metal', 'harmonicity', v),
-    });
-  }
-
-  /**
-   * Configure un slider de paramètre générique.
-   */
-  _setupParamSlider(sliderId, config) {
-    const slider = document.getElementById(sliderId);
-    const valueEl = document.getElementById(`${sliderId}-value`);
-    if (!slider) {return;}
-
-    // Initialiser la valeur
-    const currentValue = config.getValue();
-    slider.value = currentValue;
-    if (valueEl) {
-      valueEl.textContent = config.toDisplay(currentValue);
-    }
-
-    // Écouter les changements
-    slider.addEventListener('input', () => {
-      const value = parseFloat(slider.value);
-      if (valueEl) {
-        valueEl.textContent = config.toDisplay(value);
-      }
-      config.onChange(value);
-    });
-  }
-
-  /**
-   * Met à jour un paramètre spécifique du synthé.
-   */
-  async _updateSynthParam(synthType, param, value) {
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-    if (!this.audioEngine.started) {
-      await this.audioEngine.start();
-    }
-
-    // Mettre à jour le paramètre dans l'AudioEngine
-    this.audioEngine.setSynthParam(synthType, param, value);
-    this._synthConfig = this.audioEngine.getSettings();
-    this._saveSynthSettings();
-  }
-
-  /**
-   * Configure les sliders ADSR.
-   */
-  _setupADSRSliders() {
-    const config = this._synthConfig.envelope;
-
-    // Attack (0.001 - 2s)
-    const attackSlider = document.getElementById('adsr-attack');
-    const attackValue = document.getElementById('adsr-attack-value');
-    if (attackSlider) {
-      attackSlider.value = config.attack * 1000;
-      attackValue.textContent = `${config.attack.toFixed(2)}s`;
-      attackSlider.addEventListener('input', () => {
-        const value = attackSlider.value / 1000;
-        attackValue.textContent = `${value.toFixed(2)}s`;
-        this._updateEnvelope({ attack: value });
-      });
-    }
-
-    // Decay (0.01 - 2s)
-    const decaySlider = document.getElementById('adsr-decay');
-    const decayValue = document.getElementById('adsr-decay-value');
-    if (decaySlider) {
-      decaySlider.value = config.decay * 1000;
-      decayValue.textContent = `${config.decay.toFixed(2)}s`;
-      decaySlider.addEventListener('input', () => {
-        const value = decaySlider.value / 1000;
-        decayValue.textContent = `${value.toFixed(2)}s`;
-        this._updateEnvelope({ decay: value });
-      });
-    }
-
-    // Sustain (0 - 1)
-    const sustainSlider = document.getElementById('adsr-sustain');
-    const sustainValue = document.getElementById('adsr-sustain-value');
-    if (sustainSlider) {
-      sustainSlider.value = config.sustain * 100;
-      sustainValue.textContent = config.sustain.toFixed(2);
-      sustainSlider.addEventListener('input', () => {
-        const value = sustainSlider.value / 100;
-        sustainValue.textContent = value.toFixed(2);
-        this._updateEnvelope({ sustain: value });
-      });
-    }
-
-    // Release (0.01 - 5s)
-    const releaseSlider = document.getElementById('adsr-release');
-    const releaseValue = document.getElementById('adsr-release-value');
-    if (releaseSlider) {
-      releaseSlider.value = config.release * 1000;
-      releaseValue.textContent = `${config.release.toFixed(2)}s`;
-      releaseSlider.addEventListener('input', () => {
-        const value = releaseSlider.value / 1000;
-        releaseValue.textContent = `${value.toFixed(2)}s`;
-        this._updateEnvelope({ release: value });
-      });
-    }
-  }
-
-  /**
-   * Configure les contrôles d'effets.
-   */
-  _setupEffectsControls() {
-    const effects = this._synthConfig.effects;
-
-    // Reverb
-    this._setupEffectControl('reverb', effects.reverb, {
-      amount: {
-        element: 'fx-reverb-amount',
-        valueElement: 'fx-reverb-amount-value',
-        toDisplay: (v) => `${Math.round(v * 100)}%`,
-        fromSlider: (v) => v / 100,
-        toSlider: (v) => v * 100,
-      },
-    });
-
-    // Delay
-    this._setupEffectControl('delay', effects.delay, {
-      time: {
-        element: 'fx-delay-time',
-        valueElement: 'fx-delay-time-value',
-        toDisplay: (v) => `${v.toFixed(2)}s`,
-        fromSlider: (v) => v / 1000,
-        toSlider: (v) => v * 1000,
-      },
-      feedback: {
-        element: 'fx-delay-feedback',
-        valueElement: 'fx-delay-feedback-value',
-        toDisplay: (v) => `${Math.round(v * 100)}%`,
-        fromSlider: (v) => v / 100,
-        toSlider: (v) => v * 100,
-      },
-    });
-
-    // Filter
-    this._setupEffectControl('filter', effects.filter, {
-      frequency: {
-        element: 'fx-filter-frequency',
-        valueElement: 'fx-filter-frequency-value',
-        toDisplay: (v) => `${Math.round(v)} Hz`,
-        fromSlider: (v) => parseFloat(v),
-        toSlider: (v) => v,
-      },
-    });
-  }
-
-  /**
-   * Configure un contrôle d'effet.
-   */
-  _setupEffectControl(effectName, config, params) {
-    const enabledCheckbox = document.getElementById(`fx-${effectName}-enabled`);
-    const effectContainer = enabledCheckbox?.closest('.synth-effect');
-
-    if (enabledCheckbox) {
-      enabledCheckbox.checked = config.enabled;
-      if (config.enabled) {
-        effectContainer?.classList.add('active');
-      }
-
-      enabledCheckbox.addEventListener('change', () => {
-        const enabled = enabledCheckbox.checked;
-        if (enabled) {
-          effectContainer?.classList.add('active');
-        } else {
-          effectContainer?.classList.remove('active');
-        }
-        this._updateEffect(effectName, { enabled });
-      });
-    }
-
-    // Configure chaque paramètre
-    Object.entries(params).forEach(([paramName, paramConfig]) => {
-      const slider = document.getElementById(paramConfig.element);
-      const valueEl = document.getElementById(paramConfig.valueElement);
-
-      if (slider && valueEl) {
-        const currentValue = config[paramName];
-        slider.value = paramConfig.toSlider(currentValue);
-        valueEl.textContent = paramConfig.toDisplay(currentValue);
-
-        slider.addEventListener('input', () => {
-          const value = paramConfig.fromSlider(slider.value);
-          valueEl.textContent = paramConfig.toDisplay(value);
-          this._updateEffect(effectName, { [paramName]: value });
-        });
-      }
-    });
-  }
-
-  /**
-   * Sélectionne un preset (synchronise piano et panneau synthé).
-   */
-  async _selectPreset(presetName) {
-    // Mettre à jour l'UI du panneau synthé
-    document.querySelectorAll('.synth-preset-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.preset === presetName);
-    });
-
-    // Mettre à jour l'UI du piano
-    document.querySelectorAll('.piano-instrument-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.preset === presetName);
-    });
-
-    // Mettre à jour l'état du piano
-    if (this._pianoState) {
-      this._pianoState.preset = presetName;
-    }
-
-    // Appliquer au moteur audio
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-    if (!this.audioEngine.started) {
-      await this.audioEngine.start();
-    }
-    this.audioEngine.setPreset(presetName);
-
-    // Mettre à jour les sliders avec les valeurs du preset
-    this._synthConfig = this.audioEngine.getSettings();
-    this._updateADSRSliders();
-    this._updateOscillatorButtons();
-    this._updateSynthSections();
-    this._updateSynthTypeSliders();
-    this._saveSynthSettings();
-  }
-
-  /**
-   * Met à jour les sliders des paramètres spécifiques selon la config actuelle.
-   */
-  _updateSynthTypeSliders() {
-    // FM
-    this._updateSliderValue('fm-harmonicity', this._synthConfig.fm?.harmonicity || 3, (v) => v.toFixed(1));
-    this._updateSliderValue('fm-modulation-index', this._synthConfig.fm?.modulationIndex || 10, (v) => Math.round(v).toString());
-
-    // Pluck
-    this._updateSliderValue('pluck-attack-noise', (this._synthConfig.pluck?.attackNoise || 1) * 10, (v) => (v / 10).toFixed(1));
-    this._updateSliderValue('pluck-resonance', (this._synthConfig.pluck?.resonance || 0.96) * 100, (v) => (v / 100).toFixed(2));
-    this._updateSliderValue('pluck-dampening', this._synthConfig.pluck?.dampening || 4000, (v) => `${Math.round(v)} Hz`);
-
-    // Membrane
-    this._updateSliderValue('membrane-pitch-decay', (this._synthConfig.membrane?.pitchDecay || 0.02) * 1000, (v) => `${(v / 1000).toFixed(2)}s`);
-    this._updateSliderValue('membrane-octaves', this._synthConfig.membrane?.octaves || 4, (v) => Math.round(v).toString());
-
-    // Metal
-    this._updateSliderValue('metal-frequency', this._synthConfig.metal?.frequency || 200, (v) => `${Math.round(v)} Hz`);
-    this._updateSliderValue('metal-harmonicity', this._synthConfig.metal?.harmonicity || 5, (v) => v.toFixed(1));
-  }
-
-  /**
-   * Met à jour un slider et son affichage.
-   */
-  _updateSliderValue(sliderId, value, toDisplay) {
-    const slider = document.getElementById(sliderId);
-    const valueEl = document.getElementById(`${sliderId}-value`);
-    if (slider) {
-      slider.value = value;
-    }
-    if (valueEl) {
-      valueEl.textContent = toDisplay(value);
-    }
-  }
-
-  /**
-   * Sélectionne un type d'oscillateur.
-   */
-  async _selectOscillator(type) {
-    // Mettre à jour l'UI
-    document.querySelectorAll('.synth-osc-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.oscillator === type);
-    });
-
-    // Appliquer au moteur audio
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-    if (!this.audioEngine.started) {
-      await this.audioEngine.start();
-    }
-    this.audioEngine.setOscillator(type);
-
-    // Mettre à jour la config et l'UI des presets (on passe en custom)
-    this._synthConfig = this.audioEngine.getSettings();
-    this._updatePresetButtons();
-    this._saveSynthSettings();
-  }
-
-  /**
-   * Met à jour l'enveloppe ADSR.
-   */
-  async _updateEnvelope(params) {
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-    if (!this.audioEngine.started) {
-      await this.audioEngine.start();
-    }
-    this.audioEngine.setEnvelope(params);
-    this._synthConfig = this.audioEngine.getSettings();
-    this._updatePresetButtons();
-    this._saveSynthSettings();
-  }
-
-  /**
-   * Met à jour un effet.
-   */
-  async _updateEffect(effectName, params) {
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-    if (!this.audioEngine.started) {
-      await this.audioEngine.start();
-    }
-
-    const config = { ...this._synthConfig.effects[effectName], ...params };
-
-    switch (effectName) {
-      case 'reverb':
-        this.audioEngine.setReverb(config.enabled, config.amount);
-        break;
-      case 'delay':
-        this.audioEngine.setDelay(config.enabled, config.time, config.feedback);
-        break;
-      case 'filter':
-        this.audioEngine.setFilter(config.enabled, config.frequency);
-        break;
-    }
-
-    this._synthConfig = this.audioEngine.getSettings();
-    this._saveSynthSettings();
-
-    // Synchroniser l'UI du piano si les contrôles existent
-    this._syncPianoEffectsUI();
-  }
-
-  /**
-   * Met à jour les boutons de preset dans l'UI.
-   */
-  _updatePresetButtons() {
-    const preset = this._synthConfig.preset;
-    document.querySelectorAll('.synth-preset-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.preset === preset);
-    });
-  }
-
-  /**
-   * Met à jour les boutons d'oscillateur dans l'UI.
-   */
-  _updateOscillatorButtons() {
-    const osc = this._synthConfig.oscillator;
-    document.querySelectorAll('.synth-osc-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.oscillator === osc);
-    });
-  }
-
-  /**
-   * Met à jour les sliders ADSR dans l'UI.
-   */
-  _updateADSRSliders() {
-    const env = this._synthConfig?.envelope;
-    if (!env) {return;}
-
-    const attackSlider = document.getElementById('adsr-attack');
-    const attackValue = document.getElementById('adsr-attack-value');
-    if (attackSlider && env.attack !== undefined) {
-      attackSlider.value = env.attack * 1000;
-      attackValue.textContent = `${env.attack.toFixed(2)}s`;
-    }
-
-    const decaySlider = document.getElementById('adsr-decay');
-    const decayValue = document.getElementById('adsr-decay-value');
-    if (decaySlider && env.decay !== undefined) {
-      decaySlider.value = env.decay * 1000;
-      decayValue.textContent = `${env.decay.toFixed(2)}s`;
-    }
-
-    const sustainSlider = document.getElementById('adsr-sustain');
-    const sustainValue = document.getElementById('adsr-sustain-value');
-    if (sustainSlider && env.sustain !== undefined) {
-      sustainSlider.value = env.sustain * 100;
-      sustainValue.textContent = env.sustain.toFixed(2);
-    }
-
-    const releaseSlider = document.getElementById('adsr-release');
-    const releaseValue = document.getElementById('adsr-release-value');
-    if (releaseSlider && env.release !== undefined) {
-      releaseSlider.value = env.release * 1000;
-      releaseValue.textContent = `${env.release.toFixed(2)}s`;
-    }
-  }
-
-  /**
-   * Teste le son du synthétiseur.
-   */
-  async _testSynthSound() {
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-
-    if (!this.audioEngine.started) {
-      try {
-        await this.audioEngine.start();
-        this.audioReady = true;
-      } catch {
-        console.warn('Impossible de démarrer l\'audio');
-        return;
-      }
-    }
-
-    // Appliquer la config actuelle si elle existe
-    if (this._synthConfig) {
-      this.audioEngine.applySettings(this._synthConfig);
-    }
-
-    // Jouer une petite mélodie de test (Do-Mi-Sol)
-    this.audioEngine.playNote('C4', 0.3);
-    setTimeout(() => this.audioEngine.playNote('E4', 0.3), 150);
-    setTimeout(() => this.audioEngine.playNote('G4', 0.5), 300);
-  }
-
-  // --------------------------------------------------------------------------
-  // Métronome
-  // --------------------------------------------------------------------------
-
-  /**
-   * Affiche le panel métronome.
-   */
-  showMetronome() {
-    if (this.elements.metronomeOverlay) {
-      this.elements.metronomeOverlay.classList.add('visible');
-      this._initMetronomePanel();
-    }
-  }
-
-  /**
-   * Cache le panel métronome.
-   */
-  hideMetronome() {
-    if (this.elements.metronomeOverlay) {
-      this.elements.metronomeOverlay.classList.remove('visible');
-    }
-    // Arrêter le métronome si actif
-    this._stopMetronome();
-  }
-
-  /**
-   * Arrête le métronome et réinitialise l'UI.
-   */
-  _stopMetronome() {
-    if (this.metronome && this.metronome.playing) {
-      this.metronome.stop();
-      this._updateMetronomeUI(false);
-    }
-  }
-
-  /**
-   * Met à jour l'UI du métronome.
-   * @param {boolean} isPlaying - État de lecture
-   */
-  _updateMetronomeUI(isPlaying) {
-    const btn = this.elements.metronomePlayBtn;
-    if (btn) {
-      btn.classList.toggle('playing', isPlaying);
-      const icon = btn.querySelector('.metronome-play-icon');
-      const text = btn.querySelector('.metronome-play-text');
-      if (icon) {
-        icon.textContent = isPlaying ? '⏹' : '▶';
-      }
-      if (text) {
-        text.textContent = isPlaying ? 'Arrêter' : 'Démarrer';
-      }
-    }
-
-    // Reset les indicateurs visuels si on arrête
-    if (!isPlaying) {
-      this.elements.metronomeBeats?.querySelectorAll('.metronome-beat').forEach(b => {
-        b.classList.remove('active', 'downbeat');
-      });
-    }
-  }
-
-  /**
-   * Initialise le panel métronome.
-   */
-  _initMetronomePanel() {
-    if (this._metronomePanelInitialized) {
-      return;
-    }
-
-    // Créer le métronome si nécessaire
-    if (!this.metronome && this.audioEngine) {
-      this.metronome = new Metronome(this.audioEngine);
-    }
-
-    // Callback sur les beats pour l'indicateur visuel
-    if (this.metronome) {
-      this.metronome.onBeat((beat, isDownbeat) => {
-        this._updateMetronomeBeatIndicator(beat, isDownbeat);
-      });
-    }
-
-    // Slider tempo
-    this.elements.metronomeTempoSlider?.addEventListener('input', (e) => {
-      const bpm = parseInt(e.target.value, 10);
-      this._setMetronomeTempo(bpm);
-    });
-
-    // Boutons -10, -1, +1, +10
-    document.getElementById('metronome-minus-10')?.addEventListener('click', () => {
-      this._adjustMetronomeTempo(-10);
-    });
-    document.getElementById('metronome-minus-1')?.addEventListener('click', () => {
-      this._adjustMetronomeTempo(-1);
-    });
-    document.getElementById('metronome-plus-1')?.addEventListener('click', () => {
-      this._adjustMetronomeTempo(1);
-    });
-    document.getElementById('metronome-plus-10')?.addEventListener('click', () => {
-      this._adjustMetronomeTempo(10);
-    });
-
-    // Signature rythmique
-    this.elements.metronomeTimeSignature?.addEventListener('change', (e) => {
-      const [beats] = e.target.value.split('/').map(Number);
-      this._setMetronomeTimeSignature(beats);
-    });
-
-    // Bouton play/stop
-    this.elements.metronomePlayBtn?.addEventListener('click', () => {
-      this._toggleMetronome();
-    });
-
-    this._metronomePanelInitialized = true;
-  }
-
-  /**
-   * Définit le tempo du métronome.
-   * @param {number} bpm - Tempo en BPM
-   */
-  _setMetronomeTempo(bpm) {
-    bpm = Math.max(30, Math.min(300, bpm));
-
-    if (this.elements.metronomeBpmValue) {
-      this.elements.metronomeBpmValue.textContent = bpm;
-    }
-    if (this.elements.metronomeTempoSlider) {
-      this.elements.metronomeTempoSlider.value = bpm;
-    }
-    if (this.metronome) {
-      this.metronome.setTempo(bpm);
-    }
-  }
-
-  /**
-   * Ajuste le tempo du métronome.
-   * @param {number} delta - Variation en BPM
-   */
-  _adjustMetronomeTempo(delta) {
-    const currentBpm = this.metronome?.tempo || 120;
-    this._setMetronomeTempo(currentBpm + delta);
-  }
-
-  /**
-   * Définit la signature rythmique.
-   * @param {number} beats - Nombre de temps par mesure
-   */
-  _setMetronomeTimeSignature(beats) {
-    if (this.metronome) {
-      this.metronome.setTimeSignature(beats, 4);
-    }
-
-    // Mettre à jour les indicateurs visuels
-    const container = this.elements.metronomeBeats;
-    if (container) {
-      container.innerHTML = '';
-      for (let i = 1; i <= beats; i++) {
-        const beat = document.createElement('div');
-        beat.className = 'metronome-beat';
-        beat.dataset.beat = i;
-        container.appendChild(beat);
-      }
-    }
-  }
-
-  /**
-   * Toggle le métronome.
-   */
-  async _toggleMetronome() {
-    // Créer le métronome à la demande
-    if (!this.metronome) {
-      if (!this.audioEngine) {
-        this.audioEngine = new AudioEngine();
-      }
-      if (!this.audioEngine.started) {
-        await this.audioEngine.start();
-      }
-      this.metronome = new Metronome(this.audioEngine);
-      this.metronome.onBeat((beat, isDownbeat) => {
-        this._updateMetronomeBeatIndicator(beat, isDownbeat);
-      });
-    }
-
-    const isPlaying = await this.metronome.toggle();
-
-    // Mettre à jour l'UI
-    this._updateMetronomeUI(isPlaying);
-  }
-
-  /**
-   * Met à jour l'indicateur visuel des beats.
-   * @param {number} beat - Beat courant
-   * @param {boolean} isDownbeat - Premier temps
-   */
-  _updateMetronomeBeatIndicator(beat, isDownbeat) {
-    const beats = this.elements.metronomeBeats?.querySelectorAll('.metronome-beat');
-    if (!beats) {return;}
-
-    beats.forEach((b, i) => {
-      const isCurrent = (i + 1) === beat;
-      b.classList.toggle('active', isCurrent);
-      b.classList.toggle('downbeat', isCurrent && isDownbeat);
-    });
-  }
-
-  // --------------------------------------------------------------------------
-  // Accordeur chromatique
-  // --------------------------------------------------------------------------
-
-  /**
-   * Affiche le panel accordeur.
-   */
-  showTuner() {
-    if (this.elements.tunerOverlay) {
-      this.elements.tunerOverlay.classList.add('visible');
-      this._initTunerPanel();
-    }
-  }
-
-  /**
-   * Cache le panel accordeur.
-   */
-  hideTuner() {
-    if (this.elements.tunerOverlay) {
-      this.elements.tunerOverlay.classList.remove('visible');
-    }
-    // Arrêter le tuner si actif
-    this._stopTuner();
-  }
-
-  /**
-   * Initialise le panel accordeur.
-   */
-  _initTunerPanel() {
-    if (this._tunerPanelInitialized) {
-      return;
-    }
-
-    // Bouton toggle
-    this.elements.tunerToggle?.addEventListener('click', () => {
-      this._toggleTuner();
-    });
-
-    this._tunerPanelInitialized = true;
-  }
-
-  /**
-   * Toggle l'accordeur.
-   */
-  async _toggleTuner() {
-    if (this._tunerActive) {
-      this._stopTuner();
-    } else {
-      await this._startTuner();
-    }
-  }
-
-  /**
-   * Démarre l'accordeur.
-   */
-  async _startTuner() {
-    try {
-      // Demander l'accès au micro
-      this._tunerStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // Créer le contexte audio
-      this._tunerAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-      this._tunerAnalyser = this._tunerAudioContext.createAnalyser();
-      this._tunerAnalyser.fftSize = 4096;
-
-      const source = this._tunerAudioContext.createMediaStreamSource(this._tunerStream);
-      source.connect(this._tunerAnalyser);
-
-      this._tunerActive = true;
-      this._tunerBuffer = new Float32Array(this._tunerAnalyser.fftSize);
-
-      // Historique des fréquences pour le graphe (200 points)
-      this._tunerFrequencyHistory = [];
-      this._tunerMaxHistoryLength = 200;
-
-      // Historique des notes détectées (max 10)
-      this._tunerNoteHistory = [];
-      this._tunerMaxNoteHistory = 10;
-      this._tunerLastNoteName = null;
-
-      // Initialiser le graphe
-      this._initTunerGraph();
-
-      // Mettre à jour l'UI
-      this._updateTunerUI(true);
-
-      // Démarrer l'analyse
-      this._tunerLoop();
-
-    } catch (error) {
-      console.error('Erreur accès micro:', error);
-      this._updateTunerStatus('Accès micro refusé', true);
-    }
-  }
-
-  /**
-   * Arrête l'accordeur.
-   */
-  _stopTuner() {
-    this._tunerActive = false;
-
-    // Arrêter le stream
-    if (this._tunerStream) {
-      this._tunerStream.getTracks().forEach(track => track.stop());
-      this._tunerStream = null;
-    }
-
-    // Fermer le contexte audio
-    if (this._tunerAudioContext) {
-      this._tunerAudioContext.close();
-      this._tunerAudioContext = null;
-    }
-
-    // Réinitialiser les historiques
-    this._tunerFrequencyHistory = [];
-    this._tunerNoteHistory = [];
-    this._tunerLastNoteName = null;
-
-    // Effacer le graphe
-    this._clearTunerGraph();
-
-    // Effacer l'historique affiché
-    if (this.elements.tunerHistory) {
-      this.elements.tunerHistory.innerHTML = '';
-    }
-
-    this._updateTunerUI(false);
-  }
-
-  /**
-   * Efface le graphe de l'accordeur.
-   */
-  _clearTunerGraph() {
-    const canvas = this.elements.tunerGraph;
-    if (!canvas) {return;}
-
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    ctx.clearRect(0, 0, rect.width, rect.height);
-
-    if (this.elements.tunerGraphRange) {
-      this.elements.tunerGraphRange.textContent = '-- Hz';
-    }
-  }
-
-  /**
-   * Boucle d'analyse de l'accordeur.
-   */
-  _tunerLoop() {
-    if (!this._tunerActive) {return;}
-
-    // Récupérer les données audio
-    this._tunerAnalyser.getFloatTimeDomainData(this._tunerBuffer);
-
-    // Détecter la fréquence (autocorrélation)
-    const frequency = this._detectPitch(this._tunerBuffer, this._tunerAudioContext.sampleRate);
-
-    // Ajouter à l'historique des fréquences
-    this._tunerFrequencyHistory.push(frequency > 0 ? frequency : null);
-    if (this._tunerFrequencyHistory.length > this._tunerMaxHistoryLength) {
-      this._tunerFrequencyHistory.shift();
-    }
-
-    // Dessiner le graphe
-    this._drawTunerGraph();
-
-    // Mettre à jour l'indicateur live
-    this._updateTunerLiveIndicator(frequency > 0);
-
-    if (frequency > 0) {
-      // Convertir en note
-      const noteData = this._frequencyToNote(frequency);
-      this._updateTunerDisplay(noteData, frequency);
-
-      // Ajouter à l'historique des notes si c'est une nouvelle note
-      this._addToNoteHistory(noteData);
-    } else {
-      // Pas de signal clair
-      this._updateTunerDisplay(null, 0);
-    }
-
-    // Continuer la boucle
-    requestAnimationFrame(() => this._tunerLoop());
-  }
-
-  /**
-   * Initialise le graphe de l'accordeur.
-   */
-  _initTunerGraph() {
-    const canvas = this.elements.tunerGraph;
-    if (!canvas) {return;}
-
-    // Adapter la résolution au devicePixelRatio
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-
-    // Dessiner le fond
-    this._drawTunerGraph();
-  }
-
-  /**
-   * Dessine le graphe de fréquence.
-   */
-  _drawTunerGraph() {
-    const canvas = this.elements.tunerGraph;
-    if (!canvas) {return;}
-
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // Effacer
-    ctx.clearRect(0, 0, width, height);
-
-    // Fond
-    ctx.fillStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-bg-secondary').trim() || '#1a1a2e';
-    ctx.fillRect(0, 0, width, height);
-
-    const history = this._tunerFrequencyHistory || [];
-    if (history.length < 2) {return;}
-
-    // Calculer min/max pour l'échelle
-    const validFreqs = history.filter(f => f !== null && f > 0);
-    if (validFreqs.length === 0) {return;}
-
-    const minFreq = Math.min(...validFreqs) * 0.9;
-    const maxFreq = Math.max(...validFreqs) * 1.1;
-
-    // Mettre à jour l'affichage de la plage
-    if (this.elements.tunerGraphRange) {
-      this.elements.tunerGraphRange.textContent =
-        `${Math.round(minFreq)}-${Math.round(maxFreq)} Hz`;
-    }
-
-    // Dessiner les lignes de référence (notes)
-    this._drawTunerGraphNoteLines(ctx, width, height, minFreq, maxFreq);
-
-    // Dessiner la courbe
-    ctx.beginPath();
-    ctx.strokeStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-accent').trim() || '#6366f1';
-    ctx.lineWidth = 2;
-
-    let started = false;
-    for (let i = 0; i < history.length; i++) {
-      const freq = history[i];
-      const x = (i / (this._tunerMaxHistoryLength - 1)) * width;
-
-      if (freq !== null && freq > 0) {
-        const y = height - ((freq - minFreq) / (maxFreq - minFreq)) * height;
-
-        if (!started) {
-          ctx.moveTo(x, y);
-          started = true;
-        } else {
-          ctx.lineTo(x, y);
-        }
-      }
-    }
-
-    ctx.stroke();
-
-    // Point actuel (dernier point)
-    const lastFreq = history[history.length - 1];
-    if (lastFreq !== null && lastFreq > 0) {
-      const x = width;
-      const y = height - ((lastFreq - minFreq) / (maxFreq - minFreq)) * height;
-
-      ctx.beginPath();
-      ctx.arc(x - 4, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = ctx.strokeStyle;
-      ctx.fill();
-    }
-  }
-
-  /**
-   * Dessine les lignes de référence des notes sur le graphe.
-   */
-  _drawTunerGraphNoteLines(ctx, width, height, minFreq, maxFreq) {
-    const A4 = 440;
-    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-
-    ctx.strokeStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-border').trim() || '#333';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([2, 4]);
-
-    ctx.font = '10px sans-serif';
-    ctx.fillStyle = getComputedStyle(document.documentElement)
-      .getPropertyValue('--color-text-muted').trim() || '#666';
-
-    // Dessiner des lignes pour chaque note dans la plage
-    for (let semitone = -48; semitone <= 48; semitone++) {
-      const freq = A4 * Math.pow(2, semitone / 12);
-      if (freq < minFreq || freq > maxFreq) {continue;}
-
-      const y = height - ((freq - minFreq) / (maxFreq - minFreq)) * height;
-
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-
-      // Label de la note (seulement les notes naturelles)
-      const noteIndex = ((semitone % 12) + 12 + 9) % 12;
-      const noteName = noteNames[noteIndex];
-      if (!noteName.includes('#')) {
-        const octave = 4 + Math.floor((semitone + 9) / 12);
-        const displayNote = this.formatNote(noteName, true, octave);
-        ctx.fillText(displayNote, 4, y - 2);
-      }
-    }
-
-    ctx.setLineDash([]);
-  }
-
-  /**
-   * Ajoute une note à l'historique.
-   * @param {Object} noteData - Données de la note
-   */
-  _addToNoteHistory(noteData) {
-    const noteName = `${noteData.note}${noteData.octave}`;
-
-    // Ne pas ajouter si c'est la même note que la précédente
-    if (noteName === this._tunerLastNoteName) {return;}
-
-    this._tunerLastNoteName = noteName;
-
-    // Ajouter à l'historique
-    this._tunerNoteHistory.unshift({
-      note: noteData.note,
-      octave: noteData.octave,
-      cents: noteData.cents,
-      timestamp: Date.now(),
-    });
-
-    // Limiter la taille
-    if (this._tunerNoteHistory.length > this._tunerMaxNoteHistory) {
-      this._tunerNoteHistory.pop();
-    }
-
-    // Mettre à jour l'affichage
-    this._updateTunerHistoryDisplay();
-  }
-
-  /**
-   * Met à jour l'affichage de l'historique des notes.
-   */
-  _updateTunerHistoryDisplay() {
-    const container = this.elements.tunerHistory;
-    if (!container) {return;}
-
-    container.innerHTML = this._tunerNoteHistory.map(item => {
-      let statusClass = 'in-tune';
-      if (Math.abs(item.cents) > 5) {
-        statusClass = item.cents < 0 ? 'flat' : 'sharp';
-      }
-
-      const sign = item.cents > 0 ? '+' : '';
-      const displayNote = this.formatNote(item.note);
-
-      return `
-        <div class="tuner-history-note ${statusClass}">
-          <span class="note-name">${displayNote}</span>
-          <span class="note-octave">${item.octave}</span>
-          <span class="note-cents">${sign}${item.cents}</span>
-        </div>
-      `;
-    }).join('');
-  }
-
-  /**
-   * Détecte la fréquence par autocorrélation.
-   * @param {Float32Array} buffer - Buffer audio
-   * @param {number} sampleRate - Taux d'échantillonnage
-   * @returns {number} Fréquence détectée ou -1
-   */
-  _detectPitch(buffer, sampleRate) {
-    const SIZE = buffer.length;
-
-    // Vérifier qu'il y a du signal
-    let rms = 0;
-    for (let i = 0; i < SIZE; i++) {
-      rms += buffer[i] * buffer[i];
-    }
-    rms = Math.sqrt(rms / SIZE);
-
-    if (rms < 0.01) {return -1;} // Trop silencieux
-
-    // Autocorrélation
-    const correlations = new Float32Array(SIZE);
-    for (let lag = 0; lag < SIZE; lag++) {
-      let sum = 0;
-      for (let i = 0; i < SIZE - lag; i++) {
-        sum += buffer[i] * buffer[i + lag];
-      }
-      correlations[lag] = sum;
-    }
-
-    // Trouver le premier pic après le lag 0
-    const minLag = Math.floor(sampleRate / 1000); // Min ~1000 Hz
-    const maxLag = Math.floor(sampleRate / 50);   // Max ~50 Hz
-
-    let bestLag = -1;
-    let bestCorr = 0;
-    let foundPeak = false;
-
-    for (let lag = minLag; lag < maxLag && lag < SIZE; lag++) {
-      if (correlations[lag] > bestCorr) {
-        bestCorr = correlations[lag];
-        bestLag = lag;
-        foundPeak = true;
-      } else if (foundPeak && correlations[lag] < bestCorr * 0.9) {
-        // On a dépassé le pic
-        break;
-      }
-    }
-
-    if (bestLag === -1 || bestCorr < correlations[0] * 0.5) {
-      return -1;
-    }
-
-    return sampleRate / bestLag;
-  }
-
-  /**
-   * Convertit une fréquence en note.
-   * @param {number} frequency - Fréquence en Hz
-   * @returns {Object} {note, octave, cents}
-   */
-  _frequencyToNote(frequency) {
-    const A4 = 440;
-    const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-
-    // Calcul du nombre de demi-tons depuis A4
-    const semitonesFromA4 = 12 * Math.log2(frequency / A4);
-    const roundedSemitones = Math.round(semitonesFromA4);
-
-    // Calcul de la note et de l'octave
-    const noteIndex = ((roundedSemitones % 12) + 12 + 9) % 12; // +9 car A est à l'index 9
-    const octave = 4 + Math.floor((roundedSemitones + 9) / 12);
-
-    // Calcul des cents
-    const exactFrequency = A4 * Math.pow(2, roundedSemitones / 12);
-    const cents = Math.round(1200 * Math.log2(frequency / exactFrequency));
-
-    return {
-      note: noteNames[noteIndex],
-      octave: octave,
-      cents: cents,
-      exactFrequency: exactFrequency,
-    };
-  }
-
-  /**
-   * Met à jour l'affichage de l'accordeur.
-   * @param {Object|null} noteData - Données de la note détectée
-   * @param {number} frequency - Fréquence brute
-   */
-  _updateTunerDisplay(noteData, frequency) {
-    const noteEl = this.elements.tunerNote;
-    const octaveEl = this.elements.tunerOctave;
-    const freqEl = this.elements.tunerFrequency;
-    const centsEl = this.elements.tunerCents;
-    const indicator = this.elements.tunerIndicator;
-
-    if (!noteData) {
-      if (noteEl) {
-        noteEl.textContent = '-';
-        noteEl.className = 'tuner-note';
-      }
-      if (octaveEl) {octaveEl.textContent = '';}
-      if (freqEl) {freqEl.textContent = '-- Hz';}
-      if (centsEl) {centsEl.textContent = '-- cents';}
-      if (indicator) {indicator.style.left = '50%';}
-      return;
-    }
-
-    // Note (avec la notation choisie par l'utilisateur)
-    if (noteEl) {
-      noteEl.textContent = this.formatNote(noteData.note);
-      // Couleur selon justesse
-      noteEl.className = 'tuner-note';
-      if (Math.abs(noteData.cents) <= 5) {
-        noteEl.classList.add('in-tune');
-      } else if (noteData.cents < 0) {
-        noteEl.classList.add('flat');
-      } else {
-        noteEl.classList.add('sharp');
-      }
-    }
-
-    // Octave
-    if (octaveEl) {
-      octaveEl.textContent = noteData.octave;
-    }
-
-    // Fréquence
-    if (freqEl) {
-      freqEl.textContent = `${frequency.toFixed(1)} Hz`;
-    }
-
-    // Cents
-    if (centsEl) {
-      const sign = noteData.cents > 0 ? '+' : '';
-      centsEl.textContent = `${sign}${noteData.cents} cents`;
-    }
-
-    // Indicateur
-    if (indicator) {
-      // Clamp entre -50 et +50 cents
-      const clampedCents = Math.max(-50, Math.min(50, noteData.cents));
-      const percent = 50 + (clampedCents / 50) * 50;
-      indicator.style.left = `${percent}%`;
-    }
-  }
-
-  /**
-   * Met à jour l'UI de l'accordeur.
-   * @param {boolean} active - Accordeur actif
-   */
-  _updateTunerUI(active) {
-    const btn = this.elements.tunerToggle;
-    const status = this.elements.tunerStatus;
-    const liveDot = this.elements.tunerLiveDot;
-
-    if (btn) {
-      btn.classList.toggle('active', active);
-      const icon = btn.querySelector('.tuner-btn-icon');
-      const text = btn.querySelector('.tuner-btn-text');
-      if (icon) {icon.textContent = active ? '⏹' : '🎤';}
-      if (text) {text.textContent = active ? 'Arrêter' : 'Activer le micro';}
-    }
-
-    if (status) {
-      status.textContent = active ? 'Écoute en cours...' : 'Cliquez pour démarrer';
-      status.className = 'tuner-status';
-      if (active) {status.classList.add('active');}
-    }
-
-    // Live indicator
-    if (liveDot) {
-      liveDot.classList.toggle('active', active);
-      if (!active) {
-        liveDot.classList.remove('detecting');
-      }
-    }
-  }
-
-  /**
-   * Met à jour l'indicateur live du tuner.
-   * @param {boolean} detecting - Son détecté
-   */
-  _updateTunerLiveIndicator(detecting) {
-    const liveDot = this.elements.tunerLiveDot;
-    if (liveDot) {
-      liveDot.classList.toggle('detecting', detecting);
-    }
-  }
-
-  /**
-   * Met à jour le statut de l'accordeur.
-   * @param {string} message - Message
-   * @param {boolean} isError - Est une erreur
-   */
-  _updateTunerStatus(message, isError = false) {
-    const status = this.elements.tunerStatus;
-    if (status) {
-      status.textContent = message;
-      status.className = 'tuner-status';
-      if (isError) {status.classList.add('error');}
-    }
-  }
-
-  /**
-   * Initialise le clavier piano (2 octaves).
-   */
-  _initPianoKeyboard() {
-    if (!this.elements.pianoKeyboard || this._pianoInitialized) {return;}
-
-    // Octave de base (peut être modifiée par les contrôles)
-    const baseOctave = this._pianoState?.baseOctave || 4;
-    const octave1 = baseOctave;
-    const octave2 = baseOctave + 1;
-
-    // Définition des notes sur 2 octaves
-    const notes = [
-      { note: `C${octave1}`, isBlack: false, label: 'Q' },
-      { note: `C#${octave1}`, isBlack: true, label: '2' },
-      { note: `D${octave1}`, isBlack: false, label: 'S' },
-      { note: `D#${octave1}`, isBlack: true, label: '3' },
-      { note: `E${octave1}`, isBlack: false, label: 'D' },
-      { note: `F${octave1}`, isBlack: false, label: 'F' },
-      { note: `F#${octave1}`, isBlack: true, label: '5' },
-      { note: `G${octave1}`, isBlack: false, label: 'G' },
-      { note: `G#${octave1}`, isBlack: true, label: '6' },
-      { note: `A${octave1}`, isBlack: false, label: 'H' },
-      { note: `A#${octave1}`, isBlack: true, label: '7' },
-      { note: `B${octave1}`, isBlack: false, label: 'J' },
-      { note: `C${octave2}`, isBlack: false, label: 'K' },
-      { note: `C#${octave2}`, isBlack: true, label: '9' },
-      { note: `D${octave2}`, isBlack: false, label: 'L' },
-      { note: `D#${octave2}`, isBlack: true, label: '0' },
-      { note: `E${octave2}`, isBlack: false, label: 'M' },
-      { note: `F${octave2}`, isBlack: false, label: 'W' },
-      { note: `F#${octave2}`, isBlack: true, label: '' },
-      { note: `G${octave2}`, isBlack: false, label: 'X' },
-      { note: `G#${octave2}`, isBlack: true, label: '' },
-      { note: `A${octave2}`, isBlack: false, label: 'C' },
-      { note: `A#${octave2}`, isBlack: true, label: '' },
-      { note: `B${octave2}`, isBlack: false, label: 'V' },
-    ];
-
-    // Mapping clavier AZERTY -> note
-    this._pianoKeyMap = {};
-    notes.forEach(n => {
-      if (n.label) {
-        this._pianoKeyMap[n.label.toLowerCase()] = n.note;
-      }
-    });
-
-    // Construire le HTML
-    const container = this.elements.pianoKeyboard;
-    container.innerHTML = '';
-
-    notes.forEach((n, index) => {
-      const key = document.createElement('div');
-      key.className = `piano-key piano-key-${n.isBlack ? 'black' : 'white'}`;
-      key.dataset.note = n.note;
-
-      // Position des touches noires
-      if (n.isBlack) {
-        const blackKeyOffsets = [0.7, 1.7, 3.7, 4.7, 5.7, 7.7, 8.7, 10.7, 11.7, 12.7];
-        const blackIndex = notes.slice(0, index + 1).filter(x => x.isBlack).length - 1;
-        if (blackIndex < blackKeyOffsets.length) {
-          key.style.left = `${8 + blackKeyOffsets[blackIndex] * 40 + 6}px`;
-        }
-      }
-
-      // Label
-      if (n.label) {
-        const label = document.createElement('span');
-        label.className = 'piano-key-label';
-        label.textContent = n.label;
-        key.appendChild(label);
-      }
-
-      // Events - Sustain prolongé : noteOn sur down, noteOff sur up
-      key.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        this._playPianoNote(n.note, key);
-      });
-
-      key.addEventListener('mouseup', () => {
-        this._stopPianoNote(n.note, key);
-      });
-
-      key.addEventListener('mouseleave', () => {
-        this._stopPianoNote(n.note, key);
-      });
-
-      key.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        this._playPianoNote(n.note, key);
-      });
-
-      key.addEventListener('touchend', () => {
-        this._stopPianoNote(n.note, key);
-      });
-
-      container.appendChild(key);
-    });
-
-    this._pianoInitialized = true;
-  }
-
-  /**
-   * Joue une note depuis le piano (sustain prolongé tant qu'on appuie).
-   * @param {string} note - Note au format Tone.js (ex: "C4")
-   * @param {HTMLElement} keyElement - Élément de la touche
-   */
-  async _playPianoNote(note, keyElement) {
-    // Éviter les doublons si la touche est déjà active
-    if (this._activeNotes?.has(note)) {return;}
-
-    // Tracking des notes actives
-    if (!this._activeNotes) {
-      this._activeNotes = new Set();
-    }
-    this._activeNotes.add(note);
-
-    // Feedback visuel
-    if (keyElement) {
-      keyElement.classList.add('active');
-    }
-
-    // Afficher la note
-    if (this.elements.pianoNoteDisplay) {
-      const noteName = this._noteToFrench(note);
-      this.elements.pianoNoteDisplay.textContent = noteName;
-    }
-
-    // Jouer le son
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-
-    if (!this.audioEngine.started) {
-      try {
-        await this.audioEngine.start();
-        this.audioReady = true;
-
-        // Charger et appliquer TOUS les réglages sauvegardés (preset + effets)
-        this._loadSynthSettings();
-        if (this._synthConfig) {
-          this.audioEngine.applySettings(this._synthConfig);
-        }
-      } catch {
-        console.warn('Impossible de démarrer l\'audio');
-        return;
-      }
-    }
-
-    // Sustain prolongé : noteOn maintient la note jusqu'à noteOff
-    this.audioEngine.noteOn(note);
-  }
-
-  /**
-   * Arrête une note du piano (release).
-   * @param {string} note - Note au format Tone.js (ex: "C4")
-   * @param {HTMLElement} keyElement - Élément de la touche
-   */
-  _stopPianoNote(note, keyElement) {
-    // Retirer de la liste des notes actives
-    if (this._activeNotes) {
-      this._activeNotes.delete(note);
-    }
-
-    // Feedback visuel
-    if (keyElement) {
-      keyElement.classList.remove('active');
-    }
-
-    // Arrêter la note
-    if (this.audioEngine?.started) {
-      this.audioEngine.noteOff(note);
-    }
-  }
-
-  /**
-   * Convertit une note anglaise en français.
-   * @param {string} note - Note au format "C4", "C#4", etc.
-   * @returns {string} Note en français
-   */
-  _noteToFrench(note) {
-    const noteMap = {
-      'C': 'Do', 'D': 'Ré', 'E': 'Mi', 'F': 'Fa',
-      'G': 'Sol', 'A': 'La', 'B': 'Si',
-    };
-    const match = note.match(/^([A-G])(#?)(\d)$/);
-    if (!match) {return note;}
-
-    const [, letter, sharp, octave] = match;
-    const frenchNote = noteMap[letter] || letter;
-    const sharpSymbol = sharp ? '♯' : '';
-    return `${frenchNote}${sharpSymbol}${octave}`;
+    this.synthController?.hide();
   }
 
   /**
@@ -3948,19 +2060,19 @@ export class App {
   handleKeydown(event) {
     // Échap pour fermer les overlays ou revenir au menu
     if (event.key === 'Escape') {
-      if (this.elements.metronomeOverlay?.classList.contains('visible')) {
-        this.hideMetronome();
+      if (this.metronomeController?.isVisible()) {
+        this.metronomeController.hide();
         return;
       }
-      if (this.elements.tunerOverlay?.classList.contains('visible')) {
-        this.hideTuner();
+      if (this.tunerController?.isVisible()) {
+        this.tunerController.hide();
         return;
       }
-      if (this.elements.synthOverlay?.classList.contains('visible')) {
+      if (this.synthController?.isVisible()) {
         this.hideSynth();
         return;
       }
-      if (this.elements.pianoOverlay?.classList.contains('visible')) {
+      if (this.pianoController?.isVisible()) {
         this.hidePiano();
         return;
       }
@@ -3975,13 +2087,12 @@ export class App {
     }
 
     // Piano virtuel - jouer les notes avec le clavier (sustain prolongé)
-    if (this.elements.pianoOverlay?.classList.contains('visible') && this._pianoKeyMap) {
+    if (this.pianoController?.isVisible()) {
       const keyLower = event.key.toLowerCase();
-      if (this._pianoKeyMap[keyLower] && !event.repeat) {
+      const keyMap = this.pianoController.keyMap;
+      if (keyMap[keyLower] && !event.repeat) {
         event.preventDefault();
-        const note = this._pianoKeyMap[keyLower];
-        const keyElement = this.elements.pianoKeyboard?.querySelector(`[data-note="${note}"]`);
-        this._playPianoNote(note, keyElement);
+        this.pianoController.handleKeyDown(keyLower);
         return;
       }
     }
@@ -4007,12 +2118,11 @@ export class App {
    */
   handleKeyup(event) {
     // Piano virtuel - arrêter les notes quand on relâche la touche
-    if (this.elements.pianoOverlay?.classList.contains('visible') && this._pianoKeyMap) {
+    if (this.pianoController?.isVisible()) {
       const keyLower = event.key.toLowerCase();
-      if (this._pianoKeyMap[keyLower]) {
-        const note = this._pianoKeyMap[keyLower];
-        const keyElement = this.elements.pianoKeyboard?.querySelector(`[data-note="${note}"]`);
-        this._stopPianoNote(note, keyElement);
+      const keyMap = this.pianoController.keyMap;
+      if (keyMap[keyLower]) {
+        this.pianoController.handleKeyUp(keyLower);
       }
     }
   }
@@ -4024,17 +2134,8 @@ export class App {
     if (this.audioReady) {return;}
 
     try {
-      // Créer et démarrer l'AudioEngine
-      if (!this.audioEngine) {
-        this.audioEngine = new AudioEngine();
-      }
-      await this.audioEngine.start();
-
-      // Appliquer la config sauvegardée si elle existe
-      this._loadSynthSettings();
-      if (this._synthConfig) {
-        this.audioEngine.applySettings(this._synthConfig);
-      }
+      // Utiliser le SynthManager pour initialiser l'audio
+      await this.synthManager?.ensureAudioReady();
 
       this.audioReady = true;
 
@@ -4045,6 +2146,14 @@ export class App {
     } catch (error) {
       console.error('Erreur initialisation audio:', error);
     }
+  }
+
+  /**
+   * Retourne le moteur audio (via SynthManager).
+   * @returns {AudioEngine|null}
+   */
+  get audioEngine() {
+    return this.synthManager?.audioEngine || null;
   }
 
   /**
@@ -4070,10 +2179,21 @@ export class App {
     try {
       const saved = localStorage.getItem('diese-settings');
       if (saved) {
-        this.settings = { ...this.settings, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        // Validation basique des données
+        if (typeof parsed === 'object' && parsed !== null) {
+          // Valider notation
+          if (parsed.notation && ['french', 'english'].includes(parsed.notation)) {
+            this.settings.notation = parsed.notation;
+          }
+          // Valider volume
+          if (typeof parsed.volume === 'number' && parsed.volume >= 0 && parsed.volume <= 100) {
+            this.settings.volume = parsed.volume;
+          }
+        }
       }
     } catch {
-      console.warn('Erreur chargement paramètres');
+      console.warn('Erreur chargement paramètres, utilisation des valeurs par défaut');
     }
   }
 
@@ -4083,8 +2203,12 @@ export class App {
   saveSettings() {
     try {
       localStorage.setItem('diese-settings', JSON.stringify(this.settings));
-    } catch {
-      console.warn('Erreur sauvegarde paramètres');
+    } catch (error) {
+      if (error.name === 'QuotaExceededError') {
+        console.warn('Stockage local plein, impossible de sauvegarder les paramètres');
+      } else {
+        console.warn('Erreur sauvegarde paramètres:', error.message);
+      }
     }
   }
 
@@ -4202,7 +2326,10 @@ export class App {
   getExerciseProgress(exerciseId) {
     const progress = this.progress || this.getDefaultProgress();
     const record = progress.history?.find(h => h.exerciseId === exerciseId);
-    return record ? record.score / record.maxScore : 0;
+    if (!record || !record.maxScore) {
+      return 0;
+    }
+    return record.score / record.maxScore;
   }
 
   /**
@@ -4234,16 +2361,42 @@ export class App {
     // Sauvegarder la progression
     this.saveProgress();
 
-    // Nettoyer le métronome
-    if (this.metronome) {
-      this.metronome.dispose();
-      this.metronome = null;
+    // Nettoyer les event listeners globaux
+    if (this._keydownHandler) {
+      document.removeEventListener('keydown', this._keydownHandler);
+      this._keydownHandler = null;
+    }
+    if (this._keyupHandler) {
+      document.removeEventListener('keyup', this._keyupHandler);
+      this._keyupHandler = null;
     }
 
-    // Nettoyer l'audio
-    if (this.audioEngine) {
-      this.audioEngine.dispose();
-      this.audioEngine = null;
+    // Nettoyer le tuner
+    if (this.tunerController) {
+      this.tunerController.dispose();
+      this.tunerController = null;
+    }
+
+    // Nettoyer le métronome
+    if (this.metronomeController) {
+      this.metronomeController.dispose();
+      this.metronomeController = null;
+    }
+
+    // Nettoyer le synthétiseur et piano
+    if (this.synthController) {
+      this.synthController.dispose();
+      this.synthController = null;
+    }
+
+    if (this.pianoController) {
+      this.pianoController.dispose();
+      this.pianoController = null;
+    }
+
+    if (this.synthManager) {
+      this.synthManager.dispose();
+      this.synthManager = null;
     }
 
     // Nettoyer le renderer
@@ -4258,25 +2411,19 @@ export class App {
    * @param {import('./core/Pitch.js').Pitch} pitch - Note à jouer
    */
   async playNoteAudio(pitch) {
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-
-    if (!this.audioEngine.started) {
-      try {
-        await this.audioEngine.start();
-        this.audioReady = true;
-        if (this.elements.audioBanner) {
-          this.elements.audioBanner.classList.add('hidden');
-        }
-      } catch (error) {
-        console.error('Erreur démarrage audio:', error);
-        return;
+    try {
+      await this.synthManager?.ensureAudioReady();
+      this.audioReady = true;
+      if (this.elements.audioBanner) {
+        this.elements.audioBanner.classList.add('hidden');
       }
+    } catch (error) {
+      console.error('Erreur démarrage audio:', error);
+      return;
     }
 
     // Jouer via le synthé partagé
-    this.audioEngine.playPianoNote(pitch, 0.8);
+    this.audioEngine?.playPianoNote(pitch, 0.8);
   }
 
   /**
@@ -4284,24 +2431,18 @@ export class App {
    * @param {import('./core/Pitch.js').Pitch[]} pitches - Notes de l'accord
    */
   async playChordAudio(pitches) {
-    if (!this.audioEngine) {
-      this.audioEngine = new AudioEngine();
-    }
-
-    if (!this.audioEngine.started) {
-      try {
-        await this.audioEngine.start();
-        this.audioReady = true;
-        if (this.elements.audioBanner) {
-          this.elements.audioBanner.classList.add('hidden');
-        }
-      } catch (error) {
-        console.error('Erreur démarrage audio:', error);
-        return;
+    try {
+      await this.synthManager?.ensureAudioReady();
+      this.audioReady = true;
+      if (this.elements.audioBanner) {
+        this.elements.audioBanner.classList.add('hidden');
       }
+    } catch (error) {
+      console.error('Erreur démarrage audio:', error);
+      return;
     }
 
     // Jouer via le synthé partagé
-    this.audioEngine.playPianoChord(pitches, 1);
+    this.audioEngine?.playPianoChord(pitches, 1);
   }
 }
