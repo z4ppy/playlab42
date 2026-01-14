@@ -1602,6 +1602,114 @@ html, body {
   margin-bottom: var(--space-sm);
 }
 
+/* Onglets de type de synthèse */
+.synth-type-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.synth-type-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all 0.15s ease;
+  flex: 1;
+  min-width: 60px;
+}
+
+.synth-type-tab:hover {
+  border-color: var(--color-accent);
+  background: var(--color-bg-hover);
+}
+
+.synth-type-tab.active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: white;
+}
+
+.synth-type-tab .tab-icon {
+  font-size: 1.2rem;
+}
+
+.synth-type-tab .tab-label {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.synth-type-info {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+  min-height: 1.5em;
+}
+
+/* Sections de paramètres avec état actif/inactif */
+.synth-section-typed {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.synth-section-typed.inactive {
+  display: none;
+}
+
+.synth-section-typed.active {
+  border-color: var(--color-accent);
+}
+
+.synth-section-typed.active .synth-section-header {
+  background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+}
+
+.synth-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.synth-section-header .synth-section-title {
+  margin-bottom: 0;
+}
+
+.synth-section-badge {
+  font-size: var(--font-size-xs);
+  padding: 2px 8px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+}
+
+.synth-section-typed.active .synth-section-badge {
+  background: var(--color-accent);
+  color: white;
+}
+
+.synth-section-content {
+  padding: var(--space-md);
+}
+
+.synth-info-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+
 .synth-presets {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

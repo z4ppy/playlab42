@@ -34,15 +34,19 @@ const SYNTH_PRESETS = {
     name: 'Piano',
     synthType: 'poly',
     hasOscillator: true,
-    oscillator: { type: 'triangle' },
-    envelope: { attack: 0.02, decay: 0.3, sustain: 0.2, release: 1.0 },
+    // Triangle avec harmoniques pour un son plus riche
+    oscillator: { type: 'triangle8' },
+    envelope: { attack: 0.005, decay: 1.5, sustain: 0.3, release: 2 },
   },
   electricPiano: {
     name: 'Piano Élec.',
     synthType: 'fm',
     hasOscillator: false,
-    fm: { harmonicity: 3, modulationIndex: 10 },
-    envelope: { attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.8 },
+    // Rhodes classique : harmonicity ~3, modulationIndex modéré
+    fm: { harmonicity: 3.01, modulationIndex: 4 },
+    envelope: { attack: 0.001, decay: 0.8, sustain: 0.15, release: 1.5 },
+    // modulationEnvelope avec decay court pour l'attaque caractéristique
+    fmModEnv: { attack: 0.002, decay: 0.3, sustain: 0, release: 0.3 },
   },
   organ: {
     name: 'Orgue',
@@ -57,21 +61,23 @@ const SYNTH_PRESETS = {
     name: 'Guitare Class.',
     synthType: 'pluck',
     hasOscillator: false,
-    pluck: { attackNoise: 1.2, dampening: 3500, resonance: 0.96, release: 1.2 },
+    // Paramètres optimaux : dampening moyen, haute résonance pour sustain
+    pluck: { attackNoise: 1.5, dampening: 3500, resonance: 0.98, release: 2 },
   },
   guitarFolk: {
     name: 'Guitare Folk',
     synthType: 'pluck',
     hasOscillator: false,
-    pluck: { attackNoise: 2.5, dampening: 5000, resonance: 0.94, release: 0.8 },
+    // Plus brillant et percussif
+    pluck: { attackNoise: 2.5, dampening: 4500, resonance: 0.97, release: 1.5 },
   },
   guitarElectric: {
     name: 'Guitare Élec.',
-    synthType: 'poly',
-    hasOscillator: true,
-    oscillator: { type: 'sawtooth' },
-    envelope: { attack: 0.01, decay: 0.1, sustain: 0.8, release: 1.5 },
-    effects: { distortion: 0.3 },
+    synthType: 'pluck',
+    hasOscillator: false,
+    // Très brillant avec long sustain + distortion
+    pluck: { attackNoise: 3, dampening: 6000, resonance: 0.995, release: 3 },
+    effects: { distortion: 0.4 },
   },
 
   // === Synthés ===
@@ -91,10 +97,11 @@ const SYNTH_PRESETS = {
   },
   bell: {
     name: 'Cloche',
-    synthType: 'poly',
-    hasOscillator: true,
-    oscillator: { type: 'sine' },
-    envelope: { attack: 0.001, decay: 0.8, sustain: 0.1, release: 1.2 },
+    synthType: 'fm',
+    hasOscillator: false,
+    // FM pour les harmoniques de cloche
+    fm: { harmonicity: 5.5, modulationIndex: 8 },
+    envelope: { attack: 0.001, decay: 1.5, sustain: 0.1, release: 2 },
   },
 
   // === Percussions ===
@@ -102,36 +109,47 @@ const SYNTH_PRESETS = {
     name: 'Grosse caisse',
     synthType: 'membrane',
     hasOscillator: false,
-    membrane: { pitchDecay: 0.02, octaves: 4, oscillator: { type: 'sine' } },
-    envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 },
+    // 808 style : pitchDecay modéré, octaves élevé pour le punch
+    membrane: { pitchDecay: 0.05, octaves: 8, oscillator: { type: 'sine' } },
+    envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 },
+  },
+  percSnare: {
+    name: 'Caisse claire',
+    synthType: 'noise',
+    hasOscillator: false,
+    // Snare = bruit blanc filtré + corps membrane
+    noise: { type: 'white', filterFreq: 3000 },
+    envelope: { attack: 0.001, decay: 0.15, sustain: 0, release: 0.03 },
   },
   percTom: {
     name: 'Tom',
     synthType: 'membrane',
     hasOscillator: false,
-    membrane: { pitchDecay: 0.008, octaves: 2, oscillator: { type: 'sine' } },
-    envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.3 },
+    membrane: { pitchDecay: 0.03, octaves: 4, oscillator: { type: 'sine' } },
+    envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.2 },
   },
   percWood: {
     name: 'Wood Block',
     synthType: 'membrane',
     hasOscillator: false,
-    membrane: { pitchDecay: 0.005, octaves: 1.5, oscillator: { type: 'sine' } },
+    membrane: { pitchDecay: 0.008, octaves: 2, oscillator: { type: 'sine' } },
     envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.05 },
   },
   percHihat: {
     name: 'Hi-Hat',
     synthType: 'metal',
     hasOscillator: false,
-    metal: { frequency: 200, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 },
-    envelope: { attack: 0.001, decay: 0.08, release: 0.01 },
+    // Court decay = fermé
+    metal: { frequency: 400, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 },
+    envelope: { attack: 0.001, decay: 0.05, release: 0.01 },
   },
   percCymbal: {
     name: 'Cymbale',
     synthType: 'metal',
     hasOscillator: false,
-    metal: { frequency: 300, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 },
-    envelope: { attack: 0.001, decay: 1.0, release: 0.3 },
+    // Plus d'harmoniques et long decay
+    metal: { frequency: 300, harmonicity: 12, modulationIndex: 20, resonance: 800, octaves: 1.5 },
+    envelope: { attack: 0.001, decay: 1.5, release: 0.3 },
   },
 };
 
@@ -196,6 +214,21 @@ export class AudioEngine extends EventEmitter {
 
     /** @type {Object} Enveloppe ADSR actuelle */
     this.envelope = { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 };
+
+    /** @type {string} Type de synthèse actuel */
+    this.synthType = 'poly';
+
+    /** @type {Object} Paramètres FM */
+    this.fmParams = { harmonicity: 3, modulationIndex: 10 };
+
+    /** @type {Object} Paramètres Pluck */
+    this.pluckParams = { attackNoise: 1.5, dampening: 3500, resonance: 0.98, release: 2 };
+
+    /** @type {Object} Paramètres Membrane */
+    this.membraneParams = { pitchDecay: 0.05, octaves: 8 };
+
+    /** @type {Object} Paramètres Metal */
+    this.metalParams = { frequency: 200, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 };
 
     /** @type {Object} Configuration des effets */
     this.effectsConfig = structuredClone(DEFAULT_EFFECTS);
@@ -347,7 +380,6 @@ export class AudioEngine extends EventEmitter {
   _createSynth() {
     const Tone = this.Tone;
     const preset = SYNTH_PRESETS[this.currentPreset] || SYNTH_PRESETS.piano;
-    const synthType = preset.synthType || 'poly';
 
     // Relâcher et disposer l'ancien synth si existant
     if (this.synth) {
@@ -363,54 +395,76 @@ export class AudioEngine extends EventEmitter {
       this.distortion = null;
     }
 
-    // Créer le synthétiseur selon le type
-    switch (synthType) {
+    // Disposer le noiseFilter si existant
+    if (this.noiseFilter) {
+      this.noiseFilter.dispose();
+      this.noiseFilter = null;
+    }
+
+    // Créer le synthétiseur selon le type (utilise les paramètres de l'instance)
+    switch (this.synthType) {
       case 'pluck':
-        // PluckSynth pour les guitares acoustiques (Karplus-Strong)
+        // PluckSynth pour les guitares (Karplus-Strong)
         this.synth = new Tone.PluckSynth({
-          attackNoise: preset.pluck?.attackNoise || 1,
-          dampening: preset.pluck?.dampening || 4000,
-          resonance: preset.pluck?.resonance || 0.96,
-          release: preset.pluck?.release || 1,
+          attackNoise: this.pluckParams.attackNoise,
+          dampening: this.pluckParams.dampening,
+          resonance: this.pluckParams.resonance,
+          release: this.pluckParams.release,
         });
-        this.synthType = 'pluck';
+        // Ajouter distortion pour guitare électrique
+        if (preset.effects?.distortion) {
+          this.distortion = new Tone.Distortion(preset.effects.distortion);
+        }
         break;
 
       case 'fm':
-        // FMSynth pour piano électrique (son riche type DX7)
+        // FMSynth pour piano électrique et cloches
         this.synth = new Tone.PolySynth(Tone.FMSynth, {
-          harmonicity: preset.fm?.harmonicity || 3,
-          modulationIndex: preset.fm?.modulationIndex || 10,
+          harmonicity: this.fmParams.harmonicity,
+          modulationIndex: this.fmParams.modulationIndex,
           oscillator: { type: 'sine' },
-          envelope: preset.envelope || { attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.8 },
-          modulation: { type: 'square' },
-          modulationEnvelope: { attack: 0.5, decay: 0.1, sustain: 0.2, release: 0.1 },
+          envelope: this.envelope,
+          modulation: { type: 'sine' },
+          // modulationEnvelope avec decay court pour l'attaque caractéristique Rhodes
+          modulationEnvelope: preset.fmModEnv || { attack: 0.002, decay: 0.3, sustain: 0, release: 0.3 },
         });
-        this.synthType = 'fm';
         break;
 
       case 'membrane':
         // MembraneSynth pour percussions à peau (kick, tom, wood block)
         this.synth = new Tone.MembraneSynth({
-          pitchDecay: preset.membrane?.pitchDecay || 0.02,
-          octaves: preset.membrane?.octaves || 4,
-          oscillator: preset.membrane?.oscillator || { type: 'sine' },
-          envelope: preset.envelope || { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 },
+          pitchDecay: this.membraneParams.pitchDecay,
+          octaves: this.membraneParams.octaves,
+          oscillator: { type: 'sine' },
+          envelope: this.envelope,
         });
-        this.synthType = 'membrane';
         break;
 
       case 'metal':
         // MetalSynth pour percussions métalliques (hi-hat, cymbale)
         this.synth = new Tone.MetalSynth({
-          frequency: preset.metal?.frequency || 200,
-          harmonicity: preset.metal?.harmonicity || 5.1,
-          modulationIndex: preset.metal?.modulationIndex || 32,
-          resonance: preset.metal?.resonance || 4000,
-          octaves: preset.metal?.octaves || 1.5,
-          envelope: preset.envelope || { attack: 0.001, decay: 0.1, release: 0.01 },
+          frequency: this.metalParams.frequency,
+          harmonicity: this.metalParams.harmonicity,
+          modulationIndex: this.metalParams.modulationIndex,
+          resonance: this.metalParams.resonance,
+          octaves: this.metalParams.octaves,
+          envelope: this.envelope,
         });
-        this.synthType = 'metal';
+        break;
+
+      case 'noise':
+        // NoiseSynth pour snare/caisse claire
+        this.synth = new Tone.NoiseSynth({
+          noise: { type: preset.noise?.type || 'white' },
+          envelope: this.envelope,
+        });
+        // Filtre passe-haut pour le snare
+        if (preset.noise?.filterFreq) {
+          this.noiseFilter = new Tone.Filter({
+            frequency: preset.noise.filterFreq,
+            type: 'highpass',
+          });
+        }
         break;
 
       case 'poly':
@@ -420,9 +474,8 @@ export class AudioEngine extends EventEmitter {
           oscillator: { type: this.oscillatorType },
           envelope: { ...this.envelope },
         });
-        this.synthType = 'poly';
 
-        // Ajouter distortion pour guitare électrique
+        // Ajouter distortion si spécifié
         if (preset.effects?.distortion) {
           this.distortion = new Tone.Distortion(preset.effects.distortion);
         }
@@ -448,6 +501,9 @@ export class AudioEngine extends EventEmitter {
     if (this.distortion) {
       this.distortion.disconnect();
     }
+    if (this.noiseFilter) {
+      this.noiseFilter.disconnect();
+    }
 
     // Déterminer le premier noeud de la chaîne d'effets
     let firstNode;
@@ -457,18 +513,26 @@ export class AudioEngine extends EventEmitter {
       firstNode = this.effects.delay;
     }
 
-    // Si distortion existe, l'insérer avant les autres effets
+    // Construire la chaîne : synth -> [noiseFilter] -> [distortion] -> effets -> destination
+    let currentNode = this.synth;
+
+    // Filtre pour le noise (snare)
+    if (this.noiseFilter) {
+      currentNode.connect(this.noiseFilter);
+      currentNode = this.noiseFilter;
+    }
+
+    // Distortion
     if (this.distortion) {
-      this.synth.connect(this.distortion);
-      if (firstNode) {
-        this.distortion.connect(firstNode);
-      } else {
-        this.distortion.toDestination();
-      }
-    } else if (firstNode) {
-      this.synth.connect(firstNode);
+      currentNode.connect(this.distortion);
+      currentNode = this.distortion;
+    }
+
+    // Connexion finale
+    if (firstNode) {
+      currentNode.connect(firstNode);
     } else {
-      this.synth.toDestination();
+      currentNode.toDestination();
     }
   }
 
@@ -490,11 +554,30 @@ export class AudioEngine extends EventEmitter {
     }
 
     this.currentPreset = presetName;
+    this.synthType = preset.synthType || 'poly';
 
     // Mettre à jour oscillateur et enveloppe seulement pour les presets poly
     if (preset.synthType === 'poly' || !preset.synthType) {
       this.oscillatorType = preset.oscillator?.type || 'triangle';
+    }
+
+    // Copier l'enveloppe si présente
+    if (preset.envelope) {
       this.envelope = { ...preset.envelope };
+    }
+
+    // Copier les paramètres spécifiques selon le type
+    if (preset.fm) {
+      this.fmParams = { ...this.fmParams, ...preset.fm };
+    }
+    if (preset.pluck) {
+      this.pluckParams = { ...this.pluckParams, ...preset.pluck };
+    }
+    if (preset.membrane) {
+      this.membraneParams = { ...this.membraneParams, ...preset.membrane };
+    }
+    if (preset.metal) {
+      this.metalParams = { ...this.metalParams, ...preset.metal };
     }
 
     // Recréer le synthétiseur si déjà démarré
@@ -562,6 +645,120 @@ export class AudioEngine extends EventEmitter {
     }
 
     this.emit('settingsChange', this.getSettings());
+  }
+
+  /**
+   * Change le type de synthèse
+   *
+   * @param {string} type - Type de synthèse (poly, fm, pluck, membrane, metal)
+   */
+  setSynthType(type) {
+    const validTypes = ['poly', 'fm', 'pluck', 'membrane', 'metal', 'noise'];
+    if (!validTypes.includes(type)) {
+      console.warn('Type de synthèse inconnu:', type);
+      return;
+    }
+
+    this.synthType = type;
+    this.currentPreset = 'custom';
+
+    // Recréer le synthétiseur si déjà démarré
+    if (this.started) {
+      this._createSynth();
+    }
+
+    this.emit('settingsChange', this.getSettings());
+  }
+
+  /**
+   * Modifie un paramètre spécifique d'un type de synthèse
+   *
+   * @param {string} synthType - Type de synthèse (fm, pluck, membrane, metal)
+   * @param {string} param - Nom du paramètre
+   * @param {number} value - Valeur du paramètre
+   */
+  setSynthParam(synthType, param, value) {
+    // Mettre à jour les paramètres stockés
+    switch (synthType) {
+      case 'fm':
+        if (param in this.fmParams) {
+          this.fmParams[param] = value;
+        }
+        break;
+      case 'pluck':
+        if (param in this.pluckParams) {
+          this.pluckParams[param] = value;
+        }
+        break;
+      case 'membrane':
+        if (param in this.membraneParams) {
+          this.membraneParams[param] = value;
+        }
+        break;
+      case 'metal':
+        if (param in this.metalParams) {
+          this.metalParams[param] = value;
+        }
+        break;
+      default:
+        console.warn('Type de synthèse inconnu:', synthType);
+        return;
+    }
+
+    this.currentPreset = 'custom';
+
+    // Appliquer les changements en temps réel si le synth existe et correspond au type
+    if (this.synth && this.synthType === synthType) {
+      this._applySynthParam(param, value);
+    }
+
+    this.emit('settingsChange', this.getSettings());
+  }
+
+  /**
+   * Applique un paramètre au synthétiseur en temps réel
+   * @private
+   */
+  _applySynthParam(param, value) {
+    if (!this.synth) {return;}
+
+    try {
+      switch (this.synthType) {
+        case 'fm':
+          if (param === 'harmonicity') {
+            this.synth.set({ harmonicity: value });
+          } else if (param === 'modulationIndex') {
+            this.synth.set({ modulationIndex: value });
+          }
+          break;
+        case 'pluck':
+          if (param === 'dampening') {
+            this.synth.dampening = value;
+          } else if (param === 'resonance') {
+            this.synth.resonance = value;
+          } else if (param === 'attackNoise') {
+            this.synth.attackNoise = value;
+          }
+          break;
+        case 'membrane':
+          if (param === 'pitchDecay') {
+            this.synth.pitchDecay = value;
+          } else if (param === 'octaves') {
+            this.synth.octaves = value;
+          }
+          break;
+        case 'metal':
+          if (param === 'frequency') {
+            this.synth.frequency.value = value;
+          } else if (param === 'harmonicity') {
+            this.synth.harmonicity.value = value;
+          }
+          break;
+      }
+    } catch (e) {
+      // Certains paramètres peuvent ne pas être modifiables en temps réel
+      console.debug('Paramètre non modifiable en temps réel:', param, e);
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -649,8 +846,13 @@ export class AudioEngine extends EventEmitter {
   getSettings() {
     return {
       preset: this.currentPreset,
+      synthType: this.synthType,
       oscillator: this.oscillatorType,
       envelope: { ...this.envelope },
+      fm: { ...this.fmParams },
+      pluck: { ...this.pluckParams },
+      membrane: { ...this.membraneParams },
+      metal: { ...this.metalParams },
       effects: structuredClone(this.effectsConfig),
       volume: this.volume,
     };
@@ -671,6 +873,9 @@ export class AudioEngine extends EventEmitter {
       this.setPreset(settings.preset);
     } else {
       // Configuration personnalisée
+      if (settings.synthType) {
+        this.synthType = settings.synthType;
+      }
       if (settings.oscillator) {
         this.oscillatorType = settings.oscillator;
       }
@@ -678,6 +883,20 @@ export class AudioEngine extends EventEmitter {
         this.envelope = { ...settings.envelope };
       }
       this.currentPreset = 'custom';
+    }
+
+    // Appliquer les paramètres spécifiques par type
+    if (settings.fm) {
+      this.fmParams = { ...this.fmParams, ...settings.fm };
+    }
+    if (settings.pluck) {
+      this.pluckParams = { ...this.pluckParams, ...settings.pluck };
+    }
+    if (settings.membrane) {
+      this.membraneParams = { ...this.membraneParams, ...settings.membrane };
+    }
+    if (settings.metal) {
+      this.metalParams = { ...this.metalParams, ...settings.metal };
     }
 
     // Appliquer les effets (config)
@@ -735,8 +954,20 @@ export class AudioEngine extends EventEmitter {
       return;
     }
 
-    const note = typeof pitch === 'string' ? pitch : pitch.toTone();
     const dur = typeof duration === 'number' ? duration : duration;
+
+    // NoiseSynth n'utilise pas de pitch
+    if (this.synthType === 'noise') {
+      this.emit('noteStart', { note: 'noise', duration: dur });
+      this.synth.triggerAttackRelease(dur, time);
+      const durMs = typeof duration === 'number' ? duration * 1000 : 500;
+      setTimeout(() => {
+        this.emit('noteEnd', { note: 'noise' });
+      }, durMs);
+      return;
+    }
+
+    const note = typeof pitch === 'string' ? pitch : pitch.toTone();
 
     this.emit('noteStart', { note, duration: dur });
 
@@ -761,6 +992,13 @@ export class AudioEngine extends EventEmitter {
     }
 
     const note = typeof pitch === 'string' ? pitch : pitch.toTone();
+
+    // NoiseSynth n'utilise pas de pitch
+    if (this.synthType === 'noise') {
+      this.synth.triggerAttackRelease('16n', time);
+      this.emit('noteStart', { note: 'noise' });
+      return;
+    }
 
     // Les synths monophoniques (pluck, membrane, metal) n'ont pas de sustain
     // On utilise triggerAttackRelease avec une durée courte

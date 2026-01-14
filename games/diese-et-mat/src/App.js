@@ -2239,14 +2239,23 @@ export class App {
     // Générer les boutons de presets
     this._renderSynthPresets();
 
+    // Configurer les onglets de type de synthé
+    this._setupSynthTypeTabs();
+
     // Générer les boutons d'oscillateurs
     this._renderSynthOscillators();
 
     // Configurer les sliders ADSR
     this._setupADSRSliders();
 
+    // Configurer les sliders des paramètres spécifiques (FM, Pluck, etc.)
+    this._setupSynthTypeSliders();
+
     // Configurer les contrôles d'effets
     this._setupEffectsControls();
+
+    // Mettre à jour les sections selon le type actuel
+    this._updateSynthSections();
 
     this._synthPanelInitialized = true;
   }
@@ -2361,6 +2370,217 @@ export class App {
 
       container.appendChild(btn);
     });
+  }
+
+  /**
+   * Configure les onglets de type de synthèse.
+   */
+  _setupSynthTypeTabs() {
+    const tabsContainer = document.getElementById('synth-type-tabs');
+    if (!tabsContainer) {return;}
+
+    // Descriptions des types de synthèse
+    const typeDescriptions = {
+      poly: 'Synthèse soustractive classique avec oscillateur et enveloppe ADSR.',
+      fm: 'Synthèse FM (modulation de fréquence) pour sons riches type DX7.',
+      pluck: 'Modèle physique de cordes pincées (algorithme Karplus-Strong).',
+      membrane: 'Modèle physique de membranes (percussions à peau).',
+      metal: 'Modèle physique de surfaces métalliques (cymbales, cloches).',
+      noise: 'Générateur de bruit filtré (caisse claire, percussions).',
+    };
+
+    tabsContainer.addEventListener('click', (e) => {
+      const tab = e.target.closest('.synth-type-tab');
+      if (!tab) {return;}
+
+      const synthType = tab.dataset.type;
+      this._selectSynthType(synthType);
+
+      // Mettre à jour la description
+      const infoEl = document.getElementById('synth-type-info');
+      if (infoEl) {
+        infoEl.textContent = typeDescriptions[synthType] || '';
+      }
+    });
+
+    // Afficher la description initiale
+    const currentType = this._getCurrentSynthType();
+    const infoEl = document.getElementById('synth-type-info');
+    if (infoEl) {
+      infoEl.textContent = typeDescriptions[currentType] || '';
+    }
+  }
+
+  /**
+   * Retourne le type de synthé actuel depuis le preset ou la config.
+   */
+  _getCurrentSynthType() {
+    const presets = AudioEngine.getPresets();
+    const preset = presets[this._synthConfig?.preset];
+    return preset?.synthType || 'poly';
+  }
+
+  /**
+   * Sélectionne un type de synthèse.
+   */
+  async _selectSynthType(synthType) {
+    // Mettre à jour l'UI des onglets
+    document.querySelectorAll('.synth-type-tab').forEach((tab) => {
+      tab.classList.toggle('active', tab.dataset.type === synthType);
+    });
+
+    // Mettre à jour les sections actives/inactives
+    this._updateSynthSections(synthType);
+
+    // Appliquer au moteur audio
+    if (!this.audioEngine) {
+      this.audioEngine = new AudioEngine();
+    }
+    if (!this.audioEngine.started) {
+      await this.audioEngine.start();
+    }
+
+    // Changer le type de synthé dans l'AudioEngine
+    this.audioEngine.setSynthType(synthType);
+    this._synthConfig = this.audioEngine.getSettings();
+    this._saveSynthSettings();
+
+    // Mettre à jour l'UI des presets (marquer comme custom)
+    this._updatePresetButtons();
+  }
+
+  /**
+   * Met à jour l'affichage des sections selon le type de synthé.
+   */
+  _updateSynthSections(synthType) {
+    const currentType = synthType || this._getCurrentSynthType();
+
+    // Mettre à jour les onglets
+    document.querySelectorAll('.synth-type-tab').forEach((tab) => {
+      tab.classList.toggle('active', tab.dataset.type === currentType);
+    });
+
+    // Mettre à jour les sections
+    document.querySelectorAll('.synth-section-typed').forEach((section) => {
+      const types = section.dataset.types?.split(',') || [];
+      const isActive = types.includes(currentType);
+      section.classList.toggle('active', isActive);
+      section.classList.toggle('inactive', !isActive);
+
+      // Activer/désactiver les inputs
+      section.querySelectorAll('input, button').forEach((input) => {
+        input.disabled = !isActive;
+      });
+    });
+  }
+
+  /**
+   * Configure les sliders des paramètres spécifiques (FM, Pluck, Membrane, Metal).
+   */
+  _setupSynthTypeSliders() {
+    // Paramètres FM
+    this._setupParamSlider('fm-harmonicity', {
+      min: 1, max: 10, step: 0.1,
+      getValue: () => this._synthConfig.fm?.harmonicity || 3,
+      toDisplay: (v) => v.toFixed(1),
+      onChange: (v) => this._updateSynthParam('fm', 'harmonicity', v),
+    });
+    this._setupParamSlider('fm-modulation-index', {
+      min: 1, max: 30,
+      getValue: () => this._synthConfig.fm?.modulationIndex || 10,
+      toDisplay: (v) => Math.round(v).toString(),
+      onChange: (v) => this._updateSynthParam('fm', 'modulationIndex', v),
+    });
+
+    // Paramètres Pluck
+    this._setupParamSlider('pluck-attack-noise', {
+      min: 1, max: 50,
+      getValue: () => (this._synthConfig.pluck?.attackNoise || 1) * 10,
+      toDisplay: (v) => (v / 10).toFixed(1),
+      onChange: (v) => this._updateSynthParam('pluck', 'attackNoise', v / 10),
+    });
+    this._setupParamSlider('pluck-resonance', {
+      min: 80, max: 99,
+      getValue: () => (this._synthConfig.pluck?.resonance || 0.96) * 100,
+      toDisplay: (v) => (v / 100).toFixed(2),
+      onChange: (v) => this._updateSynthParam('pluck', 'resonance', v / 100),
+    });
+    this._setupParamSlider('pluck-dampening', {
+      min: 1000, max: 8000,
+      getValue: () => this._synthConfig.pluck?.dampening || 4000,
+      toDisplay: (v) => `${Math.round(v)} Hz`,
+      onChange: (v) => this._updateSynthParam('pluck', 'dampening', v),
+    });
+
+    // Paramètres Membrane
+    this._setupParamSlider('membrane-pitch-decay', {
+      min: 1, max: 100,
+      getValue: () => (this._synthConfig.membrane?.pitchDecay || 0.02) * 1000,
+      toDisplay: (v) => `${(v / 1000).toFixed(2)}s`,
+      onChange: (v) => this._updateSynthParam('membrane', 'pitchDecay', v / 1000),
+    });
+    this._setupParamSlider('membrane-octaves', {
+      min: 1, max: 8,
+      getValue: () => this._synthConfig.membrane?.octaves || 4,
+      toDisplay: (v) => Math.round(v).toString(),
+      onChange: (v) => this._updateSynthParam('membrane', 'octaves', v),
+    });
+
+    // Paramètres Metal
+    this._setupParamSlider('metal-frequency', {
+      min: 100, max: 1000,
+      getValue: () => this._synthConfig.metal?.frequency || 200,
+      toDisplay: (v) => `${Math.round(v)} Hz`,
+      onChange: (v) => this._updateSynthParam('metal', 'frequency', v),
+    });
+    this._setupParamSlider('metal-harmonicity', {
+      min: 1, max: 10, step: 0.1,
+      getValue: () => this._synthConfig.metal?.harmonicity || 5,
+      toDisplay: (v) => v.toFixed(1),
+      onChange: (v) => this._updateSynthParam('metal', 'harmonicity', v),
+    });
+  }
+
+  /**
+   * Configure un slider de paramètre générique.
+   */
+  _setupParamSlider(sliderId, config) {
+    const slider = document.getElementById(sliderId);
+    const valueEl = document.getElementById(`${sliderId}-value`);
+    if (!slider) {return;}
+
+    // Initialiser la valeur
+    const currentValue = config.getValue();
+    slider.value = currentValue;
+    if (valueEl) {
+      valueEl.textContent = config.toDisplay(currentValue);
+    }
+
+    // Écouter les changements
+    slider.addEventListener('input', () => {
+      const value = parseFloat(slider.value);
+      if (valueEl) {
+        valueEl.textContent = config.toDisplay(value);
+      }
+      config.onChange(value);
+    });
+  }
+
+  /**
+   * Met à jour un paramètre spécifique du synthé.
+   */
+  async _updateSynthParam(synthType, param, value) {
+    if (!this.audioEngine) {
+      this.audioEngine = new AudioEngine();
+    }
+    if (!this.audioEngine.started) {
+      await this.audioEngine.start();
+    }
+
+    // Mettre à jour le paramètre dans l'AudioEngine
+    this.audioEngine.setSynthParam(synthType, param, value);
+    this._synthConfig = this.audioEngine.getSettings();
+    this._saveSynthSettings();
   }
 
   /**
@@ -2544,7 +2764,45 @@ export class App {
     this._synthConfig = this.audioEngine.getSettings();
     this._updateADSRSliders();
     this._updateOscillatorButtons();
+    this._updateSynthSections();
+    this._updateSynthTypeSliders();
     this._saveSynthSettings();
+  }
+
+  /**
+   * Met à jour les sliders des paramètres spécifiques selon la config actuelle.
+   */
+  _updateSynthTypeSliders() {
+    // FM
+    this._updateSliderValue('fm-harmonicity', this._synthConfig.fm?.harmonicity || 3, (v) => v.toFixed(1));
+    this._updateSliderValue('fm-modulation-index', this._synthConfig.fm?.modulationIndex || 10, (v) => Math.round(v).toString());
+
+    // Pluck
+    this._updateSliderValue('pluck-attack-noise', (this._synthConfig.pluck?.attackNoise || 1) * 10, (v) => (v / 10).toFixed(1));
+    this._updateSliderValue('pluck-resonance', (this._synthConfig.pluck?.resonance || 0.96) * 100, (v) => (v / 100).toFixed(2));
+    this._updateSliderValue('pluck-dampening', this._synthConfig.pluck?.dampening || 4000, (v) => `${Math.round(v)} Hz`);
+
+    // Membrane
+    this._updateSliderValue('membrane-pitch-decay', (this._synthConfig.membrane?.pitchDecay || 0.02) * 1000, (v) => `${(v / 1000).toFixed(2)}s`);
+    this._updateSliderValue('membrane-octaves', this._synthConfig.membrane?.octaves || 4, (v) => Math.round(v).toString());
+
+    // Metal
+    this._updateSliderValue('metal-frequency', this._synthConfig.metal?.frequency || 200, (v) => `${Math.round(v)} Hz`);
+    this._updateSliderValue('metal-harmonicity', this._synthConfig.metal?.harmonicity || 5, (v) => v.toFixed(1));
+  }
+
+  /**
+   * Met à jour un slider et son affichage.
+   */
+  _updateSliderValue(sliderId, value, toDisplay) {
+    const slider = document.getElementById(sliderId);
+    const valueEl = document.getElementById(`${sliderId}-value`);
+    if (slider) {
+      slider.value = value;
+    }
+    if (valueEl) {
+      valueEl.textContent = toDisplay(value);
+    }
   }
 
   /**
@@ -2643,32 +2901,33 @@ export class App {
    * Met à jour les sliders ADSR dans l'UI.
    */
   _updateADSRSliders() {
-    const env = this._synthConfig.envelope;
+    const env = this._synthConfig?.envelope;
+    if (!env) {return;}
 
     const attackSlider = document.getElementById('adsr-attack');
     const attackValue = document.getElementById('adsr-attack-value');
-    if (attackSlider) {
+    if (attackSlider && env.attack !== undefined) {
       attackSlider.value = env.attack * 1000;
       attackValue.textContent = `${env.attack.toFixed(2)}s`;
     }
 
     const decaySlider = document.getElementById('adsr-decay');
     const decayValue = document.getElementById('adsr-decay-value');
-    if (decaySlider) {
+    if (decaySlider && env.decay !== undefined) {
       decaySlider.value = env.decay * 1000;
       decayValue.textContent = `${env.decay.toFixed(2)}s`;
     }
 
     const sustainSlider = document.getElementById('adsr-sustain');
     const sustainValue = document.getElementById('adsr-sustain-value');
-    if (sustainSlider) {
+    if (sustainSlider && env.sustain !== undefined) {
       sustainSlider.value = env.sustain * 100;
       sustainValue.textContent = env.sustain.toFixed(2);
     }
 
     const releaseSlider = document.getElementById('adsr-release');
     const releaseValue = document.getElementById('adsr-release-value');
-    if (releaseSlider) {
+    if (releaseSlider && env.release !== undefined) {
       releaseSlider.value = env.release * 1000;
       releaseValue.textContent = `${env.release.toFixed(2)}s`;
     }

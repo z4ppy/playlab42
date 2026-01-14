@@ -332,45 +332,196 @@
           <button class="synth-close" id="synth-close">&times;</button>
         </div>
         <div class="synth-content">
-          <!-- Presets -->
+          <!-- Presets d'instruments -->
           <div class="synth-section">
-            <div class="synth-section-title">Presets</div>
+            <div class="synth-section-title">Instruments</div>
             <div class="synth-presets" id="synth-presets">
               <!-- Générés par JavaScript -->
             </div>
           </div>
 
-          <!-- Oscillateur -->
+          <!-- Type de synthétiseur (onglets) -->
           <div class="synth-section">
-            <div class="synth-section-title">Oscillateur</div>
-            <div class="synth-oscillators" id="synth-oscillators">
-              <!-- Générés par JavaScript -->
+            <div class="synth-section-title">Type de synthèse</div>
+            <div class="synth-type-tabs" id="synth-type-tabs">
+              <button class="synth-type-tab active" data-type="poly" title="Synthèse soustractive classique">
+                <span class="tab-icon">∿</span>
+                <span class="tab-label">Poly</span>
+              </button>
+              <button class="synth-type-tab" data-type="fm" title="Synthèse FM (modulation de fréquence)">
+                <span class="tab-icon">⚡</span>
+                <span class="tab-label">FM</span>
+              </button>
+              <button class="synth-type-tab" data-type="pluck" title="Synthèse physique (cordes pincées)">
+                <span class="tab-icon">🎸</span>
+                <span class="tab-label">Pluck</span>
+              </button>
+              <button class="synth-type-tab" data-type="membrane" title="Synthèse physique (membranes)">
+                <span class="tab-icon">🥁</span>
+                <span class="tab-label">Membrane</span>
+              </button>
+              <button class="synth-type-tab" data-type="metal" title="Synthèse physique (métaux)">
+                <span class="tab-icon">🔔</span>
+                <span class="tab-label">Metal</span>
+              </button>
+              <button class="synth-type-tab" data-type="noise" title="Synthèse de bruit (percussions)">
+                <span class="tab-icon">〰️</span>
+                <span class="tab-label">Noise</span>
+              </button>
+            </div>
+            <div class="synth-type-info" id="synth-type-info">
+              <!-- Description du type affiché par JavaScript -->
             </div>
           </div>
 
-          <!-- ADSR -->
-          <div class="synth-section">
-            <div class="synth-section-title">Enveloppe ADSR</div>
-            <div class="synth-adsr">
-              <div class="synth-slider-row">
-                <label>Attack</label>
-                <input type="range" id="adsr-attack" min="1" max="2000" value="20">
-                <span class="synth-slider-value" id="adsr-attack-value">0.02s</span>
+          <!-- Oscillateur (poly uniquement) -->
+          <div class="synth-section synth-section-typed" id="synth-section-oscillator" data-types="poly">
+            <div class="synth-section-header">
+              <div class="synth-section-title">Oscillateur</div>
+              <span class="synth-section-badge">Poly</span>
+            </div>
+            <div class="synth-section-content">
+              <div class="synth-oscillators" id="synth-oscillators">
+                <!-- Générés par JavaScript -->
               </div>
-              <div class="synth-slider-row">
-                <label>Decay</label>
-                <input type="range" id="adsr-decay" min="10" max="2000" value="100">
-                <span class="synth-slider-value" id="adsr-decay-value">0.10s</span>
+            </div>
+          </div>
+
+          <!-- Enveloppe ADSR (poly, fm) -->
+          <div class="synth-section synth-section-typed" id="synth-section-adsr" data-types="poly,fm">
+            <div class="synth-section-header">
+              <div class="synth-section-title">Enveloppe ADSR</div>
+              <span class="synth-section-badge">Poly, FM</span>
+            </div>
+            <div class="synth-section-content">
+              <div class="synth-adsr">
+                <div class="synth-slider-row">
+                  <label>Attack</label>
+                  <input type="range" id="adsr-attack" min="1" max="2000" value="20">
+                  <span class="synth-slider-value" id="adsr-attack-value">0.02s</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Decay</label>
+                  <input type="range" id="adsr-decay" min="10" max="2000" value="100">
+                  <span class="synth-slider-value" id="adsr-decay-value">0.10s</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Sustain</label>
+                  <input type="range" id="adsr-sustain" min="0" max="100" value="30">
+                  <span class="synth-slider-value" id="adsr-sustain-value">0.30</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Release</label>
+                  <input type="range" id="adsr-release" min="10" max="5000" value="800">
+                  <span class="synth-slider-value" id="adsr-release-value">0.80s</span>
+                </div>
               </div>
-              <div class="synth-slider-row">
-                <label>Sustain</label>
-                <input type="range" id="adsr-sustain" min="0" max="100" value="30">
-                <span class="synth-slider-value" id="adsr-sustain-value">0.30</span>
+            </div>
+          </div>
+
+          <!-- Paramètres FM -->
+          <div class="synth-section synth-section-typed" id="synth-section-fm" data-types="fm">
+            <div class="synth-section-header">
+              <div class="synth-section-title">Paramètres FM</div>
+              <span class="synth-section-badge">FM</span>
+            </div>
+            <div class="synth-section-content">
+              <div class="synth-adsr">
+                <div class="synth-slider-row">
+                  <label>Harmonicity</label>
+                  <input type="range" id="fm-harmonicity" min="1" max="10" value="3" step="0.1">
+                  <span class="synth-slider-value" id="fm-harmonicity-value">3.0</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Modulation</label>
+                  <input type="range" id="fm-modulation-index" min="1" max="30" value="10">
+                  <span class="synth-slider-value" id="fm-modulation-index-value">10</span>
+                </div>
               </div>
-              <div class="synth-slider-row">
-                <label>Release</label>
-                <input type="range" id="adsr-release" min="10" max="5000" value="800">
-                <span class="synth-slider-value" id="adsr-release-value">0.80s</span>
+            </div>
+          </div>
+
+          <!-- Paramètres Pluck (cordes pincées) -->
+          <div class="synth-section synth-section-typed" id="synth-section-pluck" data-types="pluck">
+            <div class="synth-section-header">
+              <div class="synth-section-title">Paramètres Pluck</div>
+              <span class="synth-section-badge">Pluck</span>
+            </div>
+            <div class="synth-section-content">
+              <div class="synth-adsr">
+                <div class="synth-slider-row">
+                  <label>Attack Noise</label>
+                  <input type="range" id="pluck-attack-noise" min="1" max="50" value="10">
+                  <span class="synth-slider-value" id="pluck-attack-noise-value">1.0</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Resonance</label>
+                  <input type="range" id="pluck-resonance" min="80" max="99" value="96">
+                  <span class="synth-slider-value" id="pluck-resonance-value">0.96</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Dampening</label>
+                  <input type="range" id="pluck-dampening" min="1000" max="8000" value="4000">
+                  <span class="synth-slider-value" id="pluck-dampening-value">4000 Hz</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paramètres Membrane (percussions à peau) -->
+          <div class="synth-section synth-section-typed" id="synth-section-membrane" data-types="membrane">
+            <div class="synth-section-header">
+              <div class="synth-section-title">Paramètres Membrane</div>
+              <span class="synth-section-badge">Membrane</span>
+            </div>
+            <div class="synth-section-content">
+              <div class="synth-adsr">
+                <div class="synth-slider-row">
+                  <label>Pitch Decay</label>
+                  <input type="range" id="membrane-pitch-decay" min="1" max="100" value="20">
+                  <span class="synth-slider-value" id="membrane-pitch-decay-value">0.02s</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Octaves</label>
+                  <input type="range" id="membrane-octaves" min="1" max="8" value="4">
+                  <span class="synth-slider-value" id="membrane-octaves-value">4</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paramètres Metal (cymbales, cloches) -->
+          <div class="synth-section synth-section-typed" id="synth-section-metal" data-types="metal">
+            <div class="synth-section-header">
+              <div class="synth-section-title">Paramètres Metal</div>
+              <span class="synth-section-badge">Metal</span>
+            </div>
+            <div class="synth-section-content">
+              <div class="synth-adsr">
+                <div class="synth-slider-row">
+                  <label>Frequency</label>
+                  <input type="range" id="metal-frequency" min="100" max="1000" value="200">
+                  <span class="synth-slider-value" id="metal-frequency-value">200 Hz</span>
+                </div>
+                <div class="synth-slider-row">
+                  <label>Harmonicity</label>
+                  <input type="range" id="metal-harmonicity" min="1" max="10" value="5" step="0.1">
+                  <span class="synth-slider-value" id="metal-harmonicity-value">5.0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paramètres Noise (caisse claire, percussions) -->
+          <div class="synth-section synth-section-typed" id="synth-section-noise" data-types="noise">
+            <div class="synth-section-header">
+              <div class="synth-section-title">Paramètres Noise</div>
+              <span class="synth-section-badge">Noise</span>
+            </div>
+            <div class="synth-section-content">
+              <div class="synth-info-text">
+                Bruit blanc filtré - idéal pour caisse claire et percussions.<br>
+                Les paramètres sont définis par le preset sélectionné.
               </div>
             </div>
           </div>
