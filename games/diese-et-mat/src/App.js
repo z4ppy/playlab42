@@ -1951,7 +1951,10 @@ export class App {
   _initPianoControls() {
     if (this._pianoControlsInitialized) {return;}
 
-    // État du piano (utiliser le preset actuel du synthé si disponible)
+    // Charger les réglages sauvegardés (partagés avec le panneau synthé)
+    this._loadSynthSettings();
+
+    // État du piano (utiliser le preset actuel du synthé)
     this._pianoState = {
       preset: this._synthConfig?.preset || 'piano',
       baseOctave: 4,
@@ -3601,9 +3604,11 @@ export class App {
         await this.audioEngine.start();
         this.audioReady = true;
 
-        // Appliquer le preset sélectionné au démarrage
-        const preset = this._pianoState?.preset || 'piano';
-        this.audioEngine.setPreset(preset);
+        // Charger et appliquer TOUS les réglages sauvegardés (preset + effets)
+        this._loadSynthSettings();
+        if (this._synthConfig) {
+          this.audioEngine.applySettings(this._synthConfig);
+        }
       } catch {
         console.warn('Impossible de démarrer l\'audio');
         return;
