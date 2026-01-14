@@ -25,61 +25,69 @@ const DEFAULT_TEMPO = 120;
 
 /**
  * Presets d'instruments disponibles
- * Chaque preset définit un type d'oscillateur et une enveloppe ADSR
+ * synthType: 'poly' (défaut), 'pluck' (cordes), 'membrane' (tambours), 'metal' (métallique)
  */
 const SYNTH_PRESETS = {
   piano: {
     name: 'Piano',
+    synthType: 'poly',
     oscillator: { type: 'triangle' },
     envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 },
   },
   organ: {
     name: 'Orgue',
+    synthType: 'poly',
     oscillator: { type: 'sine' },
     envelope: { attack: 0.01, decay: 0.01, sustain: 0.9, release: 0.3 },
   },
   guitarClassic: {
     name: 'Guitare Class.',
-    oscillator: { type: 'triangle' },
-    envelope: { attack: 0.01, decay: 0.3, sustain: 0.2, release: 0.5 },
+    synthType: 'pluck',
+    pluck: { attackNoise: 1, dampening: 4000, resonance: 0.98, release: 1.5 },
   },
   guitarFolk: {
     name: 'Guitare Folk',
-    oscillator: { type: 'sawtooth' },
-    envelope: { attack: 0.005, decay: 0.4, sustain: 0.15, release: 0.4 },
+    synthType: 'pluck',
+    pluck: { attackNoise: 2, dampening: 5000, resonance: 0.97, release: 1.2 },
   },
   guitarElectric: {
     name: 'Guitare Élec.',
-    oscillator: { type: 'sawtooth' },
-    envelope: { attack: 0.01, decay: 0.2, sustain: 0.6, release: 0.3 },
+    synthType: 'pluck',
+    pluck: { attackNoise: 3, dampening: 6000, resonance: 0.99, release: 2 },
   },
   synthLead: {
     name: 'Synth Lead',
+    synthType: 'poly',
     oscillator: { type: 'sawtooth' },
     envelope: { attack: 0.01, decay: 0.2, sustain: 0.5, release: 0.4 },
   },
   electricPiano: {
     name: 'Piano Élec.',
+    synthType: 'poly',
     oscillator: { type: 'sine' },
     envelope: { attack: 0.01, decay: 0.4, sustain: 0.4, release: 0.6 },
   },
   bell: {
     name: 'Cloche',
+    synthType: 'poly',
     oscillator: { type: 'sine' },
     envelope: { attack: 0.001, decay: 0.8, sustain: 0.1, release: 1.2 },
   },
   percDrum: {
     name: 'Tambour',
-    oscillator: { type: 'sine' },
-    envelope: { attack: 0.001, decay: 0.2, sustain: 0.0, release: 0.1 },
+    synthType: 'membrane',
+    membrane: { pitchDecay: 0.05, octaves: 6, oscillator: { type: 'sine' } },
+    envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.4 },
   },
   percWood: {
     name: 'Wood Block',
-    oscillator: { type: 'triangle' },
-    envelope: { attack: 0.001, decay: 0.08, sustain: 0.0, release: 0.05 },
+    synthType: 'membrane',
+    membrane: { pitchDecay: 0.008, octaves: 2, oscillator: { type: 'sine' } },
+    envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 },
   },
   retro8bit: {
     name: '8-bit',
+    synthType: 'poly',
     oscillator: { type: 'square' },
     envelope: { attack: 0.001, decay: 0.15, sustain: 0.4, release: 0.2 },
   },
@@ -291,44 +299,79 @@ export class AudioEngine extends EventEmitter {
 
   /**
    * Crée le synthétiseur avec les paramètres actuels
+   * Supporte différents types : poly, pluck, membrane
    * @private
    */
   _createSynth() {
-    const PolySynth = this.Tone.PolySynth;
-    const Synth = this.Tone.Synth;
-
-    if (!PolySynth || !Synth) {
-      console.error('Classes Tone.js non trouvées:', {
-        PolySynth: !!PolySynth,
-        Synth: !!Synth,
-      });
-      throw new Error('Classes Tone.js manquantes');
-    }
+    const Tone = this.Tone;
+    const preset = SYNTH_PRESETS[this.currentPreset] || SYNTH_PRESETS.piano;
+    const synthType = preset.synthType || 'poly';
 
     // Relâcher et disposer l'ancien synth si existant
     if (this.synth) {
-      this.synth.releaseAll();
+      if (this.synth.releaseAll) {
+        this.synth.releaseAll();
+      }
       this.synth.dispose();
     }
 
-    // Créer le PolySynth avec les paramètres actuels
-    this.synth = new PolySynth(Synth, {
-      oscillator: {
-        type: this.oscillatorType,
-      },
-      envelope: { ...this.envelope },
-    });
+    // Créer le synthétiseur selon le type
+    switch (synthType) {
+      case 'pluck':
+        // PluckSynth pour les guitares (algorithme Karplus-Strong)
+        this.synth = new Tone.PluckSynth({
+          attackNoise: preset.pluck?.attackNoise || 1,
+          dampening: preset.pluck?.dampening || 4000,
+          resonance: preset.pluck?.resonance || 0.98,
+          release: preset.pluck?.release || 1,
+        });
+        this.synthType = 'pluck';
+        break;
+
+      case 'membrane':
+        // MembraneSynth pour les percussions à membrane
+        this.synth = new Tone.MembraneSynth({
+          pitchDecay: preset.membrane?.pitchDecay || 0.05,
+          octaves: preset.membrane?.octaves || 4,
+          oscillator: preset.membrane?.oscillator || { type: 'sine' },
+          envelope: preset.envelope || { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.4 },
+        });
+        this.synthType = 'membrane';
+        break;
+
+      case 'poly':
+      default:
+        // PolySynth standard
+        this.synth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: this.oscillatorType },
+          envelope: { ...this.envelope },
+        });
+        this.synthType = 'poly';
+        break;
+    }
 
     // Appliquer le volume
     this.synth.volume.value = this.volume;
 
+    // Connecter à la chaîne d'effets
+    this._connectSynthToEffects();
+  }
+
+  /**
+   * Connecte le synthétiseur à la chaîne d'effets
+   * @private
+   */
+  _connectSynthToEffects() {
+    if (!this.synth) {return;}
+
+    // Déconnecter d'abord
+    this.synth.disconnect();
+
     // Connecter à la chaîne d'effets si elle existe, sinon à la destination
     if (this.effects.filter) {
-      // Si le filtre est activé, passer par lui, sinon le bypasser
       if (this.effectsConfig.filter.enabled) {
         this.synth.connect(this.effects.filter);
       } else {
-        // Bypasser le filtre, connecter directement au delay
         this.synth.connect(this.effects.delay);
       }
     } else {
@@ -354,8 +397,12 @@ export class AudioEngine extends EventEmitter {
     }
 
     this.currentPreset = presetName;
-    this.oscillatorType = preset.oscillator.type;
-    this.envelope = { ...preset.envelope };
+
+    // Mettre à jour oscillateur et enveloppe seulement pour les presets poly
+    if (preset.synthType === 'poly' || !preset.synthType) {
+      this.oscillatorType = preset.oscillator?.type || 'triangle';
+      this.envelope = { ...preset.envelope };
+    }
 
     // Recréer le synthétiseur si déjà démarré
     if (this.started) {
@@ -761,7 +808,7 @@ export class AudioEngine extends EventEmitter {
    * Arrête tous les sons en cours
    */
   stopAll() {
-    if (this.synth) {
+    if (this.synth && this.synth.releaseAll) {
       this.synth.releaseAll();
     }
   }
