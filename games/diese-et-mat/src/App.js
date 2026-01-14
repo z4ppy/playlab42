@@ -280,6 +280,11 @@ export class App {
     document.addEventListener('keydown', (e) => {
       this.handleKeydown(e);
     });
+
+    // Relâchement des touches (pour sustain prolongé)
+    document.addEventListener('keyup', (e) => {
+      this.handleKeyup(e);
+    });
   }
 
   /**
@@ -2018,16 +2023,19 @@ export class App {
     // Icônes pour chaque preset
     const icons = {
       piano: '🎹',
+      electricPiano: '⚡',
       organ: '🎵',
       guitarClassic: '🎸',
       guitarFolk: '🪕',
       guitarElectric: '🎸',
       synthLead: '🎛️',
-      electricPiano: '⚡',
-      bell: '🔔',
-      percDrum: '🥁',
-      percWood: '🪵',
       retro8bit: '👾',
+      bell: '🔔',
+      percKick: '🥁',
+      percTom: '🪘',
+      percWood: '🪵',
+      percHihat: '🔔',
+      percCymbal: '🥏',
     };
 
     container.innerHTML = '';
@@ -3553,18 +3561,18 @@ export class App {
         key.appendChild(label);
       }
 
-      // Events
+      // Events - Sustain prolongé : noteOn sur down, noteOff sur up
       key.addEventListener('mousedown', (e) => {
         e.preventDefault();
         this._playPianoNote(n.note, key);
       });
 
       key.addEventListener('mouseup', () => {
-        key.classList.remove('active');
+        this._stopPianoNote(n.note, key);
       });
 
       key.addEventListener('mouseleave', () => {
-        key.classList.remove('active');
+        this._stopPianoNote(n.note, key);
       });
 
       key.addEventListener('touchstart', (e) => {
@@ -3573,7 +3581,7 @@ export class App {
       });
 
       key.addEventListener('touchend', () => {
-        key.classList.remove('active');
+        this._stopPianoNote(n.note, key);
       });
 
       container.appendChild(key);
@@ -3583,11 +3591,20 @@ export class App {
   }
 
   /**
-   * Joue une note depuis le piano.
+   * Joue une note depuis le piano (sustain prolongé tant qu'on appuie).
    * @param {string} note - Note au format Tone.js (ex: "C4")
    * @param {HTMLElement} keyElement - Élément de la touche
    */
   async _playPianoNote(note, keyElement) {
+    // Éviter les doublons si la touche est déjà active
+    if (this._activeNotes?.has(note)) {return;}
+
+    // Tracking des notes actives
+    if (!this._activeNotes) {
+      this._activeNotes = new Set();
+    }
+    this._activeNotes.add(note);
+
     // Feedback visuel
     if (keyElement) {
       keyElement.classList.add('active');
@@ -3620,8 +3637,30 @@ export class App {
       }
     }
 
-    // Jouer via le synthé partagé (preset appliqué automatiquement)
-    this.audioEngine.playPianoNote(note, 0.5);
+    // Sustain prolongé : noteOn maintient la note jusqu'à noteOff
+    this.audioEngine.noteOn(note);
+  }
+
+  /**
+   * Arrête une note du piano (release).
+   * @param {string} note - Note au format Tone.js (ex: "C4")
+   * @param {HTMLElement} keyElement - Élément de la touche
+   */
+  _stopPianoNote(note, keyElement) {
+    // Retirer de la liste des notes actives
+    if (this._activeNotes) {
+      this._activeNotes.delete(note);
+    }
+
+    // Feedback visuel
+    if (keyElement) {
+      keyElement.classList.remove('active');
+    }
+
+    // Arrêter la note
+    if (this.audioEngine?.started) {
+      this.audioEngine.noteOff(note);
+    }
   }
 
   /**
@@ -3676,19 +3715,14 @@ export class App {
       return;
     }
 
-    // Piano virtuel - jouer les notes avec le clavier
+    // Piano virtuel - jouer les notes avec le clavier (sustain prolongé)
     if (this.elements.pianoOverlay?.classList.contains('visible') && this._pianoKeyMap) {
       const keyLower = event.key.toLowerCase();
-      if (this._pianoKeyMap[keyLower]) {
+      if (this._pianoKeyMap[keyLower] && !event.repeat) {
         event.preventDefault();
         const note = this._pianoKeyMap[keyLower];
         const keyElement = this.elements.pianoKeyboard?.querySelector(`[data-note="${note}"]`);
         this._playPianoNote(note, keyElement);
-
-        // Retirer la classe active après un délai
-        if (keyElement) {
-          setTimeout(() => keyElement.classList.remove('active'), 200);
-        }
         return;
       }
     }
@@ -3704,6 +3738,22 @@ export class App {
       const keyNum = parseInt(event.key);
       if (keyNum >= 1 && keyNum <= 7 && this.currentExercise?.mode !== 'rhythm') {
         this.submitAnswer(keyNum - 1);
+      }
+    }
+  }
+
+  /**
+   * Gère le relâchement des touches clavier (sustain prolongé).
+   * @param {KeyboardEvent} event
+   */
+  handleKeyup(event) {
+    // Piano virtuel - arrêter les notes quand on relâche la touche
+    if (this.elements.pianoOverlay?.classList.contains('visible') && this._pianoKeyMap) {
+      const keyLower = event.key.toLowerCase();
+      if (this._pianoKeyMap[keyLower]) {
+        const note = this._pianoKeyMap[keyLower];
+        const keyElement = this.elements.pianoKeyboard?.querySelector(`[data-note="${note}"]`);
+        this._stopPianoNote(note, keyElement);
       }
     }
   }

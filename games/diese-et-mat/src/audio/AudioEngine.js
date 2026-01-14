@@ -25,71 +25,113 @@ const DEFAULT_TEMPO = 120;
 
 /**
  * Presets d'instruments disponibles
- * synthType: 'poly' (défaut), 'pluck' (cordes), 'membrane' (tambours), 'metal' (métallique)
+ * synthType: 'poly', 'pluck', 'membrane', 'metal', 'noise'
+ * hasOscillator: true si l'oscillateur est configurable (pour l'UI)
  */
 const SYNTH_PRESETS = {
+  // === Claviers ===
   piano: {
     name: 'Piano',
     synthType: 'poly',
+    hasOscillator: true,
     oscillator: { type: 'triangle' },
-    envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 },
+    envelope: { attack: 0.02, decay: 0.3, sustain: 0.2, release: 1.0 },
+  },
+  electricPiano: {
+    name: 'Piano Élec.',
+    synthType: 'fm',
+    hasOscillator: false,
+    fm: { harmonicity: 3, modulationIndex: 10 },
+    envelope: { attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.8 },
   },
   organ: {
     name: 'Orgue',
     synthType: 'poly',
+    hasOscillator: true,
     oscillator: { type: 'sine' },
     envelope: { attack: 0.01, decay: 0.01, sustain: 0.9, release: 0.3 },
   },
+
+  // === Guitares ===
   guitarClassic: {
     name: 'Guitare Class.',
     synthType: 'pluck',
-    pluck: { attackNoise: 1, dampening: 4000, resonance: 0.98, release: 1.5 },
+    hasOscillator: false,
+    pluck: { attackNoise: 1.2, dampening: 3500, resonance: 0.96, release: 1.2 },
   },
   guitarFolk: {
     name: 'Guitare Folk',
     synthType: 'pluck',
-    pluck: { attackNoise: 2, dampening: 5000, resonance: 0.97, release: 1.2 },
+    hasOscillator: false,
+    pluck: { attackNoise: 2.5, dampening: 5000, resonance: 0.94, release: 0.8 },
   },
   guitarElectric: {
     name: 'Guitare Élec.',
-    synthType: 'pluck',
-    pluck: { attackNoise: 3, dampening: 6000, resonance: 0.99, release: 2 },
+    synthType: 'poly',
+    hasOscillator: true,
+    oscillator: { type: 'sawtooth' },
+    envelope: { attack: 0.01, decay: 0.1, sustain: 0.8, release: 1.5 },
+    effects: { distortion: 0.3 },
   },
+
+  // === Synthés ===
   synthLead: {
     name: 'Synth Lead',
     synthType: 'poly',
+    hasOscillator: true,
     oscillator: { type: 'sawtooth' },
     envelope: { attack: 0.01, decay: 0.2, sustain: 0.5, release: 0.4 },
-  },
-  electricPiano: {
-    name: 'Piano Élec.',
-    synthType: 'poly',
-    oscillator: { type: 'sine' },
-    envelope: { attack: 0.01, decay: 0.4, sustain: 0.4, release: 0.6 },
-  },
-  bell: {
-    name: 'Cloche',
-    synthType: 'poly',
-    oscillator: { type: 'sine' },
-    envelope: { attack: 0.001, decay: 0.8, sustain: 0.1, release: 1.2 },
-  },
-  percDrum: {
-    name: 'Tambour',
-    synthType: 'membrane',
-    membrane: { pitchDecay: 0.05, octaves: 6, oscillator: { type: 'sine' } },
-    envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.4 },
-  },
-  percWood: {
-    name: 'Wood Block',
-    synthType: 'membrane',
-    membrane: { pitchDecay: 0.008, octaves: 2, oscillator: { type: 'sine' } },
-    envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 },
   },
   retro8bit: {
     name: '8-bit',
     synthType: 'poly',
+    hasOscillator: true,
     oscillator: { type: 'square' },
     envelope: { attack: 0.001, decay: 0.15, sustain: 0.4, release: 0.2 },
+  },
+  bell: {
+    name: 'Cloche',
+    synthType: 'poly',
+    hasOscillator: true,
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.001, decay: 0.8, sustain: 0.1, release: 1.2 },
+  },
+
+  // === Percussions ===
+  percKick: {
+    name: 'Grosse caisse',
+    synthType: 'membrane',
+    hasOscillator: false,
+    membrane: { pitchDecay: 0.02, octaves: 4, oscillator: { type: 'sine' } },
+    envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 },
+  },
+  percTom: {
+    name: 'Tom',
+    synthType: 'membrane',
+    hasOscillator: false,
+    membrane: { pitchDecay: 0.008, octaves: 2, oscillator: { type: 'sine' } },
+    envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.3 },
+  },
+  percWood: {
+    name: 'Wood Block',
+    synthType: 'membrane',
+    hasOscillator: false,
+    membrane: { pitchDecay: 0.005, octaves: 1.5, oscillator: { type: 'sine' } },
+    envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.05 },
+  },
+  percHihat: {
+    name: 'Hi-Hat',
+    synthType: 'metal',
+    hasOscillator: false,
+    metal: { frequency: 200, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 },
+    envelope: { attack: 0.001, decay: 0.08, release: 0.01 },
+  },
+  percCymbal: {
+    name: 'Cymbale',
+    synthType: 'metal',
+    hasOscillator: false,
+    metal: { frequency: 300, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 },
+    envelope: { attack: 0.001, decay: 1.0, release: 0.3 },
   },
 };
 
@@ -299,7 +341,7 @@ export class AudioEngine extends EventEmitter {
 
   /**
    * Crée le synthétiseur avec les paramètres actuels
-   * Supporte différents types : poly, pluck, membrane
+   * Supporte : poly, fm, pluck, membrane, metal
    * @private
    */
   _createSynth() {
@@ -315,28 +357,60 @@ export class AudioEngine extends EventEmitter {
       this.synth.dispose();
     }
 
+    // Disposer la distortion si existante
+    if (this.distortion) {
+      this.distortion.dispose();
+      this.distortion = null;
+    }
+
     // Créer le synthétiseur selon le type
     switch (synthType) {
       case 'pluck':
-        // PluckSynth pour les guitares (algorithme Karplus-Strong)
+        // PluckSynth pour les guitares acoustiques (Karplus-Strong)
         this.synth = new Tone.PluckSynth({
           attackNoise: preset.pluck?.attackNoise || 1,
           dampening: preset.pluck?.dampening || 4000,
-          resonance: preset.pluck?.resonance || 0.98,
+          resonance: preset.pluck?.resonance || 0.96,
           release: preset.pluck?.release || 1,
         });
         this.synthType = 'pluck';
         break;
 
+      case 'fm':
+        // FMSynth pour piano électrique (son riche type DX7)
+        this.synth = new Tone.PolySynth(Tone.FMSynth, {
+          harmonicity: preset.fm?.harmonicity || 3,
+          modulationIndex: preset.fm?.modulationIndex || 10,
+          oscillator: { type: 'sine' },
+          envelope: preset.envelope || { attack: 0.01, decay: 0.3, sustain: 0.3, release: 0.8 },
+          modulation: { type: 'square' },
+          modulationEnvelope: { attack: 0.5, decay: 0.1, sustain: 0.2, release: 0.1 },
+        });
+        this.synthType = 'fm';
+        break;
+
       case 'membrane':
-        // MembraneSynth pour les percussions à membrane
+        // MembraneSynth pour percussions à peau (kick, tom, wood block)
         this.synth = new Tone.MembraneSynth({
-          pitchDecay: preset.membrane?.pitchDecay || 0.05,
+          pitchDecay: preset.membrane?.pitchDecay || 0.02,
           octaves: preset.membrane?.octaves || 4,
           oscillator: preset.membrane?.oscillator || { type: 'sine' },
-          envelope: preset.envelope || { attack: 0.001, decay: 0.4, sustain: 0.01, release: 0.4 },
+          envelope: preset.envelope || { attack: 0.001, decay: 0.3, sustain: 0, release: 0.1 },
         });
         this.synthType = 'membrane';
+        break;
+
+      case 'metal':
+        // MetalSynth pour percussions métalliques (hi-hat, cymbale)
+        this.synth = new Tone.MetalSynth({
+          frequency: preset.metal?.frequency || 200,
+          harmonicity: preset.metal?.harmonicity || 5.1,
+          modulationIndex: preset.metal?.modulationIndex || 32,
+          resonance: preset.metal?.resonance || 4000,
+          octaves: preset.metal?.octaves || 1.5,
+          envelope: preset.envelope || { attack: 0.001, decay: 0.1, release: 0.01 },
+        });
+        this.synthType = 'metal';
         break;
 
       case 'poly':
@@ -347,6 +421,11 @@ export class AudioEngine extends EventEmitter {
           envelope: { ...this.envelope },
         });
         this.synthType = 'poly';
+
+        // Ajouter distortion pour guitare électrique
+        if (preset.effects?.distortion) {
+          this.distortion = new Tone.Distortion(preset.effects.distortion);
+        }
         break;
     }
 
@@ -366,14 +445,28 @@ export class AudioEngine extends EventEmitter {
 
     // Déconnecter d'abord
     this.synth.disconnect();
+    if (this.distortion) {
+      this.distortion.disconnect();
+    }
 
-    // Connecter à la chaîne d'effets si elle existe, sinon à la destination
-    if (this.effects.filter) {
-      if (this.effectsConfig.filter.enabled) {
-        this.synth.connect(this.effects.filter);
+    // Déterminer le premier noeud de la chaîne d'effets
+    let firstNode;
+    if (this.effects.filter && this.effectsConfig.filter.enabled) {
+      firstNode = this.effects.filter;
+    } else if (this.effects.delay) {
+      firstNode = this.effects.delay;
+    }
+
+    // Si distortion existe, l'insérer avant les autres effets
+    if (this.distortion) {
+      this.synth.connect(this.distortion);
+      if (firstNode) {
+        this.distortion.connect(firstNode);
       } else {
-        this.synth.connect(this.effects.delay);
+        this.distortion.toDestination();
       }
+    } else if (firstNode) {
+      this.synth.connect(firstNode);
     } else {
       this.synth.toDestination();
     }
@@ -654,6 +747,53 @@ export class AudioEngine extends EventEmitter {
     setTimeout(() => {
       this.emit('noteEnd', { note });
     }, durMs);
+  }
+
+  /**
+   * Démarre une note (sustain prolongé jusqu'à noteOff)
+   *
+   * @param {import('../core/Pitch.js').Pitch|string} pitch - Note à jouer
+   * @param {number} time - Temps de départ (optionnel)
+   */
+  noteOn(pitch, time) {
+    if (!this.started || this.muted || !this.synth) {
+      return;
+    }
+
+    const note = typeof pitch === 'string' ? pitch : pitch.toTone();
+
+    // Les synths monophoniques (pluck, membrane, metal) n'ont pas de sustain
+    // On utilise triggerAttackRelease avec une durée courte
+    if (this.synthType === 'pluck' || this.synthType === 'membrane' || this.synthType === 'metal') {
+      const dur = this.synthType === 'metal' ? 0.1 : 0.5;
+      this.synth.triggerAttackRelease(note, dur, time);
+    } else {
+      // PolySynth et FMSynth supportent triggerAttack
+      this.synth.triggerAttack(note, time);
+    }
+
+    this.emit('noteStart', { note });
+  }
+
+  /**
+   * Arrête une note (release)
+   *
+   * @param {import('../core/Pitch.js').Pitch|string} pitch - Note à arrêter
+   * @param {number} time - Temps de release (optionnel)
+   */
+  noteOff(pitch, time) {
+    if (!this.started || !this.synth) {
+      return;
+    }
+
+    const note = typeof pitch === 'string' ? pitch : pitch.toTone();
+
+    // Seulement pour les synths qui supportent triggerRelease
+    if (this.synthType === 'poly' || this.synthType === 'fm') {
+      this.synth.triggerRelease(note, time);
+    }
+
+    this.emit('noteEnd', { note });
   }
 
   /**
