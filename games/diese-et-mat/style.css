@@ -369,6 +369,15 @@ html, body {
   height: 160px;
   padding: var(--space-sm);
   background: var(--color-bg-secondary);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Espace à droite pour permettre de scroller jusqu'à la dernière touche */
+.piano-keyboard::after {
+  content: '';
+  flex-shrink: 0;
+  width: var(--space-sm);
 }
 
 .piano-key {
@@ -390,6 +399,7 @@ html, body {
   border: 1px solid #ccc;
   border-radius: 0 0 4px 4px;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .piano-key-white:hover {
