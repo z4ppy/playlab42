@@ -86,8 +86,11 @@ export class AudioEngine {
     /** @type {Object|null} Module Tone.js */
     this.Tone = null;
 
-    /** @type {Object|null} Synthétiseur polyphonique */
+    /** @type {Object|null} Synthétiseur polyphonique (personnalisable) */
     this.synth = null;
+
+    /** @type {Object|null} Synthétiseur piano (son propre, sans effets) */
+    this.pianoSynth = null;
 
     /** @type {boolean} État d'initialisation */
     this.ready = false;
@@ -209,9 +212,10 @@ export class AudioEngine {
         }
       }
 
-      // Créer la chaîne d'effets puis le synthétiseur
+      // Créer la chaîne d'effets puis les synthétiseurs
       await this._createEffectsChain();
       this._createSynth();
+      this._createPianoSynth();
 
       this.started = true;
       this._emit('started');
@@ -309,6 +313,45 @@ export class AudioEngine {
     } else {
       this.synth.toDestination();
     }
+  }
+
+  /**
+   * Crée le synthétiseur piano dédié (son propre, sans effets)
+   * Utilisé uniquement pour le clavier virtuel, indépendant des réglages du synthé.
+   * @private
+   */
+  _createPianoSynth() {
+    const PolySynth = this.Tone.PolySynth;
+    const Synth = this.Tone.Synth;
+
+    if (!PolySynth || !Synth) {
+      return;
+    }
+
+    // Disposer l'ancien piano synth si existant
+    if (this.pianoSynth) {
+      this.pianoSynth.releaseAll();
+      this.pianoSynth.dispose();
+    }
+
+    // Créer un PolySynth avec un son de piano propre et chaleureux
+    this.pianoSynth = new PolySynth(Synth, {
+      oscillator: {
+        type: 'triangle',
+      },
+      envelope: {
+        attack: 0.02,
+        decay: 0.1,
+        sustain: 0.3,
+        release: 0.8,
+      },
+    });
+
+    // Volume identique au synth principal
+    this.pianoSynth.volume.value = this.volume;
+
+    // Connecter directement à la destination (sans effets)
+    this.pianoSynth.toDestination();
   }
 
   // --------------------------------------------------------------------------
@@ -584,6 +627,24 @@ export class AudioEngine {
   }
 
   /**
+   * Joue une note depuis le clavier piano (son propre, sans effets)
+   *
+   * @param {import('../core/Pitch.js').Pitch|string} pitch - Note à jouer
+   * @param {number|string} duration - Durée (en secondes ou notation "4n", "8n", etc.)
+   * @param {number} time - Temps de départ (optionnel)
+   */
+  playPianoNote(pitch, duration = DEFAULT_NOTE_DURATION, time) {
+    if (!this.started || this.muted || !this.pianoSynth) {
+      return;
+    }
+
+    const note = typeof pitch === 'string' ? pitch : pitch.toTone();
+    const dur = typeof duration === 'number' ? duration : duration;
+
+    this.pianoSynth.triggerAttackRelease(note, dur, time);
+  }
+
+  /**
    * Joue un accord
    *
    * @param {Array<import('../core/Pitch.js').Pitch|string>} pitches - Notes de l'accord
@@ -667,6 +728,10 @@ export class AudioEngine {
 
     if (this.synth) {
       this.synth.volume.value = this.volume;
+    }
+
+    if (this.pianoSynth) {
+      this.pianoSynth.volume.value = this.volume;
     }
 
     this._emit('settingsChange', this.getSettings());
@@ -755,6 +820,9 @@ export class AudioEngine {
     if (this.synth) {
       this.synth.releaseAll();
     }
+    if (this.pianoSynth) {
+      this.pianoSynth.releaseAll();
+    }
   }
 
   /**
@@ -766,6 +834,11 @@ export class AudioEngine {
     if (this.synth) {
       this.synth.dispose();
       this.synth = null;
+    }
+
+    if (this.pianoSynth) {
+      this.pianoSynth.dispose();
+      this.pianoSynth = null;
     }
 
     // Disposer les effets

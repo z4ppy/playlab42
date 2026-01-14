@@ -3348,7 +3348,8 @@ export class App {
       }
     }
 
-    this.audioEngine.playNote(note, 0.5);
+    // Utiliser le synthé piano dédié (son propre, sans effets)
+    this.audioEngine.playPianoNote(note, 0.5);
   }
 
   /**
