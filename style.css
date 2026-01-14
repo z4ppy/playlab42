@@ -286,6 +286,18 @@ main {
   transition: background-color var(--transition-normal);
 }
 
+/* Lien pour hash routing des cartes */
+.card-link {
+  display: flex;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-link:hover .card {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--color-shadow);
+}
+
 /* === Game View === */
 #view-game {
   display: none;
