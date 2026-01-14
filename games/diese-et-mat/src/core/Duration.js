@@ -219,10 +219,18 @@ export class Duration {
    * @returns {boolean}
    */
   equals(other) {
+    // Comparaison explicite des tuplets
+    const tupletEquals =
+      (this.tuplet === null && other.tuplet === null) ||
+      (this.tuplet !== null &&
+        other.tuplet !== null &&
+        this.tuplet.ratio?.[0] === other.tuplet.ratio?.[0] &&
+        this.tuplet.ratio?.[1] === other.tuplet.ratio?.[1]);
+
     return (
       this.base === other.base &&
       this.dots === other.dots &&
-      JSON.stringify(this.tuplet) === JSON.stringify(other.tuplet)
+      tupletEquals
     );
   }
 

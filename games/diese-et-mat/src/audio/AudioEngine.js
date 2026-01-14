@@ -117,7 +117,7 @@ export class AudioEngine {
     this.envelope = { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.8 };
 
     /** @type {Object} Configuration des effets */
-    this.effectsConfig = JSON.parse(JSON.stringify(DEFAULT_EFFECTS));
+    this.effectsConfig = structuredClone(DEFAULT_EFFECTS);
 
     /** @type {Object} Instances des effets Tone.js */
     this.effects = {
@@ -181,7 +181,7 @@ export class AudioEngine {
       this._emit('ready');
     } catch (error) {
       console.error('Erreur lors du chargement de Tone.js:', error);
-      throw new Error('Impossible de charger Tone.js');
+      throw new Error('Impossible de charger Tone.js', { cause: error });
     }
   }
 
@@ -528,7 +528,7 @@ export class AudioEngine {
       preset: this.currentPreset,
       oscillator: this.oscillatorType,
       envelope: { ...this.envelope },
-      effects: JSON.parse(JSON.stringify(this.effectsConfig)),
+      effects: structuredClone(this.effectsConfig),
       volume: this.volume,
     };
   }
@@ -642,6 +642,23 @@ export class AudioEngine {
     const dur = typeof duration === 'number' ? duration : duration;
 
     this.pianoSynth.triggerAttackRelease(note, dur, time);
+  }
+
+  /**
+   * Joue un accord depuis le clavier piano (son propre, sans effets)
+   *
+   * @param {Array<import('../core/Pitch.js').Pitch|string>} pitches - Notes de l'accord
+   * @param {number|string} duration - Durée
+   * @param {number} time - Temps de départ
+   */
+  playPianoChord(pitches, duration = DEFAULT_NOTE_DURATION, time) {
+    if (!this.started || this.muted || !this.pianoSynth) {
+      return;
+    }
+
+    const notes = pitches.map((p) => (typeof p === 'string' ? p : p.toTone()));
+
+    this.pianoSynth.triggerAttackRelease(notes, duration, time);
   }
 
   /**

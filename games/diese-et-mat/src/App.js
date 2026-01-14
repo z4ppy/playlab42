@@ -3673,7 +3673,7 @@ export class App {
   }
 
   /**
-   * Joue une note avec l'audio.
+   * Joue une note avec l'audio (son neutre pour exercices).
    * @param {import('./core/Pitch.js').Pitch} pitch - Note à jouer
    */
   async playNoteAudio(pitch) {
@@ -3694,11 +3694,12 @@ export class App {
       }
     }
 
-    this.audioEngine.playNote(pitch, 0.8);
+    // Utiliser le son neutre (pianoSynth) pour les exercices
+    this.audioEngine.playPianoNote(pitch, 0.8);
   }
 
   /**
-   * Joue un accord avec l'audio.
+   * Joue un accord avec l'audio (son neutre pour exercices).
    * @param {import('./core/Pitch.js').Pitch[]} pitches - Notes de l'accord
    */
   async playChordAudio(pitches) {
@@ -3719,6 +3720,7 @@ export class App {
       }
     }
 
-    this.audioEngine.playChord(pitches, 1);
+    // Utiliser le son neutre (pianoSynth) pour les exercices
+    this.audioEngine.playPianoChord(pitches, 1);
   }
 }

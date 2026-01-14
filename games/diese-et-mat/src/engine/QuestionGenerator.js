@@ -53,14 +53,16 @@ export class QuestionGenerator {
     /** @type {string} Clé musicale */
     this.clef = config.clef || 'treble';
 
-    /** @type {Object} Plage de notes */
-    this.range = config.range || NOTE_RANGES[this.clef];
+    /** @type {number} Niveau de difficulté */
+    this.difficulty = config.difficulty || 1;
+
+    /** @type {Object} Plage de notes - utilise DIFFICULTY_RANGES si pas de range explicite */
+    this.range = config.range ||
+      DIFFICULTY_RANGES[this.difficulty]?.[this.clef] ||
+      NOTE_RANGES[this.clef];
 
     /** @type {boolean} Inclure les altérations */
     this.accidentals = config.accidentals || false;
-
-    /** @type {number} Niveau de difficulté */
-    this.difficulty = config.difficulty || 1;
 
     /** @type {Function} Fonction random */
     this.randomFn = config.randomFn || Math.random;

@@ -185,12 +185,7 @@ export class ExerciseView {
       return;
     }
 
-    // Espace pour passer
-    if (e.key === ' ') {
-      e.preventDefault();
-      this._handleAnswer(-1);
-      return;
-    }
+    // Note: Espace est réservé au tap en mode rythme (géré par App.js)
 
     // Échap pour quitter
     if (e.key === 'Escape') {
