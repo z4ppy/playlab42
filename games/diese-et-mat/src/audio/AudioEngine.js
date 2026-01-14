@@ -8,6 +8,8 @@
  * @module audio/AudioEngine
  */
 
+import { EventEmitter } from '../utils/EventEmitter.js';
+
 // ============================================================================
 // Constantes
 // ============================================================================
@@ -74,8 +76,14 @@ const DEFAULT_EFFECTS = {
 
 /**
  * Moteur audio pour la synthèse musicale avec contrôles avancés
+ *
+ * @fires AudioEngine#ready - Quand Tone.js est chargé
+ * @fires AudioEngine#started - Quand le contexte audio est démarré
+ * @fires AudioEngine#noteStart - Quand une note commence
+ * @fires AudioEngine#noteEnd - Quand une note se termine
+ * @fires AudioEngine#settingsChange - Quand les paramètres changent
  */
-export class AudioEngine {
+export class AudioEngine extends EventEmitter {
   /**
    * Crée une nouvelle instance du moteur audio
    *
@@ -83,6 +91,7 @@ export class AudioEngine {
    * @param {number} options.volume - Volume initial (-60 à 0 dB)
    */
   constructor(options = {}) {
+    super();
     /** @type {Object|null} Module Tone.js */
     this.Tone = null;
 
@@ -124,15 +133,6 @@ export class AudioEngine {
       reverb: null,
       delay: null,
       filter: null,
-    };
-
-    /** @type {Function[]} Callbacks pour les événements */
-    this._callbacks = {
-      ready: [],
-      started: [],
-      noteStart: [],
-      noteEnd: [],
-      settingsChange: [],
     };
   }
 
@@ -178,7 +178,7 @@ export class AudioEngine {
 
       // Le contexte audio est créé mais pas encore démarré
       this.ready = true;
-      this._emit('ready');
+      this.emit('ready');
     } catch (error) {
       console.error('Erreur lors du chargement de Tone.js:', error);
       throw new Error('Impossible de charger Tone.js', { cause: error });
@@ -218,7 +218,7 @@ export class AudioEngine {
       this._createPianoSynth();
 
       this.started = true;
-      this._emit('started');
+      this.emit('started');
     } catch (error) {
       console.error('Erreur lors du démarrage audio:', error);
       throw error;
@@ -379,7 +379,7 @@ export class AudioEngine {
       this._createSynth();
     }
 
-    this._emit('settingsChange', this.getSettings());
+    this.emit('settingsChange', this.getSettings());
   }
 
   /**
@@ -403,7 +403,7 @@ export class AudioEngine {
       });
     }
 
-    this._emit('settingsChange', this.getSettings());
+    this.emit('settingsChange', this.getSettings());
   }
 
   /**
@@ -438,7 +438,7 @@ export class AudioEngine {
       });
     }
 
-    this._emit('settingsChange', this.getSettings());
+    this.emit('settingsChange', this.getSettings());
   }
 
   // --------------------------------------------------------------------------
@@ -460,7 +460,7 @@ export class AudioEngine {
       this.effects.reverb.wet.value = enabled ? this.effectsConfig.reverb.amount : 0;
     }
 
-    this._emit('settingsChange', this.getSettings());
+    this.emit('settingsChange', this.getSettings());
   }
 
   /**
@@ -482,7 +482,7 @@ export class AudioEngine {
       this.effects.delay.feedback.value = this.effectsConfig.delay.feedback;
     }
 
-    this._emit('settingsChange', this.getSettings());
+    this.emit('settingsChange', this.getSettings());
   }
 
   /**
@@ -511,7 +511,7 @@ export class AudioEngine {
       }
     }
 
-    this._emit('settingsChange', this.getSettings());
+    this.emit('settingsChange', this.getSettings());
   }
 
   // --------------------------------------------------------------------------
@@ -615,14 +615,14 @@ export class AudioEngine {
     const note = typeof pitch === 'string' ? pitch : pitch.toTone();
     const dur = typeof duration === 'number' ? duration : duration;
 
-    this._emit('noteStart', { note, duration: dur });
+    this.emit('noteStart', { note, duration: dur });
 
     this.synth.triggerAttackRelease(note, dur, time);
 
     // Émettre la fin de note après la durée
     const durMs = typeof duration === 'number' ? duration * 1000 : 500;
     setTimeout(() => {
-      this._emit('noteEnd', { note });
+      this.emit('noteEnd', { note });
     }, durMs);
   }
 
@@ -675,13 +675,13 @@ export class AudioEngine {
 
     const notes = pitches.map((p) => (typeof p === 'string' ? p : p.toTone()));
 
-    this._emit('noteStart', { notes, duration });
+    this.emit('noteStart', { notes, duration });
 
     this.synth.triggerAttackRelease(notes, duration, time);
 
     const durMs = typeof duration === 'number' ? duration * 1000 : 500;
     setTimeout(() => {
-      this._emit('noteEnd', { notes });
+      this.emit('noteEnd', { notes });
     }, durMs);
   }
 
@@ -751,7 +751,7 @@ export class AudioEngine {
       this.pianoSynth.volume.value = this.volume;
     }
 
-    this._emit('settingsChange', this.getSettings());
+    this.emit('settingsChange', this.getSettings());
   }
 
   /**
@@ -775,47 +775,6 @@ export class AudioEngine {
   toggleMute() {
     this.setMuted(!this.muted);
     return this.muted;
-  }
-
-  // --------------------------------------------------------------------------
-  // Événements
-  // --------------------------------------------------------------------------
-
-  /**
-   * Ajoute un listener d'événement
-   *
-   * @param {string} event - Nom de l'événement
-   * @param {Function} callback - Fonction callback
-   */
-  on(event, callback) {
-    if (this._callbacks[event]) {
-      this._callbacks[event].push(callback);
-    }
-  }
-
-  /**
-   * Retire un listener
-   *
-   * @param {string} event - Nom de l'événement
-   * @param {Function} callback - Fonction callback
-   */
-  off(event, callback) {
-    if (this._callbacks[event]) {
-      const index = this._callbacks[event].indexOf(callback);
-      if (index !== -1) {
-        this._callbacks[event].splice(index, 1);
-      }
-    }
-  }
-
-  /**
-   * Émet un événement
-   * @private
-   */
-  _emit(event, data) {
-    if (this._callbacks[event]) {
-      this._callbacks[event].forEach((cb) => cb(data));
-    }
   }
 
   // --------------------------------------------------------------------------
@@ -870,13 +829,9 @@ export class AudioEngine {
     this.ready = false;
     this.started = false;
     this.Tone = null;
-    this._callbacks = {
-      ready: [],
-      started: [],
-      noteStart: [],
-      noteEnd: [],
-      settingsChange: [],
-    };
+
+    // Nettoyer les listeners EventEmitter
+    super.dispose();
   }
 }
 

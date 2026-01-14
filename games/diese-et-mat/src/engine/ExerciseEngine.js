@@ -7,6 +7,7 @@
  * @module engine/ExerciseEngine
  */
 
+import { EventEmitter } from '../utils/EventEmitter.js';
 import { QuestionGenerator } from './QuestionGenerator.js';
 import { ScoreCalculator } from './ScoreCalculator.js';
 
@@ -28,12 +29,19 @@ const SESSION_STATES = {
 
 /**
  * Moteur d'exercices
+ *
+ * @fires ExerciseEngine#session-start - Quand une session démarre
+ * @fires ExerciseEngine#session-end - Quand une session se termine
+ * @fires ExerciseEngine#question-start - Quand une nouvelle question commence
+ * @fires ExerciseEngine#question-answered - Quand une réponse est soumise
+ * @fires ExerciseEngine#achievement-unlocked - Quand un achievement est débloqué
  */
-export class ExerciseEngine {
+export class ExerciseEngine extends EventEmitter {
   /**
    * Crée un nouveau moteur d'exercices
    */
   constructor() {
+    super();
     /** @type {Object|null} Configuration de l'exercice courant */
     this.exercise = null;
 
@@ -63,15 +71,6 @@ export class ExerciseEngine {
 
     /** @type {number} Timestamp de début de question */
     this.questionStartTime = 0;
-
-    /** @type {Object} Callbacks d'événements */
-    this._callbacks = {
-      'session-start': [],
-      'session-end': [],
-      'question-start': [],
-      'question-answered': [],
-      'achievement-unlocked': [],
-    };
   }
 
   // --------------------------------------------------------------------------
@@ -109,7 +108,7 @@ export class ExerciseEngine {
 
     this.state = SESSION_STATES.RUNNING;
 
-    this._emit('session-start', {
+    this.emit('session-start', {
       exercise: this.exercise,
       totalQuestions: this.totalQuestions,
     });
@@ -137,7 +136,7 @@ export class ExerciseEngine {
     // Générer la question selon le mode
     this.currentQuestion = this._generateQuestion();
 
-    this._emit('question-start', {
+    this.emit('question-start', {
       question: this.currentQuestion,
       index: this.currentIndex,
       total: this.totalQuestions,
@@ -219,7 +218,7 @@ export class ExerciseEngine {
       isLastQuestion: this.currentIndex >= this.totalQuestions,
     };
 
-    this._emit('question-answered', result);
+    this.emit('question-answered', result);
 
     return result;
   }
@@ -448,7 +447,7 @@ export class ExerciseEngine {
 
     const summary = this._getSessionSummary();
 
-    this._emit('session-end', summary);
+    this.emit('session-end', summary);
 
     return summary;
   }
@@ -501,47 +500,6 @@ export class ExerciseEngine {
     this.state = SESSION_STATES.IDLE;
     this.currentQuestion = null;
     this.currentIndex = 0;
-  }
-
-  // --------------------------------------------------------------------------
-  // Événements
-  // --------------------------------------------------------------------------
-
-  /**
-   * Ajoute un listener
-   *
-   * @param {string} event - Nom de l'événement
-   * @param {Function} callback - Callback
-   */
-  on(event, callback) {
-    if (this._callbacks[event]) {
-      this._callbacks[event].push(callback);
-    }
-  }
-
-  /**
-   * Retire un listener
-   *
-   * @param {string} event - Nom de l'événement
-   * @param {Function} callback - Callback
-   */
-  off(event, callback) {
-    if (this._callbacks[event]) {
-      const index = this._callbacks[event].indexOf(callback);
-      if (index !== -1) {
-        this._callbacks[event].splice(index, 1);
-      }
-    }
-  }
-
-  /**
-   * Émet un événement
-   * @private
-   */
-  _emit(event, data) {
-    if (this._callbacks[event]) {
-      this._callbacks[event].forEach((cb) => cb(data));
-    }
   }
 
   // --------------------------------------------------------------------------
