@@ -46,6 +46,9 @@ export async function openGame(gameId) {
 /**
  * Charge un outil depuis son ID
  * Valide l'existence et synchronise le hash
+ * Les outils peuvent être:
+ * - Simples: tools/{id}.html
+ * - Complexes: tools/{id}/index.html
  * @param {string} toolId - ID de l'outil
  */
 export async function openTool(toolId) {
@@ -54,19 +57,31 @@ export async function openTool(toolId) {
     return;
   }
 
-  const path = `tools/${toolId}/index.html`;
+  // Essayer d'abord le format complexe (dossier), puis le format simple (fichier)
+  const paths = [
+    `tools/${toolId}/index.html`,
+    `tools/${toolId}.html`,
+  ];
 
   try {
-    // Valider que l'outil existe avec une HEAD request
-    const response = await fetch(path, { method: 'HEAD' });
-    if (!response.ok) {
+    let validPath = null;
+
+    for (const path of paths) {
+      const response = await fetch(path, { method: 'HEAD' });
+      if (response.ok) {
+        validPath = path;
+        break;
+      }
+    }
+
+    if (!validPath) {
       console.error(`Outil non trouvé: ${toolId}`);
       window.location.hash = '#/';
       return;
     }
 
     // Charger l'outil
-    loadGame(path, toolId, 'tool', toolId);
+    loadGame(validPath, toolId, 'tool', toolId);
 
     // Synchroniser le hash
     window.location.hash = `#/tools/${toolId}`;

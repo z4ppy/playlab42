@@ -93,29 +93,48 @@ describe('game-loader: openGame and openTool functions', () => {
   // ===== openTool TESTS =====
 
   describe('openTool(toolId)', () => {
-    it('validates tool existence with HEAD request before loading', async () => {
+    it('tries complex path first (tools/:id/index.html)', async () => {
       global.fetch.mockResolvedValueOnce({ ok: true });
+
+      await openTool('relativity-lab');
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        'tools/relativity-lab/index.html',
+        { method: 'HEAD' },
+      );
+    });
+
+    it('falls back to simple path (tools/:id.html) if complex fails', async () => {
+      // Complex path fails, simple path succeeds
+      global.fetch
+        .mockResolvedValueOnce({ ok: false })
+        .mockResolvedValueOnce({ ok: true });
 
       await openTool('json-formatter');
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(global.fetch).toHaveBeenNthCalledWith(1,
         'tools/json-formatter/index.html',
+        { method: 'HEAD' },
+      );
+      expect(global.fetch).toHaveBeenNthCalledWith(2,
+        'tools/json-formatter.html',
         { method: 'HEAD' },
       );
     });
 
     it('loads tool when HEAD request succeeds', async () => {
       global.fetch.mockResolvedValueOnce({ ok: true });
-      jest.spyOn(window.location, 'hash', 'set');
 
-      await openTool('json-formatter');
+      await openTool('relativity-lab');
 
-      expect(window.location.hash).toBe('#/tools/json-formatter');
+      expect(window.location.hash).toBe('#/tools/relativity-lab');
     });
 
-    it('returns to catalogue with #/ hash when tool not found', async () => {
-      global.fetch.mockResolvedValueOnce({ ok: false, status: 404 });
-      jest.spyOn(window.location, 'hash', 'set');
+    it('returns to catalogue with #/ hash when tool not found in both paths', async () => {
+      global.fetch
+        .mockResolvedValueOnce({ ok: false })
+        .mockResolvedValueOnce({ ok: false });
 
       await openTool('nonexistent-tool');
 
@@ -124,7 +143,6 @@ describe('game-loader: openGame and openTool functions', () => {
 
     it('returns to catalogue on network error', async () => {
       global.fetch.mockRejectedValueOnce(new Error('Network error'));
-      jest.spyOn(window.location, 'hash', 'set');
 
       await openTool('json-formatter');
 
