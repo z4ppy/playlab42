@@ -1951,11 +1951,14 @@ export class App {
   _initPianoControls() {
     if (this._pianoControlsInitialized) {return;}
 
-    // État du piano
+    // État du piano (utiliser le preset actuel du synthé si disponible)
     this._pianoState = {
-      preset: 'piano',
+      preset: this._synthConfig?.preset || 'piano',
       baseOctave: 4,
     };
+
+    // Générer les boutons de presets
+    this._renderPianoPresets();
 
     // Sélecteur d'instrument (synchronisé avec le panneau synthé)
     const instrumentSelector = document.getElementById('piano-instrument-selector');
@@ -1994,6 +1997,42 @@ export class App {
     }
 
     this._pianoControlsInitialized = true;
+  }
+
+  /**
+   * Génère les boutons de presets du piano (identiques au panneau synthé).
+   */
+  _renderPianoPresets() {
+    const container = document.getElementById('piano-instrument-selector');
+    if (!container) {return;}
+
+    const presets = AudioEngine.getPresets();
+    const currentPreset = this._pianoState?.preset || this._synthConfig?.preset || 'piano';
+
+    // Icônes pour chaque preset
+    const icons = {
+      piano: '🎹',
+      organ: '🎵',
+      synthLead: '🎛️',
+      electricPiano: '⚡',
+      bell: '🔔',
+      retro8bit: '👾',
+    };
+
+    container.innerHTML = '';
+
+    Object.entries(presets).forEach(([key, preset]) => {
+      const btn = document.createElement('button');
+      btn.className = 'piano-instrument-btn';
+      btn.dataset.preset = key;
+      btn.textContent = `${icons[key] || '🎵'} ${preset.name}`;
+
+      if (currentPreset === key) {
+        btn.classList.add('active');
+      }
+
+      container.appendChild(btn);
+    });
   }
 
   /**
