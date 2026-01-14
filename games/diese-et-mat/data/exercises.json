@@ -146,6 +146,38 @@
         "questionsCount": 20,
         "timing": "untimed"
       }
+    },
+    {
+      "id": "rhythm-basic",
+      "category": "rhythm",
+      "mode": "rhythm",
+      "title": "Rythme - Basique",
+      "description": "Rondes, blanches et noires",
+      "difficulty": 1,
+      "skills": ["rhythm"],
+      "config": {
+        "durations": ["whole", "half", "quarter"],
+        "beatsPerMeasure": 4,
+        "tempo": 60,
+        "questionsCount": 10,
+        "timing": "timed"
+      }
+    },
+    {
+      "id": "rhythm-intermediate",
+      "category": "rhythm",
+      "mode": "rhythm",
+      "title": "Rythme - Intermédiaire",
+      "description": "Avec croches",
+      "difficulty": 2,
+      "skills": ["rhythm"],
+      "config": {
+        "durations": ["half", "quarter", "eighth"],
+        "beatsPerMeasure": 4,
+        "tempo": 80,
+        "questionsCount": 12,
+        "timing": "timed"
+      }
     }
   ],
   "categories": [
@@ -166,6 +198,12 @@
       "name": "Accords",
       "description": "Identifier les types d'accords",
       "icon": "🎹"
+    },
+    {
+      "id": "rhythm",
+      "name": "Rythme",
+      "description": "Reproduire des rythmes en tapant",
+      "icon": "🥁"
     }
   ]
 }

@@ -168,6 +168,13 @@ export class ExerciseEngine {
           types: this.exercise.config?.chordTypes,
         });
 
+      case 'rhythm':
+        return this.generator.generateRhythm({
+          durations: this.exercise.config?.durations,
+          beatsPerMeasure: this.exercise.config?.beatsPerMeasure,
+          tempo: this.exercise.config?.tempo,
+        });
+
       default:
         return this.generator.generateNote();
     }
@@ -234,9 +241,22 @@ export class ExerciseEngine {
       case 'chord':
         return this._validateChordAnswer(answer);
 
+      case 'rhythm':
+        return this._validateRhythmAnswer(answer);
+
       default:
         return false;
     }
+  }
+
+  /**
+   * Valide une réponse de rythme
+   * @private
+   */
+  _validateRhythmAnswer(answer) {
+    // La validation du rythme est gérée par App.js
+    // qui envoie 'correct' ou 'incorrect' selon l'évaluation des taps
+    return answer === 'correct';
   }
 
   /**
@@ -316,6 +336,12 @@ export class ExerciseEngine {
           type: this.currentQuestion.expectedType,
           symbol: this.currentQuestion.chord.toSymbol(),
           french: this.currentQuestion.chord.toFrench(),
+        };
+
+      case 'rhythm':
+        return {
+          pattern: this.currentQuestion.pattern,
+          french: 'Reproduire le rythme',
         };
 
       default:

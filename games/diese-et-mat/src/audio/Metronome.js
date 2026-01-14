@@ -64,6 +64,9 @@ export class Metronome {
 
     /** @type {Function[]} Callbacks sur le premier temps */
     this._downbeatCallbacks = [];
+
+    /** @type {number} Dernier temps joué (pour éviter les conflits Tone.js) */
+    this._lastPlayTime = 0;
   }
 
   // --------------------------------------------------------------------------
@@ -84,21 +87,20 @@ export class Metronome {
     const Tone = this.audioEngine.Tone;
 
     // Créer un synthétiseur simple pour les clicks
-    this._clickSynth = new Tone.MembraneSynth({
-      pitchDecay: 0.008,
-      octaves: 2,
+    // Utiliser Synth au lieu de MembraneSynth pour éviter les conflits de timing
+    this._clickSynth = new Tone.Synth({
       oscillator: {
-        type: 'sine',
+        type: 'triangle',
       },
       envelope: {
         attack: 0.001,
-        decay: 0.1,
+        decay: 0.05,
         sustain: 0,
-        release: 0.1,
+        release: 0.05,
       },
     }).toDestination();
 
-    this._clickSynth.volume.value = -10;
+    this._clickSynth.volume.value = -5;
   }
 
   // --------------------------------------------------------------------------
@@ -143,13 +145,13 @@ export class Metronome {
   /**
    * Toggle start/stop
    *
-   * @returns {boolean} Nouvel état (true = playing)
+   * @returns {Promise<boolean>} Nouvel état (true = playing)
    */
-  toggle() {
+  async toggle() {
     if (this.playing) {
       this.stop();
     } else {
-      this.start();
+      await this.start();
     }
     return this.playing;
   }
@@ -186,7 +188,14 @@ export class Metronome {
     const pitch = this.accent && isDownbeat ? 'G5' : 'C5';
     const duration = '32n';
 
-    this._clickSynth.triggerAttackRelease(pitch, duration);
+    // Garantir que le temps est strictement croissant
+    const Tone = this.audioEngine.Tone;
+    const now = Tone.now();
+    const minTime = this._lastPlayTime + 0.05; // Au moins 50ms après le dernier
+    const time = Math.max(now + 0.01, minTime);
+    this._lastPlayTime = time;
+
+    this._clickSynth.triggerAttackRelease(pitch, duration, time);
   }
 
   // --------------------------------------------------------------------------

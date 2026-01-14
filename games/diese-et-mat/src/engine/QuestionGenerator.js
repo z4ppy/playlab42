@@ -204,6 +204,65 @@ export class QuestionGenerator {
   }
 
   // --------------------------------------------------------------------------
+  // Génération de rythmes
+  // --------------------------------------------------------------------------
+
+  /**
+   * Génère une question de rythme
+   *
+   * @param {Object} options - Options
+   * @param {string[]} options.durations - Durées autorisées ('whole', 'half', 'quarter', 'eighth')
+   * @param {number} options.beatsPerMeasure - Nombre de temps par mesure
+   * @returns {{ type: string, pattern: Object[], beatsPerMeasure: number, tempo: number }}
+   */
+  generateRhythm(options = {}) {
+    const allowedDurations = options.durations || ['quarter', 'half'];
+    const beatsPerMeasure = options.beatsPerMeasure || 4;
+    const tempo = options.tempo || 60;
+
+    // Valeurs en beats pour chaque durée
+    const durationValues = {
+      whole: 4,
+      half: 2,
+      quarter: 1,
+      eighth: 0.5,
+    };
+
+    // Générer un pattern rythmique qui remplit la mesure
+    const pattern = [];
+    let remainingBeats = beatsPerMeasure;
+
+    while (remainingBeats > 0) {
+      // Filtrer les durées qui rentrent dans l'espace restant
+      const validDurations = allowedDurations.filter(
+        (d) => durationValues[d] <= remainingBeats,
+      );
+
+      if (validDurations.length === 0) {break;}
+
+      // Choisir une durée aléatoire
+      const duration =
+        validDurations[Math.floor(this.randomFn() * validDurations.length)];
+      const beats = durationValues[duration];
+
+      pattern.push({
+        duration,
+        beats,
+        startBeat: beatsPerMeasure - remainingBeats,
+      });
+
+      remainingBeats -= beats;
+    }
+
+    return {
+      type: 'rhythm',
+      pattern,
+      beatsPerMeasure,
+      tempo,
+    };
+  }
+
+  // --------------------------------------------------------------------------
   // Génération d'accords
   // --------------------------------------------------------------------------
 
