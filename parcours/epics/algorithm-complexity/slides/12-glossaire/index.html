@@ -40,13 +40,130 @@
 
                     const html = glossary.generateGlossaryPage();
                     glossaryContainer.innerHTML = html;
+
+                    // Apply custom styles matching Algorithm Complexity theme
+                    applyCustomStyles();
                 } catch (e) {
                     console.error("Failed to load glossary:", e);
                     glossaryContainer.innerHTML = `<div class="p-4 ac-accent-red border border-red-500 rounded">Erreur de chargement du glossaire.</div>`;
                 }
             }
         });
+
+        function applyCustomStyles() {
+            // Add utility classes to generated elements
+            document.querySelectorAll('.glossary-category-title').forEach(el => {
+                el.classList.add('text-accent', 'pb-2', 'border-b', 'border-[var(--ac-border-color)]');
+            });
+
+            document.querySelectorAll('.glossary-term-title').forEach(el => {
+                el.classList.add('text-primary');
+            });
+
+            document.querySelectorAll('.glossary-short').forEach(el => {
+                el.classList.add('text-secondary');
+            });
+
+            document.querySelectorAll('.glossary-long').forEach(el => {
+                el.classList.add('ac-text-muted');
+            });
+        }
     </script>
+
+    <style>
+        /* Styles spécifiques à la page glossaire (Identique à Deep Learning mais adapté au thème AC) */
+        .glossary-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .glossary-category {
+            margin-bottom: 2.5rem;
+        }
+
+        .glossary-category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+            /* Border and color handled by Tailwind classes in JS */
+        }
+
+        .glossary-list {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0;
+        }
+
+        .glossary-entry {
+            padding: 1rem;
+            border-bottom: 1px solid var(--ac-border-color);
+            border-radius: 0;
+            transition: background-color 0.2s;
+        }
+
+        .glossary-entry:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .glossary-entry:last-child {
+            border-bottom: none;
+        }
+
+        .glossary-term-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .glossary-term-title::before {
+            content: '◆';
+            font-size: 0.6rem;
+            opacity: 0.5;
+            color: var(--ac-accent-blue);
+        }
+
+        .glossary-definition {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .glossary-short {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .glossary-long {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .glossary-see {
+            margin: 0.75rem 0 0 0;
+            font-size: 0.85rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--ac-border-color);
+            color: var(--ac-text-muted);
+        }
+
+        .glossary-link {
+            color: var(--ac-accent-blue);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .glossary-link:hover {
+            text-decoration: underline;
+            color: var(--ac-accent-cyan);
+        }
+    </style>
 </head>
 <body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
 
