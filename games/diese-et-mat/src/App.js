@@ -8,6 +8,7 @@
 
 import { ExerciseEngine } from './engine/ExerciseEngine.js';
 import { StaffRenderer } from './renderer/StaffRenderer.js';
+import { QuestionRenderer } from './renderer/QuestionRenderer.js';
 import { SynthManager } from './audio/index.js';
 import { DataManager } from './services/DataManager.js';
 import { TunerController } from './controllers/TunerController.js';
@@ -15,6 +16,7 @@ import { MetronomeController } from './controllers/MetronomeController.js';
 import { SynthController } from './controllers/SynthController.js';
 import { PianoController } from './controllers/PianoController.js';
 import { MenuController } from './controllers/MenuController.js';
+import { RhythmController } from './controllers/RhythmController.js';
 
 // ============================================================================
 // Classe App
@@ -46,6 +48,9 @@ export class App {
     /** @type {StaffRenderer|null} Renderer de portée */
     this.staffRenderer = null;
 
+    /** @type {QuestionRenderer|null} Renderer de questions */
+    this.questionRenderer = null;
+
     /** @type {Object|null} Données des exercices */
     this.exercisesData = null;
 
@@ -67,8 +72,8 @@ export class App {
     /** @type {MenuController|null} Contrôleur du menu d'exercices */
     this.menuController = null;
 
-    /** @type {Object|null} État du mode rythme */
-    this.rhythmState = null;
+    /** @type {RhythmController|null} Contrôleur du mode rythme */
+    this.rhythmController = null;
 
     /** @type {Function|null} Handler pour keydown global */
     this._keydownHandler = null;
@@ -247,6 +252,36 @@ export class App {
     // Écouter la sélection d'exercice
     this.menuController.on('exercise-selected', ({ exerciseId }) => {
       this.startExercise(exerciseId);
+    });
+
+    // Controller du mode rythme
+    this.rhythmController = new RhythmController({
+      getMetronome: () => this.metronome,
+      ensureAudioReady: () => this.synthManager?.ensureAudioReady(),
+    });
+
+    // Écouter la fin du rythme
+    this.rhythmController.on('rhythm-ended', ({ hits, total, accuracy, isCorrect }) => {
+      // Soumettre au moteur
+      if (this.engine) {
+        this.engine.submitAnswer(isCorrect ? 'correct' : 'incorrect');
+      }
+
+      // Afficher le feedback
+      this.rhythmController.showEndFeedback(isCorrect, accuracy, hits, total);
+
+      // Passer à la suite après un délai
+      setTimeout(() => {
+        const progress = this.engine?.getProgress();
+        if (progress && progress.current >= progress.total) {
+          this.showResults();
+        } else {
+          const nextQuestion = this.engine?.nextQuestion();
+          if (nextQuestion) {
+            this.showQuestion(nextQuestion);
+          }
+        }
+      }, 1500);
     });
   }
 
@@ -652,6 +687,13 @@ export class App {
       clef: exercise.config.clef || 'treble',
     });
 
+    // Initialiser le renderer de questions
+    this.questionRenderer = new QuestionRenderer({
+      staffRenderer: this.staffRenderer,
+      playNoteAudio: (pitch) => this.playNoteAudio(pitch),
+    });
+    this.questionRenderer.setStaffContainer(staffContainer);
+
     // Créer les boutons selon le mode
     this.currentExercise = exercise;
     let buttonMode = 'note';
@@ -827,149 +869,21 @@ export class App {
     if (question.type === 'note' && question.pitch) {
       if (isEarTraining) {
         // Mode ear training : cacher la portée, afficher un indicateur
-        this.showEarTrainingQuestion(question);
+        this.questionRenderer?.renderEarTrainingQuestion(question);
       } else {
         // Question de lecture de note
-        this.staffRenderer.renderNote(question.pitch);
+        this.questionRenderer?.renderNoteQuestion(question);
       }
     } else if (question.type === 'interval') {
       // Question d'intervalle - afficher les 2 notes
-      this.showIntervalQuestion(question);
+      this.questionRenderer?.renderIntervalQuestion(question);
     } else if (question.type === 'chord') {
       // Question d'accord - afficher les notes de l'accord
-      this.showChordQuestion(question);
+      this.questionRenderer?.renderChordQuestion(question);
     } else if (question.type === 'rhythm') {
       // Question de rythme - afficher le pattern
       this.showRhythmQuestion(question);
     }
-  }
-
-  /**
-   * Affiche une question d'ear training (audio uniquement).
-   * @param {Object} question - Question de note
-   */
-  showEarTrainingQuestion(question) {
-    const staffContainer = document.getElementById('staff-container');
-    if (!staffContainer) {return;}
-
-    // Afficher un indicateur visuel au lieu de la note
-    staffContainer.innerHTML = `
-      <div style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        gap: var(--space-md);
-      ">
-        <div style="
-          font-size: 4rem;
-          color: var(--color-accent);
-        ">🎧</div>
-        <div style="
-          font-size: var(--font-size-lg);
-          color: var(--color-text);
-          text-align: center;
-        ">
-          Écoutez la note et identifiez-la
-        </div>
-        <div style="
-          font-size: var(--font-size-sm);
-          color: var(--color-text-muted);
-        ">
-          Cliquez sur "Écouter" pour rejouer
-        </div>
-      </div>
-    `;
-
-    // Jouer automatiquement la note après un court délai
-    setTimeout(() => {
-      this.playNoteAudio(question.pitch);
-    }, 300);
-  }
-
-  /**
-   * Affiche une question d'intervalle (2 notes).
-   * @param {Object} question - Question d'intervalle
-   */
-  showIntervalQuestion(question) {
-    const staffContainer = document.getElementById('staff-container');
-
-    // Afficher les 2 notes visuellement
-    // Pour l'instant, afficher un texte + la première note sur la portée
-    const note1 = question.pitch1.toFrench();
-    const note2 = question.pitch2.toFrench();
-
-    // Clear et afficher la première note
-    this.staffRenderer.clear();
-    this.staffRenderer.renderNote(question.pitch1);
-
-    // Ajouter un indicateur visuel pour la 2ème note
-    const infoDiv = document.createElement('div');
-    infoDiv.id = 'interval-info';
-    infoDiv.style.cssText = `
-      text-align: center;
-      margin-top: var(--space-sm);
-      font-size: var(--font-size-lg);
-      color: var(--color-text);
-    `;
-    infoDiv.innerHTML = `
-      <span style="color: var(--color-accent);">${note1}</span>
-      <span style="margin: 0 var(--space-sm);">→</span>
-      <span style="color: var(--color-success);">${note2}</span>
-      <div style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--space-xs);">
-        Quel intervalle ?
-      </div>
-    `;
-
-    // Supprimer l'ancien indicateur s'il existe
-    const oldInfo = document.getElementById('interval-info');
-    if (oldInfo) {oldInfo.remove();}
-
-    staffContainer.appendChild(infoDiv);
-  }
-
-  /**
-   * Affiche une question d'accord.
-   * @param {Object} question - Question d'accord
-   */
-  showChordQuestion(question) {
-    const staffContainer = document.getElementById('staff-container');
-
-    // Récupérer les notes de l'accord
-    const chord = question.chord;
-    const pitches = chord.getPitches();
-    const notesStr = pitches.map(p => p.toFrench()).join(' - ');
-
-    // Clear et afficher la fondamentale
-    this.staffRenderer.clear();
-    this.staffRenderer.renderNote(chord.root);
-
-    // Ajouter un indicateur visuel pour l'accord
-    const infoDiv = document.createElement('div');
-    infoDiv.id = 'chord-info';
-    infoDiv.style.cssText = `
-      text-align: center;
-      margin-top: var(--space-sm);
-      font-size: var(--font-size-lg);
-      color: var(--color-text);
-    `;
-    infoDiv.innerHTML = `
-      <div style="font-size: var(--font-size-md); color: var(--color-accent);">
-        ${notesStr}
-      </div>
-      <div style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-top: var(--space-xs);">
-        Quel type d'accord ?
-      </div>
-    `;
-
-    // Supprimer l'ancien indicateur s'il existe
-    const oldInfo = document.getElementById('chord-info');
-    if (oldInfo) {oldInfo.remove();}
-    const oldIntervalInfo = document.getElementById('interval-info');
-    if (oldIntervalInfo) {oldIntervalInfo.remove();}
-
-    staffContainer.appendChild(infoDiv);
   }
 
   /**
@@ -978,416 +892,7 @@ export class App {
    */
   showRhythmQuestion(question) {
     const staffContainer = document.getElementById('staff-container');
-    staffContainer.innerHTML = '';
-
-    // Symboles et noms des durées
-    const durationSymbols = {
-      whole: '𝅝', half: '𝅗𝅥', quarter: '♩', eighth: '♪',
-    };
-    const durationNames = {
-      whole: 'Ronde', half: 'Blanche', quarter: 'Noire', eighth: 'Croche',
-    };
-
-    // Construire la piste de rythme
-    const container = document.createElement('div');
-    container.className = 'rhythm-container';
-
-    // Créer les cellules de beats
-    const track = document.createElement('div');
-    track.className = 'rhythm-track';
-    track.id = 'rhythm-track';
-
-    // Générer les cellules pour chaque beat de la mesure
-    const beatDuration = 60000 / question.tempo;
-    const cells = [];
-
-    for (let beat = 0; beat < question.beatsPerMeasure; beat++) {
-      const cell = document.createElement('div');
-      cell.className = 'rhythm-beat';
-      cell.dataset.beat = beat;
-
-      // Trouver si une note commence sur ce beat
-      const note = question.pattern.find(n => Math.floor(n.startBeat) === beat);
-
-      if (note) {
-        cell.dataset.hasNote = 'true';
-        cell.dataset.noteIndex = question.pattern.indexOf(note);
-        cell.innerHTML = `
-          <div class="rhythm-beat-symbol">${durationSymbols[note.duration]}</div>
-          <div class="rhythm-beat-label">${durationNames[note.duration]}</div>
-        `;
-      } else {
-        cell.innerHTML = `
-          <div class="rhythm-beat-symbol" style="opacity: 0.3;">·</div>
-          <div class="rhythm-beat-label">-</div>
-        `;
-      }
-
-      cells.push(cell);
-      track.appendChild(cell);
-    }
-
-    // Curseur
-    const cursor = document.createElement('div');
-    cursor.className = 'rhythm-cursor';
-    cursor.id = 'rhythm-cursor';
-    track.appendChild(cursor);
-
-    // Zone de tap
-    const tapZone = document.createElement('div');
-    tapZone.className = 'rhythm-tap-zone';
-    tapZone.id = 'rhythm-tap-zone';
-    tapZone.textContent = 'TAP';
-
-    // Score en temps réel
-    const scoreDisplay = document.createElement('div');
-    scoreDisplay.className = 'rhythm-score';
-    scoreDisplay.id = 'rhythm-score';
-    scoreDisplay.innerHTML = `
-      <div class="rhythm-score-item">
-        <div class="rhythm-score-value" id="rhythm-hits">0</div>
-        <div class="rhythm-score-label">Réussis</div>
-      </div>
-      <div class="rhythm-score-item">
-        <div class="rhythm-score-value" id="rhythm-misses">0</div>
-        <div class="rhythm-score-label">Manqués</div>
-      </div>
-    `;
-
-    // Info tempo
-    const tempoInfo = document.createElement('div');
-    tempoInfo.style.cssText = 'font-size: var(--font-size-sm); color: var(--color-text-muted);';
-    tempoInfo.textContent = `Tempo: ${question.tempo} BPM`;
-
-    // Bouton démarrer
-    const startBtn = document.createElement('button');
-    startBtn.id = 'btn-start-rhythm';
-    startBtn.style.cssText = `
-      padding: var(--space-sm) var(--space-lg);
-      background: var(--color-success);
-      border: none;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      font-size: var(--font-size-md);
-      color: white;
-    `;
-    startBtn.textContent = '▶ Démarrer';
-    startBtn.addEventListener('click', () => this.startRhythmExercise());
-
-    container.appendChild(track);
-    container.appendChild(tapZone);
-    container.appendChild(scoreDisplay);
-    container.appendChild(tempoInfo);
-    container.appendChild(startBtn);
-    staffContainer.appendChild(container);
-
-    // Events tap
-    tapZone.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      this.handleRhythmTap();
-    });
-    tapZone.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      this.handleRhythmTap();
-    });
-
-    // Initialiser l'état du rythme
-    this.rhythmState = {
-      pattern: question.pattern,
-      beatsPerMeasure: question.beatsPerMeasure,
-      tempo: question.tempo,
-      beatDuration,
-      cells,
-      currentBeat: -1,
-      hits: 0,
-      misses: 0,
-      noteResults: new Array(question.pattern.length).fill(null),
-      started: false,
-      startTime: null,
-      animationId: null,
-    };
-  }
-
-  /**
-   * Démarre l'exercice de rythme avec compte à rebours.
-   */
-  async startRhythmExercise() {
-    if (!this.rhythmState) {return;}
-
-    // Cacher le bouton démarrer
-    const startBtn = document.getElementById('btn-start-rhythm');
-    if (startBtn) {startBtn.style.display = 'none';}
-
-    // Initialiser l'audio et le métronome
-    try {
-      await this.synthManager?.ensureAudioReady();
-
-      // S'assurer que le métronome est prêt via le controller
-      const metronome = await this.metronomeController?.ensureReady();
-      if (metronome) {
-        metronome.setTempo(this.rhythmState.tempo);
-        metronome.setTimeSignature(this.rhythmState.beatsPerMeasure, 4);
-      }
-    } catch {
-      console.warn('Audio non disponible, mode silencieux');
-    }
-
-    // Compte à rebours
-    this._rhythmCountdown(3);
-  }
-
-  /**
-   * Compte à rebours avant le rythme.
-   * @param {number} count - Nombre de temps
-   */
-  _rhythmCountdown(count) {
-    const feedbackContainer = document.getElementById('feedback-container');
-    const beatDuration = this.rhythmState.beatDuration;
-
-    if (count > 0) {
-      if (feedbackContainer) {
-        feedbackContainer.innerHTML = `
-          <div style="font-size: 3rem; font-weight: bold; color: var(--color-accent);">
-            ${count}
-          </div>
-        `;
-      }
-      // Jouer un tick
-      if (this.metronome?._clickSynth) {
-        this.metronome._playClick(count === 1);
-      }
-      setTimeout(() => this._rhythmCountdown(count - 1), beatDuration);
-    } else {
-      if (feedbackContainer) {
-        feedbackContainer.innerHTML = `
-          <div style="font-size: 2rem; font-weight: bold; color: var(--color-success);">
-            GO!
-          </div>
-        `;
-      }
-      setTimeout(() => {
-        if (feedbackContainer) {feedbackContainer.innerHTML = '';}
-        this._startRhythmPlayback();
-      }, 300);
-    }
-  }
-
-  /**
-   * Démarre la lecture du rythme avec curseur.
-   */
-  _startRhythmPlayback() {
-    this.rhythmState.started = true;
-    this.rhythmState.startTime = Date.now();
-    this.rhythmState.currentBeat = -1;
-
-    // Démarrer le métronome
-    if (this.metronome) {
-      this.metronome.start();
-    }
-
-    // Animation du curseur
-    this._animateRhythmCursor();
-  }
-
-  /**
-   * Anime le curseur et gère le timing.
-   */
-  _animateRhythmCursor() {
-    if (!this.rhythmState?.started) {return;}
-
-    const { beatDuration, beatsPerMeasure, cells } = this.rhythmState;
-    const elapsed = Date.now() - this.rhythmState.startTime;
-    const totalDuration = beatDuration * beatsPerMeasure;
-
-    // Position du curseur (0 à 100%)
-    const progress = Math.min(elapsed / totalDuration, 1);
-    const cursor = document.getElementById('rhythm-cursor');
-    const track = document.getElementById('rhythm-track');
-
-    if (cursor && track) {
-      const trackWidth = track.offsetWidth - 4; // -4 pour la largeur du curseur
-      cursor.style.left = `${progress * trackWidth}px`;
-    }
-
-    // Déterminer le beat actuel
-    const currentBeat = Math.floor((elapsed / beatDuration));
-
-    // Nouveau beat ?
-    if (currentBeat !== this.rhythmState.currentBeat && currentBeat < beatsPerMeasure) {
-      this.rhythmState.currentBeat = currentBeat;
-
-      // Mettre à jour les cellules
-      cells.forEach((cell, i) => {
-        cell.classList.remove('active');
-        if (i === currentBeat) {
-          cell.classList.add('active');
-        }
-      });
-
-      // Vérifier les notes manquées du beat précédent
-      if (currentBeat > 0) {
-        this._checkMissedNotes(currentBeat - 1);
-      }
-    }
-
-    // Continuer ou terminer
-    if (progress < 1) {
-      this.rhythmState.animationId = requestAnimationFrame(() => this._animateRhythmCursor());
-    } else {
-      // Vérifier le dernier beat
-      this._checkMissedNotes(beatsPerMeasure - 1);
-      this._endRhythmExercise();
-    }
-  }
-
-  /**
-   * Vérifie les notes manquées sur un beat.
-   * @param {number} beat - Numéro du beat
-   */
-  _checkMissedNotes(beat) {
-    const { pattern, noteResults, cells } = this.rhythmState;
-
-    pattern.forEach((note, i) => {
-      if (Math.floor(note.startBeat) === beat && noteResults[i] === null) {
-        // Note manquée
-        noteResults[i] = false;
-        this.rhythmState.misses++;
-        this._updateRhythmScore();
-
-        // Feedback visuel
-        const cell = cells[beat];
-        if (cell) {
-          cell.classList.add('miss');
-        }
-      }
-    });
-  }
-
-  /**
-   * Gère un tap de l'utilisateur.
-   */
-  handleRhythmTap() {
-    // Feedback visuel du tap
-    const tapZone = document.getElementById('rhythm-tap-zone');
-    if (tapZone) {
-      tapZone.classList.add('pressed');
-      setTimeout(() => tapZone.classList.remove('pressed'), 100);
-    }
-
-    if (!this.rhythmState?.started) {
-      // Si pas démarré, démarrer l'exercice
-      const startBtn = document.getElementById('btn-start-rhythm');
-      if (startBtn && startBtn.style.display !== 'none') {
-        this.startRhythmExercise();
-      }
-      return;
-    }
-
-    const { beatDuration, pattern, noteResults, cells, startTime } = this.rhythmState;
-    const tapTime = Date.now() - startTime;
-    const tolerance = beatDuration / 3; // Tolérance généreuse
-
-    // Chercher la note la plus proche non encore tapée
-    let bestMatch = null;
-    let bestDiff = Infinity;
-
-    pattern.forEach((note, i) => {
-      if (noteResults[i] !== null) {return;} // Déjà traité
-
-      const noteTime = note.startBeat * beatDuration;
-      const diff = Math.abs(tapTime - noteTime);
-
-      if (diff < bestDiff && diff <= tolerance) {
-        bestDiff = diff;
-        bestMatch = i;
-      }
-    });
-
-    if (bestMatch !== null) {
-      // Hit !
-      noteResults[bestMatch] = true;
-      this.rhythmState.hits++;
-
-      // Feedback visuel
-      const note = pattern[bestMatch];
-      const cell = cells[Math.floor(note.startBeat)];
-      if (cell) {
-        cell.classList.add('hit');
-      }
-    }
-    // Note: on ne compte pas les taps en trop pour être plus indulgent
-
-    this._updateRhythmScore();
-  }
-
-  /**
-   * Met à jour l'affichage du score.
-   */
-  _updateRhythmScore() {
-    const hitsEl = document.getElementById('rhythm-hits');
-    const missesEl = document.getElementById('rhythm-misses');
-
-    if (hitsEl) {hitsEl.textContent = this.rhythmState.hits;}
-    if (missesEl) {missesEl.textContent = this.rhythmState.misses;}
-  }
-
-  /**
-   * Termine l'exercice de rythme.
-   */
-  _endRhythmExercise() {
-    if (!this.rhythmState) {return;}
-
-    // Arrêter
-    this.rhythmState.started = false;
-    if (this.rhythmState.animationId) {
-      cancelAnimationFrame(this.rhythmState.animationId);
-    }
-    if (this.metronome) {
-      this.metronome.stop();
-    }
-
-    // Calculer le résultat
-    const { hits, pattern } = this.rhythmState;
-    const total = pattern.length;
-    const accuracy = total > 0 ? hits / total : 0;
-    const isCorrect = accuracy >= 0.7;
-
-    // Soumettre au moteur
-    if (this.engine) {
-      this.engine.submitAnswer(isCorrect ? 'correct' : 'incorrect');
-    }
-
-    // Afficher le feedback final
-    const feedbackContainer = document.getElementById('feedback-container');
-    if (feedbackContainer) {
-      const percent = Math.round(accuracy * 100);
-      feedbackContainer.innerHTML = `
-        <div style="
-          padding: var(--space-md);
-          background: rgba(${isCorrect ? '76, 175, 80' : '244, 67, 54'}, 0.1);
-          border-radius: var(--radius-md);
-          text-align: center;
-        ">
-          <div style="font-size: 2rem;">${isCorrect ? '✓' : '✗'}</div>
-          <div style="color: var(--color-${isCorrect ? 'success' : 'error'}); font-weight: bold;">
-            ${percent}% - ${hits}/${total} notes
-          </div>
-        </div>
-      `;
-    }
-
-    // Passer à la suite après un délai
-    setTimeout(() => {
-      const progress = this.engine?.getProgress();
-      if (progress && progress.current >= progress.total) {
-        this.showResults();
-      } else {
-        const nextQuestion = this.engine?.nextQuestion();
-        if (nextQuestion) {
-          this.showQuestion(nextQuestion);
-        }
-      }
-    }, 1500);
+    this.rhythmController?.show(question, staffContainer);
   }
 
   /**
@@ -1936,9 +1441,9 @@ export class App {
     }
 
     // Barre d'espace pour le tap en mode rythme
-    if (event.key === ' ' && this.rhythmState) {
+    if (event.key === ' ' && this.rhythmController?.state) {
       event.preventDefault();
-      this.handleRhythmTap();
+      this.rhythmController.handleKeydown(event);
     }
 
     // Touches 1-7 pour les notes
@@ -2107,12 +1612,22 @@ export class App {
       this.menuController = null;
     }
 
+    if (this.rhythmController) {
+      this.rhythmController.dispose();
+      this.rhythmController = null;
+    }
+
     if (this.synthManager) {
       this.synthManager.dispose();
       this.synthManager = null;
     }
 
-    // Nettoyer le renderer
+    // Nettoyer les renderers
+    if (this.questionRenderer) {
+      this.questionRenderer.dispose();
+      this.questionRenderer = null;
+    }
+
     if (this.staffRenderer) {
       this.staffRenderer.dispose();
       this.staffRenderer = null;
