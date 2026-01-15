@@ -66,7 +66,6 @@ export class RhythmController extends EventEmitter {
 
     // Bind des méthodes pour les event listeners
     this._handleTap = this._handleTap.bind(this);
-    this._handleKeydown = this._handleKeydown.bind(this);
   }
 
   // --------------------------------------------------------------------------
