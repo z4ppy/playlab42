@@ -1,0 +1,209 @@
+{
+  "exercises": [
+    {
+      "id": "note-treble-natural",
+      "category": "note-reading",
+      "mode": "visual-to-name",
+      "title": "Clé de sol - Notes naturelles",
+      "description": "Identifier les notes naturelles en clé de sol",
+      "difficulty": 1,
+      "skills": ["treble-clef"],
+      "config": {
+        "clef": "treble",
+        "range": { "low": "C4", "high": "G5" },
+        "accidentals": false,
+        "questionsCount": 20,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "note-treble-extended",
+      "category": "note-reading",
+      "mode": "visual-to-name",
+      "title": "Clé de sol - Étendue",
+      "description": "Notes avec lignes supplémentaires en clé de sol",
+      "difficulty": 2,
+      "skills": ["treble-clef"],
+      "config": {
+        "clef": "treble",
+        "range": { "low": "G3", "high": "C6" },
+        "accidentals": false,
+        "questionsCount": 20,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "note-bass-natural",
+      "category": "note-reading",
+      "mode": "visual-to-name",
+      "title": "Clé de fa - Notes naturelles",
+      "description": "Identifier les notes naturelles en clé de fa",
+      "difficulty": 1,
+      "skills": ["bass-clef"],
+      "config": {
+        "clef": "bass",
+        "range": { "low": "E2", "high": "C4" },
+        "accidentals": false,
+        "questionsCount": 20,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "note-treble-sharps",
+      "category": "note-reading",
+      "mode": "visual-to-name",
+      "title": "Clé de sol - Dièses",
+      "description": "Notes avec dièses en clé de sol",
+      "difficulty": 2,
+      "skills": ["treble-clef", "accidentals"],
+      "config": {
+        "clef": "treble",
+        "range": { "low": "C4", "high": "G5" },
+        "accidentals": true,
+        "questionsCount": 20,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "note-audio-treble",
+      "category": "note-reading",
+      "mode": "audio-to-name",
+      "title": "Clé de sol - Écoute",
+      "description": "Identifier la note jouée (clé de sol)",
+      "difficulty": 2,
+      "skills": ["treble-clef"],
+      "config": {
+        "clef": "treble",
+        "range": { "low": "C4", "high": "G5" },
+        "accidentals": false,
+        "questionsCount": 15,
+        "timing": "untimed",
+        "playSound": true
+      }
+    },
+    {
+      "id": "interval-basic",
+      "category": "intervals",
+      "mode": "interval",
+      "title": "Intervalles - Basique",
+      "description": "Secondes et tierces",
+      "difficulty": 1,
+      "skills": ["intervals"],
+      "config": {
+        "clef": "treble",
+        "range": { "low": "C4", "high": "G5" },
+        "intervalTypes": ["minor-2", "major-2", "minor-3", "major-3"],
+        "questionsCount": 15,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "interval-all",
+      "category": "intervals",
+      "mode": "interval",
+      "title": "Intervalles - Tous",
+      "description": "Tous les intervalles simples",
+      "difficulty": 2,
+      "skills": ["intervals"],
+      "config": {
+        "clef": "treble",
+        "range": { "low": "C4", "high": "C6" },
+        "intervalTypes": [
+          "minor-2", "major-2", "minor-3", "major-3",
+          "perfect-4", "augmented-4", "perfect-5",
+          "minor-6", "major-6", "minor-7", "major-7"
+        ],
+        "questionsCount": 20,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "chord-major-minor",
+      "category": "chords",
+      "mode": "chord",
+      "title": "Accords - Majeur/Mineur",
+      "description": "Distinguer accords majeurs et mineurs",
+      "difficulty": 1,
+      "skills": ["chords"],
+      "config": {
+        "clef": "treble",
+        "chordTypes": ["major", "minor"],
+        "questionsCount": 15,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "chord-all-triads",
+      "category": "chords",
+      "mode": "chord",
+      "title": "Accords - Triades",
+      "description": "Majeur, mineur, diminué, augmenté",
+      "difficulty": 2,
+      "skills": ["chords"],
+      "config": {
+        "clef": "treble",
+        "chordTypes": ["major", "minor", "diminished", "augmented"],
+        "questionsCount": 20,
+        "timing": "untimed"
+      }
+    },
+    {
+      "id": "rhythm-basic",
+      "category": "rhythm",
+      "mode": "rhythm",
+      "title": "Rythme - Basique",
+      "description": "Rondes, blanches et noires",
+      "difficulty": 1,
+      "skills": ["rhythm"],
+      "config": {
+        "durations": ["whole", "half", "quarter"],
+        "beatsPerMeasure": 4,
+        "tempo": 60,
+        "questionsCount": 10,
+        "timing": "timed"
+      }
+    },
+    {
+      "id": "rhythm-intermediate",
+      "category": "rhythm",
+      "mode": "rhythm",
+      "title": "Rythme - Intermédiaire",
+      "description": "Avec croches",
+      "difficulty": 2,
+      "skills": ["rhythm"],
+      "config": {
+        "durations": ["half", "quarter", "eighth"],
+        "beatsPerMeasure": 4,
+        "tempo": 80,
+        "questionsCount": 12,
+        "timing": "timed"
+      }
+    }
+  ],
+  "categories": [
+    {
+      "id": "note-reading",
+      "name": "Lecture de notes",
+      "description": "Apprendre à lire les notes sur la portée",
+      "icon": "🎼"
+    },
+    {
+      "id": "intervals",
+      "name": "Intervalles",
+      "description": "Reconnaître les intervalles entre notes",
+      "icon": "↕️"
+    },
+    {
+      "id": "chords",
+      "name": "Accords",
+      "description": "Identifier les types d'accords",
+      "icon": "🎹"
+    },
+    {
+      "id": "rhythm",
+      "name": "Rythme",
+      "description": "Reproduire des rythmes en tapant",
+      "icon": "🥁"
+    }
+  ]
+}
