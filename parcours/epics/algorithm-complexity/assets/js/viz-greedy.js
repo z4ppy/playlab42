@@ -2,10 +2,10 @@
  * Visualization Greedy Algorithm (Coin Change)
  */
 export function initGreedyViz(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+  const container = document.getElementById(containerId);
+  if (!container) {return;}
 
-    container.innerHTML = `
+  container.innerHTML = `
         <div class="flex flex-col items-center gap-4 p-4">
             <div class="text-xl">Montant à rendre : <span id="target-amount" class="font-bold text-yellow-400">47</span></div>
             <div class="flex gap-2">
@@ -24,41 +24,41 @@ export function initGreedyViz(containerId) {
         </div>
     `;
 
-    const coins = [20, 10, 5, 1];
-    let target = 47;
-    
-    // reset logic
-    const reset = () => {
-        document.getElementById('result-area').innerHTML = '';
-    };
+  const coins = [20, 10, 5, 1];
+  const target = 47;
 
-    document.getElementById('btn-reset-greedy').onclick = reset;
+  // reset logic
+  const reset = () => {
+    document.getElementById('result-area').innerHTML = '';
+  };
 
-    document.getElementById('btn-greedy').onclick = async () => {
-        reset();
-        let remaining = target;
-        const resultArea = document.getElementById('result-area');
+  document.getElementById('btn-reset-greedy').onclick = reset;
 
-        for (let coin of coins) {
-            while (remaining >= coin) {
-                // Add visual coin
-                const cDiv = document.createElement('div');
-                cDiv.className = `w-10 h-10 rounded-full flex items-center justify-center text-black font-bold animate-pulse`;
-                
-                // Color mapping
-                if (coin === 20) cDiv.classList.add('bg-yellow-500');
-                else if (coin === 10) cDiv.classList.add('bg-gray-400');
-                else if (coin === 5) cDiv.classList.add('bg-red-400');
-                else cDiv.classList.add('bg-orange-400', 'w-8', 'h-8');
+  document.getElementById('btn-greedy').onclick = async () => {
+    reset();
+    let remaining = target;
+    const resultArea = document.getElementById('result-area');
 
-                cDiv.innerText = coin;
-                resultArea.appendChild(cDiv);
+    for (const coin of coins) {
+      while (remaining >= coin) {
+        // Add visual coin
+        const cDiv = document.createElement('div');
+        cDiv.className = 'w-10 h-10 rounded-full flex items-center justify-center text-black font-bold animate-pulse';
 
-                remaining -= coin;
-                
-                // delay
-                await new Promise(r => setTimeout(r, 400));
-            }
-        }
-    };
+        // Color mapping
+        if (coin === 20) {cDiv.classList.add('bg-yellow-500');}
+        else if (coin === 10) {cDiv.classList.add('bg-gray-400');}
+        else if (coin === 5) {cDiv.classList.add('bg-red-400');}
+        else {cDiv.classList.add('bg-orange-400', 'w-8', 'h-8');}
+
+        cDiv.innerText = coin;
+        resultArea.appendChild(cDiv);
+
+        remaining -= coin;
+
+        // delay
+        await new Promise(r => setTimeout(r, 400));
+      }
+    }
+  };
 }
