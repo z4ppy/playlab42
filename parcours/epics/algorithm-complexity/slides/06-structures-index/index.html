@@ -283,5 +283,16 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initHashViz } from '../../assets/js/viz-hashing.js';
+        import { initBSTViz } from '../../assets/js/viz-bst.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initHashViz('viz-hashing');
+                 initBSTViz('viz-btree');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

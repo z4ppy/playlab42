@@ -247,5 +247,16 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initGreedyViz } from '../../assets/js/viz-greedy.js';
+        import { initBacktrackingViz } from '../../assets/js/viz-backtracking.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initGreedyViz('viz-greedy-coins');
+                 initBacktrackingViz('viz-backtracking');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

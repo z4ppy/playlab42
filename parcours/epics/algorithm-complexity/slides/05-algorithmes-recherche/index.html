@@ -202,5 +202,16 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initLinearSearchViz } from '../../assets/js/viz-linear-search.js';
+        import { initBinarySearchViz } from '../../assets/js/viz-binary-search.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initLinearSearchViz('viz-linear-search');
+                 initBinarySearchViz('viz-binary-search');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

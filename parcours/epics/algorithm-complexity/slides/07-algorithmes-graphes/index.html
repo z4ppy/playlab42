@@ -253,5 +253,15 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initPathfindingViz } from '../../assets/js/viz-graph-pathfinding.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             // Init with a slight delay for layout
+             setTimeout(() => {
+                 initPathfindingViz('viz-graph-pathfinding');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

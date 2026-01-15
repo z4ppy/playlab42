@@ -244,5 +244,16 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initSortingViz } from '../../assets/js/viz-sorting.js';
+        
+        // Wait for DOM to be fully loaded (and layout computed)
+        document.addEventListener('DOMContentLoaded', () => {
+             // Basic delay to ensure styles are applied
+             setTimeout(() => {
+                 initSortingViz('viz-sorting');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

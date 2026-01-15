@@ -340,5 +340,15 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initKnapsackViz } from '../../assets/js/viz-dp-knapsack.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             // Init with a slight delay
+             setTimeout(() => {
+                 initKnapsackViz('viz-dp-knapsack');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

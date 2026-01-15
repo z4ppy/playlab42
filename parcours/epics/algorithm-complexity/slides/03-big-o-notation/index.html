@@ -271,5 +271,14 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initBigOViz } from '../../assets/js/viz-big-o.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initBigOViz('viz-big-o');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

@@ -465,5 +465,15 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initTSPViz } from '../../assets/js/viz-tsp.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             // Init with a slight delay
+             setTimeout(() => {
+                 initTSPViz('viz-tsp');
+             }, 100);
+        });
+    </script>
 </body>
 </html>

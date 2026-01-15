@@ -244,5 +244,14 @@
         </section>
 
     </main>
+    <script type="module">
+        import { initMathLogViz } from '../../assets/js/viz-math-log.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initMathLogViz('viz-math-log');
+             }, 100);
+        });
+    </script>
 </body>
 </html>
