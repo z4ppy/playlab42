@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prérequis Mathématiques - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-xs font-medium">
+                Fondamentaux
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Prérequis <span class="text-[var(--ac-accent-purple)]">Mathématiques</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Les outils essentiels pour comprendre la complexité : logarithmes, puissances et courbes de croissance.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- LOGARITHMES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">➗</span>
+                Le Logarithme : Diviser pour régner
+            </h2>
+            
+            <div class="prose prose-invert max-w-none ac-text-secondary mb-8">
+                <p class="mb-4">
+                    Le logarithme binaire ($\log_2 n$) est la clé de voûte de l'informatique. Il répond à une question simple :
+                </p>
+                <div class="ac-card p-6 bg-[var(--ac-bg-secondary)] border-l-4 border-l-[var(--ac-accent-purple)] mb-6">
+                    <p class="text-lg font-medium ac-text-primary italic text-center">
+                        "Combien de fois faut-il diviser n par 2 pour atteindre 1 ?"
+                    </p>
+                </div>
+                <p class="mb-4">
+                    Exemple pour $n = 8$ :
+                    <br/>
+                    $8 \rightarrow 4 \rightarrow 2 \rightarrow 1$ (3 étapes)
+                    <br/>
+                    Donc $\log_2(8) = 3$.
+                </p>
+                <p>
+                    C'est pourquoi la recherche dichotomique est si rapide. Pour chercher dans <strong>un milliard</strong> d'éléments, il suffit de <strong>30 comparaisons</strong> ($\log_2 10^9 \approx 29.9$). Doubler la taille des données n'ajoute qu'une seule étape !
+                </p>
+            </div>
+
+            <!-- TABLEAU CROISSANCE -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full ac-card text-sm text-left">
+                    <thead class="bg-[var(--ac-bg-tertiary)] uppercase text-[var(--ac-text-muted)] font-bold">
+                        <tr>
+                            <th class="px-6 py-3">n (Taille)</th>
+                            <th class="px-6 py-3">$\log_2(n)$ (Étapes)</th>
+                            <th class="px-6 py-3">Interprétation</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--ac-border-color)]">
+                        <tr>
+                            <td class="px-6 py-4">10</td>
+                            <td class="px-6 py-4">~3.3</td>
+                            <td class="px-6 py-4">Chercher parmi 10 objets</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4">1 000</td>
+                            <td class="px-6 py-4">~10</td>
+                            <td class="px-6 py-4">Chercher parmi un millier</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4">1 000 000</td>
+                            <td class="px-6 py-4">~20</td>
+                            <td class="px-6 py-4">Chercher parmi un million</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4">1 000 000 000</td>
+                            <td class="px-6 py-4">~30</td>
+                            <td class="px-6 py-4">Chercher sur toute la planète (presque)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ANECTOTE: GAUSS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🧠</span>
+                L'anecdote de Gauss
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-green-500 bg-opacity-10 bg-green-900">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    On raconte qu'à l'école primaire, l'instituteur de Carl Friedrich Gauss, voulant avoir la paix, demanda à ses élèves d'additionner tous les nombres de 1 à 100.
+                </p>
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    Alors que ses camarades additionnaient laborieusement ($1+2=3, +3=6, ...$), ce qui est une approche <strong>linéaire O(n)</strong>, le jeune Gauss donna la réponse en quelques secondes : <strong>5050</strong>.
+                </p>
+                <p class="ac-text-secondary leading-relaxed">
+                    Il avait remarqué qu'en additionnant les extrêmes ($1+100$, $2+99$, $3+98$...), on obtenait toujours 101. Avec 50 paires, le résultat est $50 \times 101$.
+                    Il venait de transformer un problème O(n) en une formule mathématique <strong>constante O(1)</strong> : $\frac{n(n+1)}{2}$.
+                </p>
+            </div>
+        </section>
+
+        <!-- VISUALISATION CHART -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📈</span>
+                Laboratoire : La puissance du Log
+            </h2>
+            <div class="ac-card p-4 min-h-[400px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative" id="viz-math-log">
+                <!-- Javascript insertion point -->
+            </div>
+            <script type="module">
+                import { initMathLogViz } from '../../assets/js/viz-math-log.js';
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => initMathLogViz('viz-math-log'));
+                } else {
+                    initMathLogViz('viz-math-log');
+                }
+            </script>
+        </section>
+
+        <!-- CAS PRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">💼</span>
+                Cas Pratiques
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Compression (Zip, JPEG)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        Les arbres de Huffman utilisent une structure logarithmique pour encoder les données fréquentes avec moins de bits.
+                    </p>
+                    <div class="mt-2 text-xs bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        Réduit l'entropie en exploitant la fréquence (maths).
+                    </div>
+                </div>
+                
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Cryptographie (RSA)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        La sécurité repose sur l'exponentiation modulaire, une opération mathématique simple à faire dans un sens, impossible dans l'autre sans la clé.
+                    </p>
+                    <div class="mt-2 text-xs bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        Sécurise toutes vos transactions bancaires.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROPRIETES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🛠️</span>
+                Propriétés essentielles des Logarithmes
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold text-[var(--ac-accent-blue)] mb-2">Produit</h3>
+                    <p class="mb-2">$\log(a \times b) = \log(a) + \log(b)$</p>
+                    <p class="text-sm ac-text-muted">Diviser un produit demande autant d'efforts que diviser les parties séparément.</p>
+                </div>
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold text-[var(--ac-accent-green)] mb-2">Puissance</h3>
+                    <p class="mb-2">$\log(a^k) = k \times \log(a)$</p>
+                    <p class="text-sm ac-text-muted">Une puissance revient à répéter l'opération k fois.</p>
+                </div>
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-accent-yellow mb-2">Changement de base</h3>
+                    <p class="mb-2">$\log_a n = \frac{\log_b n}{\log_b a}$</p>
+                    <p class="text-sm ac-text-muted">En notation O, la base n'importe pas car $\frac{1}{\log_b a}$ est une constante. $O(\log_2 n) = O(\log_{10} n) = O(\ln n)$.</p>
+                </div>
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-accent-red mb-2">Factorielle (Stirling)</h3>
+                    <p class="mb-2">$\log(n!) = \Theta(n \log n)$</p>
+                    <p class="text-sm ac-text-muted">Approximation de Stirling : $n! \approx \sqrt{2\pi n}(\frac{n}{e})^n$. Le log de n! croît comme $n \log n$.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SOMMES ET SERIES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">∑</span>
+                Sommes et Séries courantes
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Arithmétique -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Série Arithmétique</h3>
+                    <div class="text-xl mb-3 ac-accent-blue">$\sum_{i=1}^n i = \frac{n(n+1)}{2}$</div>
+                    <p class="text-sm ac-text-secondary">Complexité : <strong>$\Theta(n^2)$</strong></p>
+                    <p class="text-xs ac-text-muted mt-2">Utilisé pour analyser les boucles imbriquées (Tri à bulles).</p>
+                </div>
+
+                <!-- Géométrique -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Série Géométrique</h3>
+                    <div class="text-xl mb-3 ac-accent-green">$\sum_{i=0}^n r^i = \frac{r^{n+1}-1}{r-1}$</div>
+                    <p class="text-sm ac-text-secondary">Complexité : <strong>$\Theta(r^n)$</strong> (pour $r > 1$)</p>
+                    <p class="text-xs ac-text-muted mt-2">Utilisé pour les arbres et les récursions.</p>
+                </div>
+
+                <!-- Harmonique -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Série Harmonique</h3>
+                    <div class="text-xl mb-3 ac-accent-purple">$\sum_{i=1}^n \frac{1}{i} \approx \ln n$</div>
+                    <p class="text-sm ac-text-secondary">Complexité : <strong>$\Theta(\log n)$</strong></p>
+                    <p class="text-xs ac-text-muted mt-2">Apparaît dans le problème du collectionneur de vignettes et QuickSort.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

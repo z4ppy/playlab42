@@ -1,0 +1,8 @@
+{
+  "id": "05-algorithmes-recherche",
+  "title": "Algorithmes de recherche",
+  "description": "Séquentielle, dichotomique, interpolation, hachage",
+  "type": "page",
+  "icon": "🔍",
+  "duration": "15 min"
+}

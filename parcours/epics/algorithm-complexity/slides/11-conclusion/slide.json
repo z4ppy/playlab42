@@ -1,0 +1,8 @@
+{
+  "id": "11-conclusion",
+  "title": "Conclusion",
+  "description": "Importance du choix algorithmique, trade-offs, cache/localité/parallélisme",
+  "type": "page",
+  "icon": "🏁",
+  "duration": "5 min"
+}

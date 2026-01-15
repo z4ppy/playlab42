@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paradigmes Algorithmiques - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 ac-accent-purple text-xs font-medium">
+                Architecture de Solutions
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Paradigmes <span class="bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent">Algorithmiques</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                La boîte à outils de l'architecte : 8 stratégies fondamentales pour attaquer n'importe quel problème.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- FORCE BRUTE & BACKTRACKING -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🔍</span>
+                Exploration de l'Espace
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6 border-t-4 border-t-gray-500">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Force Brute</h3>
+                    <p class="text-sm ac-text-secondary mb-2">
+                        Tout essayer, sans réfléchir.
+                    </p>
+                    <ul class="text-xs space-y-1 ac-text-muted list-disc list-inside">
+                        <li>TSP : $O(n!)$</li>
+                        <li>Sac à dos : $O(2^n)$</li>
+                        <li>Lent mais sûr (optimalité garantie).</li>
+                    </ul>
+                </div>
+                <div class="ac-card p-6 border-t-4 border-t-indigo-500">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Backtracking</h3>
+                    <p class="text-sm ac-text-secondary mb-2">
+                        Explorer en profondeur et faire marche arrière (élagage) dès qu'une impasse est détectée.
+                    </p>
+                    <ul class="text-xs space-y-1 ac-text-muted list-disc list-inside">
+                        <li><strong>N-Reines (N=8)</strong>: ~15k nœuds vs 16M (Force Brute).</li>
+                        <li>Complexité: $O(b^d)$ (facteur de branchement $b$, profondeur $d$).</li>
+                        <li>Sudoku : remplissage contraint.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIVISER POUR REGNER & GLOUTON -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">⚔️</span>
+                Stratégies de Conquête
+            </h2>
+            <div class="space-y-6">
+                <div class="ac-card p-6 flex flex-col md:flex-row gap-6">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold ac-accent-blue">Diviser pour Régner</h3>
+                        <p class="text-sm ac-text-secondary mt-2">
+                            Découper le problème en sous-problèmes <strong>indépendants</strong>, résoudre récursivement, puis combiner.
+                        </p>
+                        <div class="mt-3 flex gap-2">
+                             <span class="ac-badge bg-blue-900 border-blue-700 text-blue-300">MergeSort</span>
+                             <span class="ac-badge bg-blue-900 border-blue-700 text-blue-300">Karatsuba</span>
+                             <span class="ac-badge bg-blue-900 border-blue-700 text-blue-300">MapReduce</span>
+                        </div>
+                    </div>
+                    <div class="md:w-1/3 bg-[var(--ac-bg-tertiary)] p-3 rounded font-mono text-xs border border-blue-500/20">
+                        <strong class="ac-accent-blue">Master Theorem</strong> :<br>
+                        $T(n) = aT(n/b) + f(n)$<br>
+                        <div class="my-2 h-px bg-white/10"></div>
+                        Comparaison de $f(n)$ et $n^{\log_b a}$ :<br>
+                        1. $f(n)$ petit → Dominé par feuilles<br>
+                        2. Équilibre → $\times \log n$<br>
+                        3. $f(n)$ grand → Dominé par racine
+                    </div>
+                </div>
+
+                <div class="ac-card p-6 flex flex-col md:flex-row gap-6">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold ac-accent-green">Algorithmes Gloutons (Greedy)</h3>
+                        <p class="text-sm ac-text-secondary mt-2">
+                            Faire le meilleur choix <strong>localement</strong> à chaque étape en espérant l'optimum global.
+                        </p>Soit $G$ glouton et $O$ optimum.
+                                Montrer qu'on peut transformer $O$ en $G$ (échange progressif) sans dégrader le coût.
+                                $\Rightarrow G$ est optimal.
+                            </p>
+                        </div>
+                        <p class="text-xs mt-2 text-yellow-500">
+                            Exemples valides : <strong>Huffman</strong> (codage), <strong>Dijkstra</strong>.
+                            <br>
+                            ⚠️ Contre-exemple : Sac à Dos 0/1 (nécessite DP).
+                            </p>
+                        </div>
+                        <p class="text-xs mt-2 text-yellow-500">
+                            ⚠️ Attention : Ne marche que si le problème a la propriété du choix glouton (ex: Dijkstra, Huffman). Pas pour le Sac à Dos !
+                        </p>
+                    </div>
+                    <!-- Visualization Placeholder -->
+                    <div class="md:w-1/3 min-h-[100px] bg-[var(--ac-bg-secondary)] rounded flex flex-col items-center justify-center relative border border-green-500/20" id="viz-greedy-coins">
+                         <!-- JS INJ -->
+                    </div>
+                </div>
+            </div>
+            <script type="module">
+                import { initGreedyViz } from '../../assets/js/viz-greedy.js';
+                // Wait for DOM to be sure
+                 if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => initGreedyViz('viz-greedy-coins'));
+                } else {
+                    initGreedyViz('viz-greedy-coins');
+                }
+            </script>
+        </section>
+
+        <!-- LAB: BACKTRACKING -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🧪</span>
+                Laboratoire : Le Backtracking
+            </h2>
+            <div class="ac-card p-6">
+                 <p class="ac-text-secondary mb-4">
+                    Le Backtracking est une "Force Brute intelligente". On explore l'arbre des possibles, mais on coupe la branche (<em>pruning</em>) dès qu'on viole une contrainte.
+                    <br/>
+                    Exemple : Placer 4 Reines sur un échiquier sans qu'elles s'attaquent.
+                </p>
+                <div class="bg-[var(--ac-bg-secondary)] p-4 flex flex-col items-center justify-center relative overflow-hidden rounded-lg border border-indigo-500/30" id="viz-backtracking">
+                    <!-- JS Injected -->
+                </div>
+                <script type="module">
+                    import { initBacktrackingViz } from '../../assets/js/viz-backtracking.js';
+                    initBacktrackingViz('viz-backtracking');
+                </script>
+            </div>
+        </section>
+
+        <!-- CAS PRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">💼</span>
+                Cas Pratiques
+            </h2>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Résolution de contraintes (CP)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        Les solveurs comme <strong>CP-SAT</strong> (OR-Tools) utilisent le Backtracking amélioré pour planifier les emplois du temps des infirmières ou optimiser les chaînes logistiques.
+                    </p>
+                </div>
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Compression (Huffman)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        L'algorithme <strong>Glouton</strong> de Huffman construit l'arbre de compression optimal (ZIP, JPEG) en fusionnant toujours les deux fréquences les plus basses.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HISTORY: TSP -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🌍</span>
+                Le défi du Voyageur de Commerce
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-red-500 bg-opacity-10 bg-red-900">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    Le problème du Voyageur de Commerce (TSP) est le cauchemar des algorithmes gloutons. Vous devez visiter N villes, une seule fois, et revenir au départ.
+                </p>
+                <p class="ac-text-secondary leading-relaxed text-sm">
+                    En 1954, le trio de légende <strong>Dantzig, Fulkerson et Johnson</strong> a réussi à résoudre exactement une instance de 49 villes (les capitales US). Ils ont utilisé la <em>méthode des plans coupants</em>, posant les bases de la programmation linéaire en nombres entiers.
+                    <br/><br/>
+                    Aujourd'hui, même avec des supercalculateurs, on ne sait pas résoudre TSP en temps polynomial. C'est un problème <strong>NP-Complet</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- AVANCÉS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🎲</span>
+                Au-delà du Déterminisme
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                 <!-- Randomisés -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Randomisés</h3>
+                    <p class="text-xs ac-text-muted mb-2">Las Vegas vs Monte Carlo</p>
+                    <p class="text-sm ac-text-secondary">
+                        Utiliser le hasard pour éviter les pires cas (QuickSort pivot) ou approcher une solution (Monte Carlo).
+                    </p>
+                </div>
+
+
+                <!-- Approximation -->
+                <div class="ac-card p-6 border-t-4 border-t-orange-500">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Approximation</h3>
+                    <p class="text-xs ac-text-muted mb-2">Pour problèmes NP-Durs</p>
+                    <p class="text-sm ac-text-secondary">
+                        Accepter une solution "assez bonne" (ratio garanti) en temps polynomial.
+                        <br/><em>Ex: Vertex Cover x2.</em>
+                    </p>
+                </div>
+
+                <!-- Branch & Bound -->
+                <div class="ac-card p-6 border-t-4 border-t-teal-500">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Branch & Bound</h3>
+                    <p class="text-xs ac-text-muted mb-2">Optimisation exacte</p>
+                    <p class="text-sm ac-text-secondary">
+                        Comme le backtracking mais avec des <strong>bornes</strong> (inf/sup) pour couper des branches entières d'optimisation.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

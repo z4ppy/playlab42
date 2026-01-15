@@ -1,0 +1,8 @@
+{
+  "id": "03-big-o-notation",
+  "title": "Notation Big O",
+  "description": "Définition, règles de simplification, complexité temporelle vs spatiale, hiérarchie O(1) à O(n!)",
+  "type": "page",
+  "icon": "📈",
+  "duration": "20 min"
+}

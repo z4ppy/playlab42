@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossaire - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        import { ParcoursGlossary } from '../../../../../lib/parcours/ParcoursGlossary.js';
+        
+        initSlide();
+
+        // Initialize Glossary
+        window.addEventListener('DOMContentLoaded', async () => {
+            const glossaryContainer = document.getElementById('glossary-container');
+            if (glossaryContainer) {
+                // Fetch glossary data
+                try {
+                    const response = await fetch('../../glossary.json');
+                    const glossaryData = await response.json();
+                    
+                    // Instantiate using dummy paths since we manually inject data
+                    const glossary = new ParcoursGlossary('algorithm-complexity', '../..');
+                    glossary.terms = glossaryData; // Manual injection
+
+                    const html = glossary.generateGlossaryPage();
+                    glossaryContainer.innerHTML = html;
+
+                    // Init internal links if needed (not strict necessary for static view)
+                } catch (e) {
+                    console.error("Failed to load glossary:", e);
+                    glossaryContainer.innerHTML = `<div class="p-4 ac-accent-red border border-red-500 rounded">Erreur de chargement du glossaire.</div>`;
+                }
+            }
+        });
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-gray-500/10 border border-gray-500/20 ac-text-muted text-xs font-medium">
+                Référence
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Glossaire
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Définitions des termes clés de la complexité algorithmique.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div id="glossary-container">
+            <!-- Glossary content will be injected here -->
+            <div class="animate-pulse flex space-x-4">
+                <div class="flex-1 space-y-4 py-1">
+                    <div class="h-4 bg-[var(--ac-bg-tertiary)] rounded w-3/4"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-[var(--ac-bg-tertiary)] rounded"></div>
+                        <div class="h-4 bg-[var(--ac-bg-tertiary)] rounded w-5/6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
