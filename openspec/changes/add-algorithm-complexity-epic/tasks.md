@@ -31,7 +31,7 @@
 - [x] `chapters/10-notions-avancees.md` — Notions avancées (P/NP)
 - [x] `chapters/11-conclusion.md` — Conclusion
 
-## Phase 3 : Conversion en slides HTML
+## Phase 3 : Conversion en slides HTML ✅ COMPLET
 
 > **⚠️ INSTRUCTIONS CRITIQUES :**
 >
@@ -56,42 +56,42 @@
 > **Lire chaque chapitre en entier** avant conversion.
 
 ### Slides de base
-- [ ] `slides/01-introduction/index.html`
-- [ ] `slides/02-prerequis-maths/index.html`
-- [ ] `slides/03-big-o-notation/index.html`
-- [ ] `slides/04-algorithmes-tri/index.html`
-- [ ] `slides/05-algorithmes-recherche/index.html`
-- [ ] `slides/06-structures-index/index.html`
-- [ ] `slides/07-algorithmes-graphes/index.html`
-- [ ] `slides/08-programmation-dynamique/index.html`
-- [ ] `slides/09-paradigmes-algorithmiques/index.html`
-- [ ] `slides/10-notions-avancees/index.html`
-- [ ] `slides/11-conclusion/index.html`
-- [ ] `slides/12-glossaire/index.html` (auto-généré)
+- [x] `slides/01-introduction/index.html`
+- [x] `slides/02-prerequis-maths/index.html`
+- [x] `slides/03-big-o-notation/index.html`
+- [x] `slides/04-algorithmes-tri/index.html`
+- [x] `slides/05-algorithmes-recherche/index.html`
+- [x] `slides/06-structures-index/index.html`
+- [x] `slides/07-algorithmes-graphes/index.html`
+- [x] `slides/08-programmation-dynamique/index.html`
+- [x] `slides/09-paradigmes-algorithmiques/index.html`
+- [x] `slides/10-notions-avancees/index.html`
+- [x] `slides/11-conclusion/index.html`
+- [x] `slides/12-glossaire/index.html` (auto-généré)
 
-## Phase 4 : Visualisations interactives
+## Phase 4 : Visualisations interactives ✅ COMPLET
 
 ### Graphiques et animations
-- [ ] Graphique comparatif des fonctions de croissance (slide 02)
-- [ ] Hiérarchie des complexités avec animation (slide 03)
-- [ ] Animation des algorithmes de tri (slide 04)
-  - [ ] Bubble Sort
-  - [ ] Quick Sort
-  - [ ] Merge Sort
-  - [ ] Heap Sort
-- [ ] Animation recherche dichotomique (slide 05)
-- [ ] Visualisation B-Tree vs Hash Table (slide 06)
-- [ ] Animation parcours de graphes (slide 07)
-  - [ ] BFS
-  - [ ] DFS
-  - [ ] Dijkstra
-- [ ] Visualisation mémoïsation (slide 08)
-  - [ ] Fibonacci
-  - [ ] Knapsack
+- [x] Graphique comparatif des fonctions de croissance (slide 02)
+- [x] Hiérarchie des complexités avec animation (slide 03)
+- [x] Animation des algorithmes de tri (slide 04)
+  - [x] Bubble Sort
+  - [x] Quick Sort
+  - [x] Merge Sort
+  - [x] Heap Sort
+- [x] Animation recherche dichotomique (slide 05)
+- [x] Visualisation B-Tree vs Hash Table (slide 06)
+- [x] Animation parcours de graphes (slide 07)
+  - [x] BFS
+  - [x] DFS
+  - [x] Dijkstra
+- [x] Visualisation mémoïsation (slide 08)
+  - [x] Fibonacci
+  - [x] Knapsack
 
-## Phase 5 : Glossaire
+## Phase 5 : Glossaire ✅ COMPLET
 
-- [ ] Compléter `glossary.json` avec tous les termes techniques
+- [x] Compléter `glossary.json` avec tous les termes techniques
   - Notation Big O, O, Omega, Theta
   - Complexité temporelle, spatiale
   - Stable (tri), En place (tri)
