@@ -454,72 +454,77 @@ html, body {
   color: var(--color-accent);
 }
 
-/* Contrôles du piano */
-.piano-controls {
+/* Toolbar compacte du piano */
+.piano-toolbar {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-md);
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-xs) var(--space-md);
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
 }
 
-.piano-control-group {
+.piano-tool-group {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: var(--space-xs);
 }
 
-.piano-control-label {
+.piano-tool-label {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.piano-instrument-selector {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.piano-instrument-btn {
-  padding: var(--space-xs) var(--space-sm);
+/* Select pour l'instrument */
+.piano-select {
+  padding: 4px 8px;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  min-width: 140px;
 }
 
-.piano-instrument-btn:hover {
-  background: var(--color-bg-hover);
+.piano-select:hover {
   border-color: var(--color-accent);
 }
 
-.piano-instrument-btn.active {
-  background: var(--color-accent);
-  color: white;
+.piano-select:focus {
+  outline: none;
   border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2);
 }
 
+/* Séparateur vertical */
+.piano-tool-separator {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border);
+  margin: 0 var(--space-xs);
+}
+
+/* Contrôle d'octave */
 .piano-octave-control {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 2px;
 }
 
 .piano-octave-btn {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   font-weight: bold;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -536,57 +541,58 @@ html, body {
 }
 
 .piano-octave-value {
-  min-width: 24px;
+  min-width: 20px;
   text-align: center;
   font-weight: bold;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
 }
 
-/* Effets du piano */
-.piano-effects-group {
-  flex: 1 1 100%;
-  margin-top: var(--space-xs);
-}
-
-.piano-effects {
-  display: flex;
-  gap: var(--space-md);
-  flex-wrap: wrap;
-}
-
-.piano-effect {
+/* Effets compacts */
+.piano-fx-group {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  flex: 1;
-  min-width: 120px;
+  gap: var(--space-sm);
+  margin-left: auto;
 }
 
-.piano-effect-toggle {
+.piano-fx {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 4px;
+}
+
+.piano-fx-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   cursor: pointer;
-  font-size: var(--font-size-xs);
+  font-size: 11px;
+  color: var(--color-text-muted);
   white-space: nowrap;
+  user-select: none;
 }
 
-.piano-effect-toggle input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
-  cursor: pointer;
-}
-
-.piano-effect-slider {
-  flex: 1;
-  min-width: 60px;
-  height: 4px;
+.piano-fx-toggle input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
   cursor: pointer;
   accent-color: var(--color-accent);
 }
 
-.piano-effect-slider:disabled {
-  opacity: 0.4;
+.piano-fx-toggle input[type="checkbox"]:checked + span {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.piano-fx-slider {
+  width: 50px;
+  height: 3px;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+
+.piano-fx-slider:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
 }
 

@@ -260,54 +260,54 @@
           <button class="piano-close" id="piano-close" aria-label="Fermer le clavier">&times;</button>
         </div>
 
-        <!-- Contrôles -->
-        <div class="piano-controls">
-          <!-- Sélecteur d'instrument (généré dynamiquement) -->
-          <div class="piano-control-group">
-            <label class="piano-control-label">Instrument</label>
-            <div class="piano-instrument-selector" id="piano-instrument-selector">
-              <!-- Générés par JavaScript -->
-            </div>
+        <!-- Contrôles compacts -->
+        <div class="piano-toolbar">
+          <!-- Sélecteur d'instrument (dropdown) -->
+          <div class="piano-tool-group">
+            <label class="piano-tool-label" for="piano-instrument-select">Instrument</label>
+            <select id="piano-instrument-select" class="piano-select" aria-label="Choisir un instrument">
+              <!-- Options générées par JavaScript -->
+            </select>
           </div>
 
           <!-- Contrôle d'octave -->
-          <div class="piano-control-group">
-            <label class="piano-control-label">Octave</label>
+          <div class="piano-tool-group">
+            <label class="piano-tool-label">Octave</label>
             <div class="piano-octave-control">
-              <button class="piano-octave-btn" id="piano-octave-down">−</button>
+              <button class="piano-octave-btn" id="piano-octave-down" aria-label="Diminuer l'octave">−</button>
               <span class="piano-octave-value" id="piano-octave-value">4</span>
-              <button class="piano-octave-btn" id="piano-octave-up">+</button>
+              <button class="piano-octave-btn" id="piano-octave-up" aria-label="Augmenter l'octave">+</button>
             </div>
           </div>
 
-          <!-- Effets -->
-          <div class="piano-control-group piano-effects-group">
-            <label class="piano-control-label">Effets</label>
-            <div class="piano-effects">
-              <!-- Reverb -->
-              <div class="piano-effect">
-                <label class="piano-effect-toggle">
-                  <input type="checkbox" id="piano-fx-reverb">
-                  <span>Reverb</span>
-                </label>
-                <input type="range" id="piano-fx-reverb-amount" min="0" max="100" value="30" class="piano-effect-slider">
-              </div>
-              <!-- Delay -->
-              <div class="piano-effect">
-                <label class="piano-effect-toggle">
-                  <input type="checkbox" id="piano-fx-delay">
-                  <span>Delay</span>
-                </label>
-                <input type="range" id="piano-fx-delay-time" min="10" max="500" value="200" class="piano-effect-slider">
-              </div>
-              <!-- Filter -->
-              <div class="piano-effect">
-                <label class="piano-effect-toggle">
-                  <input type="checkbox" id="piano-fx-filter">
-                  <span>Filter</span>
-                </label>
-                <input type="range" id="piano-fx-filter-freq" min="200" max="8000" value="2000" class="piano-effect-slider">
-              </div>
+          <!-- Séparateur -->
+          <div class="piano-tool-separator"></div>
+
+          <!-- Effets compacts -->
+          <div class="piano-fx-group">
+            <!-- Reverb -->
+            <div class="piano-fx">
+              <label class="piano-fx-toggle" title="Activer/désactiver la réverbération">
+                <input type="checkbox" id="piano-fx-reverb">
+                <span>Rev</span>
+              </label>
+              <input type="range" id="piano-fx-reverb-amount" min="0" max="100" value="30" class="piano-fx-slider" aria-label="Quantité de réverbération">
+            </div>
+            <!-- Delay -->
+            <div class="piano-fx">
+              <label class="piano-fx-toggle" title="Activer/désactiver le délai">
+                <input type="checkbox" id="piano-fx-delay">
+                <span>Del</span>
+              </label>
+              <input type="range" id="piano-fx-delay-time" min="10" max="500" value="200" class="piano-fx-slider" aria-label="Temps de délai">
+            </div>
+            <!-- Filter -->
+            <div class="piano-fx">
+              <label class="piano-fx-toggle" title="Activer/désactiver le filtre">
+                <input type="checkbox" id="piano-fx-filter">
+                <span>Flt</span>
+              </label>
+              <input type="range" id="piano-fx-filter-freq" min="200" max="8000" value="2000" class="piano-fx-slider" aria-label="Fréquence de coupure">
             </div>
           </div>
         </div>

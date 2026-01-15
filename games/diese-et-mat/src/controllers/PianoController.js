@@ -325,43 +325,50 @@ export class PianoController extends EventEmitter {
   }
 
   /**
-   * Génère les boutons de presets.
+   * Génère le select dropdown des presets.
    * @private
    */
   _renderPresets() {
-    const container = this.elements.presetsContainer ||
-      document.getElementById('piano-instrument-selector');
-    if (!container) {
+    const select = document.getElementById('piano-instrument-select');
+    if (!select) {
       return;
     }
 
     const presets = AudioEngine.getPresets();
     const currentPreset = this.synthManager?.preset || 'piano';
 
-    container.innerHTML = '';
+    // Grouper les presets par catégorie
+    const categories = {
+      'Claviers': ['piano', 'electricPiano', 'organ'],
+      'Guitares': ['guitarClassic', 'guitarFolk', 'guitarElectric'],
+      'Synthés': ['synthLead', 'retro8bit', 'bell'],
+      'Percussions': ['percKick', 'percSnare', 'percTom', 'percWood', 'percHihat', 'percCymbal'],
+    };
 
-    Object.entries(presets).forEach(([key, preset]) => {
-      const btn = document.createElement('button');
-      btn.className = 'piano-instrument-btn';
-      btn.dataset.preset = key;
-      btn.textContent = `${PRESET_ICONS[key] || '🎵'} ${preset.name}`;
+    select.innerHTML = '';
 
-      if (currentPreset === key) {
-        btn.classList.add('active');
+    // Créer les optgroups
+    for (const [category, presetKeys] of Object.entries(categories)) {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = category;
+
+      for (const key of presetKeys) {
+        const preset = presets[key];
+        if (!preset) {continue;}
+
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = `${PRESET_ICONS[key] || '🎵'} ${preset.name}`;
+        option.selected = currentPreset === key;
+        optgroup.appendChild(option);
       }
 
-      container.appendChild(btn);
-    });
+      select.appendChild(optgroup);
+    }
 
-    // Event handler pour les presets
-    container.addEventListener('click', (e) => {
-      const btn = e.target.closest('.piano-instrument-btn');
-      if (!btn) {
-        return;
-      }
-
-      const preset = btn.dataset.preset;
-      this.synthManager?.setPreset(preset);
+    // Event handler pour le changement de preset
+    select.addEventListener('change', () => {
+      this.synthManager?.setPreset(select.value);
     });
   }
 
@@ -621,9 +628,10 @@ export class PianoController extends EventEmitter {
    * @param {string} preset - Nom du preset
    */
   _updatePresetUI(preset) {
-    document.querySelectorAll('.piano-instrument-btn').forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.preset === preset);
-    });
+    const select = document.getElementById('piano-instrument-select');
+    if (select && select.value !== preset) {
+      select.value = preset;
+    }
   }
 
   // --------------------------------------------------------------------------
