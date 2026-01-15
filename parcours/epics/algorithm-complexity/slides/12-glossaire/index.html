@@ -22,8 +22,7 @@
         }
     </script>
     <script type="module">
-        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
-        import { ParcoursGlossary } from '../../../../../lib/parcours/ParcoursGlossary.js';
+        import { initSlide, initGlossary } from '../../../../../parcours/_shared/slide-utils.js';
         
         initSlide();
 
@@ -31,19 +30,16 @@
         window.addEventListener('DOMContentLoaded', async () => {
             const glossaryContainer = document.getElementById('glossary-container');
             if (glossaryContainer) {
-                // Fetch glossary data
                 try {
-                    const response = await fetch('../../glossary.json');
-                    const glossaryData = await response.json();
+                    // Use shared initGlossary which handles loading and unwrapping
+                    const glossary = await initGlossary();
                     
-                    // Instantiate using dummy paths since we manually inject data
-                    const glossary = new ParcoursGlossary('algorithm-complexity', '../..');
-                    glossary.terms = glossaryData.terms || glossaryData; // Manual injection with unwrapping
+                    if (!glossary) {
+                        throw new Error("Glossary initialization failed");
+                    }
 
                     const html = glossary.generateGlossaryPage();
                     glossaryContainer.innerHTML = html;
-
-                    // Init internal links if needed (not strict necessary for static view)
                 } catch (e) {
                     console.error("Failed to load glossary:", e);
                     glossaryContainer.innerHTML = `<div class="p-4 ac-accent-red border border-red-500 rounded">Erreur de chargement du glossaire.</div>`;
