@@ -38,7 +38,7 @@
                     
                     // Instantiate using dummy paths since we manually inject data
                     const glossary = new ParcoursGlossary('algorithm-complexity', '../..');
-                    glossary.terms = glossaryData; // Manual injection
+                    glossary.terms = glossaryData.terms || glossaryData; // Manual injection with unwrapping
 
                     const html = glossary.generateGlossaryPage();
                     glossaryContainer.innerHTML = html;
