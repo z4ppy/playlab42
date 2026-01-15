@@ -1635,6 +1635,15 @@ export class App {
   }
 
   /**
+   * Joue un son de test via le synthé configuré.
+   * @private
+   */
+  async _testSynthSound() {
+    // Jouer un Do4 via le synthé avec les paramètres courants
+    await this.synthManager?.playNote('C4', 0.5);
+  }
+
+  /**
    * Joue une note avec l'audio (son neutre pour exercices).
    * @param {import('./core/Pitch.js').Pitch} pitch - Note à jouer
    */
