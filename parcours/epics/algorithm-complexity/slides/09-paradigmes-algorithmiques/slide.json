@@ -1,0 +1,8 @@
+{
+  "id": "09-paradigmes-algorithmiques",
+  "title": "Paradigmes algorithmiques",
+  "description": "Force brute, glouton, diviser pour régner, backtracking",
+  "type": "page",
+  "icon": "💡",
+  "duration": "20 min"
+}

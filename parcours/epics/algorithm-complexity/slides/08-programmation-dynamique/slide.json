@@ -1,0 +1,8 @@
+{
+  "id": "08-programmation-dynamique",
+  "title": "Programmation dynamique",
+  "description": "Principes, mémoïsation vs bottom-up, exemples (Fibonacci, Knapsack, Levenshtein, LCS, LIS)",
+  "type": "page",
+  "icon": "🧩",
+  "duration": "25 min"
+}

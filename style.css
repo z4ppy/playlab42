@@ -214,7 +214,7 @@ main {
 /* Cards grid */
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: var(--space-md);
 }
 
@@ -240,6 +240,7 @@ main {
   align-items: center;
   justify-content: center;
   font-size: 3rem;
+  overflow: hidden;
   transition: background-color var(--transition-normal);
 }
 
@@ -247,27 +248,36 @@ main {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.card:hover .card-thumb img {
+  transform: scale(1.05);
 }
 
 .card-info {
-  padding: 0.75rem;
+  padding: var(--space-md);
 }
 
 .card-info h3 {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   margin-bottom: var(--space-xs);
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
 .card-info p {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--color-text-muted);
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .card-tags {
@@ -503,7 +513,7 @@ footer {
 }
 
 /* === Responsive === */
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .cards {
     grid-template-columns: 1fr;
   }
@@ -556,14 +566,14 @@ footer {
 
 .featured-epics {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: var(--space-md);
 }
 
 /* Grilles de cartes */
 .epic-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: var(--space-md);
 }
 
@@ -607,6 +617,11 @@ footer {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.epic-card:hover .epic-thumb img {
+  transform: scale(1.05);
 }
 
 .epic-info {
@@ -632,6 +647,7 @@ footer {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.4;
 }
 
 .epic-meta {
@@ -780,7 +796,7 @@ body.game-active > main {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: var(--space-sm) var(--space-md);
+  padding: 0.75rem var(--space-md);
   text-decoration: none;
   color: inherit;
   border-radius: var(--radius-sm);

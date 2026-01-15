@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmes de Graphes - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-xs font-medium">
+                Structures & Algorithmes
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Algorithmes de <span class="bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">Graphes</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Explorer le monde connecté : GPS, réseaux sociaux, internet.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- PARCOURS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🕸️</span>
+                Les Parcours (Traversals)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6 border-t-4 border-t-blue-400">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">BFS (Largeur)</h3>
+                    <p class="text-sm font-mono ac-accent-blue mb-2">O(V + E)</p>
+                    <p class="text-sm ac-text-secondary">
+                        Explore par cercles concentriques (vague). Trouve le chemin le plus court en nombre d'arêtes.
+                        <br/>
+                        <span class="inline-block mt-2 text-xs border border-blue-500/30 bg-blue-500/10 px-2 py-1 rounded">Impl: File (Queue) FIFO</span>
+                        <br/>
+                        <em>Usage: Réseaux sociaux (amis d'amis), web crawling.</em>
+                    </p>
+                </div>
+                <div class="ac-card p-6 border-t-4 border-t-purple-400">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">DFS (Profondeur)</h3>
+                    <p class="text-sm font-mono ac-accent-purple mb-2">O(V + E)</p>
+                    <p class="text-sm ac-text-secondary">
+                        Va au fond du labyrinthe avant de revenir.
+                        <br/>
+                        <span class="inline-block mt-2 text-xs border border-purple-500/30 bg-purple-500/10 px-2 py-1 rounded">Impl: Pile (Stack) LIFO</span>
+                        <br/>
+                        <em>Usage: Détections de cycles, composants connexes, puzzles.</em>
+                    </p>
+                </div>
+            </div>
+            
+             <div class="mt-8 ac-card p-4 min-h-[300px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative overflow-hidden" id="viz-graph-pathfinding">
+               <!-- JS inj -->
+            </div>
+            <script type="module">
+                import { initPathfindingViz } from '../../assets/js/viz-graph-pathfinding.js';
+                initPathfindingViz('viz-graph-pathfinding');
+            </script>
+        </section>
+
+        <!-- CAS PRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📱</span>
+                Cas Pratiques
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="ac-card p-6">
+                    <div class="text-3xl mb-3">🤝</div>
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Réseaux Sociaux</h3>
+                    <p class="text-sm ac-text-secondary">
+                        <strong>Problème :</strong> Trouver le lien entre deux personnes (Degré de séparation).
+                    </p>
+                    <div class="mt-3 text-xs bg-blue-900/30 p-2 rounded border border-blue-800">
+                        <span class="font-bold text-blue-300">Algo : BFS</span>
+                        <br/>Explore par cercles d'amis pour trouver le chemin le plus court (non pondéré).
+                    </div>
+                </div>
+                
+                <div class="ac-card p-6">
+                    <div class="text-3xl mb-3">📦</div>
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Dépendances (npm)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        <strong>Problème :</strong> Installer les paquets dans le bon ordre sans conflits.
+                    </p>
+                    <div class="mt-3 text-xs bg-purple-900/30 p-2 rounded border border-purple-800">
+                        <span class="font-bold text-purple-300">Algo : DFS (Topo Sort)</span>
+                        <br/>Traverse le graphe des dépendances (DAG) pour établir une séquence linéaire.
+                    </div>
+                </div>
+                
+                <div class="ac-card p-6">
+                    <div class="text-3xl mb-3">📍</div>
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">GPS & Maps</h3>
+                    <p class="text-sm ac-text-secondary">
+                        <strong>Problème :</strong> Trajet le plus rapide Paris-Berlin en évitant les bouchons.
+                    </p>
+                    <div class="mt-3 text-xs bg-green-900/30 p-2 rounded border border-green-800">
+                        <span class="font-bold text-green-300">Algo : A* (ou Contraction)</span>
+                        <br/>Utilise la géographie (distance à vol d'oiseau) pour guider la recherche vers la cible.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HISTORY: EULER -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🌉</span>
+                La naissance des graphes
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-purple-500 bg-opacity-10 bg-purple-900">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    La théorie des graphes est née d'un problème touristique en 1736 : <strong>Les Ponts de Königsberg</strong>.
+                </p>
+                <p class="ac-text-secondary leading-relaxed text-sm mb-4">
+                    Les habitants se demandaient s'il était possible de traverser les 7 ponts sur la rivière Pregel sans passer deux fois par le même.
+                </p>
+                <div class="bg-[var(--ac-bg-secondary)] p-4 rounded mb-4">
+                    <p class="text-xs font-mono text-purple-300 mb-2">Preuve d'Euler :</p>
+                    <p class="text-sm italic ac-text-secondary">
+                        "Pour traverser chaque pont une seule fois, chaque zone terrestre doit avoir un nombre pair de ponts (on arrive, on repart), sauf le départ et l'arrivée."
+                    </p>
+                </div>
+                <p class="ac-text-muted text-xs">
+                    Comme les 4 zones avaient un nombre impair de ponts, c'était impossible. Euler venait d'inventer la <strong>Topologie</strong>.
+                </p>
+            </div>
+        </section>
+
+        <!-- CHEMINS LES PLUS COURTS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🌍</span>
+                Plus Courts Chemins
+            </h2>
+            <div class="space-y-6">
+                <!-- Dijkstra -->
+                <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-green)]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold ac-text-primary">Dijkstra</h3>
+                        <span class="ac-badge ml-2 bg-green-900 border-green-700 text-green-300">Greedy</span>
+                    </div>
+                    <div class="mt-2 text-sm ac-text-secondary">
+                        <p class="mb-2"><strong>Complexité :</strong> \(O(E + V \log V)\) <span class="text-xs opacity-70">(Fibonacci Heap)</span></p>
+                        <p>
+                            Avance toujours vers le nœud le plus proche connu. Ne marche <strong>pas</strong> avec des poids négatifs. C'est la base des GPS.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bellman-Ford -->
+                <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-yellow)]">
+                     <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold ac-text-primary">Bellman-Ford</h3>
+                        <span class="ac-badge ml-2 bg-yellow-900 border-yellow-700 text-yellow-300">Dynamic Prog</span>
+                    </div>
+                    <div class="mt-2 text-sm ac-text-secondary">
+                        <p class="mb-2"><strong>Complexité :</strong> O(V ⋅ E)</p>
+                        <p>
+                            Plus lent, mais gère les <strong>poids négatifs</strong> et détecte les cycles négatifs (renvoie une erreur).
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Floyd-Warshall -->
+                <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-red)]">
+                     <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold ac-text-primary">Floyd-Warshall</h3>
+                        <span class="ac-badge ml-2 bg-red-900 border-red-700 text-red-300">Dynamic Prog</span>
+                    </div>
+                    <div class="mt-2 text-sm ac-text-secondary">
+                        <p class="mb-2"><strong>Complexité :</strong> O(V³)</p>
+                        <p>
+                            Calcule les chemins entre <strong>toutes les paires</strong> de sommets. Très élégant (3 boucles imbriquées), mais coûteux.
+                        </p>
+                        <div class="bg-[var(--ac-bg-tertiary)] p-2 rounded mt-2 font-mono text-xs ac-text-secondary">
+                            d[i][j] = min(d[i][j], d[i][k] + d[k][j])
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- A* -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">⭐</span>
+                A* (A-Star) et Heuristiques
+            </h2>
+            <div class="ac-card p-6">
+                <p class="ac-text-secondary mb-4">
+                    Le moteur des <strong>Jeux Vidéo</strong> (pathfinding) et des robots. Il améliore Dijkstra en "devinant" la direction grâce à une heuristique.
+                </p>
+                <div class="bg-[var(--ac-bg-secondary)] p-4 rounded text-center grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="flex flex-col justify-center">
+                        <span class="font-bold text-xl text-[var(--ac-accent-cyan)]">$f(n)$</span>
+                        <span class="text-xs ac-text-muted uppercase">Score total</span>
+                    </div>
+                    <div class="flex flex-col justify-center border-x border-[var(--ac-border-color)]">
+                        <span class="font-bold text-xl ac-text-primary">$g(n)$</span>
+                        <span class="text-xs ac-text-muted uppercase">Distance réelle parcourue</span>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <span class="font-bold text-xl text-[var(--ac-accent-pink)]">$h(n)$</span>
+                        <span class="text-xs ac-text-muted uppercase">Estimation vol d'oiseau</span>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="min-w-[4px] h-full bg-[var(--ac-accent-pink)] rounded"></div>
+                        <div>
+                            <h4 class="font-bold text-sm text-[var(--ac-accent-pink)]">Heuristique Admissible</h4>
+                            <p class="text-xs ac-text-muted">
+                                Pour garantir le chemin optimal, l'estimation $h(n)$ ne doit <strong>jamais surestimer</strong> le coût réel $h^*(n)$ :
+                                <span class="block text-center py-1 font-mono">$$h(n) \leq h^*(n)$$</span>
+                                Ex: Distance Euclidienne (ligne droite) ou Manhattan (grille).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script type="module">
+        import { initPathfindingViz } from '../../assets/js/viz-graph-pathfinding.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             // Init with a slight delay for layout
+             setTimeout(() => {
+                 initPathfindingViz('viz-graph-pathfinding');
+             }, 100);
+        });
+    </script>
+</body>
+</html>

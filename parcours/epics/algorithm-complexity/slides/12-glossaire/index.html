@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossaire - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide, initGlossary } from '../../../../../parcours/_shared/slide-utils.js';
+        
+        initSlide();
+
+        // Initialize Glossary
+        window.addEventListener('DOMContentLoaded', async () => {
+            const glossaryContainer = document.getElementById('glossary-container');
+            if (glossaryContainer) {
+                try {
+                    // Use shared initGlossary which handles loading and unwrapping
+                    const glossary = await initGlossary();
+                    
+                    if (!glossary) {
+                        throw new Error("Glossary initialization failed");
+                    }
+
+                    const html = glossary.generateGlossaryPage();
+                    glossaryContainer.innerHTML = html;
+
+                    // Apply custom styles matching Algorithm Complexity theme
+                    applyCustomStyles();
+                } catch (e) {
+                    console.error("Failed to load glossary:", e);
+                    glossaryContainer.innerHTML = `<div class="p-4 ac-accent-red border border-red-500 rounded">Erreur de chargement du glossaire.</div>`;
+                }
+            }
+        });
+
+        function applyCustomStyles() {
+            // Add utility classes to generated elements
+            document.querySelectorAll('.glossary-category-title').forEach(el => {
+                el.classList.add('text-accent', 'pb-2', 'border-b', 'border-[var(--ac-border-color)]');
+            });
+
+            document.querySelectorAll('.glossary-term-title').forEach(el => {
+                el.classList.add('text-primary');
+            });
+
+            document.querySelectorAll('.glossary-short').forEach(el => {
+                el.classList.add('text-secondary');
+            });
+
+            document.querySelectorAll('.glossary-long').forEach(el => {
+                el.classList.add('ac-text-muted');
+            });
+        }
+    </script>
+
+    <style>
+        /* Styles spécifiques à la page glossaire (Identique à Deep Learning mais adapté au thème AC) */
+        .glossary-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .glossary-category {
+            margin-bottom: 2.5rem;
+        }
+
+        .glossary-category-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+            /* Border and color handled by Tailwind classes in JS */
+        }
+
+        .glossary-list {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 0;
+        }
+
+        .glossary-entry {
+            padding: 1rem;
+            border-bottom: 1px solid var(--ac-border-color);
+            border-radius: 0;
+            transition: background-color 0.2s;
+        }
+
+        .glossary-entry:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .glossary-entry:last-child {
+            border-bottom: none;
+        }
+
+        .glossary-term-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .glossary-term-title::before {
+            content: '◆';
+            font-size: 0.6rem;
+            opacity: 0.5;
+            color: var(--ac-accent-blue);
+        }
+
+        .glossary-definition {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .glossary-short {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .glossary-long {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.8;
+        }
+
+        .glossary-see {
+            margin: 0.75rem 0 0 0;
+            font-size: 0.85rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed var(--ac-border-color);
+            color: var(--ac-text-muted);
+        }
+
+        .glossary-link {
+            color: var(--ac-accent-blue);
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .glossary-link:hover {
+            text-decoration: underline;
+            color: var(--ac-accent-cyan);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-gray-500/10 border border-gray-500/20 ac-text-muted text-xs font-medium">
+                Référence
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Glossaire
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Définitions des termes clés de la complexité algorithmique.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div id="glossary-container">
+            <!-- Glossary content will be injected here -->
+            <div class="animate-pulse flex space-x-4">
+                <div class="flex-1 space-y-4 py-1">
+                    <div class="h-4 bg-[var(--ac-bg-tertiary)] rounded w-3/4"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 bg-[var(--ac-bg-tertiary)] rounded"></div>
+                        <div class="h-4 bg-[var(--ac-bg-tertiary)] rounded w-5/6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

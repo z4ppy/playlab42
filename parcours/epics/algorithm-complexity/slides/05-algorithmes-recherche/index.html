@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmes de Recherche - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-xs font-medium">
+                Algorithmes classiques
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Algorithmes de <span class="text-[var(--ac-accent-cyan)]">Recherche</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Trouver une aiguille dans une botte de foin : séquentielle, dichotomique, interpolation, hachage.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- SEQUENCE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🔎</span>
+                Recherche Séquentielle (Linéaire)
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-yellow)]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold font-mono text-[var(--ac-accent-yellow)]">O(n)</h3>
+                    <span class="text-sm ac-text-muted">Données non triées</span>
+                </div>
+                <p class="ac-text-secondary mb-4">
+                    La méthode brute : on vérifie chaque élément un par un. Comme chercher un livre dans une bibliothèque en désordre.
+                </p>
+                <div class="bg-[var(--ac-bg-secondary)] p-4 rounded flex flex-col items-center justify-center relative overflow-hidden" id="viz-linear-search">
+                    <!-- JS inj -->
+                </div>
+                <script type="module">
+                    import { initLinearSearchViz } from '../../assets/js/viz-linear-search.js';
+                    initLinearSearchViz('viz-linear-search');
+                </script>
+            </div>
+        </section>
+
+        <!-- DICHOTOMIQUE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">✂️</span>
+                Recherche Dichotomique (Binaire)
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-green)]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold font-mono text-[var(--ac-accent-green)]">O(log n)</h3>
+                    <span class="ac-badge ml-2 block">Requiert données TRIÉES</span>
+                </div>
+                <p class="ac-text-secondary mb-4">
+                    On coupe en deux à chaque étape. Comme chercher dans un dictionnaire : on ouvre au milieu, si le mot est après, on ignore la première moitié.
+                </p>
+                <ul class="list-disc pl-5 mt-2 space-y-1 text-sm ac-text-muted">
+                    <li>1 milliard d'éléments = 30 comparaisons max.</li>
+                    <li>Principe "Diviser pour Régner".</li>
+                </ul>
+            </div>
+            
+            <div class="mt-8 ac-card p-4 min-h-[300px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative overflow-hidden" id="viz-binary-search">
+                 <!-- JS inj -->
+            </div>
+            <script type="module">
+                import { initBinarySearchViz } from '../../assets/js/viz-binary-search.js';
+                initBinarySearchViz('viz-binary-search');
+            </script>
+        </section>
+
+        <!-- CAS PRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">💼</span>
+                Cas Pratiques
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- DB -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Base de Données</h3>
+                    <p class="text-sm ac-text-secondary mb-2">
+                        <code>SELECT * FROM users WHERE email = '...'</code>
+                    </p>
+                    <ul class="text-xs ac-text-muted space-y-2">
+                        <li><strong>Sans Index :</strong> Full Table Scan ($O(n)$) → Lent.</li>
+                        <li><strong>Avec Index (B-Tree) :</strong> Recherche logarithmique ($O(\log n)$) → Rapide.</li>
+                    </ul>
+                </div>
+
+                <!-- DNS -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">DNS & Routing</h3>
+                    <p class="text-sm ac-text-secondary mb-2">
+                        Quand vous tapez <code>google.com</code>, le routeur doit trouver l'IP.
+                    </p>
+                    <ul class="text-xs ac-text-muted space-y-2">
+                        <li>Les tables de routage utilisent des tris en arbres préfixés (Tries) pour une recherche ultra-rapide ($O(1)$ par rapport au nombre de routes, dépend de la longueur de l'IP).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- HISTORY: THE BUG -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🐛</span>
+                Le bug historique
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-red-500 bg-opacity-10 bg-red-900">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    La recherche binaire semble simple, n'est-ce pas ? Pourtant, Jon Bentley a montré en 1986 que <strong>90% des programmeurs professionnels</strong> ne parvenaient pas à l'écrire sans bug en 2 heures.
+                </p>
+                <p class="ac-text-secondary leading-relaxed text-sm">
+                    Le bug le plus célèbre ? Le calcul du milieu : <code>(low + high) / 2</code>.
+                    <br/>
+                    Si <code>low + high</code> dépasse la valeur maximale d'un entier (2^31 - 1), cela crée un <em>integer overflow</em> et le résultat devient négatif !
+                    <br/>
+                    Ce bug a existé dans le JDK de Java pendant 9 ans avant d'être corrigé par <code>low + (high - low) / 2</code> (ou le shift bit à bit <code>>>> 1</code>).
+                </p>
+            </div>
+        </section>
+
+        <!-- INTERPOLATION -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📍</span>
+                Recherche par Interpolation
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-purple)]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold font-mono text-[var(--ac-accent-purple)]">O(log log n)</h3>
+                    <span class="text-sm ac-text-muted">Moyenne (Uniforme)</span>
+                </div>
+                <p class="ac-text-secondary mb-4">
+                    Amélioration de la dichotomie. On "devine" la position probable. Si vous cherchez "Zèbre" dans le dictionnaire, vous ouvrez à la fin, pas au milieu.
+                </p>
+                <div class="bg-[var(--ac-bg-tertiary)] p-4 rounded text-sm ac-text-secondary overflow-x-auto">
+                    $$pos = lo + \left\lfloor \frac{(x - A[lo]) \times (hi - lo)}{A[hi] - A[lo]} \right\rfloor$$
+                </div>
+                <p class="mt-4 text-sm ac-accent-red">
+                    ⚠️ Attention : Pire cas O(n) si la distribution n'est pas uniforme (ex: exponentielle).
+                </p>
+            </div>
+        </section>
+
+        <!-- HACHAGE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">⚡</span>
+                Recherche par Hachage
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-blue)]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold font-mono text-[var(--ac-accent-blue)]">O(1)</h3>
+                    <span class="text-sm ac-text-muted">Moyenne</span>
+                </div>
+                <p class="ac-text-secondary mb-4">
+                    La méthode magique. Une fonction $h(key)$ calcule directement l'adresse mémoire. Pas de parcours, accès instantané.
+                </p>
+                <ul class="list-disc pl-5 mt-2 space-y-1 text-sm ac-text-muted">
+                    <li>Utilisé dans Python (dict), Java (HashMap), C++ (std::unordered_map).</li>
+                    <li>Compromis : Espace O(n) et redimensionnement occasionnel O(n).</li>
+                </ul>
+
+                <!-- Birthday Paradox Warning -->
+                <div class="mt-4 p-3 bg-red-900/20 border border-red-500/30 rounded text-sm">
+                    <strong>⚠️ Le Paradoxe des Anniversaires :</strong>
+                    Les collisions arrivent bien plus vite qu'on ne le pense. Avec une table de taille $m$, il suffit de $\sqrt{2m}$ éléments pour avoir 50% de chance de collision.
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script type="module">
+        import { initLinearSearchViz } from '../../assets/js/viz-linear-search.js';
+        import { initBinarySearchViz } from '../../assets/js/viz-binary-search.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initLinearSearchViz('viz-linear-search');
+                 initBinarySearchViz('viz-binary-search');
+             }, 100);
+        });
+    </script>
+</body>
+</html>

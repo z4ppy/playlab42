@@ -1,0 +1,58 @@
+{
+  "id": "algorithm-complexity",
+  "title": "La Complexité Algorithmique",
+  "description": "Guide complet sur la complexité algorithmique : notation Big O, algorithmes de tri et recherche, structures de données, graphes et programmation dynamique.",
+  "hierarchy": ["fondamentaux"],
+  "tags": ["algorithmes", "complexite", "big-o", "structures-donnees", "tri", "graphes"],
+  "metadata": {
+    "author": "cyrille",
+    "created": "2026-01-13",
+    "duration": "2h",
+    "difficulty": "intermediate",
+    "language": "fr"
+  },
+  "icon": "📊",
+  "thumbnail": "thumbnail.jpg",
+  "content": [
+    {
+      "id": "fondamentaux",
+      "title": "Fondamentaux",
+      "icon": "📚",
+      "content": [
+        { "id": "01-introduction" },
+        { "id": "02-prerequis-maths" },
+        { "id": "03-big-o-notation" }
+      ]
+    },
+    {
+      "id": "algorithmes",
+      "title": "Algorithmes classiques",
+      "icon": "⚙️",
+      "content": [
+        { "id": "04-algorithmes-tri" },
+        { "id": "05-algorithmes-recherche" }
+      ]
+    },
+    {
+      "id": "structures",
+      "title": "Structures de données",
+      "icon": "🗃️",
+      "content": [
+        { "id": "06-structures-index" },
+        { "id": "07-algorithmes-graphes" }
+      ]
+    },
+    {
+      "id": "techniques",
+      "title": "Techniques avancées",
+      "icon": "🧠",
+      "content": [
+        { "id": "08-programmation-dynamique" },
+        { "id": "09-paradigmes-algorithmiques" }
+      ]
+    },
+    { "id": "10-notions-avancees", "optional": true },
+    { "id": "11-conclusion" },
+    { "id": "12-glossaire", "type": "glossary", "optional": true }
+  ]
+}

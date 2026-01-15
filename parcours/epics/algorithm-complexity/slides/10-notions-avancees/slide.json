@@ -1,0 +1,8 @@
+{
+  "id": "10-notions-avancees",
+  "title": "Notions avancées",
+  "description": "Classes P, NP, NP-complet, P=NP?, complexité amortie, notations Omega/Theta",
+  "type": "page",
+  "icon": "🎓",
+  "duration": "20 min"
+}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notation Big O - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-xs font-medium">
+                Notation standard
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                La notation <span class="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">Big O</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Le langage universel pour décrire la performance : O(n), O(log n), O(n²)...
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- DEFINITION -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📝</span>
+                Définitions Formelles
+            </h2>
+            <div class="prose prose-invert max-w-none ac-text-secondary">
+                <p>
+                    L'analyse asymptotique utilise trois notations principales pour encadrer la performance :
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+                    <!-- Big O -->
+                    <div class="ac-card p-4 border-t-4 border-red-500">
+                        <h3 class="font-bold ac-accent-red mb-2">Big O (Borne Sup.)</h3>
+                        <div class="font-mono text-xs mb-2">$$f(n) \le c \cdot g(n)$$</div>
+                        <p class="text-sm">"Au pire, c'est comme ça."</p>
+                    </div>
+                    
+                    <!-- Big Omega -->
+                    <div class="ac-card p-4 border-t-4 border-green-500">
+                        <h3 class="font-bold ac-accent-green mb-2">Big Ω (Borne Inf.)</h3>
+                        <div class="font-mono text-xs mb-2">$$f(n) \ge c \cdot g(n)$$</div>
+                        <p class="text-sm">"Au mieux, c'est comme ça."</p>
+                    </div>
+
+                    <!-- Big Theta -->
+                    <div class="ac-card p-4 border-t-4 border-blue-500">
+                        <h3 class="font-bold ac-accent-blue mb-2">Big Θ (Borne Exacte)</h3>
+                        <div class="font-mono text-xs mb-2">$$c_1 g(n) \le f(n) \le c_2 g(n)$$</div>
+                        <p class="text-sm">"C'est exactement cet ordre de grandeur."</p>
+                    </div>
+                </div>
+
+                <div class="ac-card p-4 bg-[var(--ac-bg-secondary)] font-mono text-sm">
+                    $$f(n) = O(g(n)) \iff \exists c > 0, n_0 : \forall n \ge n_0, f(n) \le c \cdot g(n)$$
+                </div>
+            </div>
+        </section>
+
+        <!-- ORIGINE HISTORIQUE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📜</span>
+                L'origine du symbole
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-blue-500 bg-opacity-10 bg-blue-900">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    Contrairement à ce qu'on pourrait croire, le "O" ne vient pas de "Opération" ou "Ordre".
+                </p>
+                <p class="ac-text-secondary leading-relaxed mb-2">
+                    Il a été introduit par le mathématicien allemand **Paul Bachmann** en 1894, puis popularisé par **Edmund Landau**. Le "O" signifiait <em>Ordnung</em> (Ordre de grandeur en allemand).
+                </p>
+                <p class="ac-text-secondary leading-relaxed text-sm italic">
+                    C'est **Donald Knuth**,figure légendaire de l'informatique, qui a imposé cette notation comme standard pour l'analyse d'algorithmes dans les années 70, bien qu'il ait parfois regretté la confusion avec le "Grand Omicron" grec.
+                </p>
+            </div>
+        </section>
+
+        <!-- REGLES DE SIMPLIFICATION -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">✂️</span>
+                Règles de simplification
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold text-[var(--ac-accent-yellow)] mb-2">1. Ignorer les constantes</h3>
+                    <p class="mb-2 text-xl font-mono">O(2n) → O(n)</p>
+                    <p class="text-sm ac-text-muted">
+                        Un algorithme qui fait $2n$ opérations croît à la même vitesse (linéaire) qu'un algorithme qui en fait $n$. Seule la pente change, pas la courbe.
+                    </p>
+                </div>
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold text-[var(--ac-accent-red)] mb-2">2. Garder le terme dominant</h3>
+                    <p class="mb-2 text-xl font-mono">O(n² + n) → O(n²)</p>
+                    <p class="text-sm ac-text-muted">
+                        Pour $n$ très grand, $n^2$ écrase complètement $n$. Le terme de plus haut degré dicte la performance.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TEMPS VS ESPACE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">⏳</span>
+                Temps vs Espace
+            </h2>
+            <div class="overflow-hidden rounded-lg border border-[var(--ac-border-color)]">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-[var(--ac-bg-tertiary)] text-[var(--ac-text-muted)] font-bold uppercase">
+                        <tr>
+                            <th class="px-6 py-3">Complexité</th>
+                            <th class="px-6 py-3">Mesure</th>
+                            <th class="px-6 py-3">Exemple</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--ac-border-color)] bg-[var(--ac-bg-card)]">
+                        <tr>
+                            <td class="px-6 py-4 font-bold text-[var(--ac-accent-blue)]">Temporelle</td>
+                            <td class="px-6 py-4">Opérations CPU</td>
+                            <td class="px-6 py-4">Combien de boucles, de comparaisons ?</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-bold text-[var(--ac-accent-purple)]">Spatiale</td>
+                            <td class="px-6 py-4">Mémoire RAM</td>
+                            <td class="px-6 py-4">Tableaux créés, profondeur de récursion</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-4 text-sm ac-text-muted italic">
+                Note : On mesure souvent l'espace <strong>auxiliaire</strong> (mémoire supplémentaire nécessaire) plutôt que l'espace total (qui inclut l'entrée).
+            </p>
+        </section>
+
+        <!-- HIERARCHIE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📊</span>
+                La Hiérarchie des classes (du meilleur au pire)
+            </h2>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full ac-card text-sm text-left">
+                    <thead class="bg-[var(--ac-bg-tertiary)] uppercase text-[var(--ac-text-muted)] font-bold">
+                        <tr>
+                            <th class="px-4 py-3">Notation</th>
+                            <th class="px-4 py-3">Nom</th>
+                            <th class="px-4 py-3">Exemple (n=100)</th>
+                            <th class="px-4 py-3">Exemple (n=20)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--ac-border-color)]">
+                        <tr class="bg-green-500/5">
+                            <td class="px-4 py-3 font-mono font-bold ac-accent-green">O(1)</td>
+                            <td class="px-4 py-3">Constant</td>
+                            <td class="px-4 py-3">1 ns</td>
+                            <td class="px-4 py-3">1 ns</td>
+                        </tr>
+                        <tr class="bg-green-500/5">
+                            <td class="px-4 py-3 font-mono font-bold ac-accent-green">O(log n)</td>
+                            <td class="px-4 py-3">Logarithmique</td>
+                            <td class="px-4 py-3">7 ns</td>
+                            <td class="px-4 py-3">4 ns</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono font-bold text-[var(--ac-accent-yellow)]">O(n)</td>
+                            <td class="px-4 py-3">Linéaire</td>
+                            <td class="px-4 py-3">100 ns</td>
+                            <td class="px-4 py-3">20 ns</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono font-bold ac-accent-yellow">O(n log n)</td>
+                            <td class="px-4 py-3">Linéarithmique</td>
+                            <td class="px-4 py-3">664 ns</td>
+                            <td class="px-4 py-3">86 ns</td>
+                        </tr>
+                        <tr class="bg-red-500/5">
+                            <td class="px-4 py-3 font-mono font-bold ac-accent-orange">O(n²)</td>
+                            <td class="px-4 py-3">Quadratique</td>
+                            <td class="px-4 py-3">10 μs</td>
+                            <td class="px-4 py-3">400 ns</td>
+                        </tr>
+                        <tr class="bg-red-500/10">
+                            <td class="px-4 py-3 font-mono font-bold text-red-500">O(2ⁿ)</td>
+                            <td class="px-4 py-3">Exponentiel</td>
+                            <td class="px-4 py-3">10¹⁸ ans</td>
+                            <td class="px-4 py-3">1 ms</td>
+                        </tr>
+                        <tr class="bg-red-500/20">
+                            <td class="px-4 py-3 font-mono font-bold text-red-600">O(n!)</td>
+                            <td class="px-4 py-3">Factoriel</td>
+                            <td class="px-4 py-3">∞</td>
+                            <td class="px-4 py-3">77 ans</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-8 ac-card p-4 min-h-[300px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative overflow-hidden" id="viz-big-o">
+                <!-- Javascript insertion point -->
+            </div>
+            <script type="module">
+                import { initBigOViz } from '../../assets/js/viz-big-o.js';
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => initBigOViz('viz-big-o'));
+                } else {
+                    initBigOViz('viz-big-o');
+                }
+            </script>
+        </section>
+
+        <!-- CAS PRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">💼</span>
+                Cas Pratiques
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Scalabilité (Netflix/Uber)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        Quand on a 100 millions d'utilisateurs, un algorihme O(N) coûte trop cher. On doit viser O(1) ou O(log N) pour les recommandations.
+                    </p>
+                    <div class="mt-2 text-xs bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        L'architecture Microservices aide à diviser N.
+                    </div>
+                </div>
+                
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Trading Haute Fréquence</h3>
+                    <p class="text-sm ac-text-secondary">
+                        Chaque microseconde compte. On évite O(n) sur le chemin critique. Tout doit être O(1) (Tableaux statiques, pas d'allocation dynamique).
+                    </p>
+                    <div class="mt-2 text-xs bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        Performance = Argent.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script type="module">
+        import { initBigOViz } from '../../assets/js/viz-big-o.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initBigOViz('viz-big-o');
+             }, 100);
+        });
+    </script>
+</body>
+</html>

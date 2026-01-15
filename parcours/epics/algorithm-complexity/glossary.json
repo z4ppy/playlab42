@@ -1,0 +1,111 @@
+{
+  "$schema": "../../glossary.schema.json",
+  "terms": {
+    "Algorithme Glouton": {
+      "short": "Choix localement optimal à chaque étape",
+      "long": "Approche qui fait le choix localement optimal à chaque étape dans l'espoir de trouver l'optimum global. Fonctionne pour des problèmes comme le rendu de monnaie (système canonique) ou l'arbre couvrant minimal, mais échoue pour le sac à dos.",
+      "category": "Paradigme"
+    },
+    "Amortie (Analyse)": {
+      "short": "Moyenne du coût sur une séquence d'opérations",
+      "long": "Technique d'analyse calculant le coût moyen d'une opération sur une séquence d'opérations, garantissant une borne pire cas pour la séquence totale. Exemple : ArrayList a un coût amorti O(1) par insertion.",
+      "category": "Théorie"
+    },
+    "Arbre Binaire de Recherche (BST)": {
+      "short": "Structure hiérarchique triée pour recherche rapide",
+      "long": "Structure de données où chaque nœud a au plus deux enfants, et tout nœud du sous-arbre gauche est inférieur à la racine (resp. supérieur pour le droit). Recherche moyenne en O(log n).",
+      "category": "Structure de données"
+    },
+    "Backtracking": {
+      "short": "Exploration par essais-erreurs avec retour arrière",
+      "long": "Algorithme qui explore l'espace des solutions par essais-erreurs récursifs, en revenant sur ses pas (backtrack) dès qu'une solution partielle s'avère invalide (impasse).",
+      "category": "Paradigme"
+    },
+    "Big O (O)": {
+      "short": "Borne supérieure asymptotique (pire cas)",
+      "long": "Notation asymptotique décrivant la borne supérieure d'une fonction. f(n) = O(g(n)) signifie que f ne croît pas plus vite que g.",
+      "category": "Notation"
+    },
+    "Big Omega (Ω)": {
+      "short": "Borne inférieure asymptotique",
+      "long": "Notation asymptotique décrivant la borne inférieure d'une fonction. f(n) = Ω(g(n)) signifie que f croît au moins aussi vite que g.",
+      "category": "Notation"
+    },
+    "Big Theta (Θ)": {
+      "short": "Borne exacte (encadrement asymptotique)",
+      "long": "Notation asymptotique décrivant la borne exacte (encadrement). f(n) = Θ(g(n)) si f = O(g) et f = Ω(g).",
+      "category": "Notation"
+    },
+    "Complexité Spatiale": {
+      "short": "Mémoire utilisée par un algorithme",
+      "long": "Mesure de la quantité de mémoire de travail requise par un algorithme en fonction de la taille de l'entrée.",
+      "category": "Concept"
+    },
+    "Complexité Temporelle": {
+      "short": "Temps d'exécution (opérations) d'un algorithme",
+      "long": "Mesure du nombre d'opérations élémentaires effectuées par un algorithme en fonction de la taille de l'entrée.",
+      "category": "Concept"
+    },
+    "Dijkstra": {
+      "short": "Plus court chemin dans un graphe à poids positifs",
+      "long": "Algorithme glouton permettant de trouver le plus court chemin dans un graphe pondéré à poids positifs. Complexité : O((V+E) log V).",
+      "category": "Algorithme"
+    },
+    "Diviser pour Régner": {
+      "short": "Décomposition en sous-problèmes indépendants",
+      "long": "Paradigme consistant à découper un problème en sous-problèmes indépendants, les résoudre récursivement, puis combiner les solutions (ex: Merge Sort).",
+      "category": "Paradigme"
+    },
+    "Force Brute": {
+      "short": "Exploration exhaustive de toutes les solutions",
+      "long": "Méthode de résolution consistant à énumérer systématiquement toutes les solutions possibles pour trouver la bonne. Souvent en O(n!) ou O(c^n).",
+      "category": "Paradigme"
+    },
+    "Heuristique": {
+      "short": "Estimation ou règle intuitive pour accélérer la recherche",
+      "long": "Technique visant à résourdre un problème plus rapidement quand les méthodes classiques sont trop lentes, sans garantie d'optimalité (ex: A* sans heuristique admissible).",
+      "category": "Concept"
+    },
+    "Liste Chaînée": {
+      "short": "Suite d'éléments reliés par des pointeurs",
+      "long": "Structure linéaire où chaque élément pointe vers le suivant. Insertion/Suppression O(1) si position connue, Accès O(n).",
+      "category": "Structure de données"
+    },
+    "NP (Non-déterministe Polynomial)": {
+      "short": "Vérifiable en temps polynomial",
+      "long": "Classe des problèmes de décision dont une solution positive peut être VÉRIFIÉE en temps polynomial.",
+      "category": "Théorie"
+    },
+    "NP-Complet": {
+      "short": "Les problèmes les plus difficiles de NP",
+      "long": "Problèmes les plus difficiles de la classe NP. Si un seul problème NP-Complet est résolu en temps polynomial, alors P = NP.",
+      "category": "Théorie"
+    },
+    "P (Polynomial)": {
+      "short": "Résoluble en temps polynomial",
+      "long": "Classe des problèmes de décision résolubles par un algorithme déterministe en temps polynomial O(n^k).",
+      "category": "Théorie"
+    },
+    "Programmation Dynamique": {
+      "short": "Optimisation via sous-problèmes chevauchants",
+      "long": "Méthode de résolution de problèmes complexes en les décomposant en sous-problèmes plus simples qui se chevauchent (contrairement à Diviser pour Régner), en stockant les résultats intermédiaires.",
+      "category": "Paradigme"
+    },
+    "Table de Hachage": {
+      "short": "Accès O(1) via une clé hachée",
+      "long": "Structure associant clés et valeurs via une fonction de hachage. Accès moyen en O(1), pire cas O(n) (collisions).",
+      "category": "Structure de données"
+    },
+    "Tri Fusion (Merge Sort)": {
+      "short": "Tri stable en O(n log n) par fusion",
+      "long": "Algorithme de tri 'Diviser pour Régner' stable en O(n log n).",
+      "category": "Algorithme"
+    },
+    "Tri Rapide (Quick Sort)": {
+      "short": "Tri efficace en place par partitionnement",
+      "long": "Algorithme de tri 'Diviser pour Régner' en place. Moyenne O(n log n), pire cas O(n²).",
+      "category": "Algorithme"
+    }
+  }
+}
+

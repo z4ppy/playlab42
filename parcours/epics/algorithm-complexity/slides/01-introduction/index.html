@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <!-- Hero Section -->
+    <header class="hero-section relative py-20 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-block mb-6 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-sm font-medium">
+                Introduction
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6">
+                Complexité algorithmique : <br/>
+                <span class="bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">au-delà du chronomètre</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-lg ac-text-muted mb-8 leading-relaxed">
+                Mesurer la performance par le temps d'exécution est une erreur fondamentale. Découvrez pourquoi et comment l'analyse asymptotique offre une métrique universelle.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+
+        <!-- SECTION 1 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-3xl">⏱️</span>
+                Pourquoi chronométrer ne suffit jamais
+            </h2>
+            
+            <div class="prose prose-invert max-w-none ac-text-secondary">
+                <p class="mb-4">
+                    Imaginez deux développeurs exécutant le même algorithme. Le premier obtient <strong>483 ms</strong>, le second <strong>140 ms</strong>. Lequel a le meilleur code ? Impossible à dire : la différence peut venir du processeur, du compilateur (-O2 vs -O3), ou même de la température de la pièce.
+                </p>
+                <p class="mb-4">
+                    De multiples facteurs incontrôlables influencent le temps brut :
+                </p>
+                <ul class="list-disc pl-6 space-y-2 mb-6">
+                    <li><strong class="ac-text-primary">Caches CPU :</strong> Un cache miss coûte 100x plus cher qu'un accès registre.</li>
+                    <li><strong class="ac-text-primary">Contexte :</strong> Les autres processus, l'OS, le Garbage Collector (JVM/JS).</li>
+                    <li><strong class="ac-text-primary">Optimisations :</strong> Prédiction de branchement, vectorisation SIMD.</li>
+                </ul>
+
+                <div class="ac-card bg-opacity-50 border-l-4 border-l-yellow-500">
+                    <p class="text-sm">
+                        <strong>Le paradoxe des bases de données :</strong> Une étude a montré que MariaDB pouvait être à la fois "la plus rapide" et "la plus lente" selon le type de colonne (DECIMAL vs DOUBLE). Comparer des pommes et des oranges ne mène nulle part.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- A BIT OF HISTORY -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-3xl">📜</span>
+                Un peu d'histoire
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-purple-500 bg-opacity-10 bg-purple-900">
+                <div class="flex flex-col gap-6">
+                    <div>
+                        <h3 class="text-xl font-bold ac-text-primary mb-2">D'où vient le mot "Algorithme" ?</h3>
+                        <p class="ac-text-secondary leading-relaxed mb-4">
+                            Il dérive du nom du mathématicien persan <strong>Al-Khwārizmī</strong> (vers 780-850), membre de la Maison de la Sagesse à Bagdad.
+                            Son ouvrage, <em>Al-Kitāb al-mukhtaṣar fī ḥisāb al-jabr wa-l-muqābala</em>, a non seulement donné le mot "algèbre" (al-jabr), mais la latinisation de son nom a donné "algoritmi", puis "algorithme".
+                        </p>
+                    </div>
+                    
+                    <div class="border-t border-[var(--ac-border-color)] pt-4">
+                        <h3 class="text-xl font-bold ac-text-primary mb-2">Premiers pas et formalisation</h3>
+                        <ul class="list-disc pl-6 space-y-2 ac-text-secondary">
+                            <li><strong>Ada Lovelace (1843) :</strong> Écrit le premier algorithme destiné à être exécuté par une machine (la machine analytique de Babbage), pour calculer les nombres de Bernoulli.</li>
+                            <li><strong>Alan Turing (1936) :</strong> Formalise le concept avec sa "machine de Turing", définissant un algorithme comme une suite finie d'opérations élémentaires.</li>
+                            <li><strong>Donald Knuth (1974) :</strong> "Science is what we understand well enough to explain to a computer. Art is everything else we do."</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WIRTH LAW -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-3xl">⚖️</span>
+                Le paradoxe de l'efficacité
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-red-500 bg-opacity-10 bg-red-900">
+                <blockquote class="text-xl italic ac-text-primary mb-4">
+                    "Software gets slower faster than hardware gets faster."
+                </blockquote>
+                <p class="ac-text-secondary">
+                    Connue comme la <strong>Loi de Wirth</strong> (1995), cette maxime rappelle que la puissance brute du matériel est souvent gaspillée par des couches d'abstraction logicielles inefficaces. L'efficacité algorithmique reste le seul véritable levier de performance durable.
+                </p>
+                La naissance d'une métrique universelle
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="prose prose-invert max-w-none ac-text-secondary">
+                    <p class="mb-4">
+                        Face à ce chaos, les informaticiens ont adopté un outil mathématique : la <strong>notation asymptotique</strong>. Introduite par Paul Bachmann (1894), elle a été popularisée en informatique par Donald Knuth.
+                    </p>
+                    <p>
+                        L'idée est simple : ignorer les constantes et le matériel pour se concentrer sur <strong>l'évolution du temps quand la taille de l'entrée (n) augmente</strong>.
+                    </p>
+                </div>
+                <div class="ac-card p-6 flex flex-col items-center justify-center text-center">
+                    <div class="text-6xl font-black mb-2 bg-gradient-to-br from-green-400 to-blue-500 bg-clip-text text-transparent">O(n)</div>
+                    <p class="text-sm ac-text-muted mt-2">Notation "Grand O"</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3 -->
+        <section class="mb-16">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-3xl">🚀</span>
+                Ce que la complexité capture
+            </h2>
+
+            <div class="prose prose-invert max-w-none ac-text-secondary">
+                <p class="mb-6">
+                    L'analyse asymptotique répond à une question précise : <em>"Si je double la quantité de données, comment évolue le temps de traitement ?"</em>
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="ac-card p-4">
+                        <div class="text-xl font-bold ac-accent-green mb-2">O(n)</div>
+                        <p class="text-sm">Si on double les données, le temps <strong>double</strong>.</p>
+                    </div>
+                    <div class="ac-card p-4">
+                        <div class="text-xl font-bold ac-accent-yellow mb-2">O(n²)</div>
+                        <p class="text-sm">Si on double les données, le temps <strong>quadruple</strong>.</p>
+                    </div>
+                    <div class="ac-card p-4">
+                        <div class="text-xl font-bold ac-accent-red mb-2">O(2ⁿ)</div>
+                        <p class="text-sm">Ajouter 1 donnée <strong>double</strong> le temps.</p>
+                    </div>
+                </div>
+
+                <p>
+                    Cette abstraction permet de dire : <em>"Un algorithme O(n log n) battra toujours un O(n²) pour de grandes entrées, quel que soit l'ordinateur."</em>
+                </p>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>
