@@ -6,14 +6,15 @@
  * @module App
  */
 
-import GameKit from '../../../lib/gamekit.js';
 import { ExerciseEngine } from './engine/ExerciseEngine.js';
 import { StaffRenderer } from './renderer/StaffRenderer.js';
 import { SynthManager } from './audio/index.js';
+import { DataManager } from './services/DataManager.js';
 import { TunerController } from './controllers/TunerController.js';
 import { MetronomeController } from './controllers/MetronomeController.js';
 import { SynthController } from './controllers/SynthController.js';
 import { PianoController } from './controllers/PianoController.js';
+import { MenuController } from './controllers/MenuController.js';
 
 // ============================================================================
 // Classe App
@@ -30,8 +31,8 @@ export class App {
     /** @type {string} Vue active ('menu' | 'exercise' | 'progress' | 'settings') */
     this.currentView = 'menu';
 
-    /** @type {Object|null} Données de progression */
-    this.progress = null;
+    /** @type {DataManager} Gestionnaire de données */
+    this.dataManager = new DataManager();
 
     /** @type {boolean} Audio initialisé */
     this.audioReady = false;
@@ -63,6 +64,9 @@ export class App {
     /** @type {PianoController|null} Contrôleur du piano virtuel */
     this.pianoController = null;
 
+    /** @type {MenuController|null} Contrôleur du menu d'exercices */
+    this.menuController = null;
+
     /** @type {Object|null} État du mode rythme */
     this.rhythmState = null;
 
@@ -74,19 +78,6 @@ export class App {
 
     /** @type {boolean} Flag pour éviter les appels concurrents à startExercise */
     this._startingExercise = false;
-
-    /** @type {Object} Paramètres utilisateur */
-    this.settings = {
-      notation: 'french', // 'french' | 'english'
-      volume: 80,
-    };
-
-    /** @type {Object} Filtres du menu d'exercices */
-    this.menuFilters = {
-      category: 'all',    // 'all' | 'notes' | 'intervals' | 'chords' | 'rhythm'
-      difficulty: 'all',  // 'all' | 1 | 2 | 3
-      showLocked: true,   // Afficher les exercices verrouillés
-    };
 
     /** @type {Array} Liste des exercices disponibles */
     this.exercisesList = [
@@ -114,8 +105,8 @@ export class App {
     this._initControllers();
 
     // Charger la progression et les paramètres sauvegardés
-    this.loadProgress();
-    this.loadSettings();
+    this.dataManager.loadProgress();
+    this.dataManager.loadSettings();
 
     // Configurer les événements
     this.setupEventListeners();
@@ -207,7 +198,7 @@ export class App {
       history: this.elements.tunerHistory,
       liveDot: this.elements.tunerLiveDot,
     }, {
-      formatNote: (note, includeOctave, octave) => this.formatNote(note, includeOctave, octave),
+      formatNote: (note, includeOctave, octave) => this.dataManager.formatNote(note, includeOctave, octave),
     });
 
     // Controller du métronome
@@ -244,6 +235,19 @@ export class App {
     }, {
       synthManager: this.synthManager,
     });
+
+    // Controller du menu d'exercices
+    this.menuController = new MenuController({
+      container: this.elements.menuView,
+      exercises: this.exercisesList,
+      isUnlocked: (id) => this.isExerciseUnlocked(id),
+      getProgress: (id) => this.dataManager.getExerciseProgress(id),
+    });
+
+    // Écouter la sélection d'exercice
+    this.menuController.on('exercise-selected', ({ exerciseId }) => {
+      this.startExercise(exerciseId);
+    });
   }
 
   /**
@@ -252,6 +256,22 @@ export class App {
    */
   get metronome() {
     return this.metronomeController?.metronome || null;
+  }
+
+  /**
+   * Accès à la progression (via DataManager).
+   * @returns {Object}
+   */
+  get progress() {
+    return this.dataManager.progress;
+  }
+
+  /**
+   * Accès aux paramètres (via DataManager).
+   * @returns {Object}
+   */
+  get settings() {
+    return this.dataManager.settings;
   }
 
   /**
@@ -459,184 +479,7 @@ export class App {
    * Affiche le menu principal.
    */
   renderMenu() {
-    const container = this.elements.menuView;
-    if (!container) {return;}
-
-    // Filtrer les exercices
-    const filteredExercises = this._getFilteredExercises();
-
-    container.innerHTML = `
-      <div class="menu-container">
-        <h2 class="menu-title">Choisissez un exercice</h2>
-
-        <!-- Barre de filtres -->
-        <div class="filters-bar">
-          <div class="filter-group">
-            <label class="filter-label">Catégorie</label>
-            <div class="filter-buttons" id="filter-category">
-              <button class="filter-btn ${this.menuFilters.category === 'all' ? 'active' : ''}" data-value="all">Tous</button>
-              <button class="filter-btn ${this.menuFilters.category === 'notes' ? 'active' : ''}" data-value="notes">🎼 Notes</button>
-              <button class="filter-btn ${this.menuFilters.category === 'intervals' ? 'active' : ''}" data-value="intervals">↕️ Intervalles</button>
-              <button class="filter-btn ${this.menuFilters.category === 'chords' ? 'active' : ''}" data-value="chords">🎹 Accords</button>
-              <button class="filter-btn ${this.menuFilters.category === 'rhythm' ? 'active' : ''}" data-value="rhythm">🥁 Rythme</button>
-            </div>
-          </div>
-
-          <div class="filter-group">
-            <label class="filter-label">Difficulté</label>
-            <div class="filter-buttons" id="filter-difficulty">
-              <button class="filter-btn ${this.menuFilters.difficulty === 'all' ? 'active' : ''}" data-value="all">Tous</button>
-              <button class="filter-btn ${this.menuFilters.difficulty === 1 ? 'active' : ''}" data-value="1">★☆☆</button>
-              <button class="filter-btn ${this.menuFilters.difficulty === 2 ? 'active' : ''}" data-value="2">★★☆</button>
-              <button class="filter-btn ${this.menuFilters.difficulty === 3 ? 'active' : ''}" data-value="3">★★★</button>
-            </div>
-          </div>
-
-          <div class="filter-group filter-toggle">
-            <label class="toggle-label">
-              <input type="checkbox" id="filter-locked" ${this.menuFilters.showLocked ? 'checked' : ''}>
-              <span>Afficher verrouillés</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Compteur de résultats -->
-        <div class="filter-results">
-          ${filteredExercises.length} exercice${filteredExercises.length > 1 ? 's' : ''} trouvé${filteredExercises.length > 1 ? 's' : ''}
-        </div>
-
-        <!-- Grille d'exercices -->
-        <div class="exercises-grid">
-          ${this._renderExerciseCards(filteredExercises)}
-        </div>
-      </div>
-    `;
-
-    // Event listeners pour les filtres
-    this._setupFilterListeners(container);
-
-    // Event listeners sur les cartes
-    container.querySelectorAll('.exercise-card:not(.locked)').forEach(card => {
-      card.addEventListener('click', () => {
-        const exerciseId = card.dataset.exerciseId;
-        this.startExercise(exerciseId);
-      });
-    });
-  }
-
-  /**
-   * Génère le HTML des cartes d'exercices.
-   * @param {Array} exercises - Liste des exercices à afficher
-   * @returns {string} HTML des cartes
-   * @private
-   */
-  _renderExerciseCards(exercises) {
-    if (exercises.length === 0) {
-      return '<div class="no-results">Aucun exercice ne correspond aux filtres sélectionnés.</div>';
-    }
-
-    return exercises.map(ex => this.renderExerciseCard(
-      ex.id,
-      ex.title,
-      ex.description,
-      ex.difficulty,
-      !this.isExerciseUnlocked(ex.id),
-      ex.icon,
-      ex.categoryName,
-    )).join('');
-  }
-
-  /**
-   * Retourne les exercices filtrés selon les critères actuels.
-   * @returns {Array} Exercices filtrés
-   * @private
-   */
-  _getFilteredExercises() {
-    return this.exercisesList.filter(ex => {
-      // Filtre par catégorie
-      if (this.menuFilters.category !== 'all' && ex.category !== this.menuFilters.category) {
-        return false;
-      }
-
-      // Filtre par difficulté
-      if (this.menuFilters.difficulty !== 'all' && ex.difficulty !== this.menuFilters.difficulty) {
-        return false;
-      }
-
-      // Filtre par état verrouillé
-      if (!this.menuFilters.showLocked && !this.isExerciseUnlocked(ex.id)) {
-        return false;
-      }
-
-      return true;
-    });
-  }
-
-  /**
-   * Configure les event listeners des filtres.
-   * @param {HTMLElement} container - Conteneur du menu
-   * @private
-   */
-  _setupFilterListeners(container) {
-    // Filtres catégorie
-    container.querySelector('#filter-category')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('.filter-btn');
-      if (btn) {
-        this.menuFilters.category = btn.dataset.value;
-        this.renderMenu();
-      }
-    });
-
-    // Filtres difficulté
-    container.querySelector('#filter-difficulty')?.addEventListener('click', (e) => {
-      const btn = e.target.closest('.filter-btn');
-      if (btn) {
-        const value = btn.dataset.value;
-        this.menuFilters.difficulty = value === 'all' ? 'all' : parseInt(value, 10);
-        this.renderMenu();
-      }
-    });
-
-    // Toggle verrouillés
-    container.querySelector('#filter-locked')?.addEventListener('change', (e) => {
-      this.menuFilters.showLocked = e.target.checked;
-      this.renderMenu();
-    });
-  }
-
-  /**
-   * Génère le HTML d'une carte d'exercice.
-   * @param {string} id - ID de l'exercice
-   * @param {string} title - Titre
-   * @param {string} description - Description
-   * @param {number} difficulty - Difficulté (1-5)
-   * @param {boolean} locked - Verrouillé
-   * @returns {string} HTML
-   */
-  renderExerciseCard(id, title, description, difficulty, locked = false, categoryIcon = '', categoryName = '') {
-    const stars = '★'.repeat(difficulty) + '☆'.repeat(5 - difficulty);
-    const progress = this.getExerciseProgress(id);
-
-    return `
-      <div class="exercise-card ${locked ? 'locked' : ''}" data-exercise-id="${id}">
-        <div class="exercise-card-category">
-          <span class="category-icon">${categoryIcon}</span>
-          <span class="category-name">${categoryName}</span>
-        </div>
-        <div class="exercise-card-content">
-          <div class="exercise-card-info">
-            <div class="exercise-card-title">
-              ${locked ? '🔒 ' : ''}${title}
-            </div>
-            <div class="exercise-card-description">${description}</div>
-          </div>
-          <div class="exercise-card-meta">
-            <div class="exercise-card-stars">${stars}</div>
-            ${progress > 0 ? `<div class="exercise-card-progress">${Math.round(progress * 100)}%</div>` : ''}
-          </div>
-        </div>
-      </div>
-    `;
+    this.menuController?.render();
   }
 
   /**
@@ -1277,7 +1120,7 @@ export class App {
 
     // Initialiser l'audio et le métronome
     try {
-      await this._ensureAudioReady();
+      await this.synthManager?.ensureAudioReady();
 
       // S'assurer que le métronome est prêt via le controller
       const metronome = await this.metronomeController?.ensureReady();
@@ -1774,40 +1617,36 @@ export class App {
    * @param {Object} summary - Résumé de la session
    */
   updateProgressFromSession(summary) {
-    if (!this.progress) {return;}
-
-    // Ajouter à l'historique
-    this.progress.history.push({
+    // Ajouter à l'historique via DataManager
+    this.dataManager.addHistoryEntry({
       exerciseId: summary.exerciseId,
       score: summary.totalScore,
       maxScore: summary.totalCount * 10,
       accuracy: summary.totalCount > 0 ? summary.correctCount / summary.totalCount : 0,
-      date: new Date().toISOString(),
     });
 
     // Mettre à jour les skills
-    if (summary.skill && this.progress.skills[summary.skill]) {
-      const skill = this.progress.skills[summary.skill];
-      const newAccuracy = summary.totalCount > 0
-        ? summary.correctCount / summary.totalCount
-        : 0;
-      // Moyenne pondérée
-      skill.accuracy = skill.attempts > 0
-        ? (skill.accuracy * skill.attempts + newAccuracy) / (skill.attempts + 1)
-        : newAccuracy;
-      skill.attempts++;
+    if (summary.skill) {
+      const progress = this.dataManager.progress;
+      const skill = progress.skills?.[summary.skill];
+      if (skill) {
+        const newAccuracy = summary.totalCount > 0
+          ? summary.correctCount / summary.totalCount
+          : 0;
+        // Moyenne pondérée
+        const updatedAccuracy = skill.attempts > 0
+          ? (skill.accuracy * skill.attempts + newAccuracy) / (skill.attempts + 1)
+          : newAccuracy;
+        this.dataManager.updateSkill(summary.skill, {
+          accuracy: updatedAccuracy,
+          attempts: skill.attempts + 1,
+        });
+      }
     }
 
-    // Ajouter XP
-    this.progress.xp += summary.totalScore;
+    // Ajouter XP (calcule automatiquement le level up)
+    this.dataManager.addXP(summary.totalScore);
 
-    // Level up tous les 500 XP
-    const newLevel = Math.floor(this.progress.xp / 500) + 1;
-    if (newLevel > this.progress.level) {
-      this.progress.level = newLevel;
-    }
-
-    this.saveProgress();
     this.updateLevelBadge();
   }
 
@@ -1833,7 +1672,7 @@ export class App {
     const container = this.elements.progressView;
     if (!container) {return;}
 
-    const progress = this.progress || this.getDefaultProgress();
+    const progress = this.dataManager.progress;
 
     container.innerHTML = `
       <div style="padding: var(--space-lg); max-width: 600px; margin: 0 auto;">
@@ -2000,8 +1839,7 @@ export class App {
     container.querySelectorAll('.notation-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const notation = btn.dataset.notation;
-        this.settings.notation = notation;
-        this.saveSettings();
+        this.dataManager.setNotation(notation);
         this.renderSettings(); // Re-render pour mettre à jour le style
       });
     });
@@ -2157,121 +1995,6 @@ export class App {
   }
 
   /**
-   * Charge la progression depuis GameKit.
-   */
-  loadProgress() {
-    this.progress = GameKit.loadProgress() || this.getDefaultProgress();
-  }
-
-  /**
-   * Sauvegarde la progression via GameKit.
-   */
-  saveProgress() {
-    if (this.progress) {
-      GameKit.saveProgress(this.progress);
-    }
-  }
-
-  /**
-   * Charge les paramètres utilisateur depuis localStorage.
-   */
-  loadSettings() {
-    try {
-      const saved = localStorage.getItem('diese-settings');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Validation basique des données
-        if (typeof parsed === 'object' && parsed !== null) {
-          // Valider notation
-          if (parsed.notation && ['french', 'english'].includes(parsed.notation)) {
-            this.settings.notation = parsed.notation;
-          }
-          // Valider volume
-          if (typeof parsed.volume === 'number' && parsed.volume >= 0 && parsed.volume <= 100) {
-            this.settings.volume = parsed.volume;
-          }
-        }
-      }
-    } catch {
-      console.warn('Erreur chargement paramètres, utilisation des valeurs par défaut');
-    }
-  }
-
-  /**
-   * Sauvegarde les paramètres utilisateur.
-   */
-  saveSettings() {
-    try {
-      localStorage.setItem('diese-settings', JSON.stringify(this.settings));
-    } catch (error) {
-      if (error.name === 'QuotaExceededError') {
-        console.warn('Stockage local plein, impossible de sauvegarder les paramètres');
-      } else {
-        console.warn('Erreur sauvegarde paramètres:', error.message);
-      }
-    }
-  }
-
-  /**
-   * Retourne la notation choisie par l'utilisateur.
-   * @returns {string} 'french' ou 'english'
-   */
-  getNotation() {
-    return this.settings?.notation || 'french';
-  }
-
-  /**
-   * Convertit une note selon la notation choisie.
-   * @param {string} noteLetter - Lettre de la note (C, D, E, etc.)
-   * @param {boolean} includeOctave - Inclure l'octave
-   * @param {number} octave - Numéro d'octave
-   * @returns {string}
-   */
-  formatNote(noteLetter, includeOctave = false, octave = 4) {
-    const frenchMap = {
-      'C': 'Do', 'D': 'Ré', 'E': 'Mi', 'F': 'Fa',
-      'G': 'Sol', 'A': 'La', 'B': 'Si',
-    };
-
-    let note;
-    if (this.getNotation() === 'french') {
-      // Gérer les dièses
-      const baseLetter = noteLetter.replace('#', '');
-      note = frenchMap[baseLetter] || baseLetter;
-      if (noteLetter.includes('#')) {
-        note += '♯';
-      }
-    } else {
-      note = noteLetter;
-    }
-
-    if (includeOctave) {
-      note += octave;
-    }
-
-    return note;
-  }
-
-  /**
-   * Retourne la progression par défaut.
-   * @returns {Object}
-   */
-  getDefaultProgress() {
-    return {
-      level: 1,
-      xp: 0,
-      skills: {
-        'treble-clef': { level: 0, accuracy: 0, attempts: 0 },
-        'bass-clef': { level: 0, accuracy: 0, attempts: 0 },
-        'accidentals': { level: 0, accuracy: 0, attempts: 0 },
-        'intervals': { level: 0, accuracy: 0, attempts: 0 },
-      },
-      history: [],
-      achievements: [],
-    };
-  }
-
-  /**
    * Détecte si on est en mode développement (localhost).
    * @returns {boolean}
    */
@@ -2301,7 +2024,7 @@ export class App {
     }
 
     // Les autres sont débloqués selon la progression
-    const progress = this.progress || this.getDefaultProgress();
+    const progress = this.dataManager.progress;
 
     // Déblocage basé sur les compétences
     switch (exerciseId) {
@@ -2319,36 +2042,21 @@ export class App {
   }
 
   /**
-   * Retourne le taux de réussite d'un exercice.
-   * @param {string} exerciseId - ID de l'exercice
-   * @returns {number} Taux (0-1)
-   */
-  getExerciseProgress(exerciseId) {
-    const progress = this.progress || this.getDefaultProgress();
-    const record = progress.history?.find(h => h.exerciseId === exerciseId);
-    if (!record || !record.maxScore) {
-      return 0;
-    }
-    return record.score / record.maxScore;
-  }
-
-  /**
    * Met à jour l'affichage du niveau dans le header.
    */
   updateLevelBadge() {
     if (this.elements.levelBadge) {
-      const level = this.progress?.level || 1;
+      const level = this.dataManager.level;
       this.elements.levelBadge.textContent = `Niveau ${level}`;
     }
   }
 
   /**
-   * Réinitialise la progression.
+   * Réinitialise la progression (avec confirmation utilisateur).
    */
   resetProgress() {
     if (confirm('Voulez-vous vraiment réinitialiser votre progression ?')) {
-      this.progress = this.getDefaultProgress();
-      GameKit.clearProgress();
+      this.dataManager.resetProgress();
       this.updateLevelBadge();
       this.showView('menu');
     }
@@ -2359,7 +2067,7 @@ export class App {
    */
   dispose() {
     // Sauvegarder la progression
-    this.saveProgress();
+    this.dataManager.saveProgress();
 
     // Nettoyer les event listeners globaux
     if (this._keydownHandler) {
@@ -2392,6 +2100,11 @@ export class App {
     if (this.pianoController) {
       this.pianoController.dispose();
       this.pianoController = null;
+    }
+
+    if (this.menuController) {
+      this.menuController.dispose();
+      this.menuController = null;
     }
 
     if (this.synthManager) {
