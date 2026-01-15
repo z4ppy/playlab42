@@ -532,11 +532,15 @@ export class App {
       // Charger les données d'exercices si pas encore fait
       if (!this.exercisesData) {
         const response = await fetch('./data/exercises.json');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
         this.exercisesData = await response.json();
       }
     } catch (error) {
       console.error('Erreur chargement exercises.json:', error);
       this._startingExercise = false;
+      this._showErrorMessage('Impossible de charger les exercices. Vérifiez votre connexion.');
       return;
     }
 
@@ -1026,6 +1030,7 @@ export class App {
       ? Math.round((summary.correctCount / summary.totalCount) * 100)
       : 0;
 
+    // Utiliser textContent pour les valeurs dynamiques (sécurité XSS)
     container.innerHTML = `
       <div style="
         display: flex;
@@ -1035,8 +1040,8 @@ export class App {
         height: 100%;
         padding: var(--space-lg);
         text-align: center;
-      ">
-        <div style="font-size: 4rem; margin-bottom: var(--space-lg);">
+      " role="region" aria-label="Résultats de l'exercice">
+        <div style="font-size: 4rem; margin-bottom: var(--space-lg);" aria-hidden="true">
           ${accuracy >= 80 ? '🏆' : accuracy >= 50 ? '👍' : '💪'}
         </div>
         <h2>Exercice terminé !</h2>
@@ -1048,13 +1053,13 @@ export class App {
           margin: var(--space-lg) 0;
           width: 100%;
           max-width: 400px;
-        ">
+        " role="group" aria-label="Statistiques">
           <div style="
             padding: var(--space-md);
             background: var(--color-bg-secondary);
             border-radius: var(--radius-md);
           ">
-            <div style="font-size: 2rem; font-weight: bold; color: var(--color-accent);">
+            <div style="font-size: 2rem; font-weight: bold; color: var(--color-accent);" aria-label="Score">
               ${summary.totalScore}
             </div>
             <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
@@ -1066,7 +1071,7 @@ export class App {
             background: var(--color-bg-secondary);
             border-radius: var(--radius-md);
           ">
-            <div style="font-size: 2rem; font-weight: bold; color: var(--color-success);">
+            <div style="font-size: 2rem; font-weight: bold; color: var(--color-success);" aria-label="Taux de réussite">
               ${accuracy}%
             </div>
             <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
@@ -1078,7 +1083,7 @@ export class App {
             background: var(--color-bg-secondary);
             border-radius: var(--radius-md);
           ">
-            <div style="font-size: 2rem; font-weight: bold; color: var(--color-warning);">
+            <div style="font-size: 2rem; font-weight: bold; color: var(--color-warning);" aria-label="Meilleure série">
               ${summary.maxStreak}
             </div>
             <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
@@ -1087,8 +1092,8 @@ export class App {
           </div>
         </div>
 
-        <div style="display: flex; gap: var(--space-md);">
-          <button onclick="app.startExercise('${summary.exerciseId}')" style="
+        <div style="display: flex; gap: var(--space-md);" role="group" aria-label="Actions">
+          <button id="btn-replay" style="
             padding: var(--space-sm) var(--space-lg);
             background: var(--color-accent);
             color: white;
@@ -1096,22 +1101,38 @@ export class App {
             border-radius: var(--radius-md);
             cursor: pointer;
             font-size: var(--font-size-md);
-          ">
+          " aria-label="Rejouer cet exercice">
             Rejouer
           </button>
-          <button onclick="app.showView('menu')" style="
+          <button id="btn-back-menu" style="
             padding: var(--space-sm) var(--space-lg);
             background: var(--color-bg-secondary);
             border: 1px solid var(--color-border);
             border-radius: var(--radius-md);
             cursor: pointer;
             font-size: var(--font-size-md);
-          ">
+          " aria-label="Retour au menu principal">
             Menu
           </button>
         </div>
       </div>
     `;
+
+    // Attacher les événements de manière sécurisée (pas de onclick inline)
+    const btnReplay = container.querySelector('#btn-replay');
+    const btnBackMenu = container.querySelector('#btn-back-menu');
+
+    if (btnReplay) {
+      btnReplay.addEventListener('click', () => {
+        this.startExercise(summary.exerciseId);
+      });
+    }
+
+    if (btnBackMenu) {
+      btnBackMenu.addEventListener('click', () => {
+        this.showView('menu');
+      });
+    }
 
     // Sauvegarder la progression
     this.updateProgressFromSession(summary);
@@ -1180,11 +1201,11 @@ export class App {
     const progress = this.dataManager.progress;
 
     container.innerHTML = `
-      <div style="padding: var(--space-lg); max-width: 600px; margin: 0 auto;">
+      <div style="padding: var(--space-lg); max-width: 600px; margin: 0 auto;" role="region" aria-label="Ma progression">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
           <h2>Ma progression</h2>
-          <button onclick="app.showView('menu')" class="btn-back">
-            <span class="btn-back-icon">←</span>
+          <button id="btn-back-progress" class="btn-back" aria-label="Retour au menu">
+            <span class="btn-back-icon" aria-hidden="true">←</span>
             <span>Retour</span>
           </button>
         </div>
@@ -1196,21 +1217,21 @@ export class App {
           border-radius: var(--radius-lg);
           text-align: center;
           margin-bottom: var(--space-lg);
-        ">
+        " role="group" aria-label="Niveau actuel">
           <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
             NIVEAU
           </div>
-          <div style="font-size: 3rem; font-weight: bold; color: var(--color-accent);">
+          <div style="font-size: 3rem; font-weight: bold; color: var(--color-accent);" aria-label="Niveau ${progress.level}">
             ${progress.level}
           </div>
-          <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
+          <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);" aria-label="${progress.xp} points d'expérience">
             ${progress.xp} XP
           </div>
         </div>
 
         <!-- Compétences -->
         <h3 style="margin-bottom: var(--space-md);">Compétences</h3>
-        <div style="display: flex; flex-direction: column; gap: var(--space-sm);">
+        <div style="display: flex; flex-direction: column; gap: var(--space-sm);" role="list" aria-label="Liste des compétences">
           ${this.renderSkillBar('Clé de sol', progress.skills['treble-clef']?.accuracy || 0)}
           ${this.renderSkillBar('Clé de fa', progress.skills['bass-clef']?.accuracy || 0)}
           ${this.renderSkillBar('Altérations', progress.skills['accidentals']?.accuracy || 0)}
@@ -1218,6 +1239,12 @@ export class App {
         </div>
       </div>
     `;
+
+    // Attacher l'événement de manière sécurisée
+    const btnBack = container.querySelector('#btn-back-progress');
+    if (btnBack) {
+      btnBack.addEventListener('click', () => this.showView('menu'));
+    }
   }
 
   /**
@@ -1233,9 +1260,9 @@ export class App {
         padding: var(--space-sm) var(--space-md);
         background: var(--color-bg-secondary);
         border-radius: var(--radius-md);
-      ">
+      " role="listitem">
         <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-xs);">
-          <span>${name}</span>
+          <span id="skill-${name.replace(/\s+/g, '-').toLowerCase()}">${name}</span>
           <span style="color: var(--color-text-muted);">${percent}%</span>
         </div>
         <div style="
@@ -1243,7 +1270,7 @@ export class App {
           background: var(--color-bg);
           border-radius: 4px;
           overflow: hidden;
-        ">
+        " role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100" aria-labelledby="skill-${name.replace(/\s+/g, '-').toLowerCase()}">
           <div style="
             width: ${percent}%;
             height: 100%;
@@ -1265,27 +1292,28 @@ export class App {
     const isFrench = this.settings.notation === 'french';
 
     container.innerHTML = `
-      <div style="padding: var(--space-lg); max-width: 600px; margin: 0 auto;">
+      <div style="padding: var(--space-lg); max-width: 600px; margin: 0 auto;" role="region" aria-label="Paramètres">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
           <h2>Paramètres</h2>
-          <button onclick="app.showView('menu')" class="btn-back">
-            <span class="btn-back-icon">←</span>
+          <button id="btn-back-settings" class="btn-back" aria-label="Retour au menu">
+            <span class="btn-back-icon" aria-hidden="true">←</span>
             <span>Retour</span>
           </button>
         </div>
 
         <div style="display: flex; flex-direction: column; gap: var(--space-md);">
           <!-- Notation -->
-          <div style="
+          <fieldset style="
             padding: var(--space-md);
             background: var(--color-bg-secondary);
             border-radius: var(--radius-md);
+            border: none;
           ">
-            <div style="font-weight: bold; margin-bottom: var(--space-sm);">
+            <legend style="font-weight: bold; margin-bottom: var(--space-sm);">
               Notation musicale
-            </div>
-            <div class="notation-buttons" style="display: flex; gap: var(--space-sm);">
-              <label class="notation-btn ${isFrench ? 'active' : ''}" data-notation="french" style="
+            </legend>
+            <div class="notation-buttons" style="display: flex; gap: var(--space-sm);" role="radiogroup" aria-label="Choix de la notation musicale">
+              <button class="notation-btn ${isFrench ? 'active' : ''}" data-notation="french" role="radio" aria-checked="${isFrench}" style="
                 flex: 1;
                 padding: var(--space-sm);
                 background: ${isFrench ? 'var(--color-accent)' : 'var(--color-bg)'};
@@ -1296,8 +1324,8 @@ export class App {
                 cursor: pointer;
               ">
                 Do Ré Mi
-              </label>
-              <label class="notation-btn ${!isFrench ? 'active' : ''}" data-notation="english" style="
+              </button>
+              <button class="notation-btn ${!isFrench ? 'active' : ''}" data-notation="english" role="radio" aria-checked="${!isFrench}" style="
                 flex: 1;
                 padding: var(--space-sm);
                 background: ${!isFrench ? 'var(--color-accent)' : 'var(--color-bg)'};
@@ -1308,9 +1336,9 @@ export class App {
                 cursor: pointer;
               ">
                 C D E
-              </label>
+              </button>
             </div>
-          </div>
+          </fieldset>
 
           <!-- Volume -->
           <div style="
@@ -1318,14 +1346,14 @@ export class App {
             background: var(--color-bg-secondary);
             border-radius: var(--radius-md);
           ">
-            <div style="font-weight: bold; margin-bottom: var(--space-sm);">
+            <label for="volume-slider" style="font-weight: bold; margin-bottom: var(--space-sm); display: block;">
               Volume
-            </div>
-            <input type="range" min="0" max="100" value="80" style="width: 100%;">
+            </label>
+            <input type="range" id="volume-slider" min="0" max="100" value="80" style="width: 100%;" aria-label="Volume sonore">
           </div>
 
           <!-- Reset -->
-          <button onclick="app.resetProgress()" style="
+          <button id="btn-reset-progress" style="
             padding: var(--space-md);
             background: var(--color-error);
             color: white;
@@ -1333,12 +1361,23 @@ export class App {
             border-radius: var(--radius-md);
             cursor: pointer;
             margin-top: var(--space-lg);
-          ">
+          " aria-label="Réinitialiser toute la progression (action irréversible)">
             Réinitialiser la progression
           </button>
         </div>
       </div>
     `;
+
+    // Attacher les événements de manière sécurisée
+    const btnBack = container.querySelector('#btn-back-settings');
+    if (btnBack) {
+      btnBack.addEventListener('click', () => this.showView('menu'));
+    }
+
+    const btnReset = container.querySelector('#btn-reset-progress');
+    if (btnReset) {
+      btnReset.addEventListener('click', () => this.resetProgress());
+    }
 
     // Event listeners pour les boutons de notation
     container.querySelectorAll('.notation-btn').forEach(btn => {
@@ -1641,6 +1680,52 @@ export class App {
   async _testSynthSound() {
     // Jouer un Do4 via le synthé avec les paramètres courants
     await this.synthManager?.playNote('C4', 0.5);
+  }
+
+  /**
+   * Affiche un message d'erreur à l'utilisateur.
+   * @param {string} message - Message à afficher
+   * @private
+   */
+  _showErrorMessage(message) {
+    const container = this.elements.menuView || document.getElementById('menu-view');
+    if (!container) {return;}
+
+    // Créer l'élément de message d'erreur
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.setAttribute('role', 'alert');
+    errorDiv.setAttribute('aria-live', 'assertive');
+    errorDiv.style.cssText = `
+      padding: var(--space-md);
+      background: rgba(244, 67, 54, 0.1);
+      color: var(--color-error);
+      border: 1px solid var(--color-error);
+      border-radius: var(--radius-md);
+      margin: var(--space-md);
+      text-align: center;
+    `;
+    errorDiv.textContent = message;
+
+    // Insérer en haut du container
+    container.insertBefore(errorDiv, container.firstChild);
+
+    // Auto-suppression après 5 secondes
+    setTimeout(() => {
+      errorDiv.remove();
+    }, 5000);
+  }
+
+  /**
+   * Échappe les caractères HTML pour éviter les injections XSS.
+   * @param {string} text - Texte à échapper
+   * @returns {string} Texte échappé
+   * @private
+   */
+  _escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   /**

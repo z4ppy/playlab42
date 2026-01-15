@@ -20,56 +20,56 @@
 <body>
   <div class="app-container">
     <!-- Header -->
-    <header class="app-header">
+    <header class="app-header" role="banner">
       <div class="app-title">
-        <span class="app-title-icon">🎼</span>
+        <span class="app-title-icon" aria-hidden="true">🎼</span>
         <span>Diese & Mat</span>
       </div>
-      <div class="header-actions">
-        <span class="level-badge" id="level-badge">Niveau 1</span>
-        <button class="btn-icon" id="btn-metronome" title="Métronome">🎚️</button>
-        <button class="btn-icon" id="btn-tuner" title="Accordeur">🎯</button>
-        <button class="btn-icon" id="btn-synth" title="Synthétiseur">🎛️</button>
-        <button class="btn-icon" id="btn-piano" title="Clavier piano">🎹</button>
-        <button class="btn-icon" id="btn-memo" title="Mémo musical">📖</button>
-        <button class="btn-icon" id="btn-progress" title="Progression">📊</button>
-        <button class="btn-icon" id="btn-settings" title="Paramètres">⚙️</button>
-      </div>
+      <nav class="header-actions" aria-label="Outils et navigation">
+        <span class="level-badge" id="level-badge" aria-live="polite">Niveau 1</span>
+        <button class="btn-icon" id="btn-metronome" title="Métronome" aria-label="Ouvrir le métronome"><span aria-hidden="true">🎚️</span></button>
+        <button class="btn-icon" id="btn-tuner" title="Accordeur" aria-label="Ouvrir l'accordeur"><span aria-hidden="true">🎯</span></button>
+        <button class="btn-icon" id="btn-synth" title="Synthétiseur" aria-label="Ouvrir le panneau synthétiseur"><span aria-hidden="true">🎛️</span></button>
+        <button class="btn-icon" id="btn-piano" title="Clavier piano" aria-label="Ouvrir le clavier piano"><span aria-hidden="true">🎹</span></button>
+        <button class="btn-icon" id="btn-memo" title="Mémo musical" aria-label="Ouvrir le mémo musical"><span aria-hidden="true">📖</span></button>
+        <button class="btn-icon" id="btn-progress" title="Progression" aria-label="Voir ma progression"><span aria-hidden="true">📊</span></button>
+        <button class="btn-icon" id="btn-settings" title="Paramètres" aria-label="Ouvrir les paramètres"><span aria-hidden="true">⚙️</span></button>
+      </nav>
     </header>
 
     <!-- Audio activation banner (caché par défaut, affiché si erreur) -->
-    <div class="audio-banner hidden" id="audio-banner">
-      <span>🔊</span>
+    <div class="audio-banner hidden" id="audio-banner" role="button" tabindex="0" aria-label="Activer le son">
+      <span aria-hidden="true">🔊</span>
       <span>Cliquez pour activer le son</span>
     </div>
 
     <!-- Main content -->
-    <main class="app-main" id="app-main">
+    <main class="app-main" id="app-main" role="main">
       <!-- Loading state -->
-      <div class="loading" id="loading">
-        <div class="loading-spinner"></div>
+      <div class="loading" id="loading" role="status" aria-live="polite" aria-label="Chargement en cours">
+        <div class="loading-spinner" aria-hidden="true"></div>
         <div class="loading-text">Chargement...</div>
       </div>
 
       <!-- Menu view -->
-      <div id="menu-view"></div>
+      <div id="menu-view" role="region" aria-label="Menu des exercices"></div>
 
       <!-- Exercise view -->
-      <div id="exercise-view"></div>
+      <div id="exercise-view" role="region" aria-label="Zone d'exercice"></div>
 
       <!-- Progress view -->
-      <div id="progress-view"></div>
+      <div id="progress-view" role="region" aria-label="Progression"></div>
 
       <!-- Settings view -->
-      <div id="settings-view"></div>
+      <div id="settings-view" role="region" aria-label="Paramètres"></div>
     </main>
 
     <!-- Memo popup -->
-    <div class="memo-overlay" id="memo-overlay">
+    <div class="memo-overlay" id="memo-overlay" role="dialog" aria-modal="true" aria-labelledby="memo-title">
       <div class="memo-popup">
         <div class="memo-header">
-          <span class="memo-title">📖 Mémo Musical</span>
-          <button class="memo-close" id="memo-close">&times;</button>
+          <span class="memo-title" id="memo-title"><span aria-hidden="true">📖</span> Mémo Musical</span>
+          <button class="memo-close" id="memo-close" aria-label="Fermer le mémo">&times;</button>
         </div>
         <div class="memo-content">
           <!-- Section: Notes -->
@@ -253,11 +253,11 @@
     </div>
 
     <!-- Piano popup -->
-    <div class="piano-overlay" id="piano-overlay">
+    <div class="piano-overlay" id="piano-overlay" role="dialog" aria-modal="true" aria-labelledby="piano-title">
       <div class="piano-popup">
         <div class="piano-header">
-          <span class="piano-title">🎹 Clavier</span>
-          <button class="piano-close" id="piano-close">&times;</button>
+          <span class="piano-title" id="piano-title"><span aria-hidden="true">🎹</span> Clavier</span>
+          <button class="piano-close" id="piano-close" aria-label="Fermer le clavier">&times;</button>
         </div>
 
         <!-- Contrôles -->
@@ -325,11 +325,11 @@
     </div>
 
     <!-- Synth panel popup -->
-    <div class="synth-overlay" id="synth-overlay">
+    <div class="synth-overlay" id="synth-overlay" role="dialog" aria-modal="true" aria-labelledby="synth-title">
       <div class="synth-popup">
         <div class="synth-header">
-          <span class="synth-title">🎛️ Synthétiseur</span>
-          <button class="synth-close" id="synth-close">&times;</button>
+          <span class="synth-title" id="synth-title"><span aria-hidden="true">🎛️</span> Synthétiseur</span>
+          <button class="synth-close" id="synth-close" aria-label="Fermer le synthétiseur">&times;</button>
         </div>
         <div class="synth-content">
           <!-- Presets d'instruments -->
@@ -591,11 +591,11 @@
     </div>
 
     <!-- Metronome panel popup -->
-    <div class="metronome-overlay" id="metronome-overlay">
+    <div class="metronome-overlay" id="metronome-overlay" role="dialog" aria-modal="true" aria-labelledby="metronome-title">
       <div class="metronome-popup">
         <div class="metronome-header">
-          <span class="metronome-title">🎚️ Métronome</span>
-          <button class="metronome-close" id="metronome-close">&times;</button>
+          <span class="metronome-title" id="metronome-title"><span aria-hidden="true">🎚️</span> Métronome</span>
+          <button class="metronome-close" id="metronome-close" aria-label="Fermer le métronome">&times;</button>
         </div>
         <div class="metronome-content">
           <!-- Affichage BPM -->
@@ -644,11 +644,11 @@
     </div>
 
     <!-- Tuner panel popup -->
-    <div class="tuner-overlay" id="tuner-overlay">
+    <div class="tuner-overlay" id="tuner-overlay" role="dialog" aria-modal="true" aria-labelledby="tuner-title">
       <div class="tuner-popup">
         <div class="tuner-header">
-          <span class="tuner-title">🎯 Accordeur</span>
-          <button class="tuner-close" id="tuner-close">&times;</button>
+          <span class="tuner-title" id="tuner-title"><span aria-hidden="true">🎯</span> Accordeur</span>
+          <button class="tuner-close" id="tuner-close" aria-label="Fermer l'accordeur">&times;</button>
         </div>
         <div class="tuner-content">
           <!-- Note détectée -->
