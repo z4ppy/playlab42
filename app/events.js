@@ -14,7 +14,7 @@ import { switchTab, registerRenderCallbacks } from './tabs.js';
 import { renderCatalogue } from './catalogue.js';
 import { renderParcours, openEpic, selectParcoursCategory } from './parcours.js';
 import { renderBookmarks, selectBookmarkTag, showBookmarkPreview, hideBookmarkPreview } from './bookmarks.js';
-import { loadGame, unloadGame, toggleFullscreen, toggleSound } from './game-loader.js';
+import { unloadGame, toggleFullscreen, toggleSound } from './game-loader.js';
 import { showSettings, hideSettings, setSoundPreference, setThemePreference, clearAllData } from './settings.js';
 
 /**
@@ -28,12 +28,10 @@ export function setupEventListeners() {
     renderBookmarks,
   });
 
-  // === Catalogue - click sur carte (délégation) ===
-  delegate(document, 'click', '.card', (card) => {
-    const { path, id, type } = card.dataset;
-    const name = card.querySelector('h3').textContent;
-    loadGame(path, name, type, id);
-  });
+  // === Catalogue - click sur carte (délégation via lien hash) ===
+  // Les cards sont maintenant des liens avec href="#/games/:id" ou href="#/tools/:id"
+  // Le routeur gère automatiquement le changement de hash via l'événement hashchange
+  // Donc pas besoin de handler spécial ici - le navigateur fait le travail
 
   // === Catalogue - onglets ===
   on(el.tabParcours, 'click', () => switchTab('parcours'));

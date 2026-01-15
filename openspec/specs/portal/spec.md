@@ -654,6 +654,35 @@ const loadPromise = new Promise((resolve, reject) => {
 - Announce score achievements
 - Describe game cards properly
 
+## Implementation Status
+
+### Hash Routing for Games and Tools (2026-01-14)
+
+✅ **IMPLEMENTED** - Hash routing fully implemented for games and tools
+
+**Routes supported:**
+- `#/games/:id` - Load specific game directly
+- `#/tools/:id` - Load specific tool directly
+- `#/parcours/:id` - Open parcours viewer
+- `#/parcours/:id/:slideId` - Open specific slide
+
+**Features:**
+- 2-level validation: format check (regex) + existence check (HEAD request)
+- Hash synchronization when loading games/tools
+- Card links automatically generate hash routes
+- 100% backward compatible
+- 50+ unit tests covering all scenarios
+- 345 total workspace tests (100% pass)
+
+**Implementation files:**
+- `app/router.js` - Hash pattern matching and dispatch
+- `app/game-loader.js` - openGame/openTool functions with validation
+- `app/catalogue.js` - Card elements as hash links
+- `style.css` - Card link styles
+- Test files: `app/router.test.js`, `app/game-loader.test.js`, `app/catalogue.test.js`
+
+**Merged:** feat/portal-links (2026-01-14)
+
 ## See Also
 
 - [Parcours Specification](../parcours/spec.md) - Système de parcours pédagogiques

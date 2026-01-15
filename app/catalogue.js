@@ -75,7 +75,7 @@ export function renderFilters() {
 }
 
 /**
- * Crée un élément carte
+ * Crée un élément carte avec lien hash
  * @param {Object} item - Données du jeu/outil
  * @param {string} type - Type ('game' ou 'tool')
  * @returns {DocumentFragment} Fragment DOM
@@ -88,7 +88,17 @@ export function createCardElement(item, type) {
   const desc = fragment.querySelector('p');
   const tagsContainer = fragment.querySelector('.card-tags');
 
-  // Data attributes
+  // Générer le lien hash basé sur le type
+  const hashLink = type === 'game' ? `#/games/${item.id}` : `#/tools/${item.id}`;
+
+  // Transformer la card en lien
+  const link = document.createElement('a');
+  link.href = hashLink;
+  link.className = 'card-link';
+  link.dataset.id = item.id;
+  link.dataset.type = type;
+
+  // Copier les attributs de la card
   card.dataset.id = item.id;
   card.dataset.type = type;
   card.dataset.path = item.path;
@@ -121,6 +131,11 @@ export function createCardElement(item, type) {
       tagsContainer.appendChild(tagFragment);
     }
   }
+
+  // Insérer la card dans le lien
+  link.appendChild(card);
+  fragment.textContent = '';
+  fragment.appendChild(link);
 
   return fragment;
 }
