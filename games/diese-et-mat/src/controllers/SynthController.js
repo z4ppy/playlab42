@@ -14,18 +14,7 @@ import { AudioEngine } from '../audio/AudioEngine.js';
 // Constantes
 // ============================================================================
 
-/** Types d'oscillateurs disponibles */
-const OSCILLATOR_TYPES = ['sine', 'triangle', 'square', 'sawtooth'];
-
-/** Descriptions des types de synthèse */
-const SYNTH_TYPE_DESCRIPTIONS = {
-  poly: 'Synthèse soustractive classique avec oscillateur et filtre.',
-  fm: 'Synthèse FM (modulation de fréquence) pour des sons brillants et métalliques.',
-  pluck: 'Modélisation physique de cordes pincées (Karplus-Strong).',
-  membrane: 'Modélisation physique de membranes (percussions à peau).',
-  metal: 'Modélisation physique de métaux (cymbales, cloches).',
-  noise: 'Synthèse de bruit pour percussions (caisse claire).',
-};
+/* Note: Les types d'oscillateurs et de synthèse sont définis dans les select HTML */
 
 // ============================================================================
 // Classe SynthController
@@ -40,10 +29,6 @@ export class SynthController extends EventEmitter {
    *
    * @param {Object} elements - Références aux éléments DOM
    * @param {HTMLElement} elements.overlay - Overlay du panneau
-   * @param {HTMLElement} elements.presetsContainer - Container des presets
-   * @param {HTMLElement} elements.oscillatorsContainer - Container des oscillateurs
-   * @param {HTMLElement} elements.typeTabs - Container des onglets de type
-   * @param {HTMLElement} elements.typeInfo - Info du type sélectionné
    * @param {Object} options - Options
    * @param {SynthManager} options.synthManager - Instance du SynthManager
    */
@@ -111,13 +96,14 @@ export class SynthController extends EventEmitter {
     // Écouter les événements du SynthManager
     this._setupSynthManagerListeners();
 
-    // Initialiser l'UI
-    this._renderPresets();
-    this._renderOscillators();
-    this._setupTypeTabs();
+    // Initialiser l'UI (avec les nouveaux select dropdowns)
+    this._setupPresetSelect();
+    this._setupTypeSelect();
+    this._setupOscillatorSelect();
+    this._setupCompactEffects();
+    this._setupTestButton();
     this._setupADSRSliders();
     this._setupSynthTypeSliders();
-    this._setupEffectsControls();
 
     // Mettre à jour l'UI avec la config actuelle
     this._updateUI();
@@ -131,8 +117,8 @@ export class SynthController extends EventEmitter {
    */
   _setupSynthManagerListeners() {
     const handlers = [
-      ['preset-changed', ({ preset }) => this._updatePresetButtons(preset)],
-      ['oscillator-changed', ({ oscillator }) => this._updateOscillatorButtons(oscillator)],
+      ['preset-changed', ({ preset }) => this._updatePresetSelect(preset)],
+      ['oscillator-changed', ({ oscillator }) => this._updateOscillatorSelect(oscillator)],
       ['envelope-changed', ({ envelope }) => this._updateADSRSliders(envelope)],
       ['effect-changed', ({ effectName, config }) => this._updateEffectUI(effectName, config)],
       ['config-changed', () => this._updateSynthTypeSliders()],
@@ -145,35 +131,53 @@ export class SynthController extends EventEmitter {
   }
 
   // --------------------------------------------------------------------------
-  // Presets
+  // Presets (select dropdown)
   // --------------------------------------------------------------------------
 
   /**
-   * Génère les boutons de presets.
+   * Configure le select des presets avec optgroups par catégorie.
    * @private
    */
-  _renderPresets() {
-    const container = this.elements.presetsContainer;
-    if (!container) {return;}
+  _setupPresetSelect() {
+    const select = document.getElementById('synth-preset-select');
+    if (!select) {return;}
 
     const presets = AudioEngine.getPresets();
     const currentPreset = this.synthManager.preset;
 
-    container.innerHTML = '';
+    // Catégories de presets
+    const categories = {
+      'Claviers': ['piano', 'electricPiano', 'organ'],
+      'Guitares': ['guitarClassic', 'guitarFolk', 'guitarElectric'],
+      'Synthés': ['synthLead', 'retro8bit', 'bell'],
+      'Percussions': ['percKick', 'percSnare', 'percTom', 'percWood', 'percHihat', 'percCymbal'],
+    };
 
-    for (const [key, preset] of Object.entries(presets)) {
-      const btn = document.createElement('button');
-      btn.className = 'synth-preset-btn';
-      btn.dataset.preset = key;
-      btn.textContent = preset.name;
+    select.innerHTML = '';
 
-      if (currentPreset === key) {
-        btn.classList.add('active');
+    for (const [categoryName, presetKeys] of Object.entries(categories)) {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = categoryName;
+
+      for (const key of presetKeys) {
+        if (presets[key]) {
+          const option = document.createElement('option');
+          option.value = key;
+          option.textContent = presets[key].name;
+          if (key === currentPreset) {
+            option.selected = true;
+          }
+          optgroup.appendChild(option);
+        }
       }
 
-      btn.addEventListener('click', () => this._selectPreset(key));
-      container.appendChild(btn);
+      select.appendChild(optgroup);
     }
+
+    // Listener
+    select.addEventListener('change', () => {
+      this._selectPreset(select.value);
+    });
   }
 
   /**
@@ -184,99 +188,100 @@ export class SynthController extends EventEmitter {
    */
   async _selectPreset(presetName) {
     await this.synthManager.setPreset(presetName);
-    this._updateSynthSections();
+    this._updateTypedControls();
     this.emit('preset-selected', { preset: presetName });
   }
 
   /**
-   * Met à jour les boutons de presets.
+   * Met à jour le select des presets.
    * @private
    *
    * @param {string} activePreset - Preset actif
    */
-  _updatePresetButtons(activePreset) {
-    const buttons = this.elements.presetsContainer?.querySelectorAll('.synth-preset-btn');
-    if (!buttons) {return;}
+  _updatePresetSelect(activePreset) {
+    const select = document.getElementById('synth-preset-select');
+    if (select) {
+      select.value = activePreset;
+    }
+  }
 
-    buttons.forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.preset === activePreset);
+  // --------------------------------------------------------------------------
+  // Type de synthèse (select dropdown)
+  // --------------------------------------------------------------------------
+
+  /**
+   * Configure le select du type de synthèse.
+   * @private
+   */
+  _setupTypeSelect() {
+    const select = document.getElementById('synth-type-select');
+    if (!select) {return;}
+
+    const currentType = this.synthManager.getCurrentSynthType();
+    select.value = currentType;
+
+    select.addEventListener('change', () => {
+      this._selectSynthType(select.value);
+    });
+
+    // Mise à jour initiale des contrôles typés
+    this._updateTypedControls();
+  }
+
+  /**
+   * Sélectionne un type de synthèse.
+   * @private
+   *
+   * @param {string} synthType - Type de synthèse
+   */
+  _selectSynthType(synthType) {
+    // Changer le type dans SynthManager
+    if (this.synthManager.isAudioReady) {
+      this.synthManager.audioEngine.setSynthType(synthType);
+    }
+
+    // Mettre à jour les contrôles visibles
+    this._updateTypedControls();
+  }
+
+  /**
+   * Met à jour la visibilité des contrôles selon le type de synthèse.
+   * @private
+   */
+  _updateTypedControls() {
+    const currentType = this.synthManager.getCurrentSynthType();
+
+    // Mettre à jour le select type
+    const typeSelect = document.getElementById('synth-type-select');
+    if (typeSelect) {
+      typeSelect.value = currentType;
+    }
+
+    // Afficher/masquer les contrôles selon le type
+    document.querySelectorAll('.synth-typed-control').forEach((control) => {
+      const types = control.dataset.types?.split(',') || [];
+      control.classList.toggle('visible', types.includes(currentType));
     });
   }
 
   // --------------------------------------------------------------------------
-  // Oscillateurs
+  // Oscillateur (select dropdown - poly uniquement)
   // --------------------------------------------------------------------------
 
   /**
-   * Génère les boutons d'oscillateurs.
+   * Configure le select de l'oscillateur.
    * @private
    */
-  _renderOscillators() {
-    const container = this.elements.oscillatorsContainer;
-    if (!container) {return;}
+  _setupOscillatorSelect() {
+    const select = document.getElementById('synth-osc-select');
+    if (!select) {return;}
 
     const currentOsc = this.synthManager.oscillator;
+    select.value = currentOsc;
 
-    container.innerHTML = '';
-
-    for (const type of OSCILLATOR_TYPES) {
-      const btn = document.createElement('button');
-      btn.className = 'synth-osc-btn';
-      btn.dataset.oscillator = type;
-
-      // Icône de la forme d'onde
-      const icon = document.createElement('span');
-      icon.className = 'osc-icon';
-      icon.innerHTML = this._getOscillatorIcon(type);
-
-      const label = document.createElement('span');
-      label.className = 'osc-label';
-      label.textContent = this._getOscillatorLabel(type);
-
-      btn.appendChild(icon);
-      btn.appendChild(label);
-
-      if (currentOsc === type) {
-        btn.classList.add('active');
-      }
-
-      btn.addEventListener('click', () => this._selectOscillator(type));
-      container.appendChild(btn);
-    }
-  }
-
-  /**
-   * Retourne l'icône SVG d'un oscillateur.
-   * @private
-   *
-   * @param {string} type - Type d'oscillateur
-   * @returns {string} SVG
-   */
-  _getOscillatorIcon(type) {
-    const icons = {
-      sine: '<svg viewBox="0 0 24 12"><path d="M0,6 Q3,0 6,6 T12,6 T18,6 T24,6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
-      triangle: '<svg viewBox="0 0 24 12"><path d="M0,6 L3,0 L9,12 L15,0 L21,12 L24,6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
-      square: '<svg viewBox="0 0 24 12"><path d="M0,10 L0,2 L6,2 L6,10 L12,10 L12,2 L18,2 L18,10 L24,10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
-      sawtooth: '<svg viewBox="0 0 24 12"><path d="M0,10 L6,2 L6,10 L12,2 L12,10 L18,2 L18,10 L24,2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
-    };
-    return icons[type] || icons.sine;
-  }
-
-  /**
-   * Retourne le label d'un oscillateur.
-   * @private
-   *
-   * @param {string} type - Type
-   * @returns {string}
-   */
-  _getOscillatorLabel(type) {
-    const labels = {
-      sine: 'Sinusoïde',
-      triangle: 'Triangle',
-      square: 'Carré',
-      sawtooth: 'Dent de scie',
-    };
-    return labels[type] || type;
+    select.addEventListener('change', () => {
+      this._selectOscillator(select.value);
+    });
   }
 
   /**
@@ -291,90 +296,16 @@ export class SynthController extends EventEmitter {
   }
 
   /**
-   * Met à jour les boutons d'oscillateurs.
+   * Met à jour le select d'oscillateur.
    * @private
    *
    * @param {string} activeOsc - Oscillateur actif
    */
-  _updateOscillatorButtons(activeOsc) {
-    const buttons = this.elements.oscillatorsContainer?.querySelectorAll('.synth-osc-btn');
-    if (!buttons) {return;}
-
-    buttons.forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.oscillator === activeOsc);
-    });
-  }
-
-  // --------------------------------------------------------------------------
-  // Types de synthèse
-  // --------------------------------------------------------------------------
-
-  /**
-   * Configure les onglets de type de synthèse.
-   * @private
-   */
-  _setupTypeTabs() {
-    const container = this.elements.typeTabs;
-    if (!container) {return;}
-
-    container.querySelectorAll('.synth-type-tab').forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const type = tab.dataset.type;
-        this._selectSynthType(type);
-      });
-    });
-
-    this._updateSynthSections();
-  }
-
-  /**
-   * Sélectionne un type de synthèse.
-   * @private
-   *
-   * @param {string} synthType - Type de synthèse
-   */
-  _selectSynthType(synthType) {
-    // Mettre à jour l'onglet actif
-    this.elements.typeTabs?.querySelectorAll('.synth-type-tab').forEach((tab) => {
-      tab.classList.toggle('active', tab.dataset.type === synthType);
-    });
-
-    // Mettre à jour la description
-    if (this.elements.typeInfo) {
-      this.elements.typeInfo.textContent = SYNTH_TYPE_DESCRIPTIONS[synthType] || '';
+  _updateOscillatorSelect(activeOsc) {
+    const select = document.getElementById('synth-osc-select');
+    if (select) {
+      select.value = activeOsc;
     }
-
-    // Changer le type dans SynthManager
-    if (this.synthManager.isAudioReady) {
-      this.synthManager.audioEngine.setSynthType(synthType);
-    }
-
-    // Mettre à jour les sections visibles
-    this._updateSynthSections();
-  }
-
-  /**
-   * Met à jour la visibilité des sections selon le type de synthèse.
-   * @private
-   */
-  _updateSynthSections() {
-    const currentType = this.synthManager.getCurrentSynthType();
-
-    // Mettre à jour les onglets
-    this.elements.typeTabs?.querySelectorAll('.synth-type-tab').forEach((tab) => {
-      tab.classList.toggle('active', tab.dataset.type === currentType);
-    });
-
-    // Mettre à jour l'info
-    if (this.elements.typeInfo) {
-      this.elements.typeInfo.textContent = SYNTH_TYPE_DESCRIPTIONS[currentType] || '';
-    }
-
-    // Afficher/masquer les sections selon le type
-    document.querySelectorAll('.synth-section-typed').forEach((section) => {
-      const types = section.dataset.types?.split(',') || [];
-      section.classList.toggle('hidden', !types.includes(currentType));
-    });
   }
 
   // --------------------------------------------------------------------------
@@ -556,90 +487,90 @@ export class SynthController extends EventEmitter {
   }
 
   // --------------------------------------------------------------------------
-  // Effets
+  // Effets compacts (toolbar)
   // --------------------------------------------------------------------------
 
   /**
-   * Configure les contrôles d'effets.
+   * Configure les contrôles d'effets compacts de la toolbar.
    * @private
    */
-  _setupEffectsControls() {
+  _setupCompactEffects() {
     const effects = this.synthManager.effects;
 
     // Reverb
-    this._setupEffectControl('reverb', {
-      enabled: effects.reverb.enabled,
-      params: [
-        {
-          id: 'reverb-amount',
-          min: 0,
-          max: 1,
-          value: effects.reverb.amount,
-          toDisplay: (v) => `${Math.round(v * 100)}%`,
-          onChange: (v) => this.synthManager.setEffect('reverb', { amount: v }),
-        },
-      ],
+    this._setupCompactEffect('reverb', {
+      enabled: effects.reverb?.enabled || false,
+      slider: {
+        id: 'synth-fx-reverb-amount',
+        min: 0,
+        max: 100,
+        value: (effects.reverb?.amount || 0.3) * 100,
+        onChange: (v) => this.synthManager.setEffect('reverb', { amount: v / 100 }),
+      },
     });
 
     // Delay
-    this._setupEffectControl('delay', {
-      enabled: effects.delay.enabled,
-      params: [
-        {
-          id: 'delay-time',
-          min: 0.05,
-          max: 1,
-          value: effects.delay.time,
-          toDisplay: (v) => `${(v * 1000).toFixed(0)}ms`,
-          onChange: (v) => this.synthManager.setEffect('delay', { time: v }),
-        },
-        {
-          id: 'delay-feedback',
-          min: 0,
-          max: 0.9,
-          value: effects.delay.feedback,
-          toDisplay: (v) => `${Math.round(v * 100)}%`,
-          onChange: (v) => this.synthManager.setEffect('delay', { feedback: v }),
-        },
-      ],
+    this._setupCompactEffect('delay', {
+      enabled: effects.delay?.enabled || false,
+      slider: {
+        id: 'synth-fx-delay-time',
+        min: 10,
+        max: 1000,
+        value: (effects.delay?.time || 0.2) * 1000,
+        onChange: (v) => this.synthManager.setEffect('delay', { time: v / 1000 }),
+      },
     });
 
     // Filter
-    this._setupEffectControl('filter', {
-      enabled: effects.filter.enabled,
-      params: [
-        {
-          id: 'filter-frequency',
-          min: 100,
-          max: 10000,
-          value: effects.filter.frequency,
-          toDisplay: (v) => `${Math.round(v)} Hz`,
-          onChange: (v) => this.synthManager.setEffect('filter', { frequency: v }),
-        },
-      ],
+    this._setupCompactEffect('filter', {
+      enabled: effects.filter?.enabled || false,
+      slider: {
+        id: 'synth-fx-filter-freq',
+        min: 100,
+        max: 10000,
+        value: effects.filter?.frequency || 2000,
+        onChange: (v) => this.synthManager.setEffect('filter', { frequency: v }),
+      },
     });
   }
 
   /**
-   * Configure un contrôle d'effet.
+   * Configure un effet compact.
    * @private
    *
    * @param {string} effectName - Nom de l'effet
    * @param {Object} config - Configuration
    */
-  _setupEffectControl(effectName, config) {
-    // Checkbox enable/disable
-    const checkbox = document.getElementById(`synth-${effectName}-enabled`);
+  _setupCompactEffect(effectName, config) {
+    // Checkbox
+    const checkbox = document.getElementById(`synth-fx-${effectName}`);
+    const slider = document.getElementById(config.slider.id);
+
     if (checkbox) {
       checkbox.checked = config.enabled;
+
+      // Activer/désactiver le slider selon la checkbox
+      if (slider) {
+        slider.disabled = !config.enabled;
+      }
+
       checkbox.addEventListener('change', () => {
         this.synthManager.toggleEffect(effectName, checkbox.checked);
+        if (slider) {
+          slider.disabled = !checkbox.checked;
+        }
       });
     }
 
-    // Sliders des paramètres
-    for (const param of config.params) {
-      this._setupSlider(param.id, param);
+    // Slider
+    if (slider) {
+      slider.min = config.slider.min;
+      slider.max = config.slider.max;
+      slider.value = config.slider.value;
+
+      slider.addEventListener('input', () => {
+        config.slider.onChange(parseFloat(slider.value));
+      });
     }
   }
 
@@ -652,23 +583,65 @@ export class SynthController extends EventEmitter {
    */
   _updateEffectUI(effectName, config) {
     // Checkbox
-    const checkbox = document.getElementById(`synth-${effectName}-enabled`);
+    const checkbox = document.getElementById(`synth-fx-${effectName}`);
     if (checkbox) {
       checkbox.checked = config.enabled;
     }
 
-    // Paramètres selon l'effet
+    // Slider selon l'effet
     switch (effectName) {
-      case 'reverb':
-        this._updateSliderValue('reverb-amount', config.amount, (v) => `${Math.round(v * 100)}%`);
+      case 'reverb': {
+        const slider = document.getElementById('synth-fx-reverb-amount');
+        if (slider) {
+          slider.value = (config.amount || 0.3) * 100;
+          slider.disabled = !config.enabled;
+        }
         break;
-      case 'delay':
-        this._updateSliderValue('delay-time', config.time, (v) => `${(v * 1000).toFixed(0)}ms`);
-        this._updateSliderValue('delay-feedback', config.feedback, (v) => `${Math.round(v * 100)}%`);
+      }
+      case 'delay': {
+        const slider = document.getElementById('synth-fx-delay-time');
+        if (slider) {
+          slider.value = (config.time || 0.2) * 1000;
+          slider.disabled = !config.enabled;
+        }
         break;
-      case 'filter':
-        this._updateSliderValue('filter-frequency', config.frequency, (v) => `${Math.round(v)} Hz`);
+      }
+      case 'filter': {
+        const slider = document.getElementById('synth-fx-filter-freq');
+        if (slider) {
+          slider.value = config.frequency || 2000;
+          slider.disabled = !config.enabled;
+        }
         break;
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // Bouton test
+  // --------------------------------------------------------------------------
+
+  /**
+   * Configure le bouton de test du son.
+   * @private
+   */
+  _setupTestButton() {
+    const btn = document.getElementById('synth-test-btn');
+    if (!btn) {return;}
+
+    btn.addEventListener('click', () => {
+      this._testSynthSound();
+    });
+  }
+
+  /**
+   * Joue un son de test.
+   * @private
+   */
+  _testSynthSound() {
+    if (this.synthManager.isAudioReady) {
+      // Jouer un Do4 pendant 0.5s
+      this.synthManager.audioEngine.playNote('C4', '8n');
     }
   }
 
@@ -738,15 +711,17 @@ export class SynthController extends EventEmitter {
   _updateUI() {
     const config = this.synthManager.config;
 
-    this._updatePresetButtons(config.preset);
-    this._updateOscillatorButtons(config.oscillator);
+    this._updatePresetSelect(config.preset);
+    this._updateOscillatorSelect(config.oscillator);
     this._updateADSRSliders(config.envelope);
-    this._updateSynthSections();
+    this._updateTypedControls();
     this._updateSynthTypeSliders();
 
     // Effets
     for (const effectName of ['reverb', 'delay', 'filter']) {
-      this._updateEffectUI(effectName, config.effects[effectName]);
+      if (config.effects && config.effects[effectName]) {
+        this._updateEffectUI(effectName, config.effects[effectName]);
+      }
     }
   }
 

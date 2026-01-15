@@ -1591,6 +1591,211 @@ html, body {
   color: var(--color-text);
 }
 
+/* Toolbar compacte du synth */
+.synth-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.synth-tool-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.synth-tool-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.synth-select {
+  padding: 4px 8px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.synth-select-sm {
+  min-width: 80px;
+}
+
+.synth-select:hover {
+  border-color: var(--color-accent);
+}
+
+.synth-select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2);
+}
+
+.synth-tool-separator {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border);
+  margin: 0 var(--space-xs);
+}
+
+/* Effets compacts du synth */
+.synth-fx-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.synth-fx {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.synth-fx-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.synth-fx-toggle input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+
+.synth-fx-toggle input[type="checkbox"]:checked + span {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.synth-fx-slider {
+  width: 50px;
+  height: 3px;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+
+.synth-fx-slider:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Bouton test compact */
+.synth-test-btn-compact {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.synth-test-btn-compact:hover {
+  transform: scale(1.1);
+}
+
+.synth-test-btn-compact:active {
+  transform: scale(0.95);
+}
+
+/* Panneau de paramètres */
+.synth-params {
+  padding: var(--space-sm) var(--space-md);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.synth-param-section {
+  margin-bottom: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.synth-param-section.hidden {
+  display: none;
+}
+
+.synth-param-title {
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-xs);
+}
+
+.synth-param-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-sm);
+}
+
+.synth-param {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.synth-param label {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.synth-param-slider {
+  width: 100%;
+  height: 4px;
+  accent-color: var(--color-accent);
+}
+
+.synth-param-value {
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+.synth-noise-info {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Contrôles typés (affichés/cachés selon le type de synth) */
+.synth-typed-control {
+  display: none;
+}
+
+.synth-typed-control.visible {
+  display: flex;
+}
+
+.synth-param-section.synth-typed-control.visible {
+  display: block;
+}
+
 .synth-content {
   padding: var(--space-md);
 }
