@@ -2,7 +2,7 @@
  * Bot Random pour Go 9x9
  */
 
-import { SeededRandom } from '/lib/seeded-random.js';
+import { SeededRandom } from '../../../lib/seeded-random.js';
 
 export class RandomBot {
   constructor() {
