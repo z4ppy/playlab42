@@ -1,10 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build
+# Build (générés par npm run build:ts, le workflow deploy.yml les génère)
 dist/
 build/
-*.js.map
 
 # IDE
 .idea/

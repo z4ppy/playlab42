@@ -71,6 +71,12 @@ interface ToolManifest {
 
   /** Version (optionnel, ex: "1.0.0") */
   version?: string;
+
+  /** Langage principal du code source (optionnel, défaut: "javascript") */
+  language?: "javascript" | "typescript";
+
+  /** Point d'entrée TypeScript (optionnel, défaut: "src/main.ts") */
+  entry?: string;
 }
 ```
 
@@ -85,8 +91,10 @@ interface ToolManifest {
 | `author` | string | ❌ | Auteur de l'outil |
 | `icon` | string | ❌ | Emoji représentant l'outil |
 | `version` | string | ❌ | Version semver |
+| `language` | string | ❌ | `"javascript"` (défaut) ou `"typescript"` |
+| `entry` | string | ❌ | Point d'entrée pour TypeScript (défaut: `"src/main.ts"`) |
 
-### Exemple
+### Exemple (JavaScript)
 
 Fichier : `tools/calculator.json`
 
@@ -104,7 +112,25 @@ Fichier : `tools/calculator.json`
 
 Le fichier HTML correspondant : `tools/calculator.html`
 
-### Structure de fichiers
+### Exemple (TypeScript)
+
+Fichier : `tools/particle-life/tool.json`
+
+```json
+{
+  "id": "particle-life",
+  "name": "Particle Life",
+  "description": "Simulateur de vie artificielle avec particules interactives",
+  "tags": ["simulation", "physics", "canvas"],
+  "author": "Cyrille",
+  "icon": "✨",
+  "version": "1.0.0",
+  "language": "typescript",
+  "entry": "src/main.ts"
+}
+```
+
+### Structure de fichiers (JavaScript)
 
 ```
 tools/
@@ -113,6 +139,25 @@ tools/
 ├── json-formatter.html
 ├── json-formatter.json
 └── timer.html           # Pas de manifest = pas dans le catalogue
+```
+
+### Structure de fichiers (TypeScript)
+
+```
+tools/
+└── particle-life/
+    ├── index.html          # Point d'entrée HTML
+    ├── tool.json           # Manifest avec language: "typescript"
+    ├── src/                # Code source TypeScript
+    │   ├── main.ts
+    │   ├── types.ts
+    │   └── Simulation.ts
+    ├── dist/               # Fichiers transpilés (gitignore, généré au build)
+    │   ├── main.js
+    │   ├── types.js
+    │   └── Simulation.js
+    └── __tests__/
+        └── Simulation.test.ts
 ```
 
 ## Game Manifest
@@ -153,7 +198,10 @@ interface GameManifest {
   /** Version (optionnel) */
   version?: string;
 
-  /** Fichier du moteur TypeScript (optionnel, défaut: "engine.ts") */
+  /** Langage du moteur (optionnel, défaut: "javascript") */
+  language?: "javascript" | "typescript";
+
+  /** Chemin du moteur (défaut: "engine.js" ou "engine.ts" selon language) */
   engine?: string;
 
   /** Configuration par défaut (optionnel) */
@@ -183,6 +231,12 @@ interface GameManifest {
 }
 ```
 
+### Logique de résolution du moteur
+
+1. Si `engine` est spécifié → utiliser ce chemin
+2. Si `language: "typescript"` → chercher `engine.ts`
+3. Sinon → chercher `engine.js`
+
 ### Champs
 
 | Champ | Type | Requis | Description |
@@ -207,8 +261,9 @@ interface GameManifest {
 | `bots` | object | ❌ | Configuration des bots IA |
 | `bots.default` | string | ❌ | Nom du bot par défaut |
 | `bots.available` | array | ❌ | Liste des bots disponibles |
+| `language` | string | ❌ | `"javascript"` (défaut) ou `"typescript"` |
 
-### Exemple
+### Exemple (JavaScript)
 
 Fichier : `games/tictactoe/game.json`
 
@@ -245,14 +300,14 @@ Fichier : `games/tictactoe/game.json`
 }
 ```
 
-### Structure de fichiers
+### Structure de fichiers (JavaScript)
 
 ```
 games/
 ├── tictactoe/
 │   ├── index.html       # Point d'entrée standalone
 │   ├── game.js          # Code du jeu
-│   ├── engine.ts        # Moteur de jeu (optionnel)
+│   ├── engine.js        # Moteur de jeu
 │   ├── game.json        # Manifest
 │   ├── thumb.png        # Vignette optionnelle (380x180, 19:9, < 50KB)
 │   ├── bots/            # Bots IA
@@ -260,15 +315,51 @@ games/
 │   │   ├── blocker.js
 │   │   └── perfect.js
 │   └── README.md        # Règles du jeu
-├── snake/
-│   ├── index.html
-│   ├── game.js
-│   ├── game.json
-│   ├── thumb.png
-│   └── README.md
 └── wip-game/            # Pas de game.json = pas dans le catalogue
     └── index.html
 ```
+
+### Structure de fichiers (TypeScript)
+
+```
+games/
+└── connect4/
+    ├── index.html
+    ├── game.json           # Manifest avec language: "typescript"
+    ├── engine.ts           # Moteur en TypeScript
+    ├── dist/               # Fichiers transpilés (gitignore)
+    │   └── engine.js
+    ├── bots/
+    │   ├── random.ts
+    │   └── minimax.ts
+    └── thumb.png
+```
+
+### Exemple (TypeScript)
+
+```json
+{
+  "id": "connect4",
+  "name": "Puissance 4",
+  "description": "Alignez 4 jetons pour gagner",
+  "players": { "min": 2, "max": 2 },
+  "type": "turn-based",
+  "tags": ["strategy", "classic"],
+  "author": "Cyrille",
+  "icon": "🔴",
+  "version": "1.0.0",
+  "language": "typescript",
+  "bots": {
+    "default": "Random",
+    "available": [
+      { "name": "Random", "file": "bots/random.ts", "difficulty": "easy" },
+      { "name": "Minimax", "file": "bots/minimax.ts", "difficulty": "expert" }
+    ]
+  }
+}
+```
+
+**Note** : Le champ `file` des bots accepte les extensions `.js` ou `.ts`. Le système de build transpile automatiquement les fichiers TypeScript.
 
 ## JSON Schema
 
@@ -320,6 +411,16 @@ games/
       "type": "string",
       "pattern": "^\\d+\\.\\d+\\.\\d+$",
       "description": "Version semver"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["javascript", "typescript"],
+      "default": "javascript",
+      "description": "Langage principal du code source"
+    },
+    "entry": {
+      "type": "string",
+      "description": "Point d'entrée TypeScript (ex: src/main.ts)"
     }
   },
   "additionalProperties": false
@@ -404,6 +505,12 @@ games/
     "defaultConfig": {
       "type": "object",
       "description": "Configuration par défaut"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["javascript", "typescript"],
+      "default": "javascript",
+      "description": "Langage du moteur de jeu"
     }
   },
   "additionalProperties": false
@@ -428,6 +535,18 @@ games/
 ❌ games/tictactoe/game.json: players.min (3) > players.max (2)
 ❌ games/snake/game.json: No index.html found in games/snake/
 ⚠️  tools/timer.html: No manifest found, skipping
+```
+
+### Règles de validation TypeScript
+
+1. **Cohérence language/extension** : Si `language: "typescript"`, les fichiers référencés doivent exister en `.ts`
+2. **Entry valide** : Si `entry` est spécifié, le fichier doit exister
+3. **Bots valides** : Les fichiers bots doivent exister (`.js` ou `.ts`)
+
+```
+❌ tools/particle-life/tool.json: entry 'src/main.ts' not found
+❌ games/connect4/game.json: bot file 'bots/minimax.ts' not found
+⚠️ games/connect4/game.json: language is 'typescript' but engine.ts not found, falling back to engine.js
 ```
 
 ## Vignettes (optionnelles)

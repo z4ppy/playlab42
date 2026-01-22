@@ -185,7 +185,14 @@ make test               # Exécute tous les tests (JS + TS)
 # 3. Vérifier avant commit
 make typecheck          # Vérification des types
 make lint               # Lint (exclut dist/)
+make build-ts           # Regénérer les fichiers dist/
 ```
+
+### Déploiement (GitHub Pages)
+
+Les fichiers `dist/` sont **générés automatiquement** par le workflow de déploiement (`deploy.yml`). Pas besoin de les versionner.
+
+Le workflow exécute `npm run build:ts` avant le déploiement, ce qui génère les fichiers JavaScript transpilés pour tous les tools TypeScript.
 
 ### Types disponibles
 
