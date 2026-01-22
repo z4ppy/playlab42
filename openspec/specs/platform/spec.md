@@ -47,13 +47,44 @@ The system SHALL use Docker for all development tools.
 - **WHEN** a new developer joins
 - **THEN** `make init` sets up the complete environment
 
+### Requirement: TypeScript Support
+
+The system SHALL support TypeScript files for tools, games, and epics.
+
+#### Scenario: TypeScript in development
+- **WHEN** a developer creates a `.ts` file in a tool or game
+- **THEN** it can be imported and executed in the browser during development
+
+#### Scenario: TypeScript in production
+- **WHEN** the build script runs
+- **THEN** all `.ts` files are transpiled to `.js` in a `dist/` folder
+
+#### Scenario: Type checking
+- **WHEN** `make typecheck` is executed
+- **THEN** all TypeScript files are validated without transpilation
+
+### Requirement: Mixed JS/TS Support
+
+The system SHALL allow mixing JavaScript and TypeScript files.
+
+#### Scenario: JS imports TS
+- **WHEN** a JavaScript file imports a TypeScript module
+- **THEN** the import resolves correctly (via import map or build)
+
+#### Scenario: TS imports JS
+- **WHEN** a TypeScript file imports a JavaScript module
+- **THEN** the import resolves correctly (with optional `.d.ts` declarations)
+
 ## Stack Technique
 
 | Composant | Choix | Justification |
 |-----------|-------|---------------|
 | **Frontend** | HTML pur | Standalone, pas de build, pédagogique |
+| **Langage** | JavaScript + TypeScript | TypeScript optionnel pour les moteurs et modules |
+| **Type checking** | `tsc --noEmit` | Vérification sans transpilation |
+| **Transpilation** | esbuild | Rapide, support ESM natif |
 | **Catalogue** | JSON généré | Assemblé au build, liste tools/games |
-| **Tests** | Jest | Standard Node.js |
+| **Tests** | Jest + ts-jest | Support JS et TS |
 | **Infra** | Docker | Environnement reproductible |
 
 ## Structure des Dossiers
@@ -63,23 +94,38 @@ playlab42/
 ├── index.html                # Portail principal
 ├── style.css                 # Styles du portail
 ├── app.js                    # Logique du portail
+├── tsconfig.json             # Configuration TypeScript
+├── tsconfig.build.json       # Configuration pour le build
 ├── .claude/                  # Configuration Claude Code
 ├── assets/                   # Assets du portail
 │   └── default-thumb.png     # Vignette par défaut
 ├── lib/                      # Bibliothèques partagées
 │   ├── gamekit.js            # SDK pour les jeux
 │   ├── assets.js             # Loader d'assets
-│   └── seeded-random.js      # PRNG déterministe
+│   ├── seeded-random.js      # PRNG déterministe
+│   └── types/                # Types partagés TypeScript
+│       ├── index.ts          # Types de base (PlayerId, Seed, etc.)
+│       └── game-engine.ts    # Interface GameEngine
 ├── tools/                    # Outils HTML standalone
-│   ├── [tool-name].html      # Un fichier = un outil
-│   └── [tool-name].json      # Manifest
+│   ├── [tool-name].html      # Un fichier = un outil (JS)
+│   ├── [tool-name].json      # Manifest
+│   └── [tool-id]/            # Dossier pour tools TypeScript
+│       ├── index.html        # Point d'entrée HTML
+│       ├── tool.json         # Manifest
+│       ├── src/              # Code source TypeScript
+│       │   ├── main.ts
+│       │   └── *.ts
+│       └── dist/             # Fichiers transpilés (gitignore)
+│           └── *.js
 ├── games/                    # Jeux autonomes
 │   └── [game-id]/
 │       ├── index.html        # Point d'entrée standalone
 │       ├── game.js           # Code du jeu
 │       ├── game.json         # Manifest
 │       ├── thumb.png         # Vignette (200x200)
-│       ├── engine.ts         # Moteur isomorphe (optionnel)
+│       ├── engine.js         # Moteur isomorphe (ou engine.ts)
+│       ├── dist/             # Fichiers transpilés (si TypeScript)
+│       │   └── engine.js
 │       └── bots/             # Bots IA (optionnel)
 │           └── random.js
 ├── parcours/                 # Parcours pédagogiques
@@ -96,6 +142,7 @@ playlab42/
 │   ├── build-catalogue.js    # Génère catalogue.json
 │   ├── build-parcours.js     # Génère parcours.json
 │   ├── build-bookmarks.js    # Génère bookmarks.json
+│   ├── build-typescript.js   # Script de build TypeScript
 │   └── lib/                  # Utilitaires partagés
 │       └── build-utils.js    # Fonctions communes
 ├── docs/                     # Documentation
@@ -122,6 +169,11 @@ make npm CMD="..."     # Commande npm
 # Build
 make build             # Génère catalogue.json
 make build:catalogue   # Alias pour build
+
+# TypeScript
+make typecheck         # Vérifier les types sans transpiler
+make build-ts          # Transpiler *.ts → *.js
+make build-ts:watch    # Mode watch pour le développement
 ```
 
 ### Génération des Catalogues
@@ -198,6 +250,40 @@ Aucun backend requis - tout est statique.
 | Types/classes | PascalCase | `GameEngine` |
 | Fichiers | kebab-case | `game-engine.ts` |
 | Constantes | SCREAMING_SNAKE | `MAX_PLAYERS` |
+
+### Conventions TypeScript
+
+| Élément | Convention | Exemple |
+|---------|------------|---------|
+| Interface | PascalCase + suffixe descriptif | `GameState`, `PlayerAction` |
+| Type alias | PascalCase | `PlayerId`, `CellValue` |
+| Generics | Lettre majuscule | `T`, `S`, `A` |
+| Enum | PascalCase | `GamePhase`, `BotDifficulty` |
+
+### Organisation des fichiers TypeScript
+
+```typescript
+// types.ts - Types partagés du module
+export interface State { /* ... */ }
+export interface Action { /* ... */ }
+export type PlayerId = string;
+
+// Module.ts - Classes et fonctions
+import type { State, Action } from './types.js';
+
+export class Engine {
+  // ...
+}
+```
+
+### Imports TypeScript
+
+```typescript
+// Toujours utiliser l'extension .js dans les imports (même pour .ts)
+// esbuild et le navigateur résolvent correctement
+import { Engine } from './engine.js';
+import type { State } from './types.js';
+```
 
 ## Évolutions Futures
 
