@@ -185,7 +185,21 @@ make test               # Exécute tous les tests (JS + TS)
 # 3. Vérifier avant commit
 make typecheck          # Vérification des types
 make lint               # Lint (exclut dist/)
+make build-ts           # Regénérer les fichiers dist/
 ```
+
+### Déploiement (GitHub Pages)
+
+**IMPORTANT** : Les fichiers `dist/` des tools TypeScript **doivent être versionnés** car GitHub Pages est un hébergement statique sans étape de build.
+
+```bash
+# Avant de commiter un tool TypeScript :
+make build-ts                           # Générer les fichiers dist/
+git add tools/my-tool/dist/*.js         # Ajouter les fichiers JS (pas les .map)
+git commit -m "Ajoute mon tool TypeScript"
+```
+
+Le `.gitignore` contient une exception pour `tools/*/dist/` afin de permettre le versionnement des fichiers transpilés tout en excluant les autres dossiers `dist/` du projet.
 
 ### Types disponibles
 
