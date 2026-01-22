@@ -190,16 +190,9 @@ make build-ts           # Regénérer les fichiers dist/
 
 ### Déploiement (GitHub Pages)
 
-**IMPORTANT** : Les fichiers `dist/` des tools TypeScript **doivent être versionnés** car GitHub Pages est un hébergement statique sans étape de build.
+Les fichiers `dist/` sont **générés automatiquement** par le workflow de déploiement (`deploy.yml`). Pas besoin de les versionner.
 
-```bash
-# Avant de commiter un tool TypeScript :
-make build-ts                           # Générer les fichiers dist/
-git add tools/my-tool/dist/*.js         # Ajouter les fichiers JS (pas les .map)
-git commit -m "Ajoute mon tool TypeScript"
-```
-
-Le `.gitignore` contient une exception pour `tools/*/dist/` afin de permettre le versionnement des fichiers transpilés tout en excluant les autres dossiers `dist/` du projet.
+Le workflow exécute `npm run build:ts` avant le déploiement, ce qui génère les fichiers JavaScript transpilés pour tous les tools TypeScript.
 
 ### Types disponibles
 

@@ -1,14 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build
+# Build (générés par npm run build:ts, le workflow deploy.yml les génère)
 dist/
 build/
-
-# Exception : les tools TypeScript ont besoin de leurs fichiers dist/ versionnés
-# car GitHub Pages est un hébergement statique sans étape de build
-!tools/*/dist/
-tools/*/dist/*.map
 
 # IDE
 .idea/

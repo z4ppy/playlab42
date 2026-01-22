@@ -39,6 +39,9 @@ jobs:
       - name: Installation des dépendances
         run: npm ci
 
+      - name: Build TypeScript (tools)
+        run: npm run build:ts
+
       - name: Build des données (catalogue, parcours, bookmarks)
         run: npm run build
 
