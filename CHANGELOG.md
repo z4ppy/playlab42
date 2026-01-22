@@ -8,6 +8,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [Unreleased]
 
 ### Added
+- **Mastermind** : Jeu de déduction classique (humain décodeur vs ordinateur codeur)
+  - Moteur isomorphe avec génération seedée du code secret
+  - Interface intuitive avec feedback automatique (pions noirs/blancs)
+  - 6 couleurs, 4 pions, 10 tentatives maximum
+  - Tests unitaires complets (>90% coverage)
+  - Déterminisme garanti pour replay
 - Documentation des pipelines CI/CD (`.github/docs/PIPELINES.md`)
 - Guide de déploiement et release (`docs/DEPLOYMENT.md`)
 - Guide de démarrage pour nouveaux contributeurs (`docs/GETTING_STARTED.md`)

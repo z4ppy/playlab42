@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mastermind - Playlab42</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+        max-width: 600px;
+        width: 100%;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 2em;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 0.9em;
+      }
+
+      .game-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 10px;
+      }
+
+      .info-item {
+        text-align: center;
+      }
+
+      .info-label {
+        font-size: 0.8em;
+        color: #666;
+      }
+
+      .info-value {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .attempts-grid {
+        margin-bottom: 20px;
+      }
+
+      .attempt-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        min-height: 60px;
+      }
+
+      .attempt-row.active {
+        background: #e3f2fd;
+        border: 2px solid #2196f3;
+      }
+
+      .attempt-number {
+        width: 40px;
+        font-weight: bold;
+        color: #666;
+      }
+
+      .pegs-container {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .peg {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid #ddd;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: white;
+      }
+
+      .peg:hover {
+        transform: scale(1.1);
+        border-color: #999;
+      }
+
+      .peg.R {
+        background: #f44336;
+        border-color: #c62828;
+      }
+      .peg.B {
+        background: #2196f3;
+        border-color: #1565c0;
+      }
+      .peg.G {
+        background: #4caf50;
+        border-color: #2e7d32;
+      }
+      .peg.Y {
+        background: #ffeb3b;
+        border-color: #f9a825;
+      }
+      .peg.O {
+        background: #ff9800;
+        border-color: #e65100;
+      }
+      .peg.V {
+        background: #9c27b0;
+        border-color: #6a1b9a;
+      }
+
+      .feedback-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+        width: 50px;
+        margin-left: 10px;
+      }
+
+      .feedback-peg {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ddd;
+      }
+
+      .feedback-peg.black {
+        background: #333;
+      }
+
+      .feedback-peg.white {
+        background: #fff;
+        border: 2px solid #333;
+      }
+
+      .color-palette {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f5f5f5;
+        border-radius: 10px;
+      }
+
+      .color-button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 3px solid #ddd;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .color-button:hover {
+        transform: scale(1.15);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .color-button:active {
+        transform: scale(1.05);
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      button {
+        padding: 12px 24px;
+        font-size: 1em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: bold;
+      }
+
+      .btn-primary {
+        background: #4caf50;
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+      }
+
+      .btn-secondary {
+        background: #2196f3;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #1976d2;
+      }
+
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .game-over {
+        text-align: center;
+        padding: 20px;
+        margin-top: 20px;
+        border-radius: 10px;
+        animation: fadeIn 0.5s;
+      }
+
+      .game-over.victory {
+        background: #c8e6c9;
+        color: #2e7d32;
+      }
+
+      .game-over.defeat {
+        background: #ffcdd2;
+        color: #c62828;
+      }
+
+      .game-over h2 {
+        margin-bottom: 10px;
+      }
+
+      .secret-code-reveal {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 15px;
+      }
+
+      .legend {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f5f5f5;
+        border-radius: 10px;
+        font-size: 0.9em;
+      }
+
+      .legend-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .legend-symbol {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .legend-symbol.black {
+        background: #333;
+      }
+
+      .legend-symbol.white {
+        background: #fff;
+        border: 2px solid #333;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 1.5em;
+        }
+
+        .peg {
+          width: 35px;
+          height: 35px;
+        }
+
+        .color-button {
+          width: 45px;
+          height: 45px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎯 Mastermind</h1>
+      <p class="subtitle">
+        🤖 L'ordinateur a choisi un code secret. 👤 Devinez-le en 10 tentatives !
+      </p>
+
+      <div class="game-info">
+        <div class="info-item">
+          <div class="info-label">Tentative</div>
+          <div class="info-value" id="attempt-count">0 / 10</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Statut</div>
+          <div class="info-value" id="game-status">En cours</div>
+        </div>
+      </div>
+
+      <div class="attempts-grid" id="attempts-grid">
+        <!-- Les tentatives précédentes apparaîtront ici -->
+      </div>
+
+      <!-- Tentative en cours -->
+      <div class="attempt-row active" id="current-attempt">
+        <div class="attempt-number">➜</div>
+        <div class="pegs-container" id="current-pegs">
+          <div class="peg" data-index="0"></div>
+          <div class="peg" data-index="1"></div>
+          <div class="peg" data-index="2"></div>
+          <div class="peg" data-index="3"></div>
+        </div>
+      </div>
+
+      <div class="color-palette">
+        <div class="color-button R" data-color="R"></div>
+        <div class="color-button B" data-color="B"></div>
+        <div class="color-button G" data-color="G"></div>
+        <div class="color-button Y" data-color="Y"></div>
+        <div class="color-button O" data-color="O"></div>
+        <div class="color-button V" data-color="V"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-primary" id="submit-btn" disabled>Valider</button>
+        <button class="btn-secondary" id="reset-btn">Nouvelle partie</button>
+      </div>
+
+      <div id="game-over" style="display: none"></div>
+
+      <div class="legend">
+        <div class="legend-title">📖 Légende des indices</div>
+        <div class="legend-item">
+          <div class="legend-symbol black"></div>
+          <span><strong>Noir :</strong> Couleur correcte ET bien placée</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-symbol white"></div>
+          <span><strong>Blanc :</strong> Couleur correcte MAIS mal placée</span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { MastermindEngine } from './engine.js';
+
+      const engine = new MastermindEngine();
+      const COLORS = ['R', 'B', 'G', 'Y', 'O', 'V'];
+      let state = null;
+      let currentCode = ['', '', '', ''];
+      let currentPegIndex = 0;
+
+      // Éléments DOM
+      const attemptsGrid = document.getElementById('attempts-grid');
+      const currentAttempt = document.getElementById('current-attempt');
+      const currentPegs = document.getElementById('current-pegs');
+      const submitBtn = document.getElementById('submit-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const attemptCount = document.getElementById('attempt-count');
+      const gameStatus = document.getElementById('game-status');
+      const gameOverDiv = document.getElementById('game-over');
+
+      // Initialiser le jeu
+      function initGame() {
+        const seed = Date.now();
+        state = engine.init({ seed, playerId: 'human' });
+        currentCode = ['', '', '', ''];
+        currentPegIndex = 0;
+        attemptsGrid.innerHTML = '';
+        gameOverDiv.style.display = 'none';
+        currentAttempt.style.display = 'flex';
+        updateUI();
+      }
+
+      // Mettre à jour l'interface
+      function updateUI() {
+        const view = engine.getPlayerView(state, 'human');
+        attemptCount.textContent = `${view.attempts.length} / ${view.maxAttempts}`;
+
+        // Mettre à jour le statut
+        if (view.gameOver) {
+          if (view.winner) {
+            gameStatus.textContent = '🎉 Victoire !';
+            gameStatus.style.color = '#2e7d32';
+          } else {
+            gameStatus.textContent = '😔 Défaite';
+            gameStatus.style.color = '#c62828';
+          }
+        } else {
+          gameStatus.textContent = 'En cours';
+          gameStatus.style.color = '#333';
+        }
+
+        // Afficher les tentatives précédentes
+        attemptsGrid.innerHTML = '';
+        view.attempts.forEach((attempt, index) => {
+          const row = createAttemptRow(index + 1, attempt.code, attempt.feedback);
+          attemptsGrid.appendChild(row);
+        });
+
+        // Mettre à jour la tentative en cours
+        updateCurrentAttempt();
+
+        // Bouton submit
+        const isComplete = currentCode.every((c) => c !== '');
+        submitBtn.disabled = !isComplete || view.gameOver;
+
+        // Afficher le game over si nécessaire
+        if (view.gameOver) {
+          showGameOver(view);
+        }
+      }
+
+      // Créer une ligne de tentative
+      function createAttemptRow(number, code, feedback) {
+        const row = document.createElement('div');
+        row.className = 'attempt-row';
+
+        const numDiv = document.createElement('div');
+        numDiv.className = 'attempt-number';
+        numDiv.textContent = number;
+        row.appendChild(numDiv);
+
+        const pegsContainer = document.createElement('div');
+        pegsContainer.className = 'pegs-container';
+
+        code.forEach((color) => {
+          const peg = document.createElement('div');
+          peg.className = `peg ${color}`;
+          pegsContainer.appendChild(peg);
+        });
+
+        row.appendChild(pegsContainer);
+
+        // Feedback
+        const feedbackContainer = document.createElement('div');
+        feedbackContainer.className = 'feedback-container';
+
+        for (let i = 0; i < feedback.black; i++) {
+          const feedbackPeg = document.createElement('div');
+          feedbackPeg.className = 'feedback-peg black';
+          feedbackContainer.appendChild(feedbackPeg);
+        }
+
+        for (let i = 0; i < feedback.white; i++) {
+          const feedbackPeg = document.createElement('div');
+          feedbackPeg.className = 'feedback-peg white';
+          feedbackContainer.appendChild(feedbackPeg);
+        }
+
+        // Compléter avec des pegs vides
+        const totalPegs = feedback.black + feedback.white;
+        for (let i = totalPegs; i < 4; i++) {
+          const feedbackPeg = document.createElement('div');
+          feedbackPeg.className = 'feedback-peg';
+          feedbackContainer.appendChild(feedbackPeg);
+        }
+
+        row.appendChild(feedbackContainer);
+
+        return row;
+      }
+
+      // Mettre à jour la tentative en cours
+      function updateCurrentAttempt() {
+        const pegs = currentPegs.querySelectorAll('.peg');
+        pegs.forEach((peg, index) => {
+          peg.className = 'peg';
+          if (currentCode[index]) {
+            peg.classList.add(currentCode[index]);
+          }
+        });
+      }
+
+      // Click sur une couleur
+      document.querySelectorAll('.color-button').forEach((button) => {
+        button.addEventListener('click', () => {
+          const color = button.dataset.color;
+
+          // Trouver la première position vide
+          const emptyIndex = currentCode.findIndex((c) => c === '');
+          if (emptyIndex !== -1) {
+            currentCode[emptyIndex] = color;
+            updateUI();
+          }
+        });
+      });
+
+      // Click sur un peg de la tentative en cours pour changer la couleur
+      currentPegs.addEventListener('click', (e) => {
+        if (e.target.classList.contains('peg')) {
+          const index = parseInt(e.target.dataset.index);
+          if (currentCode[index]) {
+            // Cycle vers la couleur suivante
+            const currentColorIndex = COLORS.indexOf(currentCode[index]);
+            const nextColorIndex = (currentColorIndex + 1) % COLORS.length;
+            currentCode[index] = COLORS[nextColorIndex];
+          } else {
+            // Mettre la première couleur
+            currentCode[index] = COLORS[0];
+          }
+          updateUI();
+        }
+      });
+
+      // Bouton submit
+      submitBtn.addEventListener('click', () => {
+        if (currentCode.every((c) => c !== '')) {
+          const action = { type: 'submit', code: currentCode };
+          state = engine.applyAction(state, action, 'human');
+          currentCode = ['', '', '', ''];
+          updateUI();
+        }
+      });
+
+      // Bouton reset
+      resetBtn.addEventListener('click', () => {
+        if (confirm('Voulez-vous vraiment recommencer une nouvelle partie ?')) {
+          initGame();
+        }
+      });
+
+      // Afficher le game over
+      function showGameOver(view) {
+        currentAttempt.style.display = 'none';
+
+        let html = '';
+        if (view.winner) {
+          html = '<div class="game-over victory">';
+          html += '<h2>🎉 Bravo ! Vous avez gagné !</h2>';
+          html += `<p>Vous avez trouvé le code en ${view.attempts.length} tentative(s).</p>`;
+        } else {
+          html = '<div class="game-over defeat">';
+          html += '<h2>😔 Perdu !</h2>';
+          html += '<p>Vous avez épuisé vos 10 tentatives.</p>';
+        }
+
+        // Révéler le code secret
+        if (state.secretCode) {
+          html += '<p><strong>Le code secret était :</strong></p>';
+          html += '<div class="secret-code-reveal">';
+          state.secretCode.forEach((color) => {
+            html += `<div class="peg ${color}"></div>`;
+          });
+          html += '</div>';
+        }
+
+        html += '</div>';
+
+        gameOverDiv.innerHTML = html;
+        gameOverDiv.style.display = 'block';
+      }
+
+      // Démarrer le jeu
+      initGame();
+    </script>
+  </body>
+</html>
