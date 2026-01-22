@@ -3,7 +3,7 @@
  * @see openspec/specs/parcours/spec.md
  */
 
-import { ParcoursGlossary } from '/lib/parcours/ParcoursGlossary.js';
+import { ParcoursGlossary } from '../../lib/parcours/ParcoursGlossary.js';
 
 /** @type {ParcoursGlossary|null} Instance globale du glossaire pour la slide */
 let _glossaryInstance = null;
@@ -24,7 +24,7 @@ let _glossaryInstance = null;
  */
 export async function initSlide() {
   // Importer et initialiser le thème
-  const { initTheme } = await import('/lib/theme.js');
+  const { initTheme } = await import('../../lib/theme.js');
   initTheme();
 
   // Initialiser la numérotation du footer

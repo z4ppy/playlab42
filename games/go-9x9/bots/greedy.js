@@ -3,7 +3,7 @@
  * Heuristique simple : privilégie les captures nettes, sinon un coup valide aléatoire.
  */
 
-import { SeededRandom } from '/lib/seeded-random.js';
+import { SeededRandom } from '../../../lib/seeded-random.js';
 import { Go9x9Engine } from '../engine.js';
 
 function cloneState(state) {
