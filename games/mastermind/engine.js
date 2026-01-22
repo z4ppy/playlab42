@@ -191,10 +191,10 @@ export class MastermindEngine {
    * Retourne la vue du joueur (fog of war)
    * Le code secret est caché pendant le jeu, révélé à la fin
    * @param {MastermindState} state
-   * @param {string} playerId
+   * @param {string} _playerId - Non utilisé (jeu single-player)
    * @returns {MastermindState}
    */
-  getPlayerView(state, playerId) {
+  getPlayerView(state, _playerId) {
     if (state.gameOver) {
       // Révéler le code secret à la fin
       return state;

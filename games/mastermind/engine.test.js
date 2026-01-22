@@ -208,6 +208,35 @@ describe('MastermindEngine', () => {
     });
   });
 
+  describe('getValidActions', () => {
+    it('should return reset and submit actions for active game', () => {
+      const state = engine.init({ seed: 1, playerId: 'p1' });
+      const actions = engine.getValidActions(state, 'p1');
+
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual({ type: 'reset' });
+      expect(actions[1].type).toBe('submit');
+    });
+
+    it('should return only reset action when game is over', () => {
+      const state = {
+        ...engine.init({ seed: 1, playerId: 'p1' }),
+        gameOver: true,
+      };
+      const actions = engine.getValidActions(state, 'p1');
+
+      expect(actions).toHaveLength(1);
+      expect(actions[0]).toEqual({ type: 'reset' });
+    });
+
+    it('should return empty array for wrong player', () => {
+      const state = engine.init({ seed: 1, playerId: 'p1' });
+      const actions = engine.getValidActions(state, 'p2');
+
+      expect(actions).toEqual([]);
+    });
+  });
+
   describe('getPlayerView', () => {
     it('should hide secret code during game', () => {
       const state = engine.init({ seed: 1, playerId: 'p1' });
