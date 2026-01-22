@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    // Cible moderne pour les navigateurs récents
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    // Mode strict pour une meilleure qualité de code
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+
+    // Support des imports JSON et interop ESM/CJS
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    // Librairies disponibles
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    // Chemins et alias
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["lib/*"]
+    },
+
+    // Optimisations
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Déclarations pour les types générés
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": [
+    "lib/**/*.ts",
+    "tools/**/*.ts",
+    "games/**/*.ts",
+    "parcours/**/*.ts",
+    "scripts/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/dist/**",
+    "**/*.test.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ]
+}

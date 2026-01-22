@@ -110,14 +110,105 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 
 | Aspect | Choix |
 |--------|-------|
-| Langage | JavaScript (ES2024+) |
+| Langage | JavaScript (ES2024+) + TypeScript (optionnel) |
 | Runtime | Node.js 25+ (Alpine) |
-| Tests | Jest |
+| Build TS | esbuild (transpilation rapide) |
+| Tests | Jest + ts-jest |
 | Linting | ESLint |
 | Infra | Docker, Docker Compose |
 | CI/CD | GitHub Actions |
 | Hébergement | GitHub Pages |
 | Workflow | OpenSpec |
+
+## TypeScript (optionnel)
+
+Le projet supporte TypeScript pour les tools, games et epics complexes. L'utilisation de TypeScript est **optionnelle** - les fichiers JavaScript existants continuent de fonctionner.
+
+### Commandes TypeScript
+
+```bash
+make typecheck      # Vérifier les types (tsc --noEmit)
+make build-ts       # Transpiler .ts → .js (dans dist/)
+```
+
+### Structure d'un tool TypeScript
+
+```
+tools/my-tool/
+├── index.html          # Importe depuis ./dist/main.js
+├── tool.json           # Manifest avec "typescript": true
+├── src/
+│   ├── main.ts         # Point d'entrée
+│   ├── types.ts        # Types et interfaces
+│   └── *.ts            # Autres modules
+├── dist/               # Fichiers transpilés (généré)
+│   ├── main.js
+│   └── *.js
+└── __tests__/
+    └── *.test.ts       # Tests en TypeScript
+```
+
+### Conventions TypeScript
+
+1. **Imports ESM (code source)** : Utiliser `.js` dans les imports (même pour les fichiers `.ts`)
+   ```typescript
+   // Dans src/*.ts - pour le navigateur qui charge les .js transpilés
+   import { Simulation } from './Simulation.js';  // ✅ Correct
+   import { Simulation } from './Simulation';     // ❌ Le navigateur ne trouvera pas le fichier
+   ```
+
+2. **Imports dans les tests** : Importer **sans extension** dans les fichiers de test
+   ```typescript
+   // Dans __tests__/*.test.ts - Jest utilise un resolver personnalisé
+   import { Simulation } from '../src/Simulation';  // ✅ Jest résout .ts automatiquement
+   import { Simulation } from '../src/Simulation.js';  // ⚠️ Fonctionne aussi mais moins idiomatique
+   ```
+
+   > **Pourquoi cette différence ?** Le code source est transpilé vers `.js` et exécuté dans le navigateur qui a besoin du chemin exact. Les tests sont exécutés par Jest qui utilise `jest.resolver.cjs` pour résoudre `.js` → `.ts` automatiquement.
+
+3. **Types partagés** : Utiliser `lib/types/` pour les types communs
+   ```typescript
+   import type { GameEngine, Bot } from '@lib/types/game-engine.js';
+   ```
+
+4. **Strict mode** : Le projet utilise `"strict": true` dans tsconfig.json
+
+### Workflow de développement
+
+```bash
+# 1. Développer avec watch
+make build-ts:watch     # Transpile automatiquement à chaque modification
+
+# 2. Tester
+make test               # Exécute tous les tests (JS + TS)
+
+# 3. Vérifier avant commit
+make typecheck          # Vérification des types
+make lint               # Lint (exclut dist/)
+```
+
+### Types disponibles
+
+Les types pour les APIs du projet sont dans `lib/types/` :
+
+- `PlayerId`, `Seed` - Types de base
+- `GameEngine<State, Action, PlayerView, Config>` - Interface moteur de jeu
+- `Bot<PlayerView, Action>` - Interface bot IA
+- `BaseGameConfig`, `BaseGameState` - Types de base pour les jeux
+
+Exemple :
+
+```typescript
+import type { GameEngine, BaseGameConfig, BaseGameState } from '@lib/types/game-engine.js';
+
+interface MyState extends BaseGameState {
+  board: string[];
+}
+
+class MyEngine implements GameEngine<MyState, MyAction, MyView, MyConfig> {
+  // ...
+}
+```
 
 ## Conventions de tests
 
@@ -125,10 +216,12 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 
 | Type | Pattern | Exemple |
 |------|---------|---------|
-| Lib simple | `lib/module.test.js` | `lib/seeded-random.test.js` |
-| Lib complexe | `lib/module/__tests__/*.test.js` | `lib/parcours/__tests__/progress.test.js` |
-| Games | `games/[id]/engine.test.js` | `games/tictactoe/engine.test.js` |
-| Tools complexes | `tools/[id]/__tests__/*.test.js` | `tools/relativity-lab/__tests__/Physics.test.js` |
+| Lib simple | `lib/module.test.{js,ts}` | `lib/seeded-random.test.js` |
+| Lib complexe | `lib/module/__tests__/*.test.{js,ts}` | `lib/parcours/__tests__/progress.test.js` |
+| Lib TypeScript | `lib/types/*.test.ts` | `lib/types/index.test.ts` |
+| Games | `games/[id]/engine.test.{js,ts}` | `games/tictactoe/engine.test.js` |
+| Tools JS | `tools/[id]/__tests__/*.test.js` | `tools/relativity-lab/__tests__/Physics.test.js` |
+| Tools TS | `tools/[id]/__tests__/*.test.ts` | `tools/particle-life/__tests__/Simulation.test.ts` |
 | Scripts | `scripts/*.test.js` | `scripts/parcours-utils.test.js` |
 
 ### Mocks pour les dépendances CDN

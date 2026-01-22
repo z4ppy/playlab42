@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Activer la génération de fichiers pour le build
+    "noEmit": false,
+    "outDir": "dist",
+
+    // Générer les déclarations et source maps
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    // Optimisations pour la production
+    "removeComments": false
+  },
+  "exclude": [
+    "node_modules",
+    "**/dist/**",
+    "**/*.test.ts",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ]
+}

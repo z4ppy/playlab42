@@ -8,6 +8,8 @@
  * - tools/[id]/__tests__/*.test.js : Tests pour les tools complexes
  * - scripts/*.test.js : Tests pour les scripts de build
  *
+ * Supporte JavaScript (.js) et TypeScript (.ts)
+ *
  * @see docs/TESTING.md (à créer)
  */
 
@@ -15,25 +17,44 @@ export default {
   // Environnement de test
   testEnvironment: 'node',
 
-  // Pattern de découverte des fichiers de test
+  // Resolver personnalisé pour gérer les imports .js -> .ts
+  resolver: './jest.resolver.cjs',
+
+  // Pattern de découverte des fichiers de test (JS et TS)
   testMatch: [
-    '**/lib/**/*.test.js',
-    '**/games/**/*.test.js',
-    '**/tools/**/*.test.js',
-    '**/scripts/**/*.test.js',
+    '**/lib/**/*.test.{js,ts}',
+    '**/games/**/*.test.{js,ts}',
+    '**/tools/**/*.test.{js,ts}',
+    '**/scripts/**/*.test.{js,ts}',
   ],
 
   // Fichiers à ignorer
   testPathIgnorePatterns: [
     '/node_modules/',
     '/data/',
+    '/dist/',
   ],
 
-  // Transformation pour ES modules
-  transform: {},
+  // Transformation : ts-jest pour TypeScript (gère les imports .js -> .ts)
+  transform: {
+    '^.+\\.ts$': [
+      'ts-jest',
+      {
+        useESM: true,
+        tsconfig: {
+          // Permettre les imports sans vérification de fichier
+          moduleResolution: 'bundler',
+          module: 'ESNext',
+          target: 'ES2022',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
+      },
+    ],
+  },
 
   // Extensions à considérer
-  moduleFileExtensions: ['js', 'mjs', 'json'],
+  moduleFileExtensions: ['js', 'mjs', 'ts', 'json'],
 
   // Timeout par défaut (10 secondes)
   testTimeout: 10000,
@@ -43,12 +64,14 @@ export default {
 
   // Collecter la couverture depuis ces dossiers
   collectCoverageFrom: [
-    'lib/**/*.js',
-    'games/**/engine.js',
-    'tools/**/src/**/*.js',
+    'lib/**/*.{js,ts}',
+    'games/**/engine.{js,ts}',
+    'tools/**/src/**/*.{js,ts}',
     'scripts/**/*.js',
-    '!**/*.test.js',
+    '!**/*.test.{js,ts}',
+    '!**/*.d.ts',
     '!**/node_modules/**',
+    '!**/dist/**',
   ],
 
   // Seuils de couverture (optionnel, à activer progressivement)
@@ -63,6 +86,7 @@ export default {
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
   moduleNameMapper: {
+    // Mocks pour les librairies CDN
     '^three$': '<rootDir>/tools/__mocks__/three.js',
     '^three/addons/(.*)$': '<rootDir>/tools/__mocks__/three-addons.js',
     '^lil-gui$': '<rootDir>/tools/__mocks__/lil-gui.js',
