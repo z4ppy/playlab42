@@ -1,0 +1,114 @@
+/**
+ * Algorithm Complexity - Styles partagés
+ * Utilisé par toutes les slides du parcours algorithm-complexity
+ */
+
+/* === Variables du thème === */
+:root {
+    --ac-bg-primary: #0a0f1a;
+    --ac-bg-secondary: #111827;
+    --ac-bg-tertiary: #1f2937;
+    --ac-bg-card: #1e293b;
+    --ac-accent-blue: #3b82f6;
+    --ac-accent-cyan: #06b6d4;
+    --ac-accent-purple: #8b5cf6;
+    --ac-accent-green: #10b981;
+    --ac-accent-yellow: #f59e0b;
+    --ac-accent-red: #ef4444;
+    --ac-accent-orange: #f97316;
+    --ac-text-primary: #f1f5f9;
+    --ac-text-secondary: #cbd5e1;
+    --ac-text-muted: #94a3b8;
+    --ac-border-color: #374151;
+    --ac-nav-bg: rgba(15, 23, 42, 0.95);
+    --ac-grid-color: #1e293b;
+}
+
+/* Support du thème light (amélioration du contraste) */
+[data-theme="light"] {
+    --ac-bg-primary: #ffffff;
+    --ac-bg-secondary: #f3f4f6;
+    --ac-bg-tertiary: #e5e7eb;
+    --ac-bg-card: #ffffff;
+    --ac-text-primary: #111827;
+    --ac-text-secondary: #374151;
+    --ac-text-muted: #6b7280;
+    --ac-border-color: #d1d5db;
+    --ac-nav-bg: rgba(255, 255, 255, 0.95);
+    --ac-grid-color: #e5e7eb;
+    --ac-accent-blue: #2563eb;
+    --ac-accent-cyan: #0891b2;
+    --ac-accent-purple: #7c3aed;
+    --ac-accent-green: #059669;
+    --ac-accent-yellow: #d97706;
+    --ac-accent-red: #dc2626;
+    --ac-accent-orange: #ea580c;
+}
+
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+        --ac-bg-primary: #ffffff;
+        --ac-bg-secondary: #f3f4f6;
+        --ac-bg-tertiary: #e5e7eb;
+        --ac-bg-card: #ffffff;
+        --ac-text-primary: #111827;
+        --ac-text-secondary: #374151;
+        --ac-text-muted: #6b7280;
+        --ac-border-color: #d1d5db;
+        --ac-nav-bg: rgba(255, 255, 255, 0.95);
+        --ac-grid-color: #e5e7eb;
+        --ac-accent-blue: #2563eb;
+        --ac-accent-cyan: #0891b2;
+        --ac-accent-purple: #7c3aed;
+        --ac-accent-green: #059669;
+        --ac-accent-yellow: #d97706;
+        --ac-accent-red: #dc2626;
+        --ac-accent-orange: #ea580c;
+    }
+}
+
+/* === Base Layout === */
+body {
+    background-color: var(--ac-bg-primary);
+    color: var(--ac-text-primary);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* === Typography Utilities === */
+.ac-text-primary { color: var(--ac-text-primary); }
+.ac-text-secondary { color: var(--ac-text-secondary); }
+.ac-text-muted { color: var(--ac-text-muted); }
+
+.ac-accent-blue { color: var(--ac-accent-blue); }
+.ac-accent-cyan { color: var(--ac-accent-cyan); }
+.ac-accent-purple { color: var(--ac-accent-purple); }
+.ac-accent-green { color: var(--ac-accent-green); }
+
+/* === Components === */
+.ac-card {
+    background-color: var(--ac-bg-card);
+    border: 1px solid var(--ac-border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ac-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--ac-accent-blue);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.hero-grid {
+    background-image: linear-gradient(to right, var(--ac-grid-color) 1px, transparent 1px),
+                      linear-gradient(to bottom, var(--ac-grid-color) 1px, transparent 1px);
+}

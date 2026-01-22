@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structures d'Index - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-xs font-medium">
+                Structures de données
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Structures d'<span class="text-[var(--ac-accent-purple)]">Index</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Comment les bases de données trouvent vos infos en 1 ms : Hash vs B-Trees.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- HASH TABLES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">⚡</span>
+                Tables de Hachage (Hash Tables)
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-yellow)]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold font-mono text-[var(--ac-accent-yellow)]">O(1)</h3>
+                    <span class="text-sm ac-text-muted">Moyenne</span>
+                </div>
+                <p class="ac-text-secondary mb-4">
+                    La structure reine pour la recherche exacte.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <h4 class="font-bold ac-text-primary mb-2">Forces</h4>
+                        <ul class="list-disc pl-5 ac-text-muted space-y-1">
+                            <li>Vitesse imbattable (accès direct).</li>
+                            <li>Idéal pour les caches (Redis) et maps.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold ac-text-primary mb-2">Faiblesses</h4>
+                        <ul class="list-disc pl-5 ac-text-muted space-y-1">
+                            <li>Pire cas O(n) (collisions).</li>
+                            <li>Ne supporte pas les intervalles ("trouver les prix > 100€").</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hash Viz -->
+            <div class="mt-8 ac-card p-4 min-h-[400px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative overflow-hidden" id="viz-hashing">
+                <!-- Javascript insertion point -->
+            </div>
+            <script type="module">
+                import { initHashViz } from '../../assets/js/viz-hashing.js';
+                // Wait for DOM
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => initHashViz('viz-hashing'));
+                } else {
+                    initHashViz('viz-hashing');
+                }
+            </script>
+        </section>
+
+        <!-- B-TREES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🌲</span>
+                B-Trees et B+ Trees
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-green)]">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold font-mono text-[var(--ac-accent-green)]">O(log n)</h3>
+                    <span class="text-sm ac-text-muted">Garanti</span>
+                </div>
+                <p class="ac-text-secondary mb-4">
+                    L'épine dorsale des SGBD (PostgreSQL, MySQL, Oracle). Des arbres larges optimisés pour réduire les accès disque (I/O).
+                </p>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold ac-text-primary text-sm">Le calcul magique :</h4>
+                        <p class="text-sm ac-text-muted mt-2">
+                           Avec des pages de <strong>4KB</strong>, des clés de 8 octets et des pointeurs de 8 octets, un nœud peut avoir jusqu'à <strong>256 enfants</strong> ($t=256$).
+                           <br/>
+                           Capacité avec hauteur 4 : $256^4 \approx 4 \text{ Milliards}$.
+                        </p>
+                        <div class="mt-2 p-2 bg-green-900/10 border border-green-500/20 rounded">
+                            <span class="ac-accent-green font-bold">Conséquence :</span> Pour trouver une donnée parmi <strong>1 Milliard</strong>, il ne faut que <strong>4 lectures disque</strong>.
+                        </div>
+                    </div>
+                    <div class="bg-[var(--ac-bg-secondary)] p-3 rounded text-sm">
+                        <p class="font-mono text-[var(--ac-accent-blue)]">Hauteur h $\le \log_t \frac{n+1}{2}$</p>
+                        <p class="text-xs ac-text-muted mt-1">Plus $t$ (degré) est grand, moins l'arbre est profond.</p>
+                    </div>
+                </div>
+            </div>
+            
+             <div class="mt-8 ac-card p-4 min-h-[300px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative overflow-hidden" id="viz-btree">
+                <!-- JS inj -->
+            </div>
+            <script type="module">
+                import { initBSTViz } from '../../assets/js/viz-bst.js';
+                initBSTViz('viz-btree');
+            </script>
+        </section>
+
+        <!-- HISTORY: B-TREE -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🤔</span>
+                Le mystère du B
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-blue-500 bg-opacity-10 bg-blue-900">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    Les <strong>B-Trees</strong> ont été inventés en 1971 par <strong>Rudolf Bayer</strong> et <strong>Edward McCreight</strong> chez Boeing.
+                </p>
+                <p class="ac-text-secondary leading-relaxed text-sm">
+                    Mais que signifie le "B" ? Bayer et McCreight n'ont jamais donné la réponse officielle. Les hypothèses incluent : <em>Boeing</em> (leur employeur), <em>Bayer</em> (le créateur), ou <em>Balanced</em> (équilibré).
+                    Douglas Comer a écrit : "Plus vous y réfléchissez, plus le mystère s'épaissit".
+                </p>
+            </div>
+        </section>
+
+        <!-- COMPARATIF -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">⚖️</span>
+                Comparatif : Quand utiliser quoi ?
+            </h2>
+            <div class="overflow-x-auto rounded-lg border border-[var(--ac-border-color)]">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-[var(--ac-bg-tertiary)] text-[var(--ac-text-muted)] font-bold uppercase">
+                        <tr>
+                            <th class="px-6 py-3">Opération</th>
+                            <th class="px-6 py-3">Hash Index <span class="normal-case font-normal opacity-70 ml-1">(ex: Redis, Map)</span></th>
+                            <th class="px-6 py-3">B-Tree Index <span class="normal-case font-normal opacity-70 ml-1">(ex: SQL, Mongo)</span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[var(--ac-border-color)] bg-[var(--ac-bg-card)]">
+                        <tr>
+                            <td class="px-6 py-4 font-bold">Recherche exacte (=)</td>
+                            <td class="px-6 py-4 ac-accent-green font-bold">O(1)</td>
+                            <td class="px-6 py-4 ac-accent-yellow">O(log n)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-bold">Intervalle (>, <)</td>
+                            <td class="px-6 py-4 ac-accent-red font-bold">Impossible (O(n))</td>
+                            <td class="px-6 py-4 ac-accent-green font-bold">O(log n + k)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-bold">Tri (ORDER BY)</td>
+                            <td class="px-6 py-4 ac-accent-red font-bold">Non</td>
+                            <td class="px-6 py-4 ac-accent-green font-bold">Naturel (Déjà trié)</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-bold">Préfixe (LIKE 'abc%')</td>
+                            <td class="px-6 py-4 ac-accent-red font-bold">Non</td>
+                            <td class="px-6 py-4 ac-accent-green font-bold">Oui (Optimisé)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-4 text-sm ac-text-muted italic text-center">
+                <strong>Règle d'or :</strong> Utilisez <em>Hash</em> pour les caches et lookups exacts en RAM. Utilisez <em>B-Tree</em> pour tout ce qui nécessite requêtes complexes, tris ou persistence disque.
+            </p>
+        </section>
+
+        <!-- DATABASE ADVANCED -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">💾</span>
+                Bases de Données & Indexing Avancé
+            </h2>
+
+            <!-- Composite Index -->
+            <div class="mb-8 p-6 ac-card border-l-4 border-l-purple-500">
+                <h3 class="text-xl font-bold mb-3 ac-text-primary">1. Index Composites & "Leftmost Prefix"</h3>
+                <p class="mb-4 ac-text-secondary">
+                    Un index composite <code>Index(Nom, Prenom)</code> ne crée pas deux arbres. C'est un seul B-Tree trié par Nom, puis par Prénom (comme un annuaire papier).
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="bg-[var(--ac-bg-secondary)] p-3 rounded border border-green-500/30">
+                        <p class="font-bold ac-accent-green mb-1">✅ Query: Nom = "Doe"</p>
+                        <p class="ac-text-muted">Le B-Tree est trié par Nom. On trouve "Doe" directement.</p>
+                        <p class="text-right font-mono mt-1 ac-accent-green">O(log n)</p>
+                    </div>
+                    <div class="bg-[var(--ac-bg-secondary)] p-3 rounded border border-red-500/30">
+                        <p class="font-bold ac-accent-red mb-1">❌ Query: Prenom = "John"</p>
+                        <p class="ac-text-muted">L'annuaire n'est pas trié par Prénom. "John" est partout. Il faut tout lire.</p>
+                        <p class="text-right font-mono mt-1 ac-accent-red">O(n) - Full Index Scan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi Index -->
+            <div class="mb-8 p-6 ac-card border-l-4 border-l-blue-500">
+                <h3 class="text-xl font-bold mb-3 ac-text-primary">2. Recherche Multi-Index (Intersection)</h3>
+                <p class="mb-2 ac-text-secondary">
+                    Si vous avez <code>Index(Age)</code> et <code>Index(Ville)</code> séparément pour la requête <code>Age=25 AND Ville='Paris'</code> :
+                </p>
+                <ul class="list-disc pl-5 mb-4 ac-text-muted text-sm space-y-1">
+                    <li><strong>Naïf :</strong> La DB choisit le meilleur index (ex: Ville), puis filtre le reste ligne par ligne.</li>
+                    <li><strong>Index Merge :</strong> La DB scanne les deux index séparément et calcule l'intersection des IDs en mémoire.</li>
+                </ul>
+                <div class="bg-[var(--ac-bg-tertiary)] p-3 rounded text-sm text-center font-mono ac-accent-blue">
+                    Coût = O(log n + k1) + O(log n + k2) + O(intersection)
+                </div>
+                <p class="text-xs text-center mt-2 ac-text-muted">Plus lent qu'un Index Composite targeté $O(\log n)$.</p>
+            </div>
+
+            <!-- SQL Cost -->
+            <div class="p-6 ac-card border-l-4 border-l-orange-500">
+                <h3 class="text-xl font-bold mb-3 ac-text-primary">3. Calculer la complexité SQL (Explain Plan)</h3>
+                <p class="mb-4 ac-text-secondary text-sm">
+                    Le planificateur ne calcule pas des "O(n)", il estime un <strong>Coût</strong> (I/O disque + CPU). Voici comment traduire un <code>EXPLAIN</code> :
+                </p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-[var(--ac-bg-tertiary)] text-[var(--ac-text-muted)]">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Opération EXPLAIN</th>
+                                <th class="px-4 py-2 text-left">Complexité</th>
+                                <th class="px-4 py-2 text-left">Pourquoi ?</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--ac-border-color)]">
+                            <tr>
+                                <td class="px-4 py-2 font-mono ac-accent-green">Index Seek / Unique</td>
+                                <td class="px-4 py-2 font-bold">O(log n)</td>
+                                <td class="px-4 py-2 text-xs ac-text-muted">Descente d'arbre directe.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 font-mono ac-accent-yellow">Index Range Scan</td>
+                                <td class="px-4 py-2 font-bold">O(log n + k)</td>
+                                <td class="px-4 py-2 text-xs ac-text-muted">Trouve le début, puis lit k éléments.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 font-mono ac-accent-red">Full Table Scan</td>
+                                <td class="px-4 py-2 font-bold">O(n)</td>
+                                <td class="px-4 py-2 text-xs ac-text-muted">Lecture intégrale du disque. Lenteur guarantie.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-2 font-mono ac-accent-purple">Nested Loop Join</td>
+                                <td class="px-4 py-2 font-bold">O(N * log M)</td>
+                                <td class="px-4 py-2 text-xs ac-text-muted">Pour chaque ligne de A, cherche dans l'index de B.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script type="module">
+        import { initHashViz } from '../../assets/js/viz-hashing.js';
+        import { initBSTViz } from '../../assets/js/viz-bst.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             setTimeout(() => {
+                 initHashViz('viz-hashing');
+                 initBSTViz('viz-btree');
+             }, 100);
+        });
+    </script>
+</body>
+</html>

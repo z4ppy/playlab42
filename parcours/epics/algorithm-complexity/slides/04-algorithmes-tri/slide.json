@@ -1,0 +1,8 @@
+{
+  "id": "04-algorithmes-tri",
+  "title": "Algorithmes de tri",
+  "description": "Tris simples (O(n²)), tris efficaces (O(n log n)), tris hybrides, tris linéaires",
+  "type": "page",
+  "icon": "🔢",
+  "duration": "20 min"
+}

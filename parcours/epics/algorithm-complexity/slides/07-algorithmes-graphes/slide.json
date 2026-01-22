@@ -1,0 +1,8 @@
+{
+  "id": "07-algorithmes-graphes",
+  "title": "Algorithmes sur les graphes",
+  "description": "Parcours BFS/DFS, plus courts chemins (Dijkstra, Bellman-Ford, Floyd-Warshall), arbres couvrants",
+  "type": "page",
+  "icon": "🕸️",
+  "duration": "25 min"
+}

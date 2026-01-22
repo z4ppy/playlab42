@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conclusion - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 ac-accent-green text-xs font-medium">
+                Synthèse & Horizons
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                L'Algorithmique <span class="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Demain</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Ce que nous avons appris, ce qui se fait aujourd'hui, et ce qui changera le monde demain.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- RECAP -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🎓</span>
+                Ce que nous avons traversé
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="ac-card p-4 border-t-4 border-t-blue-500">
+                    <div class="text-2xl mb-2">🐢 vs 🐇</div>
+                    <h3 class="font-bold mb-1 text-sm">Complexité</h3>
+                    <p class="text-xs ac-text-secondary">Nous avons appris à mesurer l'efficacité avec Big O, distinguant le constant (1)$ de l'exponentiel (2^n)$.</p>
+                </div>
+                <div class="ac-card p-4 border-t-4 border-t-yellow-500">
+                    <div class="text-2xl mb-2">📚</div>
+                    <h3 class="font-bold mb-1 text-sm">Tri & Recherche</h3>
+                    <p class="text-xs ac-text-secondary">Du simple scan linéaire (n)$ aux structures log (\log n)$ (Arbres) et tris rapides (n \log n)$.</p>
+                </div>
+                <div class="ac-card p-4 border-t-4 border-t-green-500">
+                    <div class="text-2xl mb-2">🌐</div>
+                    <h3 class="font-bold mb-1 text-sm">Graphes</h3>
+                    <p class="text-xs ac-text-secondary">Modéliser le monde (réseaux, GPS, social) et naviguer dedans avec BFS, DFS et Dijkstra.</p>
+                </div>
+                <div class="ac-card p-4 border-t-4 border-t-purple-500">
+                    <div class="text-2xl mb-2">🧠</div>
+                    <h3 class="font-bold mb-1 text-sm">Paradigmes</h3>
+                    <p class="text-xs ac-text-secondary">Les stratégies de résolution : Diviser pour Régner, Glouton, et Prog. Dynamique.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETAT DE L'ART -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🏭</span>
+                L'industrie Aujourd'hui (L'état de l'art)
+            </h2>
+            <div class="ac-card p-6 bg-[var(--ac-bg-secondary)]">
+                <div class="prose prose-invert max-w-none text-sm">
+                    <p class="mb-4">
+                        Au quotidien, vous réinventez rarement la roue. L'industrie repose sur des algorithmes "Hybrides" ultra-optimisés :
+                    </p>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 list-none pl-0">
+                        <li class="bg-[var(--ac-bg-primary)] p-3 rounded border border-[var(--ac-border-color)]">
+                            <strong class="text-[var(--ac-accent-blue)]">Timsort (Python/Java)</strong>
+                            <div class="text-xs text-gray-400 mt-1">Un mélange intelligent de Merge Sort et Insertion Sort qui exploite les données déjà partiellement triées.</div>
+                        </li>
+                        <li class="bg-[var(--ac-bg-primary)] p-3 rounded border border-[var(--ac-border-color)]">
+                            <strong class="text-[var(--ac-accent-green)]">HyperLogLog (Redis/BiG Data)</strong>
+                            <div class="text-xs text-gray-400 mt-1">Algorithme probabiliste pour compter des éléments uniques (cardinalité) avec une mémoire minuscule (1)$.</div>
+                        </li>
+                        <li class="bg-[var(--ac-bg-primary)] p-3 rounded border border-[var(--ac-border-color)]">
+                            <strong class="text-[var(--ac-accent-yellow)]">A* (Jeux/GPS)</strong>
+                            <div class="text-xs text-gray-400 mt-1">Dijkstra + Heuristique. Il "devine" la direction pour aller plus vite vers la cible.</div>
+                        </li>
+                        <li class="bg-[var(--ac-bg-primary)] p-3 rounded border border-[var(--ac-border-color)]">
+                            <strong class="text-red-400">SAT Solvers</strong>
+                            <div class="text-xs text-gray-400 mt-1">Pour la vérification formelle de circuits et logiciels critiques (NASA, Airbus), on résout des problèmes NP-complets.</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- RECHERCHE ET FUTUR -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🚀</span>
+                Recherche & Avenir
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- AI for Algos -->
+                <div class="ac-card p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">🤖</div>
+                    <h3 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-2">IA génératrice d'Algorithmes</h3>
+                    <p class="text-sm ac-text-secondary leading-relaxed">
+                        En 2022, DeepMind a publié <strong>AlphaTensor</strong>, une IA qui a découvert une nouvelle façon de multiplier des matrices (opération fondamentale de l'IA elle-même !), battant un record humain vieux de 50 ans (Strassen).
+                    </p>
+                    <div class="mt-4 p-2 bg-purple-500/10 rounded border border-purple-500/20 text-xs">
+                        L'algorithmique n'est plus seulement une invention humaine, mais une découverte machine.
+                    </div>
+                </div>
+
+                <!-- Quantum -->
+                <div class="ac-card p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl group-hover:opacity-20 transition-opacity">⚛️</div>
+                    <h3 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">Suprématie Quantique</h3>
+                    <p class="text-sm ac-text-secondary leading-relaxed">
+                        L'algorithme de <strong>Shor</strong> peut factoriser des entiers en temps polynomial (menaçant RSA), et l'algorithme de <strong>Grover</strong> accélère la recherche non triée de (N)$ à (\sqrt{N})$.
+                    </p>
+                    <div class="mt-4 p-2 bg-blue-500/10 rounded border border-blue-500/20 text-xs">
+                         Cela change fondamentalement les classes de complexité (BQP vs P vs NP).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ETHIQUE & ECO -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🌱</span>
+                L'Algorithme Responsable
+            </h2>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="flex-1 ac-card p-6 border-l-4 border-l-green-500">
+                    <h3 class="font-bold ac-accent-green mb-2">Green Algorithms</h3>
+                    <p class="text-sm ac-text-secondary mb-3">
+                        Entraîner un modèle comme GPT-4 a une empreinte carbone massive. L'optimisation algorithmique n'est plus un luxe académique, c'est une urgence écologique.
+                    </p>
+                    <p class="text-xs italic text-gray-500">"Reduce complexity to save the planet."</p>
+                </div>
+                <div class="flex-1 ac-card p-6 border-l-4 border-l-red-500">
+                    <h3 class="font-bold text-red-500 mb-2">Black Box Ethics</h3>
+                    <p class="text-sm ac-text-secondary mb-3">
+                        Quand les algorithmes (réseaux de neurones) deviennent trop complexes pour être analysés humainement, comment garantir qu'ils sont justes et sans biais ?
+                    </p>
+                    <p class="text-xs italic text-gray-500">L'explicabilité (XAI) est le nouveau défi de la complexité.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FIN -->
+        <section class="mb-24 text-center">
+            <h2 class="text-3xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+                Vous avez maintenant "Les Yeux de la Matrice"
+            </h2>
+            <div class="max-w-2xl mx-auto ac-text-muted text-lg leading-relaxed space-y-4">
+                <p>
+                    Regarder un bout de code et ne plus voir juste des boucles <code>for</code>, mais ressentir le coût du temps et de l'espace.
+                </p>
+                <p>
+                    Comprendre que derrière chaque clic sur Google, chaque itinéraire Uber, chaque recommandation Netflix, il y a un arbre, un graphe, un tri qui s'exécute en silence.
+                </p>
+                <p class="text-xl text-white font-medium mt-8 transform hover:scale-105 transition-transform duration-500 inline-block cursor-default">
+                    Codez efficacement.<br/>Codez durablement.
+                </p>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

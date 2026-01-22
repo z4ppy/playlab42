@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmes de Tri - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-xs font-medium">
+                Algorithmes classiques
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Algorithmes de <span class="text-[var(--ac-accent-orange)]">Tri</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                La quête de la performance, de O(n²) à O(n log n).
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- QUADRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🐢</span>
+                Les tris "naïfs" en O(n²)
+            </h2>
+            <div class="prose prose-invert max-w-none ac-text-secondary mb-6">
+                <p>
+                    Simples à implémenter mais lents pour de grands volumes. Ils restent utiles pour de tout petits tableaux (< 32 éléments).
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="ac-card p-4">
+                    <h3 class="font-bold text-[var(--ac-accent-red)]">Bubble Sort</h3>
+                    <p class="text-sm ac-text-muted mt-2">Fait remonter les bulles. Très lent, sauf si presque trié.</p>
+                </div>
+                <div class="ac-card p-4">
+                    <h3 class="font-bold text-[var(--ac-accent-orange)]">Insertion Sort</h3>
+                    <p class="text-sm ac-text-muted mt-2">Comme trier des cartes en main. Excellent sur petits volumes.</p>
+                </div>
+                <div class="ac-card p-4">
+                    <h3 class="font-bold text-[var(--ac-accent-red)]">Selection Sort</h3>
+                    <p class="text-sm ac-text-muted mt-2">Cherche le min et le place. Toujours O(n²), instable.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- EFFICACES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🐇</span>
+                Les tris efficaces en O(n log n)
+            </h2>
+            <div class="prose prose-invert max-w-none ac-text-secondary mb-6">
+                <p>
+                    La limite théorique des tris par comparaison est $\Omega(n \log n)$. Ces algorithmes l'atteignent grâce à l'approche "Diviser pour régner".
+                </p>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-green)]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold ac-text-primary">Merge Sort (Tri Fusion)</h3>
+                        <span class="ac-badge ml-2">Stable</span>
+                    </div>
+                    <p class="mt-2 ac-text-secondary">
+                        Divise le tableau en deux, trie récursivement, puis fusionne.
+                        <br/>
+                        <strong>Avantage :</strong> Garantie O(n log n) pire cas. Stable.
+                        <br/>
+                        <strong>Inconvénient :</strong> Consomme O(n) mémoire supplémentaire.
+                    </p>
+                </div>
+
+                <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-purple)]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold ac-text-primary">Quick Sort (Tri Rapide)</h3>
+                        <span class="ac-badge ml-2 ac-accent-red border-red-400/20 bg-red-400/10">Instable</span>
+                    </div>
+                    <p class="mt-2 ac-text-secondary">
+                        Choisit un pivot, partitionne (plus petit à gauche, plus grand à droite), répète.
+                        <br/>
+                        <strong>Partition de Hoare vs Lomuto :</strong> Hoare (deux pointeurs qui se croisent) est 3x plus rapide que Lomuto (un seul pointeur).
+                        <br/>
+                        <strong>Avantage :</strong> Cache-friendly, In-place.
+                        <br/>
+                        <strong>Inconvénient :</strong> Pire cas O(n²) (limité par Introsort).
+                    </p>
+                </div>
+
+                <div class="ac-card p-6 border-l-4 border-l-[var(--ac-accent-blue)]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-xl font-bold ac-text-primary">Heap Sort (Tri par Tas)</h3>
+                        <span class="ac-badge ml-2 ac-accent-red border-red-400/20 bg-red-400/10">Instable</span>
+                    </div>
+                    <p class="mt-2 ac-text-secondary">
+                        Utilise une structure de tas binaire.
+                        <br/>
+                        <strong>Avantage :</strong> Pas de mémoire supplémentaire O(1), garantie O(n log n).
+                        <br/>
+                        <strong>Inconvénient :</strong> Souvent plus lent que QuickSort en pratique.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HISTORY: MERGE SORT -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📜</span>
+                Le premier programme de tri
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-green-500 bg-opacity-10 bg-green-900">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    Le <strong>Tri Fusion (Merge Sort)</strong> n'est pas né d'hier. Il a été inventé par <strong>John von Neumann</strong> en 1945.
+                </p>
+                <p class="ac-text-secondary leading-relaxed text-sm">
+                    À l'époque, il travaillait sur l'EDVAC (l'un des premiers ordinateurs électroniques). Le programme original a été écrit à l'encre sur 23 pages de code manuscrit. L'idée de diviser un problème en sous-problèmes plus petits était révolutionnaire pour le traitement séquentiel des cartes perforées.
+                </p>
+            </div>
+        </section>
+
+        <!-- VISUALISATION -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🎬</span>
+                Comparaison visuelle
+            </h2>
+            <div class="ac-card p-4 min-h-[400px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative overflow-hidden" id="viz-sorting">
+                <!-- Javascript insertion point -->
+            </div>
+            <script type="module">
+                import { initSortingViz } from '../../assets/js/viz-sorting.js';
+                // Wait for DOM
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => initSortingViz('viz-sorting'));
+                } else {
+                    initSortingViz('viz-sorting');
+                }
+            </script>
+        </section>
+
+        <!-- CAS PRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">💼</span>
+                Cas Pratiques
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Commerce (E-commerce)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        "Trier par Prix : Croissant".
+                    </p>
+                    <div class="mt-2 text-xs bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        Souvent géré par la base de données (ORDER BY), mais le rendu frontend (React/Vue) peut re-trier de petites listes avec le <strong>Timsort</strong> (natif JS V8).
+                    </div>
+                </div>
+                
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Jeux Vidéo (Rendu 3D)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        Pour gérer la transparence, il faut afficher les objets du plus loin au plus proche (Algorithme du Peintre).
+                    </p>
+                    <div class="mt-2 text-xs bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        Utilise souvent <strong>Radix Sort</strong> ou un tri spatial (BSP Tree) car la précision parfaite n'est pas toujours requise à chaque frame.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HYBRIDES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🤖</span>
+                Les hybrides modernes (utilisés en Prod)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Timsort -->
+                <div class="ac-card p-6 border-t-4 border-yellow-500">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Timsort (Python, Java, Android)</h3>
+                    <div class="flex gap-2 mb-3">
+                        <span class="text-xs bg-[var(--ac-bg-tertiary)] px-2 py-1 rounded">Merge Sort</span>
+                        <span class="text-xs bg-[var(--ac-bg-tertiary)] px-2 py-1 rounded">+</span>
+                        <span class="text-xs bg-[var(--ac-bg-tertiary)] px-2 py-1 rounded">Insertion Sort</span>
+                    </div>
+                    <p class="text-sm ac-text-secondary">
+                        Inventé par Tim Peters pour Python (2002).
+                        <ul class="list-disc pl-4 mt-2 space-y-1">
+                            <li>Exploite les <strong>runs</strong> (séquences déjà triées) naturels.</li>
+                            <li>Bascule sur Insertion Sort pour les petits blocs (taille 32-64).</li>
+                            <li>Complexité : Meilleur cas <strong>O(n)</strong> sur données réelles !</li>
+                        </ul>
+                    </p>
+                </div>
+
+                <!-- Introsort -->
+                <div class="ac-card p-6 border-t-4 border-red-500">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Introsort (C++ std::sort, .NET)</h3>
+                    <div class="flex gap-2 mb-3">
+                        <span class="text-xs bg-[var(--ac-bg-tertiary)] px-2 py-1 rounded">Quick Sort</span>
+                        <span class="text-xs bg-[var(--ac-bg-tertiary)] px-2 py-1 rounded">+</span>
+                        <span class="text-xs bg-[var(--ac-bg-tertiary)] px-2 py-1 rounded">Heap Sort</span>
+                    </div>
+                    <p class="text-sm ac-text-secondary">
+                        Inventé par David Musser (1997).
+                        <ul class="list-disc pl-4 mt-2 space-y-1">
+                            <li>Démarre en Quick Sort (rapide).</li>
+                            <li>Si la profondeur de récursion dépasse $2 \log n$, bascule sur <strong>Heap Sort</strong> pour éviter le pire cas O(n²).</li>
+                            <li>Combine vitesse moyenne et garantie pire cas.</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script type="module">
+        import { initSortingViz } from '../../assets/js/viz-sorting.js';
+        
+        // Wait for DOM to be fully loaded (and layout computed)
+        document.addEventListener('DOMContentLoaded', () => {
+             // Basic delay to ensure styles are applied
+             setTimeout(() => {
+                 initSortingViz('viz-sorting');
+             }, 100);
+        });
+    </script>
+</body>
+</html>

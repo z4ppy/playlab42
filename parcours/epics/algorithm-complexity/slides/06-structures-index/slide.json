@@ -1,0 +1,8 @@
+{
+  "id": "06-structures-index",
+  "title": "Structures d'index",
+  "description": "Tables de hachage, BST, arbres B/B+, comparaison Hash vs B-Tree",
+  "type": "page",
+  "icon": "🗂️",
+  "duration": "15 min"
+}

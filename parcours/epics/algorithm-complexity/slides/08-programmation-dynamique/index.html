@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programmation Dynamique - Complexité Algorithmique</title>
+
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../../assets/js/mathjax-config.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--ac-text-primary)',
+                        secondary: 'var(--ac-text-secondary)',
+                        accent: 'var(--ac-accent-blue)',
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="module">
+        import { initSlide } from '../../../../../parcours/_shared/slide-utils.js';
+        initSlide();
+    </script>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:ac-text-primary bg-[var(--ac-bg-primary)] text-[var(--ac-text-primary)]">
+
+    <header class="hero-section relative py-12 overflow-hidden border-b border-[var(--ac-border-color)]">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="inline-block mb-4 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 ac-accent-blue text-xs font-medium">
+                Optimisation
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-4">
+                Programmation <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Dynamique</span>
+            </h1>
+            <p class="ac-text-muted text-lg">
+                Transformer des problèmes exponentiels en solutions polynomiales en ne résolvant jamais deux fois la même chose.
+            </p>
+        </div>
+        <div class="hero-grid absolute inset-0 opacity-30 pointer-events-none"></div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- HISTORY: BELLMAN -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🥸</span>
+                Une origine politique et mathématique
+            </h2>
+            <div class="ac-card p-6 border-l-4 border-l-orange-500 bg-opacity-10 bg-orange-900 mb-6">
+                <p class="ac-text-secondary leading-relaxed mb-4">
+                    Le terme "Programmation Dynamique" a été choisi par <strong>Richard Bellman</strong> dans les années 50 pour masquer ses activités mathématiques à Charles Wilson, Secrétaire à la Défense qui détestait la "recherche".
+                </p>
+                <p class="ac-text-secondary leading-relaxed text-sm">
+                    Bellman a choisi "Programmation" (planification militaire) et "Dynamique" (connotation positive en physique) pour sécuriser ses financements.
+                </p>
+            </div>
+            
+            <div class="ac-card p-6">
+                <h3 class="text-lg font-bold ac-text-primary mb-2">L'équation de Bellman</h3>
+                <p class="text-sm ac-text-secondary mb-4">
+                    Elle exprime la valeur d'un problème de décision en fonction des choix initiaux et de la valeur des problèmes résiduels :
+                </p>
+                <div class="overflow-x-auto py-2">
+                    $$V_{i-1}(y) = \max_a \left[ \text{gain}(a, i-1) + V_i(\text{nouvel\_état}(y, a)) \right]$$
+                </div>
+                <p class="mt-2 text-xs ac-text-muted">
+                    Fondement de l'apprentissage par renforcement moderne (Reinforcement Learning).
+                </p>
+            </div>
+        </section>
+
+        <!-- CONCEPTS -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🧠</span>
+                Les 2 Piliers
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Sous-structure optimale -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">1. Sous-structure Optimale</h3>
+                    <p class="text-sm ac-text-secondary mb-4">
+                        La solution optimale d'un problème contient les solutions optimales de ses sous-problèmes.
+                    </p>
+                    <div class="bg-[var(--ac-bg-tertiary)] p-3 rounded font-mono text-xs ac-text-muted border border-[var(--ac-border-color)]">
+                        ShortestPath(A->C) = <br/>ShortestPath(A->B) + ShortestPath(B->C)
+                    </div>
+                </div>
+                
+                <!-- Chevauchement -->
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">2. Chevauchement</h3>
+                    <p class="text-sm ac-text-secondary mb-4 italic">
+                        "Ceux qui ne peuvent se souvenir du passé sont condamnés à le répéter." — George Santayana
+                    </p>
+                    <p class="text-sm ac-text-secondary mb-4">
+                        Les mêmes sous-problèmes reviennent encore et encore (ex: Fib(3) est calculé partout). La DP les stocke pour ne pas les recalculer.
+                    </p>
+                    <div class="bg-[var(--ac-bg-tertiary)] p-3 rounded font-mono text-xs ac-text-muted border border-[var(--ac-border-color)]">
+                        Fib(5) -> Fib(4) + <strong>Fib(3)</strong><br/>
+                        Fib(4) -> <strong>Fib(3)</strong> + Fib(2)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- APPROCHES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🛠️</span>
+                Mémoïsation vs Tabulation
+            </h2>
+            <div class="space-y-4">
+                <div class="ac-card p-6 flex flex-col md:flex-row gap-6 items-start">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold ac-accent-purple mb-2">Top-Down (Mémoïsation)</h3>
+                        <ul class="text-sm ac-text-secondary list-disc pl-4 space-y-1 mb-3">
+                            <li><strong>Direction :</strong> Descendante (du problème global vers les cas de base).</li>
+                            <li><strong>Évaluation :</strong> Paresseuse (calcule uniquement les états requis).</li>
+                            <li><strong>Risque :</strong> Débordement de pile (Stack Overflow) sur les récursions profondes.</li>
+                            <li><strong>Usage :</strong> Idéal quand l'espace d'états est vaste mais épars.</li>
+                        </ul>
+                    </div>
+                    <div class="font-mono text-xs bg-[var(--ac-bg-tertiary)] p-3 rounded border border-purple-500/30 w-full md:w-auto">
+                        <div class="text-purple-300 mb-1"># Python</div>
+                        memo = {}<br>
+                        def fib(n):<br>
+                        &nbsp;&nbsp;if n in memo: return memo[n]<br>
+                        &nbsp;&nbsp;memo[n] = fib(n-1) + fib(n-2)<br>
+                        &nbsp;&nbsp;return memo[n]
+                    </div>
+                </div>
+
+                <div class="ac-card p-6 flex flex-col md:flex-row gap-6 items-start">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold ac-accent-blue mb-2">Bottom-Up (Tabulation)</h3>
+                        <ul class="text-sm ac-text-secondary list-disc pl-4 space-y-1 mb-3">
+                            <li><strong>Direction :</strong> Ascendante (des cas de base vers le problème global).</li>
+                            <li><strong>Évaluation :</strong> Avide (calcule tous les sous-problèmes).</li>
+                            <li><strong>Optimisation :</strong> Permet souvent de réduire l'espace mémoire (ex: O(1) pour Fib).</li>
+                            <li><strong>Performance :</strong> Meilleure localité de cache, pas d'overhead récursif.</li>
+                        </ul>
+                    </div>
+                    <div class="font-mono text-xs bg-[var(--ac-bg-tertiary)] p-3 rounded border border-blue-500/30 w-full md:w-auto">
+                         <div class="text-blue-300 mb-1"># Python</div>
+                        dp = [0]*(n+1)<br>
+                        dp[1] = 1<br>
+                        for i in range(2, n+1):<br>
+                        &nbsp;&nbsp;dp[i] = dp[i-1] + dp[i-2]<br>
+                        return dp[n]
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXEMPLES CLASSIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">📚</span>
+                Grands Classiques
+            </h2>
+            
+            <div class="grid grid-cols-1 gap-8">
+                <!-- Sac à dos -->
+                <div class="ac-card p-6 border-t-4 border-t-green-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-bold ac-text-primary">Sac à Dos (0/1 Knapsack)</h3>
+                        <span class="text-xs font-mono bg-green-900/50 text-green-300 px-2 py-1 rounded">O(n ⋅ W)</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-sm ac-text-secondary mb-3">
+                                Pour chaque objet $i$, deux choix : le prendre ou le laisser.
+                                <br>
+                                <span class="bg-[var(--ac-bg-tertiary)] text-xs px-1 rounded">Pseudo-polynomial</span> : Rapide si $W$ est petit, mais exponentiel en fonction du nombre de bits de $W$.
+                            </p>
+                            <div class="bg-[var(--ac-bg-tertiary)] p-3 rounded mb-2 text-xs overflow-x-auto">
+                                $$dp[i][w] = \max(dp[i-1][w], \; dp[i-1][w-w[i]] + v[i])$$
+                            </div>
+                        </div>
+                        <div class="text-xs ac-text-secondary">
+                             <strong>Preuve d'optimalité (Cut & Paste)</strong> :
+                             Si une solution optimale contient l'objet $n$, le reste des objets doit être une solution optimale pour la capacité $W - w_n$. Sinon, on pourrait améliorer ce reste et obtenir une meilleure solution globale (contradiction).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Levenshtein -->
+                <div class="ac-card p-6 border-t-4 border-t-yellow-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-bold ac-text-primary">Distance de Levenshtein (Wagner-Fischer)</h3>
+                        <span class="text-xs font-mono bg-yellow-900/50 text-yellow-300 px-2 py-1 rounded">O(n ⋅ m)</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                             <p class="text-sm ac-text-secondary mb-3">
+                                Minimum d'opérations (insert, delete, subst) pour transformer $A$ en $B$.
+                            </p>
+                            <div class="bg-[var(--ac-bg-tertiary)] p-3 rounded mb-2 text-xs overflow-x-auto">
+                                $$dp[i][j] = \begin{cases} 
+                                dp[i-1][j-1] & \text{si } A[i] = B[j] \\
+                                1 + \min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) & \text{sinon}
+                                \end{cases}$$
+                            </div>
+                        </div>
+                        <div class="text-xs ac-text-secondary flex flex-col justify-center">
+                            <ul class="list-disc pl-4 space-y-2">
+                                <li>$d[i-1][j]$ : Suppression</li>
+                                <li>$d[i][j-1]$ : Insertion</li>
+                                <li>$d[i-1][j-1]$ : Substitution</li>
+                            </ul>
+                            <p class="mt-2 italic opacity-75">Optimisation espace : O(min(n,m)) possible (Hirschberg).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIS -->
+                <div class="ac-card p-6 border-t-4 border-t-red-500">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-bold ac-text-primary">LIS (Longest Increasing Subsequence)</h3>
+                        <span class="text-xs font-mono bg-red-900/50 text-red-300 px-2 py-1 rounded">O(n log n)</span>
+                    </div>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-sm ac-text-secondary mb-3">
+                                Trouver la plus longue sous-suite croissante.
+                            </p>
+                            <div class="bg-[var(--ac-bg-tertiary)] p-3 rounded mb-2 text-xs">
+                                <strong>Approche Quadratique $O(n^2)$ :</strong><br>
+                                $$d[i] = 1 + \max(\{d[j] \mid j < i, A[j] < A[i]\} \cup \{0\})$$
+                            </div>
+                        </div>
+                         <div class="text-xs ac-text-secondary">
+                             <strong>Optimisation $O(n \log n)$ :</strong>
+                             Maintenir un tableau `tail` où `tail[k]` est la <em>plus petite valeur terminale</em> d'une LIS de longueur `k+1`.
+                             <br><br>
+                             Ce tableau reste trié, permettant une <strong>Recherche Binaire</strong>.
+                             <br>
+                             Lien direct avec le "Tri par Patience" (Patience Sorting).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADVANCED -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🚀</span>
+                Techniques Avancées
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Bitmask DP</h3>
+                    <p class="text-sm ac-text-secondary mb-2">
+                        Utilisé pour représenter des sous-ensembles quand $n$ est petit ($n \le 20$).
+                        Ex: Voyageur de Commerce (TSP).
+                    </p>
+                    <div class="font-mono text-xs ac-text-muted bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        state = (mask, last_city)<br>
+                        mask possède le i-ème bit à 1 si ville i visitée.
+                    </div>
+                </div>
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">Interval DP</h3>
+                    <p class="text-sm ac-text-secondary mb-2">
+                        Pour des problèmes de découpage ou fusion (ex: Multiplication de matrices).
+                    </p>
+                    <div class="font-mono text-xs ac-text-muted bg-[var(--ac-bg-tertiary)] p-2 rounded">
+                        dp[i][j] dépend de dp[i][k] et dp[k+1][j]<br>
+                        Complexité typique : $O(n^3)$
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+        <!-- VISUALIZATION -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">🧪</span>
+                Laboratoire : Le Sac à Dos
+            </h2>
+             <div class="ac-card p-6">
+                 <p class="ac-text-secondary mb-4">
+                    Visualisons le remplissage de la table DP (Tabulation). Pour chaque objet et chaque capacité $w$, on décide :
+                    est-ce mieux de prendre l'objet (valeur + meilleur score avec place restante) ou de le laisser (recopie du score précédent)?
+                </p>
+                <div class="ac-card p-4 min-h-[300px] flex flex-col items-center justify-center bg-[var(--ac-bg-secondary)] relative overflow-hidden" id="viz-dp-knapsack">
+                     <!-- JS inj -->
+                </div>
+                <script type="module">
+                    import { initKnapsackViz } from '../../assets/js/viz-dp-knapsack.js';
+                    initKnapsackViz('viz-dp-knapsack');
+                </script>
+            </div>
+        </section>
+
+        <!-- CAS PRATIQUES -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span class="text-2xl">💼</span>
+                Cas Pratiques (Vraie Vie)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">1. git diff</h3>
+                    <p class="text-sm ac-text-secondary">
+                        L'algorithme de diff (Myers ou LCS) utilise la DP pour trouver la plus longue séquence commune de lignes entre deux fichiers.
+                    </p>
+                    <div class="mt-2 text-xs bg-[var(--ac-bg-tertiary)] p-2 rounded font-mono text-green-400">
+                        + added line<br>
+                        - removed line
+                    </div>
+                </div>
+                
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">2. Mise en page (Word/LaTeX)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        L'algorithme de césure (Knuth-Plass) minimise la "laideur" globale des paragraphes via DP, plutôt que ligne par ligne (Glouton).
+                    </p>
+                </div>
+
+                <div class="ac-card p-6">
+                    <h3 class="text-lg font-bold ac-text-primary mb-2">3. Base de Données (Join Order)</h3>
+                    <p class="text-sm ac-text-secondary">
+                        Les optimiseurs SQL (Postgres) utilisent la DP pour trouver l'ordre de jointures le moins coûteux parmi tous les arbres possibles.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script type="module">
+        import { initKnapsackViz } from '../../assets/js/viz-dp-knapsack.js';
+        
+        document.addEventListener('DOMContentLoaded', () => {
+             // Init with a slight delay
+             setTimeout(() => {
+                 initKnapsackViz('viz-dp-knapsack');
+             }, 100);
+        });
+    </script>
+</body>
+</html>
