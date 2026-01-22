@@ -1,0 +1,10 @@
+{
+  "id": "particle-life",
+  "name": "Particle Life",
+  "description": "Simulateur de vie artificielle avec particules colorées interagissant selon des règles d'attraction et répulsion configurables",
+  "icon": "✨",
+  "tags": ["simulation", "physique", "emergent", "typescript"],
+  "typescript": true,
+  "author": "Playlab42",
+  "version": "1.0.0"
+}

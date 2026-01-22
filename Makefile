@@ -18,7 +18,7 @@ PORT_HASH := $(shell echo "$(COMPOSE_PROJECT_NAME)" | cksum | cut -d' ' -f1)
 PORT_OFFSET := $(shell echo $$(( $(PORT_HASH) % 100 )))
 export PLAYLAB_PORT ?= $(shell echo $$(( 5200 + $(PORT_OFFSET) )))
 
-.PHONY: help up down build shell logs status info claude install test lint
+.PHONY: help up down build shell logs status info claude install test lint typecheck build-ts
 
 # Affiche l'aide par défaut
 help:
@@ -47,6 +47,8 @@ help:
 	@echo "  make build-bookmarks - Générer data/bookmarks.json"
 	@echo "  make test            - Lancer les tests"
 	@echo "  make lint            - Vérifier le code"
+	@echo "  make typecheck       - Vérifier les types TypeScript"
+	@echo "  make build-ts        - Transpiler TypeScript vers JavaScript"
 	@echo ""
 	@echo "Sécurité:"
 	@echo "  make security-audit     - Audit complet de sécurité"
@@ -116,6 +118,12 @@ lint:
 
 lint-fix:
 	docker compose exec dev npm run lint:fix
+
+typecheck:
+	docker compose exec dev npm run typecheck
+
+build-ts:
+	docker compose exec dev npm run build:ts
 
 # Serveur statique pour tester tools/games (mode interactif)
 serve:

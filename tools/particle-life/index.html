@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Particle Life - Playlab42</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #111;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Panneau de contrôle */
+    .controls {
+      width: 280px;
+      padding: 16px;
+      background: #1a1a1a;
+      border-right: 1px solid #333;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .controls h1 {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .controls p.subtitle {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group h3 {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .control-row label {
+      font-size: 0.9rem;
+    }
+
+    .control-row span {
+      font-size: 0.85rem;
+      color: #888;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 4px 0;
+      accent-color: #4a9eff;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #4a9eff;
+    }
+
+    button {
+      padding: 8px 16px;
+      margin: 4px;
+      border: none;
+      border-radius: 4px;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #444;
+    }
+
+    button:active {
+      background: #555;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      margin: -4px;
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      background: #222;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #666;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #4a9eff;
+    }
+
+    /* Matrice d'attractions */
+    .matrix {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.8rem;
+    }
+
+    .matrix th {
+      padding: 4px;
+      font-weight: 600;
+    }
+
+    .matrix td {
+      padding: 2px;
+      text-align: center;
+    }
+
+    .matrix input[type="range"] {
+      width: 100%;
+      height: 24px;
+      margin: 0;
+    }
+
+    /* Zone de simulation */
+    .simulation {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .canvas-container {
+      width: 100%;
+      height: 100%;
+      max-width: 1200px;
+      max-height: 800px;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .controls {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #333;
+        max-height: 40vh;
+      }
+
+      .simulation {
+        height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="controls">
+    <h1>Particle Life</h1>
+    <p class="subtitle">Simulation de vie artificielle émergente</p>
+
+    <!-- Contrôles principaux -->
+    <div class="control-group">
+      <h3>Contrôles</h3>
+      <div class="btn-group">
+        <button id="playBtn">Pause</button>
+        <button id="resetBtn">Reset</button>
+        <button id="randomBtn">Randomize</button>
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="control-group">
+      <h3>Statistiques</h3>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Énergie</div>
+          <div class="stat-value" id="energy">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Vitesse moy.</div>
+          <div class="stat-value" id="speed">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Tick</div>
+          <div class="stat-value" id="tick">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paramètres simulation -->
+    <div class="control-group">
+      <h3>Simulation</h3>
+
+      <div class="control-row">
+        <label for="particleCount">Particules</label>
+        <span id="particleCountValue">500</span>
+      </div>
+      <input type="range" id="particleCount" min="100" max="2000" step="100" value="500">
+
+      <div class="control-row">
+        <label for="groupCount">Groupes</label>
+        <span id="groupCountValue">4</span>
+      </div>
+      <input type="range" id="groupCount" min="2" max="6" step="1" value="4">
+
+      <div class="control-row">
+        <label for="friction">Friction</label>
+        <span id="frictionValue">0.05</span>
+      </div>
+      <input type="range" id="friction" min="0" max="0.2" step="0.01" value="0.05">
+
+      <div class="control-row">
+        <label for="interactionRadius">Rayon d'interaction</label>
+        <span id="interactionRadiusValue">80</span>
+      </div>
+      <input type="range" id="interactionRadius" min="20" max="200" step="10" value="80">
+    </div>
+
+    <!-- Paramètres rendu -->
+    <div class="control-group">
+      <h3>Affichage</h3>
+      <div class="control-row">
+        <label for="showTrails">Traînées</label>
+        <input type="checkbox" id="showTrails" checked>
+      </div>
+    </div>
+
+    <!-- Matrice d'attractions -->
+    <div class="control-group">
+      <h3>Matrice d'attractions</h3>
+      <p style="font-size: 0.75rem; color: #666; margin-bottom: 8px;">
+        Vert = attraction, Rouge = répulsion
+      </p>
+      <div id="attractionMatrix"></div>
+    </div>
+  </aside>
+
+  <main class="simulation">
+    <div class="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+  </main>
+
+  <!-- Charger le JavaScript transpilé -->
+  <script type="module" src="./dist/main.js"></script>
+</body>
+</html>
