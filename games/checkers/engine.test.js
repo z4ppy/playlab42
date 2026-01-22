@@ -524,4 +524,69 @@ describe('CheckersEngine', () => {
       expect(newState1).toEqual(newState2);
     });
   });
+
+  describe('Erreurs', () => {
+    it('lance une erreur si ce n\'est pas le tour du joueur', () => {
+      const state = engine.init({
+        seed: 42,
+        playerIds: ['p1', 'p2'],
+      });
+
+      // Le joueur 1 commence (currentPlayer = 0)
+      const action = {
+        type: 'move',
+        from: { row: 6, col: 1 },
+        to: { row: 5, col: 0 },
+      };
+
+      // p2 essaie de jouer alors que c'est le tour de p1
+      expect(() => engine.applyAction(state, action, 'p2')).toThrow('Not your turn');
+    });
+  });
+
+  describe('Match nul', () => {
+    it('déclare un match nul après 40 coups sans capture', () => {
+      // Créer un état avec uniquement des dames pour simuler
+      const state = engine.init({
+        seed: 42,
+        playerIds: ['p1', 'p2'],
+      });
+
+      // Vider le plateau et placer seulement quelques dames
+      for (let row = 0; row < 10; row++) {
+        for (let col = 0; col < 10; col++) {
+          state.board[row][col] = null;
+        }
+      }
+
+      // Placer une dame blanche et une dame noire
+      state.board[0][1] = { player: 0, type: 'king' };
+      state.board[9][0] = { player: 1, type: 'king' };
+
+      // Simuler 40 coups sans capture dans l'historique
+      state.moveHistory = [];
+      for (let i = 0; i < 40; i++) {
+        state.moveHistory.push({
+          from: { row: 0, col: 1 },
+          to: { row: 1, col: 2 },
+          captures: [], // Aucune capture
+        });
+      }
+
+      // Le prochain mouvement devrait déclencher le match nul
+      // On doit simuler un mouvement valide
+      state.currentPlayer = 0;
+
+      // Faire un mouvement valide
+      const action = {
+        type: 'move',
+        from: { row: 0, col: 1 },
+        to: { row: 1, col: 2 },
+      };
+
+      const newState = engine.applyAction(state, action, 'p1');
+      expect(newState.status).toBe('draw');
+    });
+
+  });
 });
