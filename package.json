@@ -27,6 +27,12 @@
   ],
   "author": "Docaposte",
   "license": "CC-BY-NC-SA-4.0",
+  "overrides": {
+    "serve": {
+      "ajv": "^8.18.0",
+      "minimatch": "^3.1.3"
+    }
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/jest": "^30.0.0",
