@@ -123,6 +123,7 @@ jobs:
       - name: Scan du filesystem
         run: |
           trivy fs . \
+            --db-repository ghcr.io/aquasecurity/trivy-db:2 \
             --scanners vuln,secret,misconfig \
             --severity CRITICAL,HIGH,MEDIUM \
             --format json \
@@ -132,6 +133,7 @@ jobs:
         if: always()
         run: |
           trivy fs . \
+            --db-repository ghcr.io/aquasecurity/trivy-db:2 \
             --scanners vuln,secret,misconfig \
             --severity CRITICAL,HIGH,MEDIUM \
             --format table
