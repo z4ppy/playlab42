@@ -157,10 +157,14 @@ jobs:
           fetch-depth: 0  # Nécessaire pour analyser l'historique git
 
       - name: Scan GitLeaks
-        uses: gitleaks/gitleaks-action@v2
+        run: |
+          # Téléchargement du binaire gitleaks (version gratuite, sans licence requise)
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz \
+            | tar -xz gitleaks
+          # Analyse de l'historique git complet
+          ./gitleaks detect --source . --log-level warn
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}  # Optionnel, pour la version pro
 
   # Job 5 : Vérification des mises à jour de sécurité disponibles
   outdated-check:
