@@ -158,8 +158,10 @@ jobs:
 
       - name: Scan GitLeaks
         run: |
-          # Téléchargement du binaire gitleaks (version gratuite, sans licence requise)
-          curl -sSfL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz \
+          # Récupération de la dernière version et téléchargement du binaire
+          VERSION=$(curl -sSf https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
+            | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" \
             | tar -xz gitleaks
           # Analyse de l'historique git complet
           ./gitleaks detect --source . --log-level warn
