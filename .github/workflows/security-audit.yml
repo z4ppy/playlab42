@@ -51,7 +51,7 @@ jobs:
 
       - name: Upload des résultats npm audit
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: npm-audit-results
           path: npm-audit-results.json
@@ -97,7 +97,7 @@ jobs:
 
       - name: Upload des résultats ESLint
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: eslint-security-results
           path: eslint-security-results.json
@@ -140,7 +140,7 @@ jobs:
 
       - name: Upload des résultats Trivy
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: trivy-results
           path: trivy-results.json
@@ -284,7 +284,7 @@ jobs:
           echo "Pour plus de détails, consultez les artifacts du workflow." >> security-report.md
 
       - name: Upload du rapport consolidé
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-report
           path: security-report.md
