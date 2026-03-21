@@ -743,6 +743,13 @@ export class TriominoEngine {
       case 'PLACE': {
         const tile = currentPlayer.rack.find((t) => t.id === action.triominoId);
         if (!tile) return false;
+        // Vérifier que placed est une rotation valide de la tuile
+        const [a, b, c] = tile.values;
+        const validRotations = [[a, b, c], [b, c, a], [c, a, b]];
+        const isValidRotation = validRotations.some(
+          (r) => r[0] === action.placed[0] && r[1] === action.placed[1] && r[2] === action.placed[2],
+        );
+        if (!isValidRotation) return false;
         const isFirst = Object.keys(state.board).length === 0;
         return isValidPlacement(state.board, action.position, action.placed, isFirst);
       }

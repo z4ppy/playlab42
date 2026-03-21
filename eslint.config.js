@@ -73,7 +73,7 @@ export default [
       'dist/**',
       'coverage/**',
       'data/**',
-      '**/*.html',
+      'games/**/index.html',
     ],
   },
 ];
