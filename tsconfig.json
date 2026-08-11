@@ -20,9 +20,11 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
 
     // Chemins et alias
-    "baseUrl": ".",
+    // Note : `baseUrl` a été supprimé en TypeScript 7 ; les chemins sont
+    // désormais relatifs au tsconfig.json et doivent être explicitement
+    // préfixés par « ./ ».
     "paths": {
-      "@lib/*": ["lib/*"]
+      "@lib/*": ["./lib/*"]
     },
 
     // Optimisations

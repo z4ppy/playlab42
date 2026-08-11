@@ -35,23 +35,17 @@ export default {
     '/dist/',
   ],
 
-  // Transformation : ts-jest pour TypeScript (gère les imports .js -> .ts)
+  // Transformation : esbuild pour TypeScript (transpilation seule, sans
+  // vérification de types ; celle-ci est assurée par `npm run typecheck`)
   transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        useESM: true,
-        tsconfig: {
-          // Permettre les imports sans vérification de fichier
-          moduleResolution: 'bundler',
-          module: 'ESNext',
-          target: 'ES2022',
-          esModuleInterop: true,
-          allowSyntheticDefaultImports: true,
-        },
-      },
-    ],
+    '^.+\\.ts$': './jest.transform.cjs',
   },
+
+  // Traiter les .ts comme des modules ES natifs
+  // Le "type": "module" du package.json ne couvre que les .js ; sans cette
+  // ligne Jest chargerait les .ts transpilés comme du CommonJS et échouerait
+  // sur « Cannot use import statement outside a module ».
+  extensionsToTreatAsEsm: ['.ts'],
 
   // Ne pas ignorer les fichiers ESM locaux (lib/*.js, games/*.js)
   // Par défaut Jest ignore node_modules ; on garde ce comportement
