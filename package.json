@@ -41,11 +41,11 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
     "esbuild": "^0.28.0",
-    "eslint": "^10.2.0",
-    "globals": "^17.5.0",
-    "jest": "^30.3.0",
+    "eslint": "^10.8.1",
+    "globals": "^17.9.0",
+    "jest": "^30.4.2",
     "marked": "^18.0.9",
-    "prettier": "^3.8.2",
+    "prettier": "^3.9.6",
     "serve": "^14.2.6",
     "typescript": "^7.0.2"
   }
