@@ -1,5 +1,5 @@
 # Playlab42 - Container de développement
-FROM node:25-alpine
+FROM node:26-alpine
 
 # Outils de base
 RUN apk add --no-cache \
