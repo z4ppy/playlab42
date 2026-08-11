@@ -49,7 +49,7 @@ jobs:
         uses: actions/configure-pages@v6
 
       - name: Upload de l'artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           # Déploie tout le répertoire racine
           path: '.'
