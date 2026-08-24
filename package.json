@@ -42,9 +42,9 @@
     "@types/node": "^25.6.0",
     "esbuild": "^0.28.0",
     "eslint": "^10.8.1",
-    "globals": "^17.9.0",
+    "globals": "^17.11.0",
     "jest": "^30.4.2",
-    "marked": "^18.0.9",
+    "marked": "^18.0.10",
     "prettier": "^3.9.6",
     "serve": "^14.2.6",
     "typescript": "^7.0.2"
