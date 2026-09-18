@@ -111,7 +111,7 @@ Utiliser `@/openspec/AGENTS.md` pour apprendre :
 | Aspect | Choix |
 |--------|-------|
 | Langage | JavaScript (ES2024+) + TypeScript (optionnel) |
-| Runtime | Node.js 25+ (Alpine) |
+| Runtime | Node.js 26 (Alpine) |
 | Build TS | esbuild (transpilation rapide) |
 | Tests | Jest + ts-jest |
 | Linting | ESLint |

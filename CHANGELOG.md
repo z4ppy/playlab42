@@ -7,6 +7,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Changed
+- CI : les workflows s'exécutent sur Node 26 au lieu de Node 20, pour tester
+  sur le runtime réellement déployé (`node:26-alpine` au Dockerfile). Node 20
+  n'a plus reçu de version depuis mars 2026. Huit occurrences alignées dans
+  `ci.yml`, `deploy.yml` et `security-audit.yml`
+
 ## [0.2.0] - 2026-09-18
 
 Deuxième itération du MVP : quatre nouveaux jeux, trois nouveaux outils, sept
