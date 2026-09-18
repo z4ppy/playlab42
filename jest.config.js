@@ -36,10 +36,6 @@ export default {
     '/node_modules/',
     '/data/',
     '/dist/',
-    // app/router.test.js reste exclu ici : ses assertions « Invalid formats »
-    // supposent des motifs de route ancrés, ce que app/router.js ne fait pas
-    // encore. Exclusion levée par le commit qui ancre ces motifs.
-    '/app/router.test.js',
   ],
 
   // Transformation : esbuild pour TypeScript (transpilation seule, sans

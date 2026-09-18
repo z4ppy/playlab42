@@ -104,6 +104,10 @@ TypeScript optionnelle.
 - Erreurs ESLint liées à la compatibilité `@eslint/js` 10
 - CI : permissions explicites sur le job `security-report`, `gitleaks-action`
   remplacé par le CLI gratuit
+- Routage : les motifs de hash sont ancrés en début et en fin. Un identifiant
+  invalide n'est plus tronqué en identifiant valide — `#/games/with_underscore`
+  n'ouvre plus le jeu « with ». Trois assertions préexistantes de
+  `app/router.test.js` le vérifiaient déjà sans jamais être exécutées
 - Preview des bookmarks : l'erreur de chargement d'une image ne remplace plus
   par une icône erronée la preview du bookmark survolé ensuite (la preview est
   un élément unique réutilisé ; le handler `onerror` de l'image précédente
