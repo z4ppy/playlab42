@@ -4,7 +4,7 @@
  * Télécharge les images OG en cache local
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
@@ -20,6 +20,14 @@ const CONFIG = {
   cacheDays: 7,       // Validité du cache
   // User-Agent réaliste pour éviter les blocages
   userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  // Re-télécharger les images OG déjà présentes dans data/bookmarks-images/.
+  // Désactivé par défaut : ces fichiers sont versionnés et peuvent avoir été
+  // optimisés (redimensionnement/recompression). Un re-téléchargement écraserait
+  // ce travail par l'original pleine taille à la première expiration du cache
+  // de métadonnées (cacheDays), y compris quand data/bookmarks-cache.json est
+  // absent — il est gitignoré, donc vide sur une machine fraîche.
+  // Forcer avec : OG_REFRESH_IMAGES=1 npm run build:bookmarks
+  refreshImages: process.env.OG_REFRESH_IMAGES === '1',
 };
 
 /**
@@ -155,7 +163,7 @@ function buildFaviconUrl(url) {
 /**
  * Génère un nom de fichier unique basé sur l'URL
  */
-function hashUrl(url) {
+export function hashUrl(url) {
   return createHash('md5').update(url).digest('hex').substring(0, 12);
 }
 
@@ -189,6 +197,22 @@ function getImageExtension(url, contentType) {
 }
 
 /**
+ * Cherche une image déjà téléchargée pour une page donnée
+ * @param {string} pageUrl - URL de la page (base du nom de fichier)
+ * @returns {string|null} Chemin relatif de l'image ou null
+ */
+export function findExistingImage(pageUrl) {
+  if (!existsSync(IMAGES_DIR)) {
+    return null;
+  }
+  const prefix = hashUrl(pageUrl);
+  const match = readdirSync(IMAGES_DIR).find(
+    (name) => name.startsWith(`${prefix}.`),
+  );
+  return match ? `data/bookmarks-images/${match}` : null;
+}
+
+/**
  * Télécharge une image OG et la stocke en cache local
  * @returns {Promise<string|null>} Chemin relatif de l'image ou null
  */
@@ -197,6 +221,16 @@ async function downloadImage(imageUrl, pageUrl) {
     // Créer le dossier si nécessaire
     if (!existsSync(IMAGES_DIR)) {
       mkdirSync(IMAGES_DIR, { recursive: true });
+    }
+
+    // Image déjà présente : ne rien re-télécharger (cf. CONFIG.refreshImages).
+    // Le nom de fichier est dérivé du hash de l'URL de la page, l'extension
+    // dépend du content-type : on cherche donc par préfixe.
+    if (!CONFIG.refreshImages) {
+      const existing = findExistingImage(pageUrl);
+      if (existing) {
+        return existing;
+      }
     }
 
     // Résoudre l'URL relative si nécessaire

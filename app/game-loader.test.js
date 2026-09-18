@@ -1,19 +1,47 @@
 /**
+ * @jest-environment jsdom
+ *
  * Tests: app/game-loader.js - openGame et openTool
- * @see openspec/changes/extend-hash-routing-games-tools/specs/router-games-tools/spec.md
+ * @see openspec/changes/archive/extend-hash-routing-games-tools/specs/router-games-tools/spec.md
  */
 
-import { openGame, openTool, loadGame, unloadGame } from './game-loader.js';
-import { state, setState } from './state.js';
-import { el } from './dom-cache.js';
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
-// Mock fetch
+// Mock de fetch (HEAD de validation d'existence)
 global.fetch = jest.fn();
 
-// Mocks
-jest.mock('./state.js');
-jest.mock('./dom-cache.js');
-jest.mock('./storage.js');
+// Mocks ESM : unstable_mockModule + import dynamique (cf. jest.config.js)
+const state = { currentGame: null, currentView: 'catalogue', preferences: { sound: true } };
+const setState = jest.fn((updates) => Object.assign(state, updates));
+
+// Élément DOM minimal : loadGame() manipule classList, textContent et src
+const stubEl = () => document.createElement('div');
+const el = {
+  viewCatalogue: stubEl(),
+  viewSettings: stubEl(),
+  viewGame: stubEl(),
+  gameTitle: stubEl(),
+  loading: stubEl(),
+  gameIframe: stubEl(),
+  btnSound: stubEl(),
+};
+
+jest.unstable_mockModule('./state.js', () => ({
+  state,
+  setState,
+  STORAGE_KEYS: {},
+  MAX_RECENT: 5,
+}));
+jest.unstable_mockModule('./dom-cache.js', () => ({ el }));
+jest.unstable_mockModule('./storage.js', () => ({
+  loadPreferences: jest.fn(),
+  savePreferences: jest.fn(),
+  getEpicProgress: jest.fn(),
+  addToRecent: jest.fn(),
+}));
+
+// Import dynamique après les mocks
+const { openGame, openTool } = await import('./game-loader.js');
 
 describe('game-loader: openGame and openTool functions', () => {
   beforeEach(() => {
@@ -40,7 +68,6 @@ describe('game-loader: openGame and openTool functions', () => {
 
     it('loads game when HEAD request succeeds', async () => {
       global.fetch.mockResolvedValueOnce({ ok: true });
-      jest.spyOn(window.location, 'hash', 'set');
 
       await openGame('tictactoe');
 
@@ -50,7 +77,6 @@ describe('game-loader: openGame and openTool functions', () => {
 
     it('returns to catalogue with #/ hash when game not found (404)', async () => {
       global.fetch.mockResolvedValueOnce({ ok: false, status: 404 });
-      jest.spyOn(window.location, 'hash', 'set');
 
       await openGame('nonexistent');
 
@@ -59,7 +85,6 @@ describe('game-loader: openGame and openTool functions', () => {
 
     it('returns to catalogue on network error', async () => {
       global.fetch.mockRejectedValueOnce(new Error('Network error'));
-      jest.spyOn(window.location, 'hash', 'set');
 
       await openGame('tictactoe');
 

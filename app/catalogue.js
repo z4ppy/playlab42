@@ -9,6 +9,13 @@ import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
 import { cloneTemplate } from '../lib/dom.js';
 
+// Dimensions intrinsèques des vignettes : standard de fait du dépôt 380x180
+// (ratio 19/9, cf. --thumb-ratio dans style.css). Posées en attributs width/
+// height sur les <img> pour réserver la place avant chargement (anti-CLS) ;
+// le rendu final reste piloté par le CSS (width/height 100% + object-fit).
+const THUMB_WIDTH = 380;
+const THUMB_HEIGHT = 180;
+
 /**
  * Charge le catalogue depuis le serveur
  */
@@ -113,7 +120,11 @@ export function createCardElement(item, type) {
   img.src = thumbSrc;
   img.alt = item.name;
   img.loading = 'lazy';
+  img.decoding = 'async';
+  img.width = THUMB_WIDTH;
+  img.height = THUMB_HEIGHT;
   img.onerror = () => {
+    // Repli : l'emoji remplace l'image cassée dans le conteneur
     thumb.textContent = item.icon || defaultIcon;
   };
   thumb.appendChild(img);

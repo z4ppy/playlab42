@@ -1,6 +1,8 @@
 /**
  * Playlab42 - Styles du portail
- * Les variables sont importées depuis lib/theme.css
+ * Les variables globales (couleurs, espacements, transitions) sont importées
+ * depuis lib/theme.css ; les tokens propres aux vues du portail sont déclarés
+ * ci-dessous dans le bloc « Tokens de vignettes ».
  * @see openspec/specs/portal/spec.md
  */
 
@@ -23,6 +25,54 @@ body {
   flex-direction: column;
   overflow-x: hidden;
   transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* === Tokens de vignettes ===
+ * Ces trois valeurs sont consommées par la seule règle « Vignettes » ci-dessous.
+ * Elles sont nommées, et non écrites en dur, parce qu'elles matérialisent une
+ * convention du dépôt que d'autres fichiers citent : le format 380x180 (ratio
+ * 19/9) documenté dans docs/guides/contributing.md et repris en commentaire
+ * dans app/catalogue.js et app/parcours.js. Ce ne sont pas des tokens
+ * réutilisés ailleurs : les modifier ne change que les vignettes.
+ */
+:root {
+  /* Ratio des vignettes : standard de fait du dépôt, 380x180 */
+  --thumb-ratio: 19 / 9;
+  /* Taille de l'emoji affiché quand l'image est absente ou en erreur */
+  --thumb-fallback-size: 3rem;
+  --thumb-hover-scale: 1.05;
+}
+
+/* === Vignettes (catalogue, parcours, preview bookmarks) ===
+ * Les trois vues partagent le même conteneur : même ratio, même repli emoji,
+ * même transition. Ne pas redéfinir ces propriétés dans les sections ci-dessous.
+ */
+.card-thumb,
+.epic-thumb,
+.bookmark-preview-image {
+  width: 100%;
+  aspect-ratio: var(--thumb-ratio);
+  background: var(--color-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--thumb-fallback-size);
+  overflow: hidden;
+  transition: background-color var(--transition-normal);
+}
+
+.card-thumb img,
+.epic-thumb img,
+.bookmark-preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.card:hover .card-thumb img,
+.epic-card:hover .epic-thumb img {
+  transform: scale(var(--thumb-hover-scale));
 }
 
 /* === Header === */
@@ -231,29 +281,7 @@ main {
   box-shadow: 0 8px 24px var(--color-shadow);
 }
 
-.card-thumb {
-  width: 100%;
-  aspect-ratio: 19/9;
-  object-fit: cover;
-  background: var(--color-bg-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  overflow: hidden;
-  transition: background-color var(--transition-normal);
-}
-
-.card-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-normal);
-}
-
-.card:hover .card-thumb img {
-  transform: scale(1.05);
-}
+/* Vignette .card-thumb : voir la section « Vignettes » */
 
 .card-info {
   padding: var(--space-md);
@@ -584,7 +612,7 @@ footer {
   border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), background-color var(--transition-normal);
   display: flex;
   flex-direction: column;
 }
@@ -602,27 +630,7 @@ footer {
   border: 2px solid var(--color-accent);
 }
 
-.epic-thumb {
-  width: 100%;
-  aspect-ratio: 19/9;
-  background: var(--color-bg-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  overflow: hidden;
-}
-
-.epic-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-normal);
-}
-
-.epic-card:hover .epic-thumb img {
-  transform: scale(1.05);
-}
+/* Vignette .epic-thumb : voir la section « Vignettes » */
 
 .epic-info {
   padding: var(--space-md);
@@ -871,27 +879,7 @@ body.game-active > main {
   visibility: visible;
 }
 
-.bookmark-preview-image {
-  width: 100%;
-  height: 160px;
-  background: var(--color-bg-secondary);
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.bookmark-preview-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.bookmark-preview-image .preview-emoji {
-  font-size: 4rem;
-}
+/* Vignette .bookmark-preview-image : voir la section « Vignettes » */
 
 .bookmark-preview-content {
   padding: var(--space-md);
@@ -921,11 +909,6 @@ body.game-active > main {
   gap: var(--space-xs);
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
-}
-
-.bookmark-preview-domain img {
-  width: 16px;
-  height: 16px;
 }
 
 /* Responsive bookmarks */

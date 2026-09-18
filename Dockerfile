@@ -11,8 +11,15 @@ RUN apk add --no-cache \
     py3-pip \
     py3-yaml
 
-# Créer un utilisateur non-root (bonne pratique de sécurité)
-# UID 1000 correspond généralement à l'utilisateur host
+# Bloc « utilisateur non-root » désactivé — NE PAS décommenter tel quel.
+# Sur node:26-alpine, l'UID et le GID 1000 sont déjà pris par l'utilisateur
+# « node » de l'image de base : `addgroup -g 1000 devuser` échoue avec
+# « addgroup: gid '1000' in use » et casse le build.
+# Le conteneur de développement ne tourne pas en root pour autant : c'est
+# docker-compose.yml qui impose l'identité, via
+# `user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"` sur le service dev.
+# Pour durcir aussi `docker run` sans compose, la piste est `USER node`
+# (utilisateur déjà présent dans l'image), pas la recréation d'un devuser.
 #ARG UID=1000
 #ARG GID=1000
 #RUN addgroup -g ${GID} devuser && \

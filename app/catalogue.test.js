@@ -1,37 +1,44 @@
 /**
+ * @jest-environment jsdom
+ *
  * Tests: app/catalogue.js - createCardElement with hash links
  * @see openspec/changes/extend-hash-routing-games-tools/specs/router-games-tools/spec.md
  */
 
-import { createCardElement } from './catalogue.js';
+import { jest, describe, it, expect } from '@jest/globals';
 
-// Mock cloneTemplate
-jest.mock('../lib/dom.js', () => ({
+// Mock de cloneTemplate avant l'import de catalogue.js (ESM : unstable_mockModule
+// + import dynamique, cf. lib/parcours/__tests__/ParcoursNavigation.unit.test.js).
+// On conserve les autres exports réels de lib/dom.js, utilisés ailleurs dans le
+// graphe d'imports de catalogue.js.
+const actualDom = await import('../lib/dom.js');
+
+jest.unstable_mockModule('../lib/dom.js', () => ({
+  ...actualDom,
   cloneTemplate: (templateId) => {
     const template = document.createElement('template');
 
     if (templateId === 'card-template') {
       template.innerHTML = `
-        <a class="card-link">
-          <div class="card">
-            <div class="card-thumb"></div>
-            <h3></h3>
-            <p></p>
-            <div class="card-tags"></div>
-          </div>
-        </a>
+        <div class="card">
+          <div class="card-thumb"></div>
+          <h3></h3>
+          <p></p>
+          <div class="card-tags"></div>
+        </div>
       `;
     } else if (templateId === 'tag-template') {
       template.innerHTML = '<span class="card-tag"></span>';
     }
 
-    const fragment = document.createDocumentFragment();
-    while (template.firstChild) {
-      fragment.appendChild(template.firstChild);
-    }
-    return fragment;
+    // Même contrat que le vrai cloneTemplate : le contenu d'un <template> vit
+    // dans .content, pas dans ses childNodes.
+    return template.content.cloneNode(true);
   },
 }));
+
+// Import dynamique après le mock
+const { createCardElement } = await import('./catalogue.js');
 
 describe('catalogue: createCardElement with hash links', () => {
   const mockGame = {
@@ -146,21 +153,66 @@ describe('catalogue: createCardElement with hash links', () => {
     });
   });
 
-  describe('Fallback behavior', () => {
-    it('uses default game icon if none provided', () => {
-      const game = { ...mockGame, icon: undefined };
-      const fragment = createCardElement(game, 'game');
-      const title = fragment.querySelector('h3');
+  describe('Vignette', () => {
+    it('dérive le chemin de la vignette depuis le path (jeu)', () => {
+      const fragment = createCardElement(mockGame, 'game');
+      const img = fragment.querySelector('.card-thumb img');
 
-      expect(title.textContent).toContain('🎮');
+      expect(img).not.toBeNull();
+      expect(img.getAttribute('src')).toBe('games/tictactoe/thumb.png');
+      expect(img.alt).toBe('Tic-Tac-Toe');
     });
 
-    it('uses default tool icon if none provided', () => {
+    it('dérive le chemin de la vignette depuis le path (tool)', () => {
+      const fragment = createCardElement(mockTool, 'tool');
+      const img = fragment.querySelector('.card-thumb img');
+
+      expect(img.getAttribute('src')).toBe('tools/json-formatter/index-thumb.png');
+    });
+
+    it('déclare lazy/async et les dimensions intrinsèques 380x180', () => {
+      const fragment = createCardElement(mockGame, 'game');
+      const img = fragment.querySelector('.card-thumb img');
+
+      // jsdom ne reflète pas loading/decoding en attributs HTML : on vérifie
+      // la propriété IDL, que les navigateurs et jsdom exposent tous les deux.
+      expect(img.loading).toBe('lazy');
+      expect(img.decoding).toBe('async');
+      expect(img.getAttribute('width')).toBe('380');
+      expect(img.getAttribute('height')).toBe('180');
+    });
+  });
+
+  describe('Fallback behavior', () => {
+    it("remplace la vignette en erreur par l'icône de l'item", () => {
+      const fragment = createCardElement(mockGame, 'game');
+      const thumb = fragment.querySelector('.card-thumb');
+      const img = thumb.querySelector('img');
+
+      img.onerror();
+
+      expect(thumb.textContent).toBe('⭕');
+      expect(thumb.querySelector('img')).toBeNull();
+    });
+
+    it("utilise l'icône jeu par défaut si l'item n'en a pas", () => {
+      const game = { ...mockGame, icon: undefined };
+      const fragment = createCardElement(game, 'game');
+      const thumb = fragment.querySelector('.card-thumb');
+
+      thumb.querySelector('img').onerror();
+
+      expect(thumb.textContent).toBe('🎮');
+    });
+
+    it("utilise l'icône tool par défaut si l'item n'en a pas", () => {
       const tool = { ...mockTool, icon: undefined };
       const fragment = createCardElement(tool, 'tool');
-      const title = fragment.querySelector('h3');
+      const thumb = fragment.querySelector('.card-thumb');
 
-      expect(title.textContent).toContain('🔧');
+      thumb.querySelector('img').onerror();
+
+      expect(thumb.textContent).toBe('🔧');
     });
 
     it('handles missing tags gracefully', () => {
