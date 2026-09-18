@@ -28,6 +28,8 @@ const stats = {
   ogFetched: 0,
   ogCached: 0,
   ogFailed: 0,
+  // Échecs réseau pour lesquels l'image versionnée a pris le relais
+  ogImageRecovered: 0,
   errors: [],
   warnings: [],
 };
@@ -292,6 +294,13 @@ async function enrichWithOGMetadata(categories) {
 
       if (result.fromCache) {
         stats.ogCached++;
+      } else if (result.failed) {
+        // L'échec réseau reste un échec : le repli fournit l'image versionnée,
+        // pas le titre ni la description à jour.
+        stats.ogFailed++;
+        if (result.meta?.fromVersionedImage) {
+          stats.ogImageRecovered++;
+        }
       } else if (result.meta) {
         stats.ogFetched++;
       } else {
@@ -392,7 +401,10 @@ async function main() {
   console.log(`Catégories: ${sortedCategories.length}`);
   console.log(`Bookmarks total: ${totalBookmarks}`);
   console.log(`Tags uniques: ${catalogue.tags.length}`);
-  console.log(`Métadonnées OG: ${stats.ogFetched} fetchées, ${stats.ogCached} en cache, ${stats.ogFailed} échouées`);
+  const recovered = stats.ogImageRecovered
+    ? ` (dont ${stats.ogImageRecovered} avec image versionnée conservée)`
+    : '';
+  console.log(`Métadonnées OG: ${stats.ogFetched} fetchées, ${stats.ogCached} en cache, ${stats.ogFailed} échouées${recovered}`);
 
   if (stats.warnings.length > 0) {
     console.log(`\nWarnings (${stats.warnings.length}):`);

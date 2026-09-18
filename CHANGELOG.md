@@ -120,6 +120,14 @@ TypeScript optionnelle.
   `data/bookmarks-images/` ne sont plus re-téléchargées à chaque expiration du
   cache de métadonnées, ce qui écrasait les images optimisées par leur original
   pleine taille. Forçage possible via `OG_REFRESH_IMAGES=1`
+- Build des bookmarks : quand une page est injoignable (CI sans réseau
+  sortant, site hors ligne, User-Agent bloqué), l'image versionnée de
+  `data/bookmarks-images/` prend le relais au lieu d'être ignorée. La preview
+  gardait auparavant son emoji de repli alors que le fichier était présent.
+  Le rapport de build distingue désormais ces cas
+- Build des bookmarks : le minuteur de `fetch` n'était pas libéré quand la
+  requête échouait — sur 120 URLs hors ligne, autant de minuteurs de 8 s
+  retenaient le processus après la fin du travail
 - Tests : les suites de `app/` (catalogue, router, game-loader, bookmarks) sont
   désormais exécutées. Elles étaient exclues de `testMatch` dans
   `jest.config.js` et n'avaient donc jamais tourné
