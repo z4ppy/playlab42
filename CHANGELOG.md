@@ -7,6 +7,14 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Added
+- `package.json` : champ `engines` fixant Node >= 24, pour qu'un runtime trop
+  ancien produise un avertissement npm au lieu d'échouer plus loin
+
+### Removed
+- Sept images OG orphelines de `data/bookmarks-images/` (228 Ko -> 76 Ko) :
+  elles ne correspondaient plus à aucune URL du catalogue
+
 ### Changed
 - CI : les workflows s'exécutent sur Node 26 au lieu de Node 20, pour tester
   sur le runtime réellement déployé (`node:26-alpine` au Dockerfile). Node 20
