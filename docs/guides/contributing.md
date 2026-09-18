@@ -315,6 +315,21 @@ Vérifiez :
 | Audio | < 5MB |
 | Vignette | 380x180px (19:9), < 50KB |
 
+### Pourquoi les vignettes de jeux et d'outils sont en PNG
+
+Les vignettes de jeux et d'outils sont des images photographiques : en JPEG ou
+en WebP, elles pèseraient 15 à 25 Ko au lieu de 38 à 50 Ko (c'est le cas des
+vignettes d'epics, déjà en `.jpg`). Elles restent pourtant en `.png`, parce que
+leur chemin n'est pas déclaré : il est **dérivé du chemin du jeu ou de l'outil**
+dans `app/catalogue.js` (`path.replace('index.html', 'thumb.png')` pour un jeu,
+`path.replace('.html', '-thumb.png')` pour un outil). Changer d'extension
+supposerait donc de rendre le chemin de vignette explicite — champ dédié dans
+`game.json` / `tool.json`, propagé par `scripts/build-catalogue.js` jusqu'au
+catalogue — ce qui dépasse le cadre d'une optimisation d'images.
+
+En attendant, respecter la limite de 50 Ko impose de quantiser la palette
+(`pngquant 128`, par exemple) plutôt que de flouter l'image.
+
 ---
 
 ## Besoin d'aide ?

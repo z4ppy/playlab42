@@ -12,6 +12,13 @@ import { getEpicProgress } from './storage.js';
 import { cloneTemplate } from '../lib/dom.js';
 import { ParcoursViewer } from '../lib/parcours-viewer.js';
 
+// Dimensions intrinsèques des vignettes : standard de fait du dépôt 380x180
+// (ratio 19/9, cf. --thumb-ratio dans style.css). Posées en attributs width/
+// height sur les <img> pour réserver la place avant chargement (anti-CLS) ;
+// le rendu final reste piloté par le CSS (width/height 100% + object-fit).
+const THUMB_WIDTH = 380;
+const THUMB_HEIGHT = 180;
+
 /**
  * Charge le catalogue parcours depuis le serveur
  */
@@ -47,17 +54,22 @@ function createEpicCardElement(epic) {
   card.dataset.path = epic.path;
 
   // Thumbnail
+  const defaultIcon = epic.icon || '📚';
   if (epic.thumbnail) {
     const img = document.createElement('img');
     img.src = epic.thumbnail;
     img.alt = epic.title;
     img.loading = 'lazy';
+    img.decoding = 'async';
+    img.width = THUMB_WIDTH;
+    img.height = THUMB_HEIGHT;
     img.onerror = () => {
-      thumb.textContent = epic.icon || '📚';
+      // Repli : l'emoji remplace l'image cassée dans le conteneur
+      thumb.textContent = defaultIcon;
     };
     thumb.appendChild(img);
   } else {
-    thumb.textContent = epic.icon || '📚';
+    thumb.textContent = defaultIcon;
   }
 
   // Info

@@ -4,7 +4,7 @@
  * Télécharge les images OG en cache local
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
@@ -20,6 +20,14 @@ const CONFIG = {
   cacheDays: 7,       // Validité du cache
   // User-Agent réaliste pour éviter les blocages
   userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  // Re-télécharger les images OG déjà présentes dans data/bookmarks-images/.
+  // Désactivé par défaut : ces fichiers sont versionnés et peuvent avoir été
+  // optimisés (redimensionnement/recompression). Un re-téléchargement écraserait
+  // ce travail par l'original pleine taille à la première expiration du cache
+  // de métadonnées (cacheDays), y compris quand data/bookmarks-cache.json est
+  // absent — il est gitignoré, donc vide sur une machine fraîche.
+  // Forcer avec : OG_REFRESH_IMAGES=1 npm run build:bookmarks
+  refreshImages: process.env.OG_REFRESH_IMAGES === '1',
 };
 
 /**
@@ -153,9 +161,36 @@ function buildFaviconUrl(url) {
 }
 
 /**
+ * Effectue un fetch borné dans le temps, en garantissant la libération du
+ * minuteur.
+ *
+ * Sans le `finally`, un rejet de `fetch` sautait le `clearTimeout` : le
+ * minuteur de CONFIG.timeout restait armé. Sur un build de 120 URLs hors
+ * ligne, autant de minuteurs survivaient huit secondes à la fin du travail et
+ * retenaient le processus.
+ *
+ * @param {string} url - URL à appeler
+ * @param {Record<string, string>} headers - En-têtes de la requête
+ * @returns {Promise<Response>}
+ */
+async function fetchWithTimeout(url, headers) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout);
+  try {
+    return await fetch(url, {
+      signal: controller.signal,
+      headers,
+      redirect: 'follow',
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+/**
  * Génère un nom de fichier unique basé sur l'URL
  */
-function hashUrl(url) {
+export function hashUrl(url) {
   return createHash('md5').update(url).digest('hex').substring(0, 12);
 }
 
@@ -189,6 +224,48 @@ function getImageExtension(url, contentType) {
 }
 
 /**
+ * Cherche une image déjà téléchargée pour une page donnée
+ * @param {string} pageUrl - URL de la page (base du nom de fichier)
+ * @returns {string|null} Chemin relatif de l'image ou null
+ */
+export function findExistingImage(pageUrl) {
+  if (!existsSync(IMAGES_DIR)) {
+    return null;
+  }
+  const prefix = hashUrl(pageUrl);
+  const match = readdirSync(IMAGES_DIR).find(
+    (name) => name.startsWith(`${prefix}.`),
+  );
+  return match ? `data/bookmarks-images/${match}` : null;
+}
+
+/**
+ * Construit des métadonnées de repli à partir des fichiers versionnés.
+ *
+ * Les images de data/bookmarks-images/ sont versionnées : elles restent
+ * exploitables même quand la page n'est pas joignable (CI sans réseau sortant,
+ * site hors ligne, domaine qui bloque le User-Agent du build). Sans ce repli,
+ * un échec réseau vidait la preview de son image alors que le fichier était là.
+ *
+ * Le repli ne porte volontairement pas de `fetchedAt` : il ne doit pas entrer
+ * dans le cache ni empêcher une vraie tentative réseau au build suivant.
+ *
+ * @param {string} url - URL de la page
+ * @returns {object|null} Métadonnées minimales, ou null si aucune image versionnée
+ */
+export function buildFallbackMeta(url) {
+  const existing = findExistingImage(url);
+  if (!existing) {
+    return null;
+  }
+  return {
+    ogImage: existing,
+    favicon: buildFaviconUrl(url),
+    fromVersionedImage: true,
+  };
+}
+
+/**
  * Télécharge une image OG et la stocke en cache local
  * @returns {Promise<string|null>} Chemin relatif de l'image ou null
  */
@@ -199,24 +276,25 @@ async function downloadImage(imageUrl, pageUrl) {
       mkdirSync(IMAGES_DIR, { recursive: true });
     }
 
+    // Image déjà présente : ne rien re-télécharger (cf. CONFIG.refreshImages).
+    // Le nom de fichier est dérivé du hash de l'URL de la page, l'extension
+    // dépend du content-type : on cherche donc par préfixe.
+    if (!CONFIG.refreshImages) {
+      const existing = findExistingImage(pageUrl);
+      if (existing) {
+        return existing;
+      }
+    }
+
     // Résoudre l'URL relative si nécessaire
     const absoluteUrl = imageUrl.startsWith('http')
       ? imageUrl
       : new URL(imageUrl, pageUrl).href;
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout);
-
-    const response = await fetch(absoluteUrl, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': CONFIG.userAgent,
-        'Accept': 'image/*',
-      },
-      redirect: 'follow',
+    const response = await fetchWithTimeout(absoluteUrl, {
+      'User-Agent': CONFIG.userAgent,
+      'Accept': 'image/*',
     });
-
-    clearTimeout(timeoutId);
 
     if (!response.ok) {
       return null;
@@ -243,7 +321,9 @@ async function downloadImage(imageUrl, pageUrl) {
  * Fetch les métadonnées OG d'une URL
  * @param {string} url - URL à analyser
  * @param {object} cache - Cache des métadonnées
- * @returns {Promise<{meta: object|null, fromCache: boolean}>}
+ * @returns {Promise<{meta: object|null, fromCache: boolean, failed?: boolean}>}
+ *   `failed` signale un échec réseau. `meta` peut malgré tout être renseigné,
+ *   via le repli sur les images versionnées (cf. buildFallbackMeta).
  */
 export async function fetchOGMetadata(url, cache) {
   // Vérifier le cache
@@ -252,24 +332,16 @@ export async function fetchOGMetadata(url, cache) {
   }
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout);
-
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': CONFIG.userAgent,
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
-      },
-      redirect: 'follow',
+    const response = await fetchWithTimeout(url, {
+      'User-Agent': CONFIG.userAgent,
+      'Accept': 'text/html,application/xhtml+xml',
+      'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
     });
 
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
-      console.log(`  ⚠️  ${url}: HTTP ${response.status}`);
-      return { meta: null, fromCache: false };
+      const fallback = buildFallbackMeta(url);
+      console.log(`  ⚠️  ${url}: HTTP ${response.status}${fallback ? ' (image versionnée conservée)' : ''}`);
+      return { meta: fallback, fromCache: false, failed: true };
     }
 
     const html = await response.text();
@@ -281,6 +353,16 @@ export async function fetchOGMetadata(url, cache) {
       if (localImage) {
         meta.ogImageOriginal = meta.ogImage; // Garder l'URL originale
         meta.ogImage = localImage;           // Utiliser le chemin local
+      }
+    }
+
+    // La page répond mais n'expose pas (ou plus) d'og:image : si une image a
+    // été téléchargée par un build précédent, elle reste la meilleure source.
+    if (!meta.ogImage) {
+      const existing = findExistingImage(url);
+      if (existing) {
+        meta.ogImage = existing;
+        meta.fromVersionedImage = true;
       }
     }
 
@@ -300,11 +382,13 @@ export async function fetchOGMetadata(url, cache) {
     return { meta, fromCache: false };
 
   } catch (err) {
+    const fallback = buildFallbackMeta(url);
+    const kept = fallback ? ' (image versionnée conservée)' : '';
     if (err.name === 'AbortError') {
-      console.log(`  ⏱️  ${url}: timeout`);
+      console.log(`  ⏱️  ${url}: timeout${kept}`);
     } else {
-      console.log(`  ❌ ${url}: ${err.message}`);
+      console.log(`  ❌ ${url}: ${err.message}${kept}`);
     }
-    return { meta: null, fromCache: false };
+    return { meta: fallback, fromCache: false, failed: true };
   }
 }

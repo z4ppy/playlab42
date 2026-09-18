@@ -2,6 +2,8 @@
  * Configuration Jest pour Playlab42
  *
  * Conventions de tests :
+ * - app/module.test.js : Tests pour app/module.js (nécessitent jsdom, déclaré
+ *   par un docblock `@jest-environment jsdom` en tête de fichier)
  * - lib/module.test.js : Tests pour lib/module.js (pattern plat)
  * - lib/module/__tests__/*.test.js : Tests pour modules complexes
  * - games/[id]/engine.test.js : Tests pour les moteurs de jeux
@@ -22,6 +24,7 @@ export default {
 
   // Pattern de découverte des fichiers de test (JS et TS)
   testMatch: [
+    '**/app/**/*.test.{js,ts}',
     '**/lib/**/*.test.{js,ts}',
     '**/games/**/*.test.{js,ts}',
     '**/tools/**/*.test.{js,ts}',
@@ -63,6 +66,7 @@ export default {
 
   // Collecter la couverture depuis ces dossiers
   collectCoverageFrom: [
+    'app/**/*.{js,ts}',
     'lib/**/*.{js,ts}',
     'games/**/engine.{js,ts}',
     'tools/**/src/**/*.{js,ts}',

@@ -159,14 +159,38 @@ export function showBookmarkPreview(bookmarkData, anchorElement) {
   descEl.textContent = bookmarkData.displayDescription || bookmarkData.description || '';
   domainEl.textContent = bookmarkData.domain;
 
-  // Image OG ou fallback
+  // Image OG ou repli emoji : même <img> et même comportement que les
+  // vignettes du catalogue et des parcours (cf. section « Vignettes » du CSS).
   const ogImage = bookmarkData.meta?.ogImage;
+  const defaultIcon = bookmarkData.icon || '🔖';
+  // La preview est un élément unique réutilisé d'un survol à l'autre. On
+  // neutralise le handler de l'image précédente avant de vider le conteneur :
+  // sa requête peut être encore en vol et son onerror écraserait l'image du
+  // bookmark suivant.
+  const previousImg = imageEl.querySelector('img');
+  if (previousImg) {
+    previousImg.onerror = null;
+  }
+  imageEl.textContent = '';
   if (ogImage) {
-    imageEl.style.backgroundImage = `url(${ogImage})`;
-    imageEl.classList.add('has-image');
+    // Pas d'attributs width/height ici : contrairement aux vignettes locales
+    // (380x180), l'image OG est distante et de dimensions arbitraires. La place
+    // est déjà réservée par l'aspect-ratio du conteneur .bookmark-preview-image.
+    const img = document.createElement('img');
+    img.src = ogImage;
+    img.alt = `Aperçu de ${bookmarkData.displayTitle || bookmarkData.title}`;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.onerror = () => {
+      // Repli : l'emoji ne remplace l'image que si celle-ci est toujours
+      // affichée — un survol suivant a pu la détacher entre-temps.
+      if (img.parentNode === imageEl) {
+        imageEl.textContent = defaultIcon;
+      }
+    };
+    imageEl.appendChild(img);
   } else {
-    imageEl.style.backgroundImage = '';
-    imageEl.classList.remove('has-image');
+    imageEl.textContent = defaultIcon;
   }
 
   // Positionner la preview intelligemment
