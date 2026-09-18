@@ -84,7 +84,7 @@ The system SHALL allow mixing JavaScript and TypeScript files.
 | **Type checking** | `tsc --noEmit` | Vérification sans transpilation |
 | **Transpilation** | esbuild | Rapide, support ESM natif |
 | **Catalogue** | JSON généré | Assemblé au build, liste tools/games |
-| **Tests** | Jest + ts-jest | Support JS et TS |
+| **Tests** | Jest + esbuild | Support JS et TS |
 | **Infra** | Docker | Environnement reproductible |
 
 ## Structure des Dossiers
