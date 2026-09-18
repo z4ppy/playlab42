@@ -26,6 +26,9 @@
     "javascript"
   ],
   "author": "Docaposte",
+  "engines": {
+    "node": ">=24"
+  },
   "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
