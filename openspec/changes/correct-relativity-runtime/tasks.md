@@ -58,4 +58,7 @@ are in `tools/relativity-lab/README.md` and the scoped regression tests.
 
 - [x] Parent/operator review and preparation of a separate pull request
   based on the library branch, with both build hooks composed.
-- [ ] Publication and native CI; no merge or archive authorized here.
+- [x] Publication as PR #126 based on the library PR #125; no merge
+  or archive performed. Native Chromium workflow_dispatch run
+  37073211009 succeeded on code commit 15d4e4c. Automatic CI targets
+  PRs into main and will run again when the base is switched after #125.
