@@ -39,25 +39,24 @@ export class SceneManager {
   /** @type {ResizeObserver} */
   #resizeObserver;
 
-  /** @type {number} Distance cible pour le zoom lissé */
-  #targetZoom = 0;
-
-  /** @type {number} Vitesse de lissage du zoom */
-  #zoomSmoothFactor = 0.1;
-
   /**
    * @param {HTMLElement} container - Conteneur DOM pour le canvas
    */
   constructor(container) {
     this.container = container;
-    this.#setupScene();
-    this.#setupCamera();
-    this.#setupRenderer();
-    this.#setupLights();
-    this.#setupGrid();
-    this.#setupAxes();
-    this.#setupControls();
-    this.#setupResize();
+    try {
+      this.#setupScene();
+      this.#setupCamera();
+      this.#setupRenderer();
+      this.#setupLights();
+      this.#setupGrid();
+      this.#setupAxes();
+      this.#setupControls();
+      this.#setupResize();
+    } catch (error) {
+      this.dispose();
+      throw error;
+    }
   }
 
   /**
@@ -78,7 +77,7 @@ export class SceneManager {
    * Configure la caméra perspective
    */
   #setupCamera() {
-    const aspect = this.container.clientWidth / this.container.clientHeight;
+    const aspect = Math.max(1, this.container.clientWidth) / Math.max(1, this.container.clientHeight);
     this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 1000);
     this.camera.position.set(8, 6, 8);
     this.camera.lookAt(0, 0, 0);
@@ -92,7 +91,7 @@ export class SceneManager {
       antialias: true,
       alpha: false,
     });
-    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+    this.renderer.setSize(Math.max(1, this.container.clientWidth), Math.max(1, this.container.clientHeight));
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.container.appendChild(this.renderer.domElement);
@@ -195,41 +194,12 @@ export class SceneManager {
     this.controls.maxDistance = 50;
     this.controls.maxPolarAngle = Math.PI * 0.9;
 
-    // Désactiver le zoom natif pour le remplacer par un zoom lissé
-    this.controls.enableZoom = false;
+    // Garder le zoom natif : molette ET pincement tactile d'OrbitControls.
+    this.controls.enableZoom = true;
 
     // Cible initiale
     this.controls.target.set(0, 0, 0);
 
-    // Initialiser la distance cible
-    this.#targetZoom = this.camera.position.distanceTo(this.controls.target);
-
-    // Gérer le zoom manuellement avec lissage
-    this.renderer.domElement.addEventListener('wheel', (e) => {
-      e.preventDefault();
-
-      // Calculer le delta de zoom (normaliser pour trackpad vs souris)
-      const delta = e.deltaY * 0.01;
-
-      // Mettre à jour la distance cible
-      this.#targetZoom *= (1 + delta * 0.1);
-      this.#targetZoom = Math.max(this.controls.minDistance, Math.min(this.controls.maxDistance, this.#targetZoom));
-    }, { passive: false });
-  }
-
-  /**
-   * Applique le zoom lissé
-   */
-  #updateSmoothZoom() {
-    const currentDistance = this.camera.position.distanceTo(this.controls.target);
-    const diff = this.#targetZoom - currentDistance;
-
-    // Appliquer le lissage si la différence est significative
-    if (Math.abs(diff) > 0.001) {
-      const direction = this.camera.position.clone().sub(this.controls.target).normalize();
-      const newDistance = currentDistance + diff * this.#zoomSmoothFactor;
-      this.camera.position.copy(this.controls.target).add(direction.multiplyScalar(newDistance));
-    }
   }
 
   /**
@@ -282,6 +252,8 @@ export class SceneManager {
     if (smooth) {
       this.#targetPosition = target.clone();
     } else {
+      this.#targetPosition = null;
+      this.camera.position.add(target.clone().sub(this.controls.target));
       this.controls.target.copy(target);
       this.axesGroup.position.copy(target);
       this.grid.position.x = target.x;
@@ -301,7 +273,9 @@ export class SceneManager {
     const smoothFactor = 0.08;
 
     // Interpoler la position de la cible des contrôles
+    const previous = this.controls.target.clone();
     this.controls.target.lerp(this.#targetPosition, smoothFactor);
+    this.camera.position.add(this.controls.target.clone().sub(previous));
 
     // Les axes suivent la cible
     this.axesGroup.position.copy(this.controls.target);
@@ -331,7 +305,6 @@ export class SceneManager {
    * Effectue le rendu d'une frame
    */
   render() {
-    this.#updateSmoothZoom();
     this.#updateTargetFollow();
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
@@ -341,12 +314,27 @@ export class SceneManager {
    * Libère les ressources
    */
   dispose() {
-    this.#resizeObserver.disconnect();
-    this.controls.dispose();
-    this.renderer.dispose();
+    this.#resizeObserver?.disconnect();
+    this.controls?.dispose();
+    const geometries = new Set();
+    const materials = new Set();
+    const textures = new Set();
+    this.scene?.traverse(object => {
+      if (object.geometry) {geometries.add(object.geometry);}
+      for (const material of (Array.isArray(object.material) ? object.material : [object.material])) {
+        if (!material) {continue;}
+        materials.add(material);
+        if (material.map) {textures.add(material.map);}
+      }
+    });
+    textures.forEach(texture => texture.dispose());
+    materials.forEach(material => material.dispose());
+    geometries.forEach(geometry => geometry.dispose());
+    this.scene?.clear();
+    this.renderer?.dispose();
 
     // Supprimer le canvas du DOM
-    if (this.renderer.domElement.parentNode) {
+    if (this.renderer?.domElement.parentNode) {
       this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
     }
   }

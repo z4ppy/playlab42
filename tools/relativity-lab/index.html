@@ -53,7 +53,7 @@
       overscroll-behavior: contain;
     }
 
-    .panels > .lil-gui.root {
+    .panels > .lil-gui.lil-root {
       position: absolute;
       top: var(--space-md);
       right: 310px;
@@ -555,7 +555,7 @@
       font-family: var(--font-family) !important;
     }
 
-    .lil-gui .title {
+    .lil-gui .lil-title {
       font-weight: 600;
     }
 
@@ -1052,7 +1052,7 @@
         padding: var(--space-md);
         min-height: 0;
       }
-      .panels > div, .panels > .lil-gui.root {
+      .panels > div, .panels > .lil-gui.lil-root {
         position: static !important;
         inset: auto !important;
         flex: none;
@@ -1073,7 +1073,7 @@
         flex: none;
         height: 120px;
       }
-      .panels > .lil-gui.root > .children {
+      .panels > .lil-gui.lil-root > .lil-children {
         max-height: none;
         overflow: visible;
       }
@@ -1103,6 +1103,11 @@
       .play-button:hover, .play-button:active { transform: none; }
     }
   </style>
+  <style>
+    .motor-thrust-btn { touch-action: none; }
+    .model-notice { padding: var(--space-sm); font-size: 0.8rem; background: var(--color-bg-secondary); }
+    #simulation-status:empty { display: none; }
+  </style>
 
   <!-- Initialisation du thème (le plus tôt possible) -->
   <script type="module">
@@ -1117,10 +1122,17 @@
       <div class="loading" role="status">Chargement</div>
     </div>
     <p id="canvas-help" class="sr-only">Vue 3D des observateurs. Glissez sur le canvas pour tourner, pincez ou utilisez la molette pour zoomer. Les panneaux donnent les données et les commandes de simulation. Espace : lecture ou pause ; R : réinitialiser hors des contrôles.</p>
+    <div class="model-notice">
+      Vue simultanée du laboratoire : c = 1 seconde-lumière/s.
+      Choisir un observateur change le cockpit et le suivi, pas les coordonnées.
+      Horloges schématiques ; propulsion par impulsions idéales.
+      <a href="./README.md">Modèle et limites</a>
+      <div id="simulation-status" role="status" aria-live="polite"></div>
+    </div>
 
     <section class="panels" id="panels" aria-label="Panneaux de simulation">
     <!-- HUD (Head-Up Display) -->
-    <div id="hud" class="hud" role="region" aria-label="Mon référentiel" tabindex="0"></div>
+    <div id="hud" class="hud" role="region" aria-label="Observateur suivi" tabindex="0"></div>
 
     <!-- Panneau des horloges lumineuses -->
     <div id="clock-panel" class="clock-panel" role="region" aria-label="Oscilloscope" tabindex="0"></div>
@@ -1149,18 +1161,28 @@
     </div>
   </div>
 
-  <!-- Import Map pour les dépendances CDN -->
+  <!-- Distributions réelles épinglées, générées par build:relativity-vendors -->
   <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-        "lil-gui": "https://unpkg.com/lil-gui@0.19.2/dist/lil-gui.esm.js"
+        "three": "./dist/vendor/three.module.js",
+        "three/addons/controls/OrbitControls.js": "./dist/vendor/OrbitControls.js",
+        "lil-gui": "./dist/vendor/lil-gui.esm.js"
       }
     }
   </script>
 
   <!-- Point d'entrée de l'application -->
-  <script type="module" src="./src/main.js"></script>
+  <script type="module">
+    import('./src/main.js').catch(() => {
+      const loading = document.querySelector('#canvas-container .loading');
+      if (loading) {
+        loading.setAttribute('role', 'alert');
+        loading.textContent = 'Modules 3D indisponibles. Construisez les assets locaux (npm run build:relativity-vendors dans Docker), puis rechargez la page.';
+      }
+      document.querySelector('#play-button').disabled = true;
+      document.querySelector('#reset-button').disabled = true;
+    });
+  </script>
 </body>
 </html>

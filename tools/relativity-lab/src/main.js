@@ -53,6 +53,11 @@ class App {
   /** @type {boolean} */
   #isRunning = false;
 
+  #animationId = null;
+  #events = new AbortController();
+  #cleanups = [];
+  #disposed = false;
+
   /**
    * Initialise l'application
    * @returns {Promise<void>}
@@ -90,7 +95,7 @@ class App {
       if (observer) {
         this.sceneManager.setTarget(observer.position);
       }
-      console.log(`🔄 Référentiel changé vers: ${observerId}`);
+      console.log(`🔄 Observateur suivi : ${observerId}`);
     });
 
     // Créer la vue cockpit (ObserverView)
@@ -106,10 +111,10 @@ class App {
         // Appliquer la poussée à l'observateur de référence
         if (this.simulation.referenceObserver) {
           const result = this.simulation.referenceObserver.applyThrust(direction, deltaMass);
-          if (result.success) {
-            console.log(`🚀 Impulsion: Δv=${(result.deltaV * 100).toFixed(3)}%c, masse=${result.newMass.toFixed(0)}kg`);
-          }
+          this.simulation.refresh();
+          return result;
         }
+        return { success: false };
       });
     }
 
@@ -126,22 +131,24 @@ class App {
     }
 
     // Rendre les panneaux déplaçables
-    makeDraggable(hudContainer, 'relativity-lab-hud-pos');
+    this.#cleanups.push(makeDraggable(hudContainer, 'relativity-lab-hud-pos'));
     if (clockPanelContainer) {
-      makeDraggable(clockPanelContainer, 'relativity-lab-clock-pos');
+      this.#cleanups.push(makeDraggable(clockPanelContainer, 'relativity-lab-clock-pos'));
     }
     if (observerViewContainer) {
-      makeDraggable(observerViewContainer, 'relativity-lab-observer-pos');
+      this.#cleanups.push(makeDraggable(observerViewContainer, 'relativity-lab-observer-pos'));
     }
     if (dopplerGraphContainer) {
-      makeDraggable(dopplerGraphContainer, 'relativity-lab-doppler-pos');
+      this.#cleanups.push(makeDraggable(dopplerGraphContainer, 'relativity-lab-doppler-pos'));
     }
     if (motorPanelContainer) {
-      makeDraggable(motorPanelContainer, 'relativity-lab-motor-pos');
+      this.#cleanups.push(makeDraggable(motorPanelContainer, 'relativity-lab-motor-pos'));
     }
 
     // Mettre à jour le HUD, la vue cockpit, le panneau moteur, le graphique Doppler et les horloges à chaque frame
     this.simulation.onUpdate((sim) => {
+      this.#updatePlayButton(sim.state === 'running');
+      if (sim.state !== 'running') {this.motorPanel?.stopBurn();}
       const displayData = sim.getDisplayData();
       this.hud.update(displayData);
       if (this.observerView) {
@@ -166,6 +173,14 @@ class App {
       }
     });
 
+    this.simulation.beforeStep = dtLab => {
+      const thrust = this.motorPanel?.getContinuousThrust(dtLab);
+      if (thrust && this.simulation.referenceObserver) {
+        const result = this.simulation.referenceObserver.applyThrust(thrust.direction, thrust.deltaMass);
+        if (!result.success) {this.motorPanel.showError('Poussée interrompue : masse ou limite de vitesse');}
+      }
+    };
+
     // Configurer les boutons Play/Reset
     this.#setupPlayButton();
 
@@ -179,6 +194,27 @@ class App {
 
     // Écouter les changements de thème
     this.#setupThemeListener();
+    document.addEventListener('visibilitychange', () => {
+      this.#lastTime = performance.now();
+      if (document.hidden) {this.simulation.pause();}
+    }, { signal: this.#events.signal });
+    window.addEventListener('pagehide', event => {
+      if (event.persisted) {
+        this.simulation.pause();
+        this.stop();
+      } else {
+        this.dispose();
+      }
+    }, { signal: this.#events.signal });
+    window.addEventListener('pageshow', event => {
+      if (event.persisted) {this.start();}
+    }, { signal: this.#events.signal });
+    this.sceneManager.renderer.domElement.addEventListener('webglcontextlost', event => {
+      event.preventDefault();
+      this.dispose();
+      const status = document.getElementById('simulation-status');
+      if (status) {status.textContent = 'Contexte WebGL perdu. Rechargez la page pour reprendre.';}
+    }, { signal: this.#events.signal });
 
     // Mettre à jour le HUD, la vue cockpit, le panneau moteur et le graphique Doppler une première fois
     const initialData = this.simulation.getDisplayData();
@@ -259,14 +295,14 @@ class App {
       playBtn.addEventListener('click', () => {
         this.simulation.toggle();
         this.#updatePlayButton(this.simulation.state === 'running');
-      });
+      }, { signal: this.#events.signal });
     }
 
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         this.simulation.reset();
         this.#updatePlayButton(false);
-      });
+      }, { signal: this.#events.signal });
     }
   }
 
@@ -300,7 +336,7 @@ class App {
   #setupKeyboard() {
     document.addEventListener('keydown', (e) => {
       // Ignorer si on est dans un champ de saisie
-      if ((e.target instanceof Element && e.target.closest('input, textarea, select, button, [contenteditable="true"]')) || e.altKey || e.ctrlKey || e.metaKey) {
+      if ((e.target instanceof Element && e.target.closest('input, textarea, select, button, [contenteditable]:not([contenteditable="false"])')) || e.altKey || e.ctrlKey || e.metaKey || e.repeat) {
         return;
       }
 
@@ -339,10 +375,10 @@ class App {
 
         case 'KeyA':
           // Basculer les axes
-          this.sceneManager.axes.visible = !this.sceneManager.axes.visible;
+          this.sceneManager.setAxesVisible(!this.sceneManager.axesGroup.visible);
           break;
       }
-    });
+    }, { signal: this.#events.signal });
   }
 
   /**
@@ -358,19 +394,20 @@ class App {
       attributes: true,
       attributeFilter: ['data-theme'],
     });
+    this.#cleanups.push(() => observer.disconnect());
 
     // Écouter aussi les changements de media query
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     darkModeQuery.addEventListener('change', () => {
       this.sceneManager.updateTheme();
-    });
+    }, { signal: this.#events.signal });
   }
 
   /**
    * Démarre la boucle de rendu
    */
   start() {
-    if (this.#isRunning) {return;}
+    if (this.#isRunning || this.#disposed) {return;}
     this.#isRunning = true;
     this.#lastTime = performance.now();
     this.#animate();
@@ -382,7 +419,7 @@ class App {
   #animate = () => {
     if (!this.#isRunning) {return;}
 
-    requestAnimationFrame(this.#animate);
+    this.#animationId = requestAnimationFrame(this.#animate);
 
     const currentTime = performance.now();
     const deltaTime = (currentTime - this.#lastTime) / 1000;
@@ -390,14 +427,6 @@ class App {
 
     // Limiter le delta time pour éviter les sauts
     const clampedDelta = Math.min(deltaTime, 0.1);
-
-    // Gérer la poussée continue du moteur
-    if (this.motorPanel && this.simulation.referenceObserver) {
-      const thrust = this.motorPanel.getContinuousThrust();
-      if (thrust) {
-        this.simulation.referenceObserver.applyThrust(thrust.direction, thrust.deltaMass);
-      }
-    }
 
     // Mettre à jour la simulation
     this.simulation.update(clampedDelta);
@@ -411,16 +440,29 @@ class App {
    */
   stop() {
     this.#isRunning = false;
+    cancelAnimationFrame(this.#animationId);
+    this.#animationId = null;
   }
 
   /**
    * Libère les ressources
    */
   dispose() {
+    if (this.#disposed) {return;}
+    this.#disposed = true;
     this.stop();
-    this.simulation.dispose();
-    this.sceneManager.dispose();
-    this.controlPanel.destroy();
+    this.#events.abort();
+    for (const cleanup of this.#cleanups) {cleanup();}
+    this.#cleanups = [];
+    this.simulation?.dispose();
+    this.motorPanel?.dispose();
+    this.clockPanel?.dispose();
+    this.dopplerGraph?.dispose();
+    this.hud?.dispose();
+    this.sceneManager?.dispose();
+    this.controlPanel?.destroy();
+    document.querySelectorAll('#panels button, #panels input, #panels select, #play-button, #reset-button')
+      .forEach(control => { control.disabled = true; });
   }
 }
 
@@ -437,29 +479,16 @@ function initApp() {
       app.start();
     })
     .catch((error) => {
+      app.dispose();
       console.error('Erreur d\'initialisation:', error);
 
       // Afficher un message d'erreur à l'utilisateur
       const container = document.getElementById('canvas-container');
       if (container) {
-        container.innerHTML = `
-          <div role="alert" style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: var(--color-error);
-            text-align: center;
-            padding: 2rem;
-          ">
-            <h2>Erreur de chargement</h2>
-            <p>${error.message}</p>
-            <p style="font-size: 0.8em; opacity: 0.7;">
-              Vérifiez la console pour plus de détails.
-            </p>
-          </div>
-        `;
+        const alert = document.createElement('p');
+        alert.setAttribute('role', 'alert');
+        alert.textContent = `Erreur de chargement : ${error.message}. WebGL 2 et les modules locaux sont nécessaires.`;
+        container.replaceChildren(alert);
       }
     });
 

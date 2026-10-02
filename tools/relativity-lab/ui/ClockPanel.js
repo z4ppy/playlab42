@@ -36,6 +36,9 @@ export class ClockPanel {
   /** @type {number} Fenêtre temporelle affichée (secondes de temps propre du ref) */
   timeWindow = 30;
 
+  #events = new AbortController();
+  #resizeFrame = null;
+
   /**
    * @param {HTMLElement} container
    */
@@ -59,7 +62,7 @@ export class ClockPanel {
           <button class="panel-close" title="Masquer" aria-label="Masquer l’oscilloscope">&times;</button>
         </div>
       </div>
-      <div class="oscillo-hint">Phase des horloges H/V dans le temps</div>
+      <div class="oscillo-hint">Phases H/V simultanées dans le lab (pas les signaux reçus)</div>
       <div class="oscillo-canvas-wrapper">
         <canvas id="oscillo-canvas" role="img" aria-label="Évolution des phases des horloges horizontales et verticales pour chaque observateur."></canvas>
       </div>
@@ -71,17 +74,17 @@ export class ClockPanel {
 
     // Redimensionner le canvas
     this.#resizeCanvas();
-    window.addEventListener('resize', () => this.#resizeCanvas());
+    window.addEventListener('resize', () => this.#resizeCanvas(), { signal: this.#events.signal });
 
     // Bouton fermer
     this.container.querySelector('.panel-close').addEventListener('click', () => {
       this.hide();
-    });
+    }, { signal: this.#events.signal });
 
     // Sélecteur de fenêtre temporelle
     this.container.querySelector('#oscillo-timewindow').addEventListener('change', (e) => {
       this.timeWindow = parseInt(e.target.value);
-    });
+    }, { signal: this.#events.signal });
   }
 
   #resizeCanvas() {
@@ -109,13 +112,18 @@ export class ClockPanel {
    */
   update(data) {
     const isFirstUpdate = !this.currentData;
+    if (this.currentData && data.labTime < this.currentData.labTime) {this.phaseHistory.clear();}
+    const changedTime = !this.currentData || data.labTime !== this.currentData.labTime;
     this.currentData = data;
-    this.#recordPhases(data);
+    if (changedTime) {this.#recordPhases(data);}
+    for (const id of this.phaseHistory.keys()) {
+      if (!data.observers.some(observer => observer.id === id)) {this.phaseHistory.delete(id);}
+    }
     this.#updateLegend(data);
 
     // Resize au premier update pour s'assurer que le canvas a la bonne taille
     if (isFirstUpdate) {
-      requestAnimationFrame(() => this.#resizeCanvas());
+      this.#resizeFrame = requestAnimationFrame(() => this.#resizeCanvas());
     }
   }
 
@@ -123,10 +131,7 @@ export class ClockPanel {
    * Enregistre les phases actuelles dans l'historique
    */
   #recordPhases(data) {
-    const me = data.observers.find(o => o.id === data.referenceId);
-    if (!me) {return;}
-
-    const refTime = me.properTime;
+    const refTime = data.labTime;
 
     for (const obs of data.observers) {
       if (!this.phaseHistory.has(obs.id)) {
@@ -136,9 +141,8 @@ export class ClockPanel {
       const history = this.phaseHistory.get(obs.id);
 
       // Calculer la phase (0-1) basée sur le temps propre
-      const period = obs.clockPeriod || 10; // T₀ = 2L/c
-      const phaseH = (obs.properTime % period) / period;
-      const phaseV = ((obs.properTime + period / 4) % period) / period; // Décalé de 90°
+      const phaseH = obs.phaseH;
+      const phaseV = obs.phaseV;
 
       history.push({
         refTime,
@@ -167,7 +171,7 @@ export class ClockPanel {
       return `
         <span class="oscillo-legend-item" style="border-color: ${color}">
           <span class="oscillo-legend-color" style="background: ${color}"></span>
-          ${obs.name}${isRef ? ' (ref)' : ''}
+          ${this.#escapeHtml(obs.name)}${isRef ? ' (suivi)' : ''}
         </span>
       `;
     }).join('');
@@ -197,7 +201,7 @@ export class ClockPanel {
     const me = this.currentData.observers.find(o => o.id === this.currentData.referenceId);
     if (!me) {return;}
 
-    const currentRefTime = me.properTime;
+    const currentRefTime = this.currentData.labTime;
     // Échelle temporelle FIXE : timeWindow secondes = largeur totale
     // Les traces apparaissent depuis la droite et scrollent vers la gauche
     const endTime = currentRefTime;
@@ -373,6 +377,14 @@ export class ClockPanel {
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
     }
-    window.removeEventListener('resize', this.#resizeCanvas);
+    cancelAnimationFrame(this.#resizeFrame);
+    this.#events.abort();
+    this.phaseHistory.clear();
+  }
+
+  #escapeHtml(text) {
+    const span = document.createElement('span');
+    span.textContent = text;
+    return span.innerHTML;
   }
 }

@@ -27,6 +27,7 @@ describe('Relativity Lab : commandes du moteur', () => {
   });
 
   afterEach(() => {
+    panel.dispose();
     for (const args of windowListeners.mock.calls.filter(([type]) => type === 'blur')) {
       window.removeEventListener(...args);
     }
@@ -63,9 +64,9 @@ describe('Relativity Lab : commandes du moteur', () => {
     expect(panel.getContinuousThrust().direction.x).toBe(-1);
     backward.dispatchEvent(new Event('blur'));
     expect(panel.isBurning).toBe(false);
-    backward.dispatchEvent(new Event('touchstart', { cancelable: true }));
+    backward.dispatchEvent(new MouseEvent('pointerdown', { button: 0, cancelable: true }));
     expect(panel.isBurning).toBe(true);
-    backward.dispatchEvent(new Event('touchcancel'));
+    backward.dispatchEvent(new Event('pointercancel'));
     expect(panel.isBurning).toBe(false);
   });
 
@@ -103,6 +104,36 @@ describe('Relativity Lab : commandes du moteur', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     expect(panel.getContinuousThrust()).toBeNull();
   });
+
+  test('le débit continu dépend du temps lab et non de la cadence des frames', () => {
+    document.getElementById('motor-forward').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(panel.getContinuousThrust(1 / 30).deltaMass).toBeCloseTo(10 / 30);
+    expect(panel.getContinuousThrust(1 / 144).deltaMass).toBeCloseTo(10 / 144);
+    panel.config.impulseAmount = 1;
+    expect(panel.getContinuousThrust(1 / 60).deltaMass).toBeCloseTo(1 / 60);
+    expect(panel.getContinuousThrust(NaN)).toBeNull();
+  });
+
+  test('ignore le clic secondaire, arrête sur perte de capture et libère les écouteurs', () => {
+    const forward = document.getElementById('motor-forward');
+    forward.dispatchEvent(new MouseEvent('pointerdown', { button: 2 }));
+    expect(panel.isBurning).toBe(false);
+    forward.dispatchEvent(new MouseEvent('pointerdown', { button: 0 }));
+    expect(panel.isBurning).toBe(true);
+    forward.dispatchEvent(new Event('lostpointercapture'));
+    expect(panel.isBurning).toBe(false);
+    panel.dispose();
+    forward.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    document.getElementById('motor-fire').click();
+    expect(panel.isBurning).toBe(false);
+    expect(thrust).not.toHaveBeenCalled();
+  });
+
+  test('annonce une impulsion refusée au lieu d’un faux succès', () => {
+    thrust.mockReturnValue({ success: false });
+    document.getElementById('motor-fire').click();
+    expect(document.getElementById('motor-status').textContent).toMatch('Impulsion refusée');
+  });
 });
 
 describe('Relativity Lab : panneaux', () => {
@@ -127,6 +158,15 @@ describe('Relativity Lab : panneaux', () => {
     expect(element.style.left).toBe(compact ? '' : '30px');
     expect(element.style.top).toBe(compact ? '' : '40px');
     document.dispatchEvent(new MouseEvent('mouseup'));
+    cleanup();
+  });
+
+  test('un stockage indisponible ne bloque pas l’initialisation du panneau', () => {
+    window.matchMedia = jest.fn(() => ({ matches: false }));
+    jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('indisponible'); });
+    document.body.innerHTML = '<div id="panel"><div data-drag-handle>Poignée</div></div>';
+    const cleanup = makeDraggable(document.getElementById('panel'), 'position');
+    expect(typeof cleanup).toBe('function');
     cleanup();
   });
 });

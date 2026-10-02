@@ -131,6 +131,13 @@ export class PhotonBroadcast {
     return obj;
   }
 
+  /** Crée le vrai rendu si l'utilisateur affiche un signal né en mode léger. */
+  enableMesh() {
+    if (!this.lightweight) {return;}
+    this.mesh = this.#createMesh();
+    this.lightweight = false;
+  }
+
   /**
    * Retourne l'âge du photon (temps lab écoulé depuis l'émission)
    * @param {number} currentLabTime - Temps lab actuel
@@ -145,6 +152,7 @@ export class PhotonBroadcast {
    * @param {number} currentLabTime - Temps lab actuel
    */
   update(currentLabTime) {
+    if (!this.active) {this.mesh.visible = false; return;}
     const age = this.getAge(currentLabTime);
 
     // Le rayon croît à la vitesse de la lumière
