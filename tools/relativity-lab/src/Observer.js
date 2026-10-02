@@ -40,6 +40,9 @@ class LightClock {
   /** @type {number} Période propre T₀ = 2L/c */
   period;
 
+  /** @type {number} Projection β·e du véhicule sur l'axe propre du bras */
+  labAxisBeta = 0;
+
   /** @type {THREE.Group} Groupe 3D de l'horloge */
   mesh;
 
@@ -133,33 +136,34 @@ class LightClock {
   /**
    * Met à jour l'horloge pour un delta temps propre
    * @param {number} dtProper - Delta temps propre
-   * @returns {boolean} True si un tick a été accompli
+   * @returns {number[]} Instants des ticks dans le delta propre
    */
   update(dtProper) {
-    this.phase += dtProper / this.period;
+    const previousPhase = this.phase;
+    const totalPhase = previousPhase + dtProper / this.period;
+    const count = Math.floor(totalPhase + 1e-12);
+    const ticks = Array.from({ length: count }, (_, i) => (1 - previousPhase + i) * this.period);
+    this.phase = Math.max(0, totalPhase - count);
+    this.tickCount += count;
 
-    let ticked = false;
+    this.#updatePhotonPosition();
 
-    // Vérifier si on a franchi un tick (phase = 1)
-    while (this.phase >= 1) {
-      this.phase -= 1;
-      this.tickCount++;
-      ticked = true;
-    }
+    return ticks;
+  }
 
-    // Animer le photon
-    // Phase 0 → 0.5 : aller, 0.5 → 1 : retour
-    const t = this.phase < 0.5 ? this.phase * 2 : (1 - this.phase) * 2;
-    const currentLen = this.getCurrentLength();
-    const pos = t * currentLen;
-
-    if (this.orientation === 'H') {
-      this.photonMesh.position.set(pos, 0, 0);
-    } else {
-      this.photonMesh.position.set(0, pos, 0);
-    }
-
-    return ticked;
+  /**
+   * Place le photon à temps lab simultané, avec c=1 sur chaque trajet inertiel.
+   * La phase mesure le temps propre du centre, pas celui du miroir distant :
+   * la réflexion arrive à q=L(1+β·e), et non nécessairement à phase=0.5.
+   */
+  #updatePhotonPosition() {
+    const q = this.phase * this.period;
+    const outwardDuration = this.mirrorDistance * (1 + this.labAxisBeta);
+    const returnDuration = this.mirrorDistance * (1 - this.labAxisBeta);
+    const fraction = q < outwardDuration
+      ? q / outwardDuration
+      : (this.period - q) / returnDuration;
+    this.photonMesh.position.copy(this.mesh.children[2].position).multiplyScalar(fraction);
   }
 
   /**
@@ -176,8 +180,8 @@ class LightClock {
    * @param {number} contractionFactor - Facteur de contraction (0-1, 1 = pas de contraction)
    */
   setContraction(contractionFactor) {
-    // Limiter le facteur entre 0.1 et 1 pour éviter les artefacts visuels
-    const factor = Math.max(0.1, Math.min(1, contractionFactor));
+    // Les facteurs hors intervalle ne représentent pas une contraction.
+    const factor = Math.max(0, Math.min(1, contractionFactor));
 
     // Longueur contractée
     const contractedLength = this.mirrorDistance * factor;
@@ -215,6 +219,28 @@ class LightClock {
   getCurrentLength() {
     return this.currentLength !== undefined ? this.currentLength : this.mirrorDistance;
   }
+
+  /**
+   * Contracte le vecteur du bras dans le laboratoire (y compris sa direction).
+   * @param {THREE.Vector3} velocity - Vitesse lab du véhicule
+   */
+  setLabVelocity(velocity) {
+    this.labAxisBeta = this.orientation === 'H' ? velocity.x : velocity.y;
+    const end = new THREE.Vector3(this.orientation === 'H' ? this.mirrorDistance : 0,
+      this.orientation === 'V' ? this.mirrorDistance : 0, 0);
+    if (velocity.lengthSq() > 0) {
+      const dir = velocity.clone().normalize();
+      end.add(dir.multiplyScalar((1 / Physics.gammaFromVelocity(velocity) - 1) * end.dot(dir)));
+    }
+    const positions = this.mesh.children[0].geometry.attributes.position;
+    positions.array[3] = end.x;
+    positions.array[4] = end.y;
+    positions.array[5] = end.z;
+    positions.needsUpdate = true;
+    this.mesh.children[2].position.copy(end);
+    this.currentLength = end.length();
+    this.#updatePhotonPosition();
+  }
 }
 
 /**
@@ -236,7 +262,7 @@ export class Observer {
   /** @type {number} Masse actuelle en kg */
   mass;
 
-  /** @type {THREE.Vector3} Vitesse par rapport au CMB */
+  /** @type {THREE.Vector3} Alias historique de la vitesse lab (pas de modèle CMB) */
   velocityCMB;
 
   /** @type {Array<{tau: number, deltaMass: number, deltaV: THREE.Vector3, direction: THREE.Vector3}>} Historique d'accélération */
@@ -272,7 +298,7 @@ export class Observer {
   /** @type {Map<string, {lastPingSent: number, lastPongReceived: number, roundTripTime: number, estimatedDistance: number}>} Suivi des pings pour chaque observateur */
   pingTracker = new Map();
 
-  /** @type {Map<string, number>} Temps propre de mon dernier tick envoyé */
+  /** @type {number} Temps propre de mon dernier tick envoyé */
   lastEmissionTau = 0;
 
   /** @type {THREE.Group} Groupe 3D contenant tout */
@@ -299,14 +325,19 @@ export class Observer {
     this.name = name;
     // armLength contrôle la période des horloges : T = 2L/c
     // Avec armLength = 5 et c = 1, période = 10 secondes (1 émission toutes les 10s)
-    this.armLength = options.armLength || 5;
+    this.armLength = options.armLength ?? 5;
 
     // Couleur automatique ou spécifiée
-    this.color = options.color || OBSERVER_COLORS[Observer.#colorIndex % OBSERVER_COLORS.length];
+    this.color = options.color ?? OBSERVER_COLORS[Observer.#colorIndex % OBSERVER_COLORS.length];
     Observer.#colorIndex++;
 
     // Masse (défaut 1000 kg = 1 tonne)
-    this.initialMass = options.mass || 1000;
+    this.initialMass = options.mass ?? 1000;
+    if (!Physics.isFiniteVector(position) || !Physics.isValidVelocity(velocity) ||
+        !Number.isFinite(this.armLength) || this.armLength < 0.01 ||
+        !Number.isFinite(this.initialMass) || this.initialMass <= 0) {
+      throw new RangeError('Position, vitesse (< c), masse et bras (≥ 0.01 ls) doivent être valides.');
+    }
     this.mass = this.initialMass;
 
     // Positions et vitesses
@@ -315,7 +346,7 @@ export class Observer {
     this.position = position.clone();
     this.velocity = velocity.clone();
 
-    // Vitesse par rapport au CMB (initialement = vitesse initiale, tous au repos CMB au départ)
+    // Alias historique conservé pour les clients de getDisplayData().
     this.velocityCMB = velocity.clone();
 
     // Historique d'accélération
@@ -430,10 +461,10 @@ export class Observer {
   /**
    * Met à jour l'observateur pour un delta temps lab
    * @param {number} dtLab - Delta temps dans le référentiel lab
-   * @param {THREE.Vector3} referenceVelocity - Vitesse du référentiel d'observation
-   * @returns {{tickedH: boolean, tickedV: boolean}} Indique si les horloges ont tické
+   * @returns {{ticksH: number[], ticksV: number[]}} Instants de ticks dans le delta propre
    */
-  update(dtLab, referenceVelocity = new THREE.Vector3()) {
+  update(dtLab) {
+    if (!Number.isFinite(dtLab) || dtLab < 0) {throw new RangeError('Delta temps lab invalide.');}
     // Calculer le temps propre écoulé
     const dtProper = Physics.properTimeDelta(dtLab, this.beta);
     this.properTime += dtProper;
@@ -444,94 +475,30 @@ export class Observer {
     this.mesh.position.copy(this.position);
 
     // Mettre à jour les horloges (en temps propre)
-    const tickedH = this.clockH.update(dtProper);
-    const tickedV = this.clockV.update(dtProper);
-
-    // Orienter l'indicateur de direction selon la vitesse
-    if (this.velocity.lengthSq() > 0.0001) {
-      const cone = this.mesh.getObjectByName('directionCone');
-      if (cone) {
-        const dir = this.velocity.clone().normalize();
-        cone.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir);
-        cone.position.copy(dir.multiplyScalar(0.25));
-      }
-    }
+    const ticksH = this.clockH.update(dtProper);
+    const ticksV = this.clockV.update(dtProper);
 
     // Appliquer la contraction des longueurs visuelle
-    this.#applyLengthContraction(referenceVelocity);
+    this.refreshVisuals();
 
-    return { tickedH, tickedV };
+    return { ticksH, ticksV };
   }
 
   /**
-   * Applique visuellement la contraction des longueurs
-   * @param {THREE.Vector3} referenceVelocity - Vitesse du référentiel d'observation
+   * Schéma des longueurs simultanées dans le lab, indépendamment du cockpit.
    */
-  #applyLengthContraction(referenceVelocity) {
-    // Vitesse relative par rapport au référentiel d'observation
-    const relVelocity = this.velocity.clone().sub(referenceVelocity);
-    const relBeta = relVelocity.length();
-
-    if (relBeta < 0.01) {
-      // Pas de contraction significative
-      this.mesh.scale.set(1, 1, 1);
-      // Réinitialiser les horloges à leur longueur propre
-      this.clockH.setContraction(1);
-      this.clockV.setContraction(1);
-      return;
-    }
-
-    // Facteur gamma
-    const gamma = Physics.gammaFromVelocity(relVelocity);
-
-    // Direction du mouvement relatif (normalisée)
-    const dir = relVelocity.clone().normalize();
-
-    // === Contraction des horloges lumineuses ===
-    // L'horloge H est orientée selon X, V selon Y
-    // La contraction n'affecte que la composante parallèle à la vitesse
-    //
-    // Pour une horloge dont le bras est dans la direction d_arm :
-    // - Composante parallèle à v : |d_arm · dir|
-    // - Contraction : 1/γ uniquement pour cette composante
-    //
-    // Longueur apparente = √( (L·cos²θ/γ²) + (L·sin²θ) )
-    //                    = L · √( cos²θ/γ² + sin²θ )
-    // où θ est l'angle entre le bras et la direction du mouvement
-
-    // Horloge H (bras selon X local, orienté selon l'axe X global)
-    const cosH = Math.abs(dir.x); // projection sur X
-    const contractionH = Math.sqrt(cosH * cosH / (gamma * gamma) + (1 - cosH * cosH));
-
-    // Horloge V (bras selon Y local, orienté selon l'axe Y global)
-    const cosV = Math.abs(dir.y); // projection sur Y
-    const contractionV = Math.sqrt(cosV * cosV / (gamma * gamma) + (1 - cosV * cosV));
-
-    // Appliquer la contraction aux horloges
-    this.clockH.setContraction(contractionH);
-    this.clockV.setContraction(contractionV);
-
-    // === Contraction du corps de l'observateur ===
-    // Contracter seulement le corps (sphère), pas le groupe entier
-    // pour éviter la double contraction des horloges
-    const contractionFactor = Physics.lengthContraction(1, relBeta);
-    const sx = 1 - (1 - contractionFactor) * Math.abs(dir.x);
-    const sy = 1 - (1 - contractionFactor) * Math.abs(dir.y);
-    const sz = 1 - (1 - contractionFactor) * Math.abs(dir.z);
-
-    // Contracter le corps (sphère)
-    if (this.bodyMesh) {
-      this.bodyMesh.scale.set(sx, sy, sz);
-    }
-
-    // Contracter le cône directionnel
+  refreshVisuals() {
+    this.clockH.setLabVelocity(this.velocity);
+    this.clockV.setLabVelocity(this.velocity);
+    this.bodyMesh.scale.set(1 / this.gamma, 1, 1);
+    const direction = this.beta > 0 ? this.velocity.clone().normalize() : new THREE.Vector3(1, 0, 0);
+    this.bodyMesh.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), direction);
     const cone = this.mesh.getObjectByName('directionCone');
     if (cone) {
-      cone.scale.set(sx, sy, sz);
+      cone.visible = this.beta > 0;
+      cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+      cone.position.copy(direction).multiplyScalar(0.25);
     }
-
-    // Garder le groupe parent à l'échelle 1 (les horloges gèrent leur propre contraction)
-    this.mesh.scale.set(1, 1, 1);
   }
 
   /**
@@ -566,18 +533,20 @@ export class Observer {
     this.receptionHistory = [];
     this.pingTracker.clear();
     this.lastEmissionTau = 0;
+    this.refreshVisuals();
   }
 
   /**
    * Applique une impulsion (fusée à photons)
    * Convertit une partie de la masse en photons pour accélérer
-   * @param {THREE.Vector3} direction - Direction de poussée (normalisée)
+   * @param {THREE.Vector3} direction - Direction dans le repos instantané, axes sans rotation
    * @param {number} deltaMass - Masse à convertir en kg
    * @returns {{success: boolean, deltaV: number, newMass: number}} Résultat
    */
   applyThrust(direction, deltaMass) {
     // Vérifier qu'on a assez de masse
-    if (deltaMass <= 0 || deltaMass >= this.mass) {
+    if (!Number.isFinite(deltaMass) || deltaMass <= 0 || deltaMass >= this.mass ||
+        !Physics.isFiniteVector(direction) || direction.lengthSq() < 1e-20) {
       return { success: false, deltaV: 0, newMass: this.mass };
     }
 
@@ -598,7 +567,10 @@ export class Observer {
     const dir = direction.clone().normalize();
 
     // Appliquer le delta-v en utilisant l'addition relativiste des vitesses
-    const newVelocityCMB = Physics.velocityAddition3D(this.velocityCMB, dir.multiplyScalar(deltaV));
+    const newVelocityCMB = Physics.velocityAddition3D(dir.multiplyScalar(deltaV), this.velocity);
+    if (!Physics.isValidVelocity(newVelocityCMB)) {
+      return { success: false, deltaV: 0, newMass: this.mass };
+    }
 
     // Mettre à jour
     this.mass = m1;
@@ -614,6 +586,8 @@ export class Observer {
       massAfter: m1,
       vCMBAfter: newVelocityCMB.length(),
     });
+    if (this.accelerationHistory.length > 500) {this.accelerationHistory.shift();}
+    this.refreshVisuals();
 
     return { success: true, deltaV, newMass: m1 };
   }
@@ -631,7 +605,12 @@ export class Observer {
    * @param {THREE.Vector3} velocity
    */
   setVelocity(velocity) {
+    if (!Physics.isValidVelocity(velocity)) {
+      throw new RangeError('La norme de la vitesse doit être finie et strictement inférieure à c.');
+    }
     this.velocity.copy(velocity);
+    this.velocityCMB.copy(velocity);
+    this.refreshVisuals();
   }
 
   /**
@@ -639,6 +618,7 @@ export class Observer {
    * @param {THREE.Vector3} position
    */
   setPosition(position) {
+    if (!Physics.isFiniteVector(position)) {throw new RangeError('Position non finie.');}
     this.position.copy(position);
     this.mesh.position.copy(position);
   }
@@ -652,17 +632,17 @@ export class Observer {
    * @param {number} emissionTau - Temps propre de l'émetteur au moment de l'émission
    * @param {number} lightTravelTime - Temps de trajet de la lumière (temps lab)
    */
-  recordReceivedTick(sourceId, clockType, tickNumber, dopplerFactor = 1.0, emissionTau = 0, lightTravelTime = 0) {
+  recordReceivedTick(sourceId, clockType, tickNumber, dopplerFactor = 1.0, emissionTau = 0, lightTravelTime = 0, receptionTau = this.properTime) {
     if (!this.receivedTicks.has(sourceId)) {
       this.receivedTicks.set(sourceId, { H: 0, V: 0, lastReceivedAt: 0 });
     }
     const entry = this.receivedTicks.get(sourceId);
     entry[clockType] = Math.max(entry[clockType], tickNumber);
-    entry.lastReceivedAt = this.properTime;
+    entry.lastReceivedAt = receptionTau;
 
     // Ajouter à l'historique des réceptions
     this.receptionHistory.push({
-      tau: this.properTime,
+      tau: receptionTau,
       sourceId,
       clockType,
       tickNumber,
@@ -672,11 +652,12 @@ export class Observer {
     });
 
     // Mettre à jour le ping tracker pour estimation de distance
-    this.#updatePingTracker(sourceId, emissionTau, lightTravelTime);
+    this.#updatePingTracker(sourceId, emissionTau, lightTravelTime, receptionTau);
 
     // Limiter l'historique brut à 500 entrées, puis agréger
     if (this.receptionHistory.length > 500) {
       this.#aggregateHistory();
+      this.receptionHistory = this.receptionHistory.slice(-500);
     }
   }
 
@@ -686,13 +667,13 @@ export class Observer {
    * @param {number} emissionTau - Temps propre d'émission de la source
    * @param {number} lightTravelTime - Temps de trajet lumière
    */
-  #updatePingTracker(sourceId, emissionTau, lightTravelTime) {
+  #updatePingTracker(sourceId, emissionTau, lightTravelTime, receptionTau) {
     if (!this.pingTracker.has(sourceId)) {
       this.pingTracker.set(sourceId, {
         lastPingSent: 0,
-        lastPongReceived: this.properTime,
+        lastPongReceived: receptionTau,
         lastEmissionTau: emissionTau,
-        roundTripTime: 0,
+        roundTripTime: null,
         estimatedDistance: lightTravelTime,
         receptionIntervals: [],
         emissionIntervals: [],
@@ -705,12 +686,14 @@ export class Observer {
     const tracker = this.pingTracker.get(sourceId);
     const previousReception = tracker.lastPongReceived;
     const previousEmissionTau = tracker.lastEmissionTau || 0;
-    tracker.lastPongReceived = this.properTime;
+    // H et V simultanés ne sont pas deux périodes successives.
+    if (emissionTau <= tracker.lastEmissionTau) {return;}
+    tracker.lastPongReceived = receptionTau;
     tracker.lastEmissionTau = emissionTau;
 
     // Calculer l'intervalle entre réceptions (dans MON temps propre)
     if (previousReception > 0) {
-      const receptionInterval = this.properTime - previousReception;
+      const receptionInterval = receptionTau - previousReception;
       tracker.receptionIntervals.push(receptionInterval);
       if (tracker.receptionIntervals.length > 10) {
         tracker.receptionIntervals.shift();
@@ -752,7 +735,7 @@ export class Observer {
 
     // Distance estimée basée sur le temps de trajet lumière
     tracker.estimatedDistance = lightTravelTime;
-    tracker.roundTripTime = lightTravelTime * 2;
+    tracker.roundTripTime = null; // Aucun aller-retour radar n'est simulé.
   }
 
   /**
@@ -786,9 +769,9 @@ export class Observer {
     }
 
     // Convertir les agrégats en événements moyennés
-    for (const [bucket, data] of aggregated) {
+    for (const data of aggregated.values()) {
       newHistory.push({
-        tau: bucket + data.bucketSize / 2, // Centre du bucket
+        tau: data.bucket + data.bucketSize / 2, // Centre du bucket numérique
         sourceId: data.sourceId,
         clockType: 'A', // Agrégé
         tickNumber: data.count,
@@ -813,6 +796,7 @@ export class Observer {
     if (!map.has(key)) {
       map.set(key, {
         sourceId: event.sourceId,
+        bucket,
         count: 0,
         dopplerSum: 0,
         emissionTauSum: 0,
@@ -821,10 +805,11 @@ export class Observer {
       });
     }
     const agg = map.get(key);
-    agg.count++;
-    agg.dopplerSum += event.dopplerFactor;
-    agg.emissionTauSum += event.emissionTau || 0;
-    agg.lightTravelTimeSum += event.lightTravelTime || 0;
+    const weight = event.aggregated ? event.tickNumber : 1;
+    agg.count += weight;
+    agg.dopplerSum += event.dopplerFactor * weight;
+    agg.emissionTauSum += (event.emissionTau || 0) * weight;
+    agg.lightTravelTimeSum += (event.lightTravelTime || 0) * weight;
   }
 
   /**
@@ -845,6 +830,8 @@ export class Observer {
       velocityCMB: this.velocityCMB.clone(),
       clockH: this.clockH.tickCount,
       clockV: this.clockV.tickCount,
+      phaseH: this.clockH.phase,
+      phaseV: this.clockV.phase,
       clockPeriod: this.clockH.period, // T₀ = 2L/c
       position: this.position.clone(),
       velocity: this.velocity.clone(),
@@ -864,8 +851,9 @@ export class Observer {
       if (obj.geometry) {obj.geometry.dispose();}
       if (obj.material) {
         if (Array.isArray(obj.material)) {
-          obj.material.forEach(m => m.dispose());
+          obj.material.forEach(m => { m.map?.dispose(); m.dispose(); });
         } else {
+          obj.material.map?.dispose();
           obj.material.dispose();
         }
       }

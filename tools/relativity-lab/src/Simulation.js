@@ -11,6 +11,10 @@
 import * as THREE from 'three';
 import { Observer } from './Observer.js';
 import { PhotonPool } from './PhotonBroadcast.js';
+import { dopplerFactor, lightReceptionDelay } from './Physics.js';
+
+/** Pas fixe du laboratoire ; un reste inférieur à ce pas attend la frame suivante. */
+export const FIXED_STEP = 1 / 60;
 
 /**
  * États possibles de la simulation
@@ -76,6 +80,11 @@ export class Simulation {
   /** @type {number} Compteur pour générer des IDs uniques */
   #nextObserverId = 1;
 
+  #accumulator = 0;
+
+  /** @type {((dtLab: number) => void)|null} Commande moteur à chaque pas lab */
+  beforeStep = null;
+
   /**
    * @param {THREE.Scene} scene - Scène Three.js
    */
@@ -94,6 +103,7 @@ export class Simulation {
    */
   addObserver(name, position, velocity = new THREE.Vector3(), options = {}) {
     const id = options.id || `obs-${this.#nextObserverId++}`;
+    if (this.getObserver(id)) {throw new RangeError('Identifiant d’observateur déjà utilisé.');}
     const observer = new Observer(id, name, position, velocity, options);
 
     this.observers.push(observer);
@@ -106,7 +116,8 @@ export class Simulation {
     if (this.observers.length === 1) {
       this.referenceObserver = observer;
     }
-
+    observer.refreshVisuals();
+    this.refresh();
     return observer;
   }
 
@@ -133,6 +144,12 @@ export class Simulation {
     if (this.referenceObserver === observer) {
       this.referenceObserver = this.observers[0] || null;
     }
+    for (const signal of this.signals) {
+      signal.targetIds.delete(observerId);
+      if ([...signal.targetIds].every(id => signal.receivedBy.has(id))) {signal.active = false;}
+    }
+    this.#pruneInactive();
+    this.refresh();
   }
 
   /**
@@ -150,13 +167,13 @@ export class Simulation {
    */
   setReferenceFrame(observerId) {
     if (observerId === null) {
-      this.referenceObserver = null;
+      this.referenceObserver = this.getObserver('lab') || this.observers[0] || null;
     } else {
       const observer = this.getObserver(observerId);
-      if (observer) {
-        this.referenceObserver = observer;
-      }
+      if (!observer) {throw new RangeError('Observateur de référence inconnu.');}
+      this.referenceObserver = observer;
     }
+    this.refresh();
   }
 
   /**
@@ -170,7 +187,8 @@ export class Simulation {
    * @param {'H' | 'V'} clockType - Type d'horloge
    * @param {number} tickNumber - Numéro du tick
    */
-  emitPhoton(observer, clockType, tickNumber) {
+  emitPhoton(observer, clockType, tickNumber, event = {}) {
+    if (this.observers.length < 2) {return;}
     const color = clockType === 'H' ? 0xff6b6b : 0x4ade80;
 
     // Émettre un signal broadcast (sphère en expansion à c)
@@ -178,9 +196,9 @@ export class Simulation {
       sourceId: observer.id,
       clockType,
       tickNumber,
-      origin: observer.position.clone(),
-      emissionLabTime: this.labTime,
-      emissionProperTime: observer.properTime,
+      origin: event.origin || observer.position.clone(),
+      emissionLabTime: event.labTime ?? this.labTime,
+      emissionProperTime: event.properTime ?? observer.properTime,
       emissionVelocity: observer.velocity.clone(),
       color,
       maxRadius: this.maxSignalRadius,
@@ -190,6 +208,7 @@ export class Simulation {
     // Définir le nombre de cibles (tous sauf l'émetteur)
     // Le signal sera désactivé quand tous les observateurs l'auront reçu
     signal.setTargetCount(this.observers.length - 1);
+    signal.targetIds = new Set(this.observers.filter(o => o !== observer).map(o => o.id));
 
     this.signals.push(signal);
     this.scene.add(signal.mesh);
@@ -218,8 +237,21 @@ export class Simulation {
   #updateVisibility() {
     for (const signal of this.signals) {
       const sourceVisible = this.showAllSources || this.visibleSources.has(signal.sourceId);
-      signal.mesh.visible = this.showSignals && sourceVisible;
+      const visible = this.showSignals && sourceVisible;
+      if (visible && signal.lightweight) {
+        this.scene.remove(signal.mesh);
+        signal.enableMesh();
+        this.scene.add(signal.mesh);
+        signal.update(this.labTime);
+      }
+      signal.mesh.visible = visible && signal.active;
     }
+  }
+
+  /** Actualise les panneaux et les options, même en pause. */
+  refresh() {
+    this.#updateVisibility();
+    for (const callback of this.#updateCallbacks) {callback(this);}
   }
 
   /**
@@ -227,6 +259,7 @@ export class Simulation {
    */
   play() {
     this.state = SimulationState.RUNNING;
+    this.refresh();
   }
 
   /**
@@ -234,6 +267,7 @@ export class Simulation {
    */
   pause() {
     this.state = SimulationState.PAUSED;
+    this.refresh();
   }
 
   /**
@@ -252,6 +286,7 @@ export class Simulation {
    */
   reset() {
     this.labTime = 0;
+    this.#accumulator = 0;
     this.state = SimulationState.PAUSED;
 
     // Réinitialiser les observateurs
@@ -265,6 +300,7 @@ export class Simulation {
       signal.dispose();
     }
     this.signals = [];
+    this.refresh();
   }
 
   /**
@@ -273,66 +309,53 @@ export class Simulation {
    */
   update(deltaTime) {
     if (this.state !== SimulationState.RUNNING) {return;}
+    if (!Number.isFinite(deltaTime) || deltaTime < 0 ||
+        !Number.isFinite(this.timeScale) || this.timeScale <= 0) {
+      throw new RangeError('Delta temps et multiplicateur doivent être finis et positifs.');
+    }
+    this.#accumulator += Math.min(deltaTime, 0.1) * Math.min(this.timeScale, 100);
+    while (this.#accumulator + 1e-12 >= FIXED_STEP) {
+      this.#step(FIXED_STEP);
+      this.#accumulator = Math.max(0, this.#accumulator - FIXED_STEP);
+    }
+    this.refresh();
+  }
 
-    // Calculer le delta temps lab
-    const dtLab = deltaTime * this.timeScale;
+  /**
+   * Avance un segment inertiel après l'éventuelle impulsion instantanée.
+   * @param {number} dtLab
+   */
+  #step(dtLab) {
+    this.beforeStep?.(dtLab);
+    const startTime = this.labTime;
     this.labTime += dtLab;
-
-    // Vitesse du référentiel d'observation
-    const refVelocity = this.referenceObserver?.velocity || new THREE.Vector3();
 
     // Mettre à jour les observateurs
     for (const observer of this.observers) {
-      const { tickedH, tickedV } = observer.update(dtLab, refVelocity);
+      const { ticksH, ticksV } = observer.update(dtLab);
 
       // Émettre des photons si une horloge a tické
       if (this.autoEmitPhotons) {
-        if (tickedH) {
-          this.emitPhoton(observer, 'H', observer.clockH.tickCount);
-        }
-        if (tickedV) {
-          this.emitPhoton(observer, 'V', observer.clockV.tickCount);
+        for (const [type, ticks, clock] of [['H', ticksH, observer.clockH], ['V', ticksV, observer.clockV]]) {
+          ticks.forEach((properOffset, index) => {
+            const labOffset = Math.min(dtLab, Math.max(0, properOffset * observer.gamma));
+            const tickNumber = clock.tickCount - ticks.length + index + 1;
+            this.emitPhoton(observer, type, tickNumber, {
+              labTime: startTime + labOffset,
+              properTime: tickNumber * clock.period,
+              origin: observer.position.clone().sub(observer.velocity.clone().multiplyScalar(dtLab - labOffset)),
+            });
+          });
         }
       }
     }
 
-    // Mettre à jour les signaux
-    for (const signal of this.signals) {
-      signal.update(this.labTime);
-    }
-
-    // Vérifier les réceptions
-    this.#checkReceptions();
+    // Tester avant expiration pour conserver une réception dans le dernier segment.
+    this.#checkReceptions(startTime);
+    for (const signal of this.signals) {signal.update(this.labTime);}
 
     // Nettoyer les éléments inactifs
     this.#pruneInactive();
-
-    // Notifier les callbacks
-    for (const callback of this.#updateCallbacks) {
-      callback(this);
-    }
-  }
-
-  /**
-   * Calcule le facteur Doppler relativiste
-   * @param {THREE.Vector3} sourceVelocity - Vitesse de l'émetteur à l'émission
-   * @param {THREE.Vector3} receiverVelocity - Vitesse du récepteur à la réception
-   * @param {THREE.Vector3} direction - Vecteur unitaire de la source vers le récepteur
-   * @returns {number} Facteur Doppler (>1 = blueshift/approche, <1 = redshift/éloignement)
-   */
-  #calculateDopplerFactor(sourceVelocity, receiverVelocity, direction) {
-    // Vitesse relative de la source par rapport au récepteur
-    const relativeVelocity = sourceVelocity.clone().sub(receiverVelocity);
-
-    // Composante radiale (négative si source s'approche)
-    // direction pointe de la source vers le récepteur
-    const radialBeta = relativeVelocity.dot(direction);
-
-    // Facteur Doppler relativiste : f_obs/f_emit = sqrt((1 - β)/(1 + β))
-    // où β est positif si la source s'éloigne
-    // Notre radialBeta est positif si la source s'éloigne
-    const clampedBeta = Math.max(-0.999, Math.min(0.999, radialBeta));
-    return Math.sqrt((1 - clampedBeta) / (1 + clampedBeta));
   }
 
   /**
@@ -341,42 +364,46 @@ export class Simulation {
    * Les signaux broadcast (sphères en expansion) sont utilisés pour
    * détecter les réceptions. Pas besoin de photons individuels.
    */
-  #checkReceptions() {
+  #checkReceptions(startTime) {
     for (const signal of this.signals) {
       if (!signal.active) {continue;}
 
       for (const observer of this.observers) {
-        const received = signal.checkReception(observer.id, observer.position);
-
-        if (received) {
-          // Calculer le facteur Doppler
-          const source = this.getObserver(signal.sourceId);
-          const direction = observer.position.clone().sub(signal.origin).normalize();
-          const sourceVelocity = signal.emissionVelocity || (source ? source.velocity : new THREE.Vector3());
-          const dopplerFactor = this.#calculateDopplerFactor(sourceVelocity, observer.velocity, direction);
-
-          // Calculer le temps de trajet lumière
-          const lightTravelTime = this.labTime - signal.emissionLabTime;
+        if (!signal.targetIds.has(observer.id) || signal.receivedBy.has(observer.id)) {continue;}
+        const segmentStart = Math.max(startTime, signal.emissionLabTime);
+        const startPosition = observer.position.clone().sub(observer.velocity.clone().multiplyScalar(this.labTime - segmentStart));
+        const delay = lightReceptionDelay(startPosition.clone().sub(signal.origin), observer.velocity,
+          segmentStart - signal.emissionLabTime);
+        if (delay !== null && delay <= this.labTime - segmentStart + 1e-10) {
+          const receptionTime = segmentStart + delay;
+          const lightTravelTime = receptionTime - signal.emissionLabTime;
+          if (lightTravelTime > signal.maxRadius) {continue;}
+          signal.receivedBy.add(observer.id);
+          const position = startPosition.add(observer.velocity.clone().multiplyScalar(delay));
+          const direction = position.clone().sub(signal.origin).normalize();
+          const factor = dopplerFactor(signal.emissionVelocity, observer.velocity, direction);
+          const receptionTau = observer.properTime - (this.labTime - receptionTime) / observer.gamma;
 
           // Enregistrer le tick reçu dans l'observateur
           observer.recordReceivedTick(
             signal.sourceId,
             signal.clockType,
             signal.tickNumber,
-            dopplerFactor,
+            factor,
             signal.emissionProperTime,
             lightTravelTime,
+            receptionTau,
           );
 
           const reception = {
             type: 'signal',
             photon: signal.getPayload(),
-            dopplerFactor,
+            dopplerFactor: factor,
             lightTravelTime,
             receiver: {
               id: observer.id,
-              properTime: observer.properTime,
-              position: observer.position.clone(),
+              properTime: receptionTau,
+              position,
             },
           };
 
@@ -385,6 +412,7 @@ export class Simulation {
           }
         }
       }
+      if ([...signal.targetIds].every(id => signal.receivedBy.has(id))) {signal.active = false;}
     }
   }
 
@@ -465,6 +493,9 @@ export class Simulation {
    * Libère toutes les ressources
    */
   dispose() {
+    this.pause();
+    this.beforeStep = null;
+    this.referenceObserver = null;
     // Supprimer les observateurs
     for (const observer of this.observers) {
       this.scene.remove(observer.mesh);

@@ -13,6 +13,59 @@
 /** Vitesse de la lumière dans les unités de simulation */
 export const C = 1.0;
 
+/** Borne numérique des véhicules massifs, distincte de la limite physique c. */
+export const MAX_BETA = 1 - 1e-12;
+
+/**
+ * Vérifie les trois composantes d'un vecteur.
+ * @param {THREE.Vector3} vector
+ * @returns {boolean}
+ */
+export function isFiniteVector(vector) {
+  return [vector.x, vector.y, vector.z].every(Number.isFinite);
+}
+
+/**
+ * Valide une vitesse de véhicule sans la modifier silencieusement.
+ * @param {THREE.Vector3} velocity
+ * @returns {boolean}
+ */
+export function isValidVelocity(velocity) {
+  return isFiniteVector(velocity) && velocity.length() <= MAX_BETA;
+}
+
+/**
+ * Ratio fréquentiel source/récepteur pour une direction de photon dans le lab.
+ * D = γr(1 − n·vr) / [γs(1 − n·vs)]. Inclut l'effet transverse.
+ * @param {THREE.Vector3} sourceVelocity
+ * @param {THREE.Vector3} receiverVelocity
+ * @param {THREE.Vector3} direction - Direction unitaire d'émission vers réception
+ * @returns {number}
+ */
+export function dopplerFactor(sourceVelocity, receiverVelocity, direction) {
+  return gammaFromVelocity(receiverVelocity) * (1 - direction.dot(receiverVelocity)) /
+    (gammaFromVelocity(sourceVelocity) * (1 - direction.dot(sourceVelocity)));
+}
+
+/**
+ * Intersection future d'un rayon sphérique et d'une trajectoire inertielle.
+ * Résout |offset + velocity·dt|² = (age + dt)², en unités c=1.
+ * @param {THREE.Vector3} offset - Récepteur moins origine au début du segment
+ * @param {THREE.Vector3} velocity - Vitesse lab du récepteur
+ * @param {number} age - Âge du signal au début du segment
+ * @returns {number|null} Délai de réception ; null si front déjà passé
+ */
+export function lightReceptionDelay(offset, velocity, age) {
+  const a = 1 - velocity.lengthSq();
+  const b = age - offset.dot(velocity);
+  const c = offset.lengthSq() - age * age;
+  if (c < -1e-9 || a <= 0) {return null;}
+  const root = Math.sqrt(Math.max(0, b * b + a * c));
+  // Éviter la soustraction de deux nombres proches quand b est positif.
+  const delay = b > 0 ? Math.max(0, c) / (root + b) : (root - b) / a;
+  return Number.isFinite(delay) ? Math.max(0, delay) : null;
+}
+
 /**
  * Calcule le facteur de Lorentz γ (gamma)
  *
@@ -362,7 +415,7 @@ export function betaFromRapidity(phi) {
  * @returns {number} Delta-v en fraction de c
  */
 export function photonRocketDeltaV(m0, m1) {
-  if (m1 >= m0 || m1 <= 0) {return 0;}
+  if (!Number.isFinite(m0) || !Number.isFinite(m1) || m1 >= m0 || m1 <= 0) {return 0;}
   const rapidityGain = Math.log(m0 / m1);
   return Math.tanh(rapidityGain);
 }
@@ -377,8 +430,9 @@ export function photonRocketDeltaV(m0, m1) {
  * @returns {number} Masse finale requise
  */
 export function photonRocketMassRequired(m0, deltaV) {
+  if (!Number.isFinite(m0) || m0 <= 0 || !Number.isFinite(deltaV)) {return 0;}
   if (Math.abs(deltaV) >= 1) {return 0;}
-  const rapidityNeeded = Math.atanh(deltaV);
+  const rapidityNeeded = Math.atanh(Math.abs(deltaV));
   return m0 * Math.exp(-rapidityNeeded);
 }
 

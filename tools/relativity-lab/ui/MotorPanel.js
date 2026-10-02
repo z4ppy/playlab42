@@ -35,6 +35,10 @@ export class MotorPanel {
   /** @type {string} Direction de poussée continue ('forward' | 'backward' | null) */
   burnDirection = null;
 
+  #events = new AbortController();
+  #statusTimer = null;
+  #observerId = null;
+
   /**
    * @param {HTMLElement} container - Conteneur DOM
    * @param {Function} onThrust - Callback (direction: Vector3, deltaMass: number) => void
@@ -68,7 +72,7 @@ export class MotorPanel {
       </div>
 
       <div class="motor-panel-section">
-        <div class="motor-panel-label">Direction de poussée</div>
+        <div class="motor-panel-label">Direction dans le repos instantané</div>
         <div class="motor-direction-controls">
           <div class="motor-direction-row">
             <label for="motor-dir-x">X:</label>
@@ -101,7 +105,7 @@ export class MotorPanel {
           <span id="motor-impulse-val">10 kg</span>
         </div>
         <div class="motor-impulse-info">
-          <span>Δv estimé: </span>
+          <span>Δv au repos: </span>
           <span id="motor-delta-v">~0.01% c</span>
         </div>
       </div>
@@ -109,8 +113,8 @@ export class MotorPanel {
       <div class="motor-panel-section">
         <div class="motor-panel-label">Contrôles</div>
         <div class="motor-thrust-controls">
-          <button class="motor-thrust-btn motor-thrust-btn--backward" id="motor-backward" title="Freiner" aria-pressed="false" aria-describedby="motor-hold-help">
-            ◀◀ Freiner
+          <button class="motor-thrust-btn motor-thrust-btn--backward" id="motor-backward" title="Poussée opposée à la direction choisie, pas un frein automatique" aria-pressed="false" aria-describedby="motor-hold-help">
+            ◀◀ Inverser
           </button>
           <button class="motor-thrust-btn motor-thrust-btn--fire" id="motor-fire" title="Impulsion unique">
             🔥 Fire
@@ -119,7 +123,7 @@ export class MotorPanel {
             Accélérer ▶▶
           </button>
         </div>
-        <p id="motor-hold-help" class="motor-impulse-info">Maintenez le bouton, Entrée ou Espace pour une poussée continue.</p>
+        <p id="motor-hold-help" class="motor-impulse-info">Maintenez le bouton, Entrée ou Espace : débit égal à l’impulsion en kg/s lab, uniquement en lecture.</p>
       </div>
 
       <div class="motor-panel-section motor-panel-section--small">
@@ -135,11 +139,13 @@ export class MotorPanel {
    * Configure les event listeners
    */
   #setupEventListeners() {
+    const listen = (target, type, callback, options = {}) =>
+      target.addEventListener(type, callback, { ...options, signal: this.#events.signal });
     // Sliders de direction
     ['x', 'y', 'z'].forEach(axis => {
       const slider = this.container.querySelector(`#motor-dir-${axis}`);
       const display = this.container.querySelector(`#motor-dir-${axis}-val`);
-      slider.addEventListener('input', () => {
+      listen(slider, 'input', () => {
         const value = parseFloat(slider.value);
         this.config[`direction${axis.toUpperCase()}`] = value;
         display.textContent = value.toFixed(1);
@@ -149,7 +155,7 @@ export class MotorPanel {
 
     // Presets de direction
     this.container.querySelectorAll('.motor-preset').forEach(btn => {
-      btn.addEventListener('click', () => {
+      listen(btn, 'click', () => {
         const [x, y, z] = btn.dataset.dir.split(',').map(Number);
         this.#setDirection(x, y, z);
       });
@@ -158,7 +164,7 @@ export class MotorPanel {
     // Slider d'impulsion
     const impulseSlider = this.container.querySelector('#motor-impulse');
     const impulseDisplay = this.container.querySelector('#motor-impulse-val');
-    impulseSlider.addEventListener('input', () => {
+    listen(impulseSlider, 'input', () => {
       this.config.impulseAmount = parseInt(impulseSlider.value);
       impulseDisplay.textContent = `${this.config.impulseAmount} kg`;
       this.#updateDeltaVEstimate();
@@ -166,54 +172,47 @@ export class MotorPanel {
 
     // Bouton Fire (impulsion unique)
     const fireBtn = this.container.querySelector('#motor-fire');
-    fireBtn.addEventListener('click', () => this.#fireImpulse());
+    listen(fireBtn, 'click', () => this.#fireImpulse());
 
     // Boutons poussée continue
     const forwardBtn = this.container.querySelector('#motor-forward');
     const backwardBtn = this.container.querySelector('#motor-backward');
 
-    // Mouse down/up pour poussée continue
-    forwardBtn.addEventListener('mousedown', () => this.#startBurn('forward'));
-    forwardBtn.addEventListener('mouseup', () => this.#stopBurn());
-    forwardBtn.addEventListener('mouseleave', () => this.#stopBurn());
-
-    backwardBtn.addEventListener('mousedown', () => this.#startBurn('backward'));
-    backwardBtn.addEventListener('mouseup', () => this.#stopBurn());
-    backwardBtn.addEventListener('mouseleave', () => this.#stopBurn());
-
-    // Touch events pour mobile
-    forwardBtn.addEventListener('touchstart', (e) => { e.preventDefault(); this.#startBurn('forward'); });
-    forwardBtn.addEventListener('touchend', () => this.#stopBurn());
-
-    backwardBtn.addEventListener('touchstart', (e) => { e.preventDefault(); this.#startBurn('backward'); });
-    backwardBtn.addEventListener('touchend', () => this.#stopBurn());
     [forwardBtn, backwardBtn].forEach(btn => {
-      btn.addEventListener('touchcancel', () => this.#stopBurn());
-      btn.addEventListener('blur', () => this.#stopBurn());
-      btn.addEventListener('keydown', (event) => {
+      listen(btn, 'pointerdown', event => {
+        if (event.button !== 0 || event.isPrimary === false) {return;}
+        event.preventDefault();
+        btn.focus({ preventScroll: true });
+        if (event.isTrusted) {btn.setPointerCapture?.(event.pointerId);}
+        this.#startBurn(btn === forwardBtn ? 'forward' : 'backward');
+      });
+      for (const type of ['pointerup', 'pointercancel', 'lostpointercapture', 'blur']) {
+        listen(btn, type, () => this.stopBurn());
+      }
+      listen(btn, 'keydown', (event) => {
         if (event.key === ' ' || event.key === 'Enter') {
           event.preventDefault();
-          if (!event.repeat) {
+          if (!event.repeat && !event.altKey && !event.ctrlKey && !event.metaKey) {
             this.#startBurn(btn === forwardBtn ? 'forward' : 'backward');
           }
         }
       });
-      btn.addEventListener('keyup', (event) => {
+      listen(btn, 'keyup', (event) => {
         if (event.key === ' ' || event.key === 'Enter') {
           event.preventDefault();
-          this.#stopBurn();
+          this.stopBurn();
         }
       });
     });
 
-    window.addEventListener('blur', () => {
+    listen(window, 'blur', () => {
       if (this.isBurning) {
-        this.#stopBurn();
+        this.stopBurn();
       }
     });
-    document.addEventListener('visibilitychange', () => {
+    listen(document, 'visibilitychange', () => {
       if (document.hidden && this.isBurning) {
-        this.#stopBurn();
+        this.stopBurn();
       }
     });
   }
@@ -274,7 +273,11 @@ export class MotorPanel {
     direction.normalize();
 
     if (this.onThrust) {
-      this.onThrust(direction, this.config.impulseAmount);
+      const result = this.onThrust(direction, this.config.impulseAmount);
+      if (result?.success === false) {
+        this.#showStatus('Impulsion refusée : masse ou limite de vitesse', 'error');
+        return;
+      }
     }
 
     this.#showStatus('Impulsion !', 'success');
@@ -290,14 +293,14 @@ export class MotorPanel {
     this.container.querySelector('#motor-backward').setAttribute('aria-pressed', String(direction === 'backward'));
 
     const statusEl = this.container.querySelector('#motor-status');
-    statusEl.textContent = direction === 'forward' ? '🔥 Accélération...' : '🔥 Freinage...';
+    statusEl.textContent = direction === 'forward' ? '🔥 Poussée...' : '🔥 Poussée inverse...';
     statusEl.className = 'motor-panel-status motor-panel-status--burning';
   }
 
   /**
    * Arrête la poussée continue
    */
-  #stopBurn() {
+  stopBurn() {
     this.isBurning = false;
     this.burnDirection = null;
     this.container.querySelector('#motor-forward').setAttribute('aria-pressed', 'false');
@@ -309,11 +312,12 @@ export class MotorPanel {
   }
 
   /**
-   * Appelé à chaque frame pour la poussée continue
+   * Commande de débit par seconde de laboratoire, appelée au pas physique.
+   * @param {number} dtLab - Durée du pas lab
    * @returns {{direction: THREE.Vector3, deltaMass: number}|null}
    */
-  getContinuousThrust() {
-    if (!this.isBurning || !this.burnDirection) {return null;}
+  getContinuousThrust(dtLab = 1 / 60) {
+    if (!this.isBurning || !this.burnDirection || !Number.isFinite(dtLab) || dtLab <= 0) {return null;}
 
     const direction = new THREE.Vector3(
       this.config.directionX,
@@ -321,7 +325,10 @@ export class MotorPanel {
       this.config.directionZ,
     );
 
-    if (direction.lengthSq() < 0.01) {return null;}
+    if (direction.lengthSq() < 0.01) {
+      this.showError('Direction invalide');
+      return null;
+    }
 
     direction.normalize();
 
@@ -330,10 +337,18 @@ export class MotorPanel {
       direction.negate();
     }
 
-    // Poussée continue : petite quantité par frame
-    const deltaMass = Math.max(0.1, this.config.impulseAmount / 60); // ~60fps
+    const deltaMass = this.config.impulseAmount * dtLab;
 
     return { direction, deltaMass };
+  }
+
+  /**
+   * Interrompt une commande refusée et annonce son motif.
+   * @param {string} message
+   */
+  showError(message) {
+    this.stopBurn();
+    this.#showStatus(message, 'error');
   }
 
   /**
@@ -344,7 +359,8 @@ export class MotorPanel {
     statusEl.textContent = message;
     statusEl.className = `motor-panel-status motor-panel-status--${type}`;
 
-    setTimeout(() => {
+    clearTimeout(this.#statusTimer);
+    this.#statusTimer = setTimeout(() => {
       if (!this.isBurning) {
         statusEl.textContent = 'Prêt';
         statusEl.className = 'motor-panel-status';
@@ -358,6 +374,10 @@ export class MotorPanel {
    */
   update(observerData) {
     if (!observerData) {return;}
+    if (this.#observerId !== observerData.id) {
+      this.stopBurn();
+      this.#observerId = observerData.id;
+    }
 
     // Masse
     const massEl = this.container.querySelector('#motor-mass');
@@ -403,5 +423,12 @@ export class MotorPanel {
         <span class="motor-history-mass">-${h.deltaMass.toFixed(1)}kg</span>
       </div>
     `).join('');
+  }
+
+  /** Libère les écouteurs, la minuterie et toute commande maintenue. */
+  dispose() {
+    this.stopBurn();
+    this.#events.abort();
+    clearTimeout(this.#statusTimer);
   }
 }

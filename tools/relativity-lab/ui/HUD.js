@@ -1,7 +1,7 @@
 /**
  * HUD.js - Vue depuis l'observateur de référence (version compacte)
  *
- * Affiche uniquement ce que l'observateur SAIT :
+ * Affiche des données du modèle lab et les signaux reçus :
  * - Son temps propre τ
  * - Ce qu'il a reçu de chaque autre observateur (ticks H/V)
  */
@@ -16,6 +16,8 @@ export class HUD {
   /** @type {Function} Callback pour changer de référentiel */
   onReferenceChange = null;
 
+  #events = new AbortController();
+
   /**
    * @param {HTMLElement} container
    * @param {Function} onReferenceChange - (observerId) => void
@@ -29,7 +31,7 @@ export class HUD {
   #createElements() {
     this.container.innerHTML = `
       <div class="panel-header" data-drag-handle>
-        <span class="panel-title">Mon Référentiel</span>
+        <span class="panel-title">Observateur suivi</span>
         <div class="hud-state" id="hud-state" role="status">⏸ Pause</div>
       </div>
 
@@ -51,7 +53,7 @@ export class HUD {
           <div class="hud-my-tau" id="hud-my-tau">τ = 0.00 s</div>
         </div>
         <div>
-          <div class="hud-label">Vitesse CMB</div>
+          <div class="hud-label">Vitesse lab</div>
           <div class="hud-my-cmb" id="hud-my-cmb">0% c</div>
         </div>
       </div>
@@ -79,7 +81,7 @@ export class HUD {
       if (this.onReferenceChange) {
         this.onReferenceChange(e.target.value);
       }
-    });
+    }, { signal: this.#events.signal });
   }
 
   /**
@@ -170,10 +172,10 @@ export class HUD {
         }
       }
 
-      // Gamma inféré
+      // L'inversion Doppler ne détermine gamma que dans le cas radial.
       let gammaStr = '';
       if (ping && ping.inferredGamma > 1.001) {
-        gammaStr = `<span class="hud-inferred-gamma">γ=${ping.inferredGamma.toFixed(2)}</span>`;
+        gammaStr = `<span class="hud-inferred-gamma" title="Hypothèse de mouvement radial uniquement">γ radial≈${ping.inferredGamma.toFixed(2)}</span>`;
       }
 
       return `
@@ -183,7 +185,7 @@ export class HUD {
             <span class="hud-tick hud-tick--h">H:${ticks.H}</span>
             <span class="hud-tick hud-tick--v">V:${ticks.V}</span>
           </span>
-          <span class="hud-received-distance">${distanceStr}</span>
+          <span class="hud-received-distance" title="Trajet lumineux lab, pas une distance radar">${distanceStr}</span>
           ${gammaStr}
         </div>
       `;
@@ -197,6 +199,6 @@ export class HUD {
   }
 
   dispose() {
-    // Rien à nettoyer
+    this.#events.abort();
   }
 }

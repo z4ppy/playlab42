@@ -11,6 +11,7 @@
 
 import GUI from 'lil-gui';
 import * as THREE from 'three';
+import { isValidVelocity } from '../src/Physics.js';
 
 /**
  * Crée et configure le panneau de contrôle
@@ -98,7 +99,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
     .name('Signaux (sphères)')
     .onChange(value => {
       simulation.showSignals = value;
-      simulation.signals.forEach(s => s.mesh.visible = value && (simulation.showAllSources || simulation.visibleSources.has(s.sourceId)));
+      simulation.refresh();
     });
 
   vizFolder.add(params, 'showAllSources')
@@ -106,7 +107,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
     .onChange(value => {
       simulation.showAllSources = value;
       // Rafraîchir la visibilité des signaux
-      simulation.signals.forEach(s => s.mesh.visible = simulation.showSignals && (value || simulation.visibleSources.has(s.sourceId)));
+      simulation.refresh();
       // Afficher/masquer le dossier des sources
       sourcesFolder.show(!value);
     });
@@ -149,7 +150,7 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
   buildSourcesControls();
 
   // === Dossier Référentiel ===
-  const frameFolder = gui.addFolder('Référentiel');
+  const frameFolder = gui.addFolder('Observateur suivi (coordonnées lab)');
 
   const frameController = frameFolder.add(params, 'referenceFrame', buildFrameOptions(simulation))
     .name('Point de vue')
@@ -196,9 +197,9 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
         params.newObsVelZ,
       );
 
-      if (velocity.length() >= 1) {
-        velocity.normalize().multiplyScalar(0.95);
-        console.warn('Vitesse limitée à 0.95c');
+      if (!isValidVelocity(velocity)) {
+        reportError('Vitesse refusée : la norme des trois composantes doit rester inférieure à c.');
+        return;
       }
 
       simulation.addObserver(params.newObsName, position, velocity);
@@ -232,29 +233,24 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
         vz: observer.velocity.z,
       };
 
-      obsSubFolder.add(velObj, 'vx', -0.95, 0.95, 0.05)
-        .name('Vx')
-        .onChange(value => {
-          observer.velocity.x = value;
-          observer.velocityCMB.x = value;
-          observer.initialVelocity.x = value;
-        });
-
-      obsSubFolder.add(velObj, 'vy', -0.95, 0.95, 0.05)
-        .name('Vy')
-        .onChange(value => {
-          observer.velocity.y = value;
-          observer.velocityCMB.y = value;
-          observer.initialVelocity.y = value;
-        });
-
-      obsSubFolder.add(velObj, 'vz', -0.95, 0.95, 0.05)
-        .name('Vz')
-        .onChange(value => {
-          observer.velocity.z = value;
-          observer.velocityCMB.z = value;
-          observer.initialVelocity.z = value;
-        });
+      for (const axis of ['x', 'y', 'z']) {
+        const controller = obsSubFolder.add(velObj, `v${axis}`, -0.95, 0.95, 0.05)
+          .name(`V${axis} lab`)
+          .onChange(value => {
+            const velocity = observer.velocity.clone();
+            velocity[axis] = value;
+            if (!isValidVelocity(velocity)) {
+              velObj[`v${axis}`] = observer.velocity[axis];
+              controller.updateDisplay();
+              reportError('Vitesse refusée : norme ≥ c. Les autres composantes sont conservées.');
+              return;
+            }
+            observer.setVelocity(velocity);
+            observer.initialVelocity.copy(velocity);
+            reportError('');
+            simulation.refresh();
+          });
+      }
 
       // Pas de suppression pour Lab
       if (observer.id !== 'lab' && simulation.observers.length > 2) {
@@ -278,17 +274,27 @@ export function createControlPanel(simulation, sceneManager, onPlayToggle = () =
   gui.rebuildSourcesControls = buildSourcesControls;
 
   // Synchroniser l'état playing
-  simulation.onUpdate(() => {
+  const unsubscribe = simulation.onUpdate(() => {
+    params.referenceFrame = simulation.referenceObserver?.id;
+    frameController.updateDisplay();
     if (params.playing !== (simulation.state === 'running')) {
       params.playing = simulation.state === 'running';
       gui.controllersRecursive().forEach(c => {
         if (c.property === 'playing') {c.updateDisplay();}
       });
+      const destroy = gui.destroy.bind(gui);
+      gui.destroy = () => { unsubscribe(); destroy(); };
       onPlayToggle(params.playing);
     }
   });
 
   return gui;
+}
+
+/** Annonce une entrée refusée sans modifier silencieusement les données. */
+function reportError(message) {
+  const status = document.getElementById('simulation-status');
+  if (status) {status.textContent = message;}
 }
 
 /**
