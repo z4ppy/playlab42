@@ -123,9 +123,9 @@ locales nécessaires font échouer le test.
 Le test `window.blur` envoie cet événement au vrai handler après une pression clavier ;
 il ne prétend pas tester le gestionnaire de fenêtres de l'OS headless.
 
-**Réseau et dépendances réelles** : `e2e/fixtures.js` intercepte les URL CDN publiques
-et sert les distributions npm épinglées `three@0.160.0`, `lil-gui@0.19.2`
-pour les outils 3D qui utilisent encore ces importmaps. Tone 15.1.22,
+**Réseau et dépendances réelles** : Three 0.186.1 et lil-gui 0.21.0 sont
+construits par `build:relativity-vendors` dans `tools/relativity-lab/dist/vendor/`.
+Les anciennes substitutions CDN 3D des fixtures sont retirées. Tone 15.1.22,
 VexFlow 5.0.0 et MathJax 4.1.3 sont construits dans `assets/vendor/` par
 `build:runtime`, également lancé par `build:local`. Le navigateur charge
 les bundles et les fontes locales de production, sans substitution CDN.

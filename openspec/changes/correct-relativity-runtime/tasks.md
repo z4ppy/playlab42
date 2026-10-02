@@ -48,9 +48,14 @@ are in `tools/relativity-lab/README.md` and the scoped regression tests.
   regressions) in the restored `playlab42-astra-validation` runtime.
   Scoped ESLint passed for `Observer.js` and `Simulation.test.js`.
   No host Node/npm/make validation or dependency installation.
-- [ ] Parent: strict OpenSpec validation and full browser regressions after
-  this correction. The earlier results above predate this fix.
+- [x] Parent: strict OpenSpec validation and full browser regressions after
+  this correction: 9 scoped Chromium cases passed, then 36 integrated
+  cases passed after composing both library builds. Complete Jest:
+  70 suites, 1 587 tests passed; lint, types, local build and strict
+  OpenSpec validation (20 items) passed in the dedicated Docker runtime.
 
 ## Delivery
 
-- [ ] Parent/operator review and publication; no merge or archive authorized here.
+- [x] Parent/operator review and preparation of a separate pull request
+  based on the library branch, with both build hooks composed.
+- [ ] Publication and native CI; no merge or archive authorized here.
