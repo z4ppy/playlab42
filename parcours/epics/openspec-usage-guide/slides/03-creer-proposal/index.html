@@ -3,281 +3,173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer une proposal — OpenSpec Guide</title>
+  <title>Créer une proposal - PlayLab42</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../openspec-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .step-box {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid var(--color-accent);
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .step-box h3 {
-      margin-top: 0;
-      color: var(--color-accent);
-    }
-    .step-number {
-      display: inline-block;
-      width: 2.5rem;
-      height: 2.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 2.5rem;
-      font-weight: bold;
-      margin-right: var(--space-sm);
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    }
-    .example-box {
-      background: #e8f4f8;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      border-left: 4px solid #17a2b8;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .example-box h4 {
-      margin-top: 0;
-      color: #0c5460;
-    }
-    code {
-      background: var(--color-bg-tertiary);
-      padding: 0.2em 0.4em;
-      border-radius: var(--radius-sm);
-      font-family: var(--font-mono);
-      font-size: 0.9em;
-    }
-    pre code {
-      display: block;
-      padding: var(--space-md);
-      background: var(--color-bg-secondary);
-      border-radius: var(--radius-md);
-      overflow-x: auto;
-      border: 1px solid var(--color-border);
-      line-height: 1.6;
-    }
-    .template-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-  </style>
 </head>
-<body>
+<body class="openspec-guide">
   <article class="slide">
-    <h1>Créer une proposal</h1>
+    <header>
+      <p class="guide-kicker">Étape 1 · Proposer</p>
+      <h1>Créer une proposal</h1>
+      <p class="guide-lead">
+        Une proposal bien faite répond à trois questions : <strong>pourquoi</strong>, <strong>quoi</strong>
+        et <strong>comment le vérifier</strong>. Elle se relit avant d'écrire le moindre code.
+      </p>
+    </header>
 
-    <p>Cette section vous guide pas à pas pour créer votre première proposal OpenSpec.</p>
+    <section aria-labelledby="titre-quand">
+      <h2 id="titre-quand">Quand proposer ?</h2>
+      <div class="guide-grid">
+        <div class="guide-card">
+          <h3>Oui</h3>
+          <ul>
+            <li>Nouvelle fonctionnalité ou nouveau jeu</li>
+            <li>Changement de comportement ou d'architecture</li>
+            <li>Modification d'un contrat (manifeste, spec existante)</li>
+          </ul>
+        </div>
+        <div class="guide-card">
+          <h3>Pas nécessaire</h3>
+          <ul>
+            <li>Correction de bug qui rétablit le comportement spécifié</li>
+            <li>Faute de frappe, formatage, commentaire</li>
+            <li>Mise à jour de dépendance sans impact fonctionnel</li>
+          </ul>
+        </div>
+      </div>
+      <p class="guide-muted">En cas de doute, lancez d'abord <code>/opsx:explore</code> pour clarifier.</p>
+    </section>
 
-    <h2>Étape par étape</h2>
+    <section aria-labelledby="titre-lancer">
+      <h2 id="titre-lancer">Lancer la proposition</h2>
+      <p>
+        Choisissez un nom en <code>kebab-case</code> commençant par un verbe : <code>add-dark-mode</code>,
+        <code>fix-…</code>, <code>refactor-…</code>.
+      </p>
+      <div class="guide-assistant">
+        <span class="guide-badge">Chat de l'assistant</span>
+<pre><code>/opsx:propose add-dark-mode</code></pre>
+      </div>
+      <p class="guide-muted">
+        Cursor et GitHub Copilot (IDE) : <code>/opsx-propose add-dark-mode</code>.
+      </p>
+      <aside class="guide-callout">
+        <h3>Dans Playlab42</h3>
+        <p>
+          Les commandes slash OPSX ne sont pas générées (livraison skills-only) : demandez le skill par son nom.
+          Playlab42 gère déjà les thèmes ; <code>add-dark-mode</code> reste un exemple illustratif.
+        </p>
+<pre><code>Utilise le skill openspec-propose pour préparer le changement add-dark-mode</code></pre>
+        <p>
+          Ce skill s'arrête aux artefacts de planification ; relisez-les, puis demandez explicitement
+          <code>openspec-apply-change</code>. Détails : <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/openspec-workflow.md" target="_blank" rel="noopener noreferrer">guide OpenSpec de Playlab42</a>.
+        </p>
+      </aside>
+      <p>En profil étendu, vous pouvez aussi procéder pas à pas avec <code>/opsx:new</code> puis <code>/opsx:continue</code> ou <code>/opsx:ff</code>.</p>
+    </section>
 
-    <div class="step-box">
-      <h3><span class="step-number">1</span> Choisir un Change ID</h3>
-      <p>Le Change ID doit être en <strong>kebab-case</strong> avec un verbe d'action :</p>
-      <ul>
-        <li><code>add-poker-game</code> — Ajout d'une fonctionnalité</li>
-        <li><code>update-game-engine</code> — Modification</li>
-        <li><code>remove-legacy-api</code> — Suppression</li>
-        <li><code>refactor-ui-components</code> — Refactoring</li>
+    <section aria-labelledby="titre-contenu">
+      <h2 id="titre-contenu">Ce que l'assistant produit</h2>
+      <p>Exemple <strong>illustratif</strong> pour le fil rouge :</p>
+
+      <h3>1. <code>proposal.md</code> — le pourquoi et le quoi</h3>
+<pre><code># Proposal: Add Dark Mode
+
+## Intent
+Réduire la fatigue visuelle lors d'une utilisation nocturne.
+
+## Scope
+- Ajouter un sélecteur de thème (clair / sombre)
+- Détecter la préférence système
+- Hors périmètre : thèmes personnalisés
+
+## Approach
+Variables CSS pour les couleurs, préférence conservée localement.</code></pre>
+
+      <h3>2. <code>specs/ui/spec.md</code> — le delta</h3>
+<pre><code># Delta for UI
+
+## ADDED Requirements
+
+### Requirement: Choix du thème
+L'application MUST permettre de choisir entre un thème clair et un thème sombre.
+
+#### Scenario: Bascule manuelle
+- GIVEN un utilisateur sur n'importe quelle page
+- WHEN il active le thème sombre
+- THEN l'interface passe immédiatement en sombre</code></pre>
+      <p>
+        Les sections possibles sont <code>ADDED</code>, <code>MODIFIED</code> et <code>REMOVED Requirements</code>.
+        Chaque exigence a au moins un scénario. Gardez les marqueurs <code>Requirement:</code>,
+        <code>Scenario:</code> et le mot normatif <code>MUST</code> ou <code>SHALL</code> en anglais,
+        même quand le reste du texte est en français : le validateur les reconnaît.
+      </p>
+
+      <h3>3. <code>design.md</code> et <code>tasks.md</code></h3>
+<pre><code># Tasks
+
+## 1. Thème
+- [ ] 1.1 Définir la palette sombre en variables CSS
+- [ ] 1.2 Ajouter le sélecteur de thème
+
+## 2. Tests
+- [ ] 2.1 Couvrir le scénario « Bascule manuelle »</code></pre>
+      <p>
+        <code>design.md</code> consigne les choix techniques ; il est utile dès qu'il y a un compromis
+        à expliquer, facultatif pour un changement trivial.
+      </p>
+    </section>
+
+    <section aria-labelledby="titre-relire">
+      <h2 id="titre-relire">Relire et valider</h2>
+      <p class="guide-muted">
+        Dans Playlab42, le CLI local épinglé passe par Docker (jamais npm sur l'hôte) ; dans un projet
+        générique, utilisez directement <code>openspec list</code>, <code>show</code> et <code>validate</code>.
+      </p>
+      <div class="guide-terminal">
+<pre><code>make openspec-list
+make npm CMD="exec -- openspec show add-dark-mode"
+make npm CMD="exec -- openspec validate add-dark-mode --strict --no-interactive"
+make openspec-validate</code></pre>
+      </div>
+      <ul class="guide-checklist">
+        <li>L'intention et le périmètre sont clairs, y compris ce qui est exclu.</li>
+        <li>Chaque exigence a un scénario vérifiable.</li>
+        <li>Les tâches sont petites et ordonnées.</li>
+        <li>La validation du CLI passe, et l'équipe a relu avant <code>apply</code>.</li>
       </ul>
-      <blockquote>
-        <p><strong>💡 Convention</strong> : Verbe + nom descriptif, court mais explicite.</p>
-      </blockquote>
-    </div>
+    </section>
 
-    <div class="step-box">
-      <h3><span class="step-number">2</span> Créer la structure de dossiers</h3>
-      <pre><code>mkdir -p openspec/changes/[change-id]/specs</code></pre>
-      <p>Exemple :</p>
-      <pre><code>mkdir -p openspec/changes/add-poker-game/specs</code></pre>
-    </div>
+    <section class="guide-exercise" aria-labelledby="titre-exo">
+      <h2 id="titre-exo">À vous</h2>
+      <p>
+        Choisissez un petit changement de Playlab42 et rédigez son nom, une intention en une phrase
+        et un delta avec un scénario.
+      </p>
+      <div class="guide-card" data-guide-quiz>
+        <p>Quel nom de changement respecte la convention ?</p>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="Pas de verbe d'action ni de kebab-case.">Dark Mode Ajout</button>
+        <button type="button" data-guide-answer="correct" data-guide-explanation="Verbe + objet, en kebab-case.">add-dark-mode</button>
+        <p data-guide-quiz-result></p>
+      </div>
+    </section>
 
-    <div class="step-box">
-      <h3><span class="step-number">3</span> Rédiger proposal.md</h3>
-      <p>Le fichier <code>proposal.md</code> doit répondre à 3 questions :</p>
-      <ol>
-        <li><strong>Pourquoi</strong> ce changement est nécessaire (Motivation)</li>
-        <li><strong>Quoi</strong> va changer (Description)</li>
-        <li><strong>Impact</strong> sur le projet existant</li>
-      </ol>
-    </div>
-
-    <h2>Template de proposal.md</h2>
-
-    <div class="template-section">
-      <pre><code># Proposal: [Titre du changement]
-
-## Motivation
-
-Expliquer **pourquoi** ce changement est nécessaire.
-- Quel problème résout-il ?
-- Quel besoin utilisateur comble-t-il ?
-- Pourquoi maintenant ?
-
-## Description
-
-Décrire **ce qui** va changer.
-- Nouvelles fonctionnalités
-- Modifications d'APIs
-- Impacts sur l'architecture
-
-## Impact
-
-Lister les impacts sur le projet :
-- Capabilities affectées
-- Breaking changes potentiels
-- Migration nécessaire
-- Documentation à mettre à jour
-
-## Specs impactées
-
-- [ ] `specs/platform/spec.md` (UPDATED)
-- [ ] `specs/game-engine/spec.md` (ADDED requirements)
-
-## Validation
-
-- [ ] Validé par : [Nom]
-- [ ] Date : YYYY-MM-DD</code></pre>
-    </div>
-
-    <h2>Exemple concret : add-poker-game</h2>
-
-    <div class="example-box">
-      <h4>📄 Contenu de proposal.md</h4>
-      <pre><code># Proposal: Ajout du jeu de Poker
-
-## Motivation
-
-Les stagiaires ont demandé un jeu de cartes pour apprendre
-les concepts de :
-- Gestion d'état complexe (mains, pot, tours)
-- IA avec prise de décision probabiliste
-- Interface utilisateur riche
-
-Le poker est un excellent exercice pédagogique.
-
-## Description
-
-Ajout d'un mini-jeu de poker Texas Hold'em :
-- Moteur isomorphe conforme à game-engine spec
-- Mode 2-6 joueurs
-- 3 bots de difficulté croissante
-- UI avec animations de cartes
-
-## Impact
-
-- **Nouveau jeu** dans le catalogue
-- Utilise GameKit existant (pas de breaking change)
-- Nouveau dossier `games/poker/`
-- Assets : sprites de cartes (52 images)
-
-## Specs impactées
-
-- [ ] `specs/catalogue/spec.md` (ADDED entry)
-- [ ] `specs/game-engine/spec.md` (validation conformité)
-
-## Validation
-
-- [x] Validé par : Formateur
-- [x] Date : 2025-12-15</code></pre>
-    </div>
-
-    <div class="step-box">
-      <h3><span class="step-number">4</span> Créer tasks.md</h3>
-      <p>Liste séquentielle des tâches d'implémentation. Utilisez des checkboxes markdown <code>[ ]</code>.</p>
-    </div>
-
-    <h2>Template de tasks.md</h2>
-
-    <div class="template-section">
-      <pre><code># Tasks: [Change ID]
-
-## Phase 1 : Préparation
-- [ ] Créer `games/[game-id]/`
-- [ ] Ajouter `game.json` manifest
-- [ ] Créer structure HTML
-
-## Phase 2 : Moteur
-- [ ] Implémenter `engine.js`
-- [ ] Tests unitaires du moteur
-- [ ] Validation spec game-engine
-
-## Phase 3 : Bots
-- [ ] Bot random
-- [ ] Bot intermediate
-- [ ] Tests des bots
-
-## Phase 4 : Intégration
-- [ ] Rebuild catalogue
-- [ ] Tests end-to-end
-- [ ] Documentation README</code></pre>
-    </div>
-
-    <div class="example-box">
-      <h4>💡 Astuce : Déléguer aux agents IA</h4>
-      <p>Vous pouvez demander à un agent IA :</p>
-      <pre><code>@claude Je veux ajouter un jeu de poker au projet.
-Peux-tu créer une proposal OpenSpec complète avec tasks.md ?</code></pre>
-      <p>Ou utiliser la slash command :</p>
-      <pre><code>/openspec:proposal</code></pre>
-      <p>L'agent vous posera des questions pour clarifier votre besoin puis générera la proposal.</p>
-    </div>
-
-    <h2>Format des Requirements (optionnel)</h2>
-
-    <p>Si votre changement ajoute des requirements formels, utilisez ce format dans <code>specs/</code> :</p>
-
-    <div class="template-section">
-      <pre><code>## ADDED Requirements
-
-### Requirement: [Nom]
-The system SHALL [comportement attendu].
-
-#### Scenario: [Nom du scénario]
-- **WHEN** [condition]
-- **THEN** [résultat attendu]
-
-## UPDATED Requirements
-
-### Requirement: [Nom existant]
-The system SHALL [nouveau comportement].
-
-**Rationale**: [Pourquoi ce changement]
-
-## REMOVED Requirements
-
-### Requirement: [Nom à supprimer]
-**Rationale**: [Pourquoi on le retire]</code></pre>
-    </div>
-
-    <h2>Checklist avant validation</h2>
-
-    <ul>
-      <li>✅ Change ID en kebab-case avec verbe d'action</li>
-      <li>✅ <code>proposal.md</code> complète (Motivation + Description + Impact)</li>
-      <li>✅ <code>tasks.md</code> avec tâches séquentielles</li>
-      <li>✅ Specs impactées identifiées</li>
-      <li>✅ Aucun typo ou formatage incorrect</li>
-    </ul>
-
-    <blockquote>
-      <p><strong>⚠️ Important</strong> : Une proposal bien rédigée facilite grandement l'implémentation. Prenez le temps de clarifier votre vision avant de coder.</p>
-    </blockquote>
-
-    <p style="margin-top: var(--space-xl); text-align: center;">
-      <strong>Proposal créée ? Passons à l'implémentation ! 👉</strong>
+    <p class="guide-source">
+      Sources :
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/getting-started.md" target="_blank" rel="noopener noreferrer">Getting Started</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/concepts.md" target="_blank" rel="noopener noreferrer">Concepts</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener noreferrer">Commands</a>.
     </p>
+    <footer class="guide-footer">
+      <p class="guide-muted" data-slide-footer></p>
+    </footer>
   </article>
+  <script type="module" src="../../openspec-guide.js"></script>
 </body>
 </html>

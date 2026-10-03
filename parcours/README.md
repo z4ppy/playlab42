@@ -90,5 +90,6 @@ Slides Markdown converties: 3
 
 ## Voir aussi
 
+- [Guide OpenSpec / OPSX](epics/openspec-usage-guide/README.md) - Parcours actualisé, version de référence et sources officielles
 - [Playlab42 — Guide et usine logicielle](epics/hello-playlab42/README.md) - Utilisation, contribution, OpenSpec, skills et chaîne CI/publication
 - [Spec Parcours](../openspec/specs/parcours/spec.md) - Spécification technique complète

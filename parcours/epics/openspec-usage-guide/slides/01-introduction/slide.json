@@ -1,5 +1,8 @@
 {
   "id": "01-introduction",
-  "title": "Introduction et concepts clés",
-  "type": "content"
+  "title": "Bases : specs, artefacts et installation",
+  "type": "content",
+  "duration": "15 min",
+  "description": "Développement piloté par les specs, source de vérité, artefacts d'un changement, installation (Node.js ≥ 20.19), init/update génériques, CLI vs commandes assistant, legacy vs moderne et usage concret dans Playlab42 (CLI local, skills).",
+  "icon": "🧠"
 }

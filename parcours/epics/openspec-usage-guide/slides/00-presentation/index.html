@@ -6,226 +6,95 @@
   <title>OpenSpec — Guide d'utilisation pour Playlab42</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../openspec-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    article.slide {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .hero {
-      text-align: center;
-      padding: var(--space-xl) var(--space-lg);
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: var(--radius-md);
-      margin: 0 0 var(--space-xl) 0;
-      box-shadow: 0 2px 12px rgba(102, 126, 234, 0.25);
-    }
-    .hero h1 {
-      font-size: 2rem;
-      margin-bottom: var(--space-sm);
-      color: white;
-      font-weight: 700;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-    .hero .subtitle {
-      font-size: 1rem;
-      opacity: 0.95;
-      margin-bottom: 0;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-    .hero .icon {
-      font-size: 3rem;
-      margin-bottom: var(--space-sm);
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-    }
-    .info-banner {
-      background: var(--color-bg-secondary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      margin: var(--space-lg) 0;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-md);
-    }
-    .info-item {
-      text-align: center;
-      padding: var(--space-sm);
-    }
-    .info-item strong {
-      display: block;
-      color: var(--color-accent);
-      margin-bottom: var(--space-xs);
-      font-size: 0.9rem;
-    }
-    .info-item span {
-      font-size: 0.95rem;
-    }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-md);
-      margin: var(--space-lg) 0;
-    }
-    .feature-card {
-      background: var(--color-bg-secondary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-md);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .feature-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .feature-card .icon {
-      font-size: 2rem;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .feature-card-content h3 {
-      margin: 0 0 var(--space-xs) 0;
-      font-size: 1.05rem;
-      color: var(--color-accent);
-    }
-    .feature-card-content p {
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-    .learning-list {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-    }
-    .learning-list h2 {
-      margin-top: 0;
-      color: var(--color-accent);
-    }
-    .learning-list ul {
-      margin: 0;
-      padding-left: var(--space-lg);
-    }
-    .learning-list li {
-      margin: var(--space-sm) 0;
-      line-height: 1.6;
-    }
-    .cta-box {
-      text-align: center;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin-top: var(--space-xl);
-      border: 2px solid var(--color-accent);
-    }
-    .cta-box strong {
-      font-size: 1.2rem;
-      color: var(--color-accent);
-    }
-    .prereq-box {
-      background: #fff3cd;
-      color: #856404;
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #ffc107;
-      margin: var(--space-lg) 0;
-    }
-    .prereq-box strong {
-      color: #856404;
-    }
-    .prereq-box p {
-      margin: var(--space-sm) 0;
-    }
-  </style>
 </head>
-<body>
+<body class="openspec-guide">
   <article class="slide">
-    <div class="hero">
-      <div class="icon">📋</div>
-      <h1>OpenSpec</h1>
-      <p class="subtitle">Guide d'utilisation pour Playlab42</p>
-    </div>
+    <header>
+      <p class="guide-kicker">Parcours OpenSpec · version 1.14.0</p>
+      <h1>OpenSpec — Spécifier avant de coder</h1>
+      <p class="guide-lead">
+        OpenSpec aide l'équipe et l'assistant IA à se mettre d'accord sur <strong>ce qu'il faut construire</strong>
+        avant la première ligne de code, puis à garder les specs à jour.
+      </p>
+    </header>
 
-    <div class="info-banner">
-      <div class="info-item">
-        <strong>👥 Public cible</strong>
-        <span>Développeurs et stagiaires</span>
-      </div>
-      <div class="info-item">
-        <strong>⏱️ Durée</strong>
-        <span>45 minutes</span>
-      </div>
-      <div class="info-item">
-        <strong>📊 Niveau</strong>
-        <span>Intermédiaire</span>
-      </div>
-    </div>
-
-    <h2>🎯 Objectifs de ce parcours</h2>
-
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="icon">🧠</div>
-        <div class="feature-card-content">
+    <section aria-labelledby="titre-objectifs">
+      <h2 id="titre-objectifs">Ce que vous saurez faire</h2>
+      <div class="guide-grid">
+        <div class="guide-card">
           <h3>Comprendre</h3>
-          <p>La philosophie spec-driven et son intérêt pour un projet pédagogique</p>
+          <p>Le développement piloté par les specs, la source de vérité et les <em>delta specs</em>.</p>
+        </div>
+        <div class="guide-card">
+          <h3>Installer</h3>
+          <p>Node.js ≥ 20.19, <code>openspec init</code>, <code>openspec update</code> et les profils, dans un projet générique.</p>
+        </div>
+        <div class="guide-card">
+          <h3>Piloter</h3>
+          <p>Explorer, proposer, appliquer, archiver — sans cascade rigide.</p>
+        </div>
+        <div class="guide-card">
+          <h3>Contribuer à Playlab42</h3>
+          <p>Utiliser le CLI local épinglé et les skills déjà générés dans le dépôt.</p>
         </div>
       </div>
+    </section>
 
-      <div class="feature-card">
-        <div class="icon">⚙️</div>
-        <div class="feature-card-content">
-          <h3>Maîtriser</h3>
-          <p>Le workflow en 3 étapes : proposal → apply → archive</p>
-        </div>
+    <section aria-labelledby="titre-fil-rouge">
+      <h2 id="titre-fil-rouge">Fil rouge du parcours</h2>
+      <p>
+        Un exemple <strong>illustratif</strong> revient dans chaque slide : le changement
+        <code>add-dark-mode</code>, l'exemple de la documentation officielle (ajouter un mode sombre).
+        Playlab42 gère déjà les thèmes : ce n'est pas un changement réel du dépôt, il sert à suivre un cycle complet.
+      </p>
+      <ol class="guide-steps">
+        <li><strong>Explorer</strong> l'idée et le code existant.</li>
+        <li><strong>Proposer</strong> : proposal, delta specs, design, tasks.</li>
+        <li><strong>Appliquer</strong> les tâches en mettant à jour les artefacts si besoin.</li>
+        <li><strong>Archiver</strong> : les deltas rejoignent la source de vérité.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="titre-infos">
+      <h2 id="titre-infos">Informations pratiques</h2>
+      <div class="guide-table-wrapper" tabindex="0">
+        <table>
+          <tbody>
+            <tr><th scope="row">Public</th><td>Développeurs et stagiaires de Playlab42</td></tr>
+            <tr><th scope="row">Durée</th><td>≈ 75 minutes, exercices compris</td></tr>
+            <tr><th scope="row">Prérequis</th><td>Git, Markdown, notions d'assistant de code IA</td></tr>
+            <tr><th scope="row">Version de référence</th><td>OpenSpec <code>1.14.0</code> (tag <code>v1.14.0</code>, npm <code>latest</code>)</td></tr>
+          </tbody>
+        </table>
       </div>
+    </section>
 
-      <div class="feature-card">
-        <div class="icon">✍️</div>
-        <div class="feature-card-content">
-          <h3>Créer</h3>
-          <p>Vos premières proposals de changement avec rigueur</p>
-        </div>
-      </div>
+    <aside class="guide-callout" aria-labelledby="titre-versions">
+      <h2 id="titre-versions">Parcours ≠ dépôt</h2>
+      <p>
+        Le parcours explique d'abord OpenSpec 1.14.0 de façon <strong>générique</strong> (installation globale,
+        <code>openspec init</code>, commandes <code>/opsx:*</code>). Dans Playlab42, rien de cela n'est à refaire :
+        le CLI est une dépendance de développement épinglée, exécutée dans Docker, et les skills
+        <code>openspec-*</code> du profil <code>core</code> sont déjà générés (livraison skills-only).
+        Voir le <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/openspec-workflow.md" target="_blank" rel="noopener noreferrer">guide OpenSpec de Playlab42</a>.
+      </p>
+    </aside>
 
-      <div class="feature-card">
-        <div class="icon">🚀</div>
-        <div class="feature-card-content">
-          <h3>Contribuer</h3>
-          <p>Efficacement au projet avec des changements documentés</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="learning-list">
-      <h2>📚 Ce que vous apprendrez</h2>
-      <ul>
-        <li>Pourquoi utiliser OpenSpec dans Playlab42</li>
-        <li>Quand créer une proposal (et quand ne pas le faire)</li>
-        <li>Comment structurer une proposition de changement</li>
-        <li>Comment implémenter un changement step by step</li>
-        <li>Comment archiver et fusionner les specs après déploiement</li>
-        <li>Les bonnes pratiques pour des contributions de qualité</li>
-      </ul>
-    </div>
-
-    <div class="prereq-box">
-      <p><strong>💡 Prérequis</strong></p>
-      <p>Connaissances de base en git, markdown, et développement collaboratif. Avoir lu le fichier <code>AGENTS.md</code> du projet est un plus.</p>
-    </div>
-
-    <div class="cta-box">
-      <p><strong>Prêt à maîtriser OpenSpec ?</strong></p>
-      <p style="opacity: 0.8; margin-top: var(--space-sm);">Passez à la suite pour découvrir les concepts clés 👉</p>
-    </div>
+    <p class="guide-source">
+      Sources officielles :
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/getting-started.md" target="_blank" rel="noopener noreferrer">Getting Started</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/concepts.md" target="_blank" rel="noopener noreferrer">Concepts</a>
+      (tag v1.14.0 ; docs <code>main</code> identiques à la vérification).
+    </p>
+    <footer class="guide-footer">
+      <p class="guide-muted" data-slide-footer></p>
+    </footer>
   </article>
+  <script type="module" src="../../openspec-guide.js"></script>
 </body>
 </html>

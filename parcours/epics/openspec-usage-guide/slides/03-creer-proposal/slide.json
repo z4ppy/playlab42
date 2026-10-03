@@ -1,5 +1,8 @@
 {
   "id": "03-creer-proposal",
   "title": "Créer une proposal",
-  "type": "content"
+  "type": "content",
+  "duration": "15 min",
+  "description": "Quand proposer, lancer /opsx:propose, rédiger proposal, delta specs, design et tasks avec l'exemple add-dark-mode, puis valider.",
+  "icon": "✍️"
 }

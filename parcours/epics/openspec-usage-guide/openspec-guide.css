@@ -1,0 +1,430 @@
+/**
+ * Feuille de style locale du parcours OpenSpec.
+ * Active uniquement avec <body class="openspec-guide"> ; s'appuie sur les
+ * tokens de lib/theme.css (thèmes clair et sombre) et sur .slide de slide-base.css.
+ */
+
+.openspec-guide {
+  --guide-surface: color-mix(in srgb, var(--color-bg-secondary) 85%, var(--color-bg-card));
+  --guide-border: var(--color-border);
+  --guide-focus: var(--color-info);
+  --guide-code: var(--color-accent);
+  --guide-link: var(--color-info);
+  --guide-success: var(--color-success);
+  --guide-muted: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+[data-theme="light"] .openspec-guide {
+  --guide-link: #075d8b;
+  --guide-success: #146c35;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .openspec-guide {
+    --guide-link: #075d8b;
+    --guide-success: #146c35;
+  }
+}
+
+.openspec-guide .slide :not(pre) > code {
+  color: var(--guide-code);
+}
+
+.openspec-guide .slide {
+  max-width: 920px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.openspec-guide .slide > * {
+  min-width: 0;
+}
+
+/* Texte d'introduction */
+.openspec-guide .guide-kicker {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--guide-code);
+}
+
+[data-theme="light"].openspec-guide .guide-kicker,
+[data-theme="light"] .openspec-guide .guide-kicker {
+  color: #b3203a; /* contraste AA sur fond clair */
+}
+
+.openspec-guide .guide-lead {
+  font-size: var(--font-size-lg);
+  line-height: 1.5;
+  margin: 0 0 var(--space-lg);
+  max-width: 65ch;
+}
+
+.openspec-guide .guide-muted {
+  color: var(--guide-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Grille responsive de cartes */
+.openspec-guide .guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+
+.openspec-guide .guide-card {
+  background: var(--guide-surface);
+  border: 1px solid var(--guide-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  min-width: 0;
+}
+
+.openspec-guide .guide-card > :first-child {
+  margin-top: 0;
+}
+
+.openspec-guide .guide-card > :last-child {
+  margin-bottom: 0;
+}
+
+/* Encadrés : la couleur d'accent est portée par la bordure gauche */
+.openspec-guide .guide-callout,
+.openspec-guide .guide-exercise,
+.openspec-guide .guide-assistant {
+  --guide-accent: var(--color-info);
+  margin: var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--guide-surface);
+  border: 1px solid var(--guide-border);
+  border-left: 4px solid var(--guide-accent);
+  border-radius: var(--radius-md);
+}
+
+.openspec-guide .guide-exercise {
+  --guide-accent: var(--color-warning);
+}
+
+.openspec-guide .guide-assistant {
+  --guide-accent: var(--color-success);
+}
+
+.openspec-guide .guide-callout > :first-child,
+.openspec-guide .guide-exercise > :first-child,
+.openspec-guide .guide-assistant > :first-child {
+  margin-top: 0;
+}
+
+.openspec-guide .guide-callout > :last-child,
+.openspec-guide .guide-exercise > :last-child,
+.openspec-guide .guide-assistant > :last-child {
+  margin-bottom: 0;
+}
+
+/* Étapes numérotées */
+.openspec-guide .guide-steps {
+  list-style: none;
+  counter-reset: guide-step;
+  margin: var(--space-lg) 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-md);
+}
+
+.openspec-guide .guide-steps > li {
+  list-style-type: none;
+  counter-increment: guide-step;
+  position: relative;
+  padding-left: 3rem;
+  min-height: 2rem;
+}
+
+.openspec-guide .guide-steps > li::before {
+  content: counter(guide-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: #b3203a;
+  color: #fff;
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+}
+
+[data-theme="light"] .openspec-guide .guide-steps > li::before {
+  background: #b3203a;
+}
+
+/* Liste de vérification */
+.openspec-guide .guide-checklist {
+  list-style: none;
+  margin: var(--space-lg) 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.openspec-guide .guide-checklist > li {
+  list-style-type: none;
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+.openspec-guide .guide-checklist > li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+/* Tableaux : défilement horizontal contenu dans le wrapper */
+.openspec-guide .guide-table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: var(--space-lg) 0;
+  border: 1px solid var(--guide-border);
+  border-radius: var(--radius-md);
+}
+
+.openspec-guide .guide-table-wrapper:focus-visible {
+  outline: 3px solid var(--guide-focus);
+  outline-offset: 2px;
+}
+
+.openspec-guide .guide-table-wrapper table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.openspec-guide .guide-table-wrapper th,
+.openspec-guide .guide-table-wrapper td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--guide-border);
+}
+
+.openspec-guide .guide-table-wrapper th {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+}
+
+.openspec-guide .guide-table-wrapper tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Blocs de code et terminal */
+.openspec-guide pre {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  margin: var(--space-sm) 0 var(--space-lg);
+  padding: var(--space-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--guide-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.openspec-guide pre code {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+  overflow-wrap: normal;
+}
+
+.openspec-guide pre:focus-visible {
+  outline: 3px solid var(--guide-focus);
+  outline-offset: 2px;
+}
+
+.openspec-guide .guide-command,
+.openspec-guide .guide-terminal {
+  font-family: var(--font-mono);
+}
+
+.openspec-guide code.guide-command {
+  padding: 0.1em 0.4em;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-sm);
+  overflow-wrap: anywhere;
+}
+
+.openspec-guide pre.guide-command::before,
+.openspec-guide .guide-terminal pre::before {
+  content: "$ ";
+  color: var(--color-success);
+}
+
+.openspec-guide .guide-terminal {
+  --color-text: #e6e6ef;
+  --color-bg-card: #252535;
+  --color-bg-hover: #36364b;
+  --color-success: #4ade80;
+  --color-error: #ff8d8d;
+  --guide-success: #4ade80;
+  --guide-focus: #7dd3fc;
+  margin: var(--space-lg) 0;
+  border: 1px solid var(--guide-border);
+  border-radius: var(--radius-md);
+  background: #11111b;
+  color: #e6e6ef;
+  overflow: hidden;
+}
+
+.openspec-guide .guide-terminal pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+}
+
+/* Source et badge */
+.openspec-guide .guide-source {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--guide-border);
+  font-size: var(--font-size-sm);
+  color: var(--guide-muted);
+}
+
+.openspec-guide .guide-source a {
+  color: var(--guide-link);
+}
+
+.openspec-guide .guide-badge {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid var(--color-info);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  line-height: 1.6;
+  vertical-align: middle;
+}
+
+/* Barre de copie (injectée par openspec-guide.js) */
+.openspec-guide .guide-copy-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.openspec-guide .guide-copy-bar + pre {
+  margin-top: var(--space-xs);
+}
+
+.openspec-guide .guide-copy-button,
+.openspec-guide [data-guide-answer] {
+  font: inherit;
+  font-size: var(--font-size-sm);
+  min-height: 2.25rem;
+  padding: var(--space-xs) var(--space-md);
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  border: 1px solid var(--guide-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.openspec-guide .guide-copy-button:hover,
+.openspec-guide [data-guide-answer]:hover {
+  background: var(--color-bg-hover);
+}
+
+.openspec-guide [data-guide-answer][aria-pressed="true"] {
+  border-color: var(--color-info);
+  border-width: 2px;
+}
+
+.openspec-guide .guide-copy-status,
+.openspec-guide [data-guide-quiz-result] {
+  font-size: var(--font-size-sm);
+}
+
+.openspec-guide [data-guide-quiz] [data-guide-answer] {
+  margin: 0 var(--space-sm) var(--space-sm) 0;
+}
+
+.openspec-guide [data-state="success"] {
+  color: var(--guide-success);
+}
+
+.openspec-guide [data-state="error"] {
+  color: var(--color-error);
+}
+
+/* Focus visible pour tous les éléments interactifs */
+.openspec-guide a:focus-visible,
+.openspec-guide button:focus-visible,
+.openspec-guide summary:focus-visible,
+.openspec-guide [tabindex]:focus-visible {
+  outline: 3px solid var(--guide-focus);
+  outline-offset: 2px;
+}
+
+/* Très petits écrans (<= 360px) */
+@media (max-width: 360px) {
+  .openspec-guide .slide {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .openspec-guide .guide-lead {
+    font-size: var(--font-size-md);
+  }
+
+  .openspec-guide .guide-card,
+  .openspec-guide .guide-callout,
+  .openspec-guide .guide-exercise,
+  .openspec-guide .guide-assistant {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .openspec-guide .guide-steps > li {
+    padding-left: 2.5rem;
+  }
+
+  .openspec-guide pre {
+    font-size: var(--font-size-xs);
+    padding: var(--space-sm);
+  }
+
+  .openspec-guide .guide-copy-button,
+  .openspec-guide [data-guide-answer] {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .openspec-guide *,
+  .openspec-guide *::before,
+  .openspec-guide *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
