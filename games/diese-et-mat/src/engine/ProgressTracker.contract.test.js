@@ -1,0 +1,92 @@
+/** @jest-environment jsdom */
+
+import { jest } from '@jest/globals';
+import GameKit from '../../../../lib/gamekit.js';
+import { ProgressTracker } from './ProgressTracker.js';
+
+describe('Contrats de progression et notifications', () => {
+  let tracker;
+
+  beforeEach(async () => {
+    localStorage.clear();
+    jest.spyOn(GameKit, 'loadProgress').mockResolvedValue({
+      globalXP: 0, skills: {}, sessions: [], achievements: [],
+    });
+    jest.spyOn(GameKit, 'saveProgress').mockResolvedValue(undefined);
+    tracker = new ProgressTracker();
+    await tracker.load();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test.each([
+    [{ accuracy: 100, totalQuestions: 9, bestStreak: 9 }, []],
+    [{ accuracy: 99, totalQuestions: 10, bestStreak: 10 }, ['streak10']],
+    [{ accuracy: 100, totalQuestions: 10, bestStreak: 24 }, ['first-perfect', 'streak10']],
+    [{ accuracy: 100, totalQuestions: 10, bestStreak: 25 }, ['first-perfect', 'streak10', 'streak25']],
+  ])('respecte les bornes des achievements pour %j', (context, expected) => {
+    expect(tracker.checkAchievements(context).map(({ id }) => id)).toEqual(expected);
+    expect(tracker.checkAchievements(context)).toEqual([]);
+    expect(tracker.getUnlockedAchievements().map(({ id }) => id)).toEqual(expected);
+  });
+
+  test.each([5, 10])('débloque les niveaux à leur seuil exact : %i', (level) => {
+    const threshold = Array.from({ length: level - 1 }, (_, index) =>
+      Math.floor(100 * Math.pow(index + 1, 1.5))).reduce((sum, xp) => sum + xp, 0);
+    tracker.addXP(threshold - 1);
+    expect(tracker.getLevel().level).toBe(level - 1);
+    expect(tracker.checkAchievements({}).map(({ id }) => id))
+      .toEqual(level === 10 ? ['level5'] : []);
+    tracker.addXP(1);
+    expect(tracker.getLevel().level).toBe(level);
+    expect(tracker.checkAchievements({}).map(({ id }) => id)).toEqual([`level${level}`]);
+    expect(tracker.checkAchievements({})).toEqual([]);
+    expect(tracker.getAllAchievements().find(({ id }) => id === 'all-clefs').unlocked).toBe(false);
+  });
+
+  test('ne débloque rien avant le chargement', () => {
+    expect(new ProgressTracker().checkAchievements({
+      accuracy: 100, totalQuestions: 10, bestStreak: 25,
+    })).toEqual([]);
+  });
+
+  test('sauvegarde les mutations puis notifie avec le même objet', async () => {
+    const update = jest.fn();
+    tracker.onUpdate(update);
+    tracker.recordSession({ exerciseId: 'lecture', skill: 'treble-clef', xp: 5 });
+    tracker.checkAchievements({ bestStreak: 10 });
+    expect(update).not.toHaveBeenCalled();
+    await tracker.save();
+    expect(GameKit.saveProgress).toHaveBeenCalledWith(tracker.progress);
+    expect(JSON.parse(localStorage.getItem(tracker.storageKey))).toEqual(tracker.progress);
+    expect(update).toHaveBeenCalledWith(tracker.progress);
+    expect(update).toHaveBeenCalledTimes(1);
+  });
+
+  test('conserve le fallback et les erreurs visibles lorsque les stockages échouent', async () => {
+    const unavailable = new Error('stockage refusé');
+    GameKit.loadProgress.mockRejectedValue(unavailable);
+    localStorage.setItem(tracker.storageKey, JSON.stringify({
+      globalXP: 42, achievements: ['streak10'],
+    }));
+    await tracker.load();
+    expect(tracker.getGlobalXP()).toBe(42);
+    expect(tracker.checkAchievements({ bestStreak: 10 })).toEqual([]);
+    GameKit.saveProgress.mockRejectedValue(unavailable);
+    const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw unavailable; });
+    const update = jest.fn();
+    tracker.onUpdate(update);
+    await tracker.save();
+    expect(warning).toHaveBeenCalledWith('Erreur lors de la sauvegarde:', unavailable);
+    expect(update).toHaveBeenCalledWith(tracker.progress);
+    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue('{json cassé');
+    await tracker.load();
+    expect(warning).toHaveBeenCalledWith(
+      'Erreur lors du chargement de la progression:', expect.any(SyntaxError),
+    );
+    expect(tracker.getGlobalXP()).toBe(0);
+  });
+});
