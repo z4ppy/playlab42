@@ -25,5 +25,5 @@
 - [x] Guides et parcours alignés, avec limites et preuves datées.
 - [x] Revue et validation intégrée complète dans Docker.
 - [x] Builds reproductibles, archive vérifiée et Chromium réel.
-- [ ] PR et dernière tête native vérifiées.
+- [x] PR et dernière tête native vérifiées (PR #148 ; preuves datées en commentaire).
 - [ ] Livraison constatée et décision explicite d'archivage, hors autorisation actuelle.
