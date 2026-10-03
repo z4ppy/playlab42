@@ -29,6 +29,7 @@ Markdown**, et non présenté comme une page du lecteur.
 - [Architecture](architecture.md) : comprendre les composants et leurs limites.
 - [Premiers pas](../GETTING_STARTED.md) : préparer l'environnement Docker.
 - [Contribuer](contributing.md) : connaître le workflow et les vérifications.
+- [L'usine logicielle](software-factory.md) : comprendre la chaîne de livraison et les points restant à améliorer.
 
 ## Créer une contribution
 
@@ -43,6 +44,7 @@ Markdown**, et non présenté comme une page du lecteur.
 
 ## Vérifier et travailler avec l'IA
 
+- [Qualité logicielle](software-quality.md) : conception, lint, sécurité, tests et revue, avec un plan progressif.
 - [Stratégie de tests](../TESTING_STRATEGY.md) : choisir les preuves adaptées.
 - [Skills du projet](project-skills.md) : utiliser les assistants avec les mêmes conventions.
 - [Workflow OpenSpec](openspec-workflow.md) : clarifier et suivre un changement.

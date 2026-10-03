@@ -3,158 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer un outil - PlayLab42</title>
+  <title>Créer un outil</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../playlab-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .level-badge {
-      display: inline-block;
-      background: #22c55e;
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: var(--radius-full);
-      font-size: var(--font-size-sm);
-      font-weight: 500;
-      margin-bottom: var(--space-md);
-    }
-    .steps {
-      counter-reset: step;
-      margin: var(--space-lg) 0;
-    }
-    .step {
-      position: relative;
-      padding-left: 3rem;
-      margin-bottom: var(--space-lg);
-    }
-    .step::before {
-      counter-increment: step;
-      content: counter(step);
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 2rem;
-      height: 2rem;
-      background: var(--color-accent);
-      color: white;
-      border-radius: var(--radius-full);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-    .step h3 {
-      margin: 0 0 var(--space-sm) 0;
-    }
-    .code-block {
-      background: var(--color-bg-secondary);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
-      margin: var(--space-sm) 0;
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      overflow-x: auto;
-    }
-    .code-block .comment {
-      color: var(--color-text-muted);
-    }
-    .code-block .keyword {
-      color: var(--color-accent);
-    }
-    .example-box {
-      background: var(--color-bg-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-lg);
-      margin: var(--space-lg) 0;
-    }
-    .example-box h4 {
-      margin: 0 0 var(--space-md) 0;
-      color: var(--color-accent);
-    }
-  </style>
 </head>
-<body>
+<body class="playlab-guide">
   <article class="slide">
-    <span class="level-badge">Niveau : Débutant</span>
-    <h1>Créer un outil HTML</h1>
-
-    <p>
-      Les outils sont des fichiers HTML autonomes et simples.
-      Un fichier = un outil complet. Pas de dépendances, pas de build.
+    <p class="guide-kicker">Étape 4 · 7 min · Débutant</p>
+    <h1>Créer un outil</h1>
+    <p class="guide-lead">
+      Un outil est une petite application web sans backend. Il vit dans son dossier <code>tools/&lt;id&gt;/</code>
+      et se déclare avec un manifest : sans <code>tool.json</code>, le catalogue l'ignore.
     </p>
 
-    <h2>Caractéristiques d'un outil</h2>
-
-    <ul>
-      <li><strong>Autonome</strong> : Un seul fichier HTML contenant tout (CSS + JS)</li>
-      <li><strong>Thémable</strong> : Utilise <code>lib/theme.css</code> pour s'adapter au thème</li>
-      <li><strong>Sans backend</strong> : Tout tourne dans le navigateur</li>
-      <li><strong>Pratique</strong> : Résout un problème concret du quotidien</li>
+    <h2>Ce qu'il faut</h2>
+    <pre class="code-block"><code>tools/mon-outil/
+├── index.html   # point d'entrée (obligatoire)
+├── tool.json    # manifest (obligatoire)
+└── main.js      # modules locaux, optionnel</code></pre>
+    <ul class="guide-checklist">
+      <li><code>tool.json</code> exige <code>id</code> (kebab-case), <code>name</code>, <code>description</code> et <code>tags</code> (tableau) ; <code>version</code> est optionnelle, au format 1.0.0.</li>
+      <li>Les modules locaux sont permis ; servez le projet en HTTP, pas via <code>file://</code>.</li>
+      <li>Réutilisez <code>lib/theme.css</code>, <code>lib/ui.css</code> et <code>lib/components.css</code> (classes <code>ui-*</code>).</li>
+      <li>Pas de backend : tout tourne dans le navigateur, les données restent locales.</li>
     </ul>
 
-    <h2>Les étapes de création</h2>
+    <h2>Générer, essayer, cataloguer</h2>
+    <ol class="guide-flow">
+      <li>
+        Générez le squelette avec Docker (jamais Node sur l'hôte) :
+        <pre class="code-block"><code>make scaffold TYPE=tool ID=mon-compteur TITLE="Mon compteur"</code></pre>
+        Cette cible exécute <code>npm run scaffold -- tool mon-compteur --title "Mon compteur"</code> dans le conteneur.
+        Un dossier existant n'est jamais écrasé : il n'y a pas d'option <code>--force</code>.
+      </li>
+      <li>
+        Lancez le serveur : <code>make serve</code>, puis ouvrez l'URL donnée par <code>make info</code>.
+      </li>
+      <li>
+        Régénérez le catalogue :
+        <pre class="code-block"><code>make npm CMD="run build:catalogue"</code></pre>
+      </li>
+      <li>Dans le portail, onglet <strong>Outils</strong>, cherchez « compteur » et ouvrez la carte.</li>
+    </ol>
 
-    <div class="steps">
-      <div class="step">
-        <h3>Créer le dossier et fichier HTML</h3>
-        <div class="code-block">
-tools/mon-outil/
-├── index.html    <span class="comment"># L'outil</span>
-└── tool.json     <span class="comment"># Métadonnées</span></div>
-      </div>
+    <h2>La galerie UI</h2>
+    <p>
+      La <a href="../../../../../tools/ui-kit/index.html" target="_blank" rel="noopener">galerie UI Playlab42</a>
+      montre les composants partagés avec leur thème : boutons, champs, cartes, statuts et dialogue natif.
+      Copiez ses classes plutôt que d'écrire un CSS maison ; gardez les éléments natifs et leurs libellés.
+    </p>
 
-      <div class="step">
-        <h3>Utiliser le template de base</h3>
-        <div class="code-block"><span class="keyword">&lt;!DOCTYPE html&gt;</span>
-&lt;html lang="fr"&gt;
-&lt;head&gt;
-  &lt;link rel="stylesheet" href="<span class="keyword">/lib/theme.css</span>"&gt;
-  &lt;script type="module"&gt;
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
-  &lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  <span class="comment">&lt;!-- Votre interface ici --&gt;</span>
-&lt;/body&gt;
-&lt;/html&gt;</div>
-      </div>
+    <section class="guide-exercise">
+      <h2>Mini-exercice</h2>
+      <p>Votre outil <code>mon-compteur</code> n'apparaît pas dans l'onglet Outils. Citez deux causes probables.</p>
+      <details>
+        <summary>Correction</summary>
+        <ul>
+          <li>Le catalogue n'a pas été régénéré : lancez <code>make npm CMD="run build:catalogue"</code>.</li>
+          <li>Le manifest est invalide (champ requis manquant, id non kebab-case) ou <code>index.html</code> est absent : le build signale l'erreur.</li>
+        </ul>
+      </details>
+    </section>
 
-      <div class="step">
-        <h3>Créer le manifest tool.json</h3>
-        <div class="code-block">{
-  "id": "mon-outil",
-  "name": "Mon Outil",
-  "description": "Description courte",
-  "tags": ["utility"],
-  "icon": "🔧"
-}</div>
-      </div>
-
-      <div class="step">
-        <h3>Régénérer le catalogue</h3>
-        <div class="code-block">make npm CMD="run build:catalogue"</div>
-      </div>
-    </div>
-
-    <div class="example-box">
-      <h4>💡 Idées d'outils à créer</h4>
+    <h2>Sources</h2>
+    <div class="guide-resource">
       <ul>
-        <li><strong>JSON Formatter</strong> : Formatter/valider du JSON</li>
-        <li><strong>Base64 Encoder</strong> : Encoder/décoder en Base64</li>
-        <li><strong>Color Picker</strong> : Convertir des couleurs HEX/RGB/HSL</li>
-        <li><strong>Regex Tester</strong> : Tester des expressions régulières</li>
-        <li><strong>Markdown Preview</strong> : Prévisualiser du Markdown</li>
-        <li><strong>QR Code Generator</strong> : Générer des QR codes</li>
+        <li><a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/contribution-kit.md" target="_blank" rel="noopener">Kit de contribution</a> · <a href="https://github.com/z4ppy/playlab42/blob/main/scripts/scaffold.js" target="_blank" rel="noopener">scripts/scaffold.js</a> · <a href="https://github.com/z4ppy/playlab42/blob/main/scripts/build-catalogue.js" target="_blank" rel="noopener">scripts/build-catalogue.js</a> · <a href="https://github.com/z4ppy/playlab42/blob/main/tools/local-data/tool.json" target="_blank" rel="noopener">exemple de tool.json</a></li>
       </ul>
     </div>
 
-    <blockquote>
-      Inspiré des "HTML Tools" de Simon Willison : des outils simples et efficaces.
-    </blockquote>
+    <footer><p data-slide-footer>Créer un outil</p></footer>
   </article>
 </body>
 </html>

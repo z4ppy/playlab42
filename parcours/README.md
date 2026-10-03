@@ -90,4 +90,5 @@ Slides Markdown converties: 3
 
 ## Voir aussi
 
+- [Playlab42 — Guide et usine logicielle](epics/hello-playlab42/README.md) - Utilisation, contribution, OpenSpec, skills et chaîne CI/publication
 - [Spec Parcours](../openspec/specs/parcours/spec.md) - Spécification technique complète

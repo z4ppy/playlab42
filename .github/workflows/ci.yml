@@ -1,15 +1,33 @@
 # Workflow CI - Lint, Tests et Coverage
-# Exécuté sur chaque push et pull request
+# Appelé sur PR, manuellement ou par le workflow de déploiement
 
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
+permissions:
+  contents: read
 
 jobs:
+  dependency-audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: npm
+      - run: npm ci
+      - run: npm run audit:dependencies
+
   # Job de linting
   lint:
     name: Lint
@@ -82,9 +100,6 @@ jobs:
       - name: Vérification des types
         run: npm run typecheck
 
-      - name: Build TypeScript
-        run: npm run build:ts
-
   # Job de build (vérifie que le build fonctionne)
   build:
     name: Build
@@ -104,3 +119,30 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Archive du site public
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+          retention-days: 7
+
+  openspec:
+    name: OpenSpec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: npm
+      - run: npm ci
+      - run: npm run openspec:validate
+        env:
+          OPENSPEC_TELEMETRY: '0'
+
+  browser:
+    name: Browser
+    needs: build
+    uses: ./.github/workflows/ui-e2e.yml
+    with:
+      prebuilt: true

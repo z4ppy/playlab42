@@ -42,6 +42,8 @@ export default [
       'curly': ['error', 'all'],
       'no-eval': 'error',
       'no-implied-eval': 'error',
+      'no-new-func': 'error',
+      'no-script-url': 'error',
       'no-return-await': 'error',
       'require-await': 'error',
 

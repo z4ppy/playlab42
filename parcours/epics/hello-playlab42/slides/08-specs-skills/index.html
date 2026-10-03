@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Specs et skills - PlayLab42</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../playlab-guide.css">
+  <script type="module">
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
+  </script>
+</head>
+<body class="playlab-guide">
+  <article class="slide">
+    <p class="guide-kicker">Partie 3 · L'usine logicielle</p>
+    <h1>Specs et skills</h1>
+    <p class="guide-lead">
+      Avant de coder, on écrit <em>ce qu'on veut</em> (OpenSpec). Pour guider l'agent de code,
+      on lui donne des <em>instructions versionnées</em> (skills). Ce sont des fichiers Markdown :
+      aucun agent autonome ni backend n'est ajouté.
+    </p>
+
+    <h2>Fil rouge : hello-usine</h2>
+    <p>
+      Imaginons un outil <code>hello-usine</code> (illustratif, <strong>non créé</strong>) qui affiche un message.
+      Il traverse l'usine de la spec jusqu'à GitHub Pages.
+    </p>
+
+    <h2>1. OpenSpec : la spec d'abord</h2>
+    <p>
+      Le schéma <code>spec-driven</code> est choisi dans <code>openspec/config.yaml</code>.
+      Un change contient quatre artefacts :
+    </p>
+    <ol class="guide-flow">
+      <li><code>proposal.md</code> : pourquoi et quoi (impact, exclusions).</li>
+      <li><code>specs/&lt;capability&gt;/spec.md</code> : exigences avec <code>SHALL</code>/<code>MUST</code> et au moins un <code>#### Scenario:</code>.</li>
+      <li><code>design.md</code> : décisions techniques.</li>
+      <li><code>tasks.md</code> : tâches à cocher, uniquement une fois réalisées et vérifiées.</li>
+    </ol>
+
+    <h2>2. Les six skills OpenSpec (profil core)</h2>
+    <div class="guide-table-scroll" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Action</th><th scope="col">Skill (source canonique)</th></tr></thead>
+        <tbody>
+          <tr><td>Explorer sans implémenter</td><td><code>openspec-explore</code></td></tr>
+          <tr><td>Préparer un change</td><td><code>openspec-propose</code></td></tr>
+          <tr><td>Implémenter</td><td><code>openspec-apply-change</code></td></tr>
+          <tr><td>Réviser les artefacts</td><td><code>openspec-update-change</code></td></tr>
+          <tr><td>Synchroniser les specs</td><td><code>openspec-sync-specs</code></td></tr>
+          <tr><td>Archiver</td><td><code>openspec-archive-change</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Ils ont été générés par le CLI OpenSpec <strong>1.14.0</strong> (<code>generatedBy: "1.14.0"</code>),
+      en livraison « skills seulement ». Les commandes <code>/opsx:*</code> ne sont <strong>pas</strong>
+      installées automatiquement : demandez le skill par son nom.
+    </p>
+
+    <h2>3. Les cinq skills métier Playlab42</h2>
+    <div class="guide-grid">
+      <section class="guide-card"><h3><code>playlab-ui</code></h3><p>Portail, outils, clients, interactions accessibles.</p></section>
+      <section class="guide-card"><h3><code>playlab-create-game</code></h3><p>Moteur, règles, bots, manifeste et client d'un jeu.</p></section>
+      <section class="guide-card"><h3><code>playlab-create-epic</code></h3><p>Parcours, manifests, slides et build.</p></section>
+      <section class="guide-card"><h3><code>playlab-release</code></h3><p>Branche, validations, PR ; jamais de merge automatique.</p></section>
+      <section class="guide-card"><h3><code>playlab-review</code></h3><p>Revue de conception, contrats, tests et risques ; preuves et limites explicites.</p></section>
+    </div>
+    <p>
+      Les corps vivent <strong>uniquement</strong> dans <code>.github/skills/</code>. Le lien
+      <code>.claude/skills → ../.github/skills</code> expose les mêmes fichiers à Claude : pas de seconde copie.
+    </p>
+
+    <h2>Garde-fous à connaître</h2>
+    <ul class="guide-checklist">
+      <li>CLI OpenSpec local épinglé en 1.14.0, exécuté dans Docker (Node 26), jamais sur le host.</li>
+      <li>Ne pas lancer <code>openspec init --force</code> ni <code>openspec update</code> dans ce dépôt : migration destructive possible.</li>
+      <li>Une proposal générée n'est pas une approbation de livraison.</li>
+      <li>Ne pas archiver avant la livraison et une décision explicite.</li>
+      <li>La validation OpenSpec vérifie la <em>structure</em> des specs, pas le code.</li>
+    </ul>
+
+    <pre class="code-block"><code>make openspec-list
+make openspec-validate</code></pre>
+
+    <details class="guide-exercise">
+      <summary>Mini-question : /opsx:propose marche-t-il ici ?</summary>
+      <p>Pas garanti. Seuls les skills sont fournis ; demandez « utilise le skill <code>openspec-propose</code> ».</p>
+    </details>
+
+    <p class="guide-resource">
+      Sources :
+      <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/openspec-workflow.md" target="_blank" rel="noopener">openspec-workflow.md</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/project-skills.md" target="_blank" rel="noopener">project-skills.md</a>,
+      <a href="https://github.com/z4ppy/playlab42/tree/main/.github/skills" target="_blank" rel="noopener">.github/skills</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/README.md" target="_blank" rel="noopener">OpenSpec v1.14.0</a>.
+    </p>
+
+    <footer><p data-slide-footer></p></footer>
+  </article>
+</body>
+</html>

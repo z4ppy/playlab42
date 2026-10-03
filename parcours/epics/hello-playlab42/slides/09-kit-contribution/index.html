@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le kit de contribution - PlayLab42</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../playlab-guide.css">
+  <script type="module">
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
+  </script>
+</head>
+<body class="playlab-guide">
+  <article class="slide">
+    <p class="guide-kicker">Partie 3 · L'usine logicielle</p>
+    <h1>Le kit de contribution</h1>
+    <p class="guide-lead">
+      Une fois la spec écrite, on ne part pas d'une page blanche : le kit génère un
+      point de départ <strong>qui fonctionne déjà</strong>, en HTML, CSS et JavaScript ordinaires.
+    </p>
+
+    <h2>Scaffolder un module</h2>
+    <p>Dans le shell du conteneur Docker, depuis la racine du dépôt :</p>
+    <pre class="code-block"><code>node scripts/scaffold.js &lt;game|tool|epic&gt; &lt;id-kebab-case&gt; --title "Titre"</code></pre>
+    <p>
+      Raccourcis : <code>npm run scaffold -- tool mon-outil --title "Mon outil"</code>
+      ou <code>make scaffold TYPE=tool ID=mon-outil TITLE="Mon outil"</code>.
+    </p>
+
+    <div class="guide-table-scroll" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Type</th><th scope="col">Destination</th><th scope="col">Ce qui marche tout de suite</th></tr></thead>
+        <tbody>
+          <tr><td><code>game</code></td><td><code>games/&lt;id&gt;/</code></td><td>Jeu de pierres contre un bot déterministe, moteur testé</td></tr>
+          <tr><td><code>tool</code></td><td><code>tools/&lt;id&gt;/</code></td><td>Compteur de mots, local, sans CDN</td></tr>
+          <tr><td><code>epic</code></td><td><code>parcours/epics/&lt;id&gt;/</code></td><td>Deux slides : explication et question</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Règles du générateur</h2>
+    <ul class="guide-checklist">
+      <li>Pas d'option <code>--force</code> : un dossier existant est refusé, choisissez un autre identifiant.</li>
+      <li>Identifiant : kebab-case, 1 à 64 caractères. Titre : 1 à 120 caractères.</li>
+      <li>Les gabarits sont dans <code>templates/</code> (suffixe <code>.tpl</code>) : copie et adaptation, pas de nouveau framework.</li>
+      <li>Le générateur produit des fichiers que vous relisez ; il ne promet pas de génération de code au runtime.</li>
+    </ul>
+
+    <h2>La galerie UI et les helpers</h2>
+    <p>
+      Ouvrez <code>/tools/ui-kit/index.html</code> sur votre serveur local : thèmes, boutons, formulaires,
+      statuts et dialogue natif. Les classes <code>ui-*</code> de <code>lib/components.css</code> sont opt-in
+      et reposent sur <code>lib/theme.css</code> et <code>lib/ui.css</code>. Les éléments HTML natifs et leurs
+      libellés restent la base de l'accessibilité.
+    </p>
+
+    <h2>Localité : tout près du code</h2>
+    <ol class="guide-flow">
+      <li><strong>Tests</strong> à côté du code : <code>engine.test.js</code> dans le dossier du jeu.</li>
+      <li><strong>Documentation</strong> par JSDoc dans les fichiers, guides dans <code>docs/guides/</code>.</li>
+      <li><strong>Thème</strong> : variables CSS de <code>lib/theme.css</code>, pas de couleurs recopiées.</li>
+    </ol>
+
+    <h2>hello-usine, étape kit</h2>
+    <div class="guide-exercise">
+      <p>Pour notre outil imaginaire, on lancerait (dans Docker) :</p>
+      <pre class="code-block"><code>node scripts/scaffold.js tool hello-usine --title "Hello usine"</code></pre>
+      <p>Puis on remplacerait le compteur par le message, en gardant les libellés et le test de contrat.</p>
+    </div>
+
+    <details class="guide-exercise">
+      <summary>Mini-question : que faire si le dossier existe déjà ?</summary>
+      <p>Choisir un nouvel identifiant. Il n'existe aucun moyen d'écraser, c'est voulu.</p>
+    </details>
+
+    <p class="guide-resource">
+      Sources :
+      <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/contribution-kit.md" target="_blank" rel="noopener">contribution-kit.md</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/scripts/scaffold.js" target="_blank" rel="noopener">scripts/scaffold.js</a>,
+      <a href="https://github.com/z4ppy/playlab42/tree/main/templates" target="_blank" rel="noopener">templates/</a>,
+      <a href="https://github.com/z4ppy/playlab42/tree/main/tools/ui-kit" target="_blank" rel="noopener">galerie UI</a>.
+    </p>
+
+    <footer><p data-slide-footer></p></footer>
+  </article>
+</body>
+</html>

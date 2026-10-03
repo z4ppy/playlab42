@@ -1,15 +1,15 @@
 {
   "id": "hello-playlab42",
-  "title": "Bienvenue sur PlayLab42",
-  "description": "Découvrez la plateforme, ses objectifs pédagogiques et comment contribuer.",
+  "title": "PlayLab42 — Guide et usine logicielle",
+  "description": "Utilisez le portail, contribuez avec OpenSpec et les skills, puis découvrez l'architecture de l'usine logicielle : kit de contribution, tests, CI et publication statique.",
   "hierarchy": ["playlab42"],
   "order": 1,
-  "tags": ["howto", "debutant", "ia", "dev"],
+  "tags": ["howto", "debutant", "ia", "dev", "architecture", "openspec", "skills", "ci"],
   "metadata": {
     "author": "PlayLab42",
     "created": "2025-01-15",
-    "updated": "2025-12-13",
-    "duration": "15 min",
+    "updated": "2026-10-03",
+    "duration": "60 min",
     "difficulty": "beginner",
     "language": "fr"
   },
@@ -18,7 +18,7 @@
   "content": [
     {
       "id": "decouverte",
-      "title": "Découverte",
+      "title": "Utiliser et comprendre",
       "icon": "🎯",
       "content": [
         { "id": "01-bienvenue" },
@@ -36,6 +36,40 @@
         { "id": "06-creer-bot" }
       ]
     },
+    {
+      "id": "usine-logicielle",
+      "title": "L'usine logicielle",
+      "icon": "🏭",
+      "content": [
+        { "id": "08-specs-skills" },
+        { "id": "09-kit-contribution" },
+        { "id": "10-qualite-ci" },
+        { "id": "11-publication" }
+      ]
+    },
     { "id": "07-aller-plus-loin" }
+  ],
+  "bookmarks": [
+    {
+      "url": "https://github.com/z4ppy/playlab42",
+      "title": "Playlab42 — Dépôt et documentation",
+      "description": "Code source, conventions et chaîne de contribution de la plateforme",
+      "icon": "🎮",
+      "tags": ["playlab42", "github", "dev"]
+    },
+    {
+      "url": "https://github.com/z4ppy/playlab42/blob/main/docs/guides/openspec-workflow.md",
+      "title": "Workflow OpenSpec dans Playlab42",
+      "description": "OPSX, CLI épinglé dans Docker, skills et règles de livraison",
+      "icon": "📋",
+      "tags": ["playlab42", "openspec", "workflow"]
+    },
+    {
+      "url": "https://github.com/z4ppy/playlab42/blob/main/docs/guides/contribution-kit.md",
+      "title": "Kit de contribution Playlab42",
+      "description": "Gabarits, scaffold et galerie de composants pour outils, jeux et parcours",
+      "icon": "🧰",
+      "tags": ["playlab42", "contribution", "dev"]
+    }
   ]
 }

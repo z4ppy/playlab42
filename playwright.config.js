@@ -6,6 +6,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error('PLAYWRIGHT_PORT doit etre un port TCP valide.');
 }
 const baseURL = externalURL || `http://127.0.0.1:${port}`;
+const prebuilt = process.env.PLAYWRIGHT_PREBUILT === '1';
 
 export default defineConfig({
   testDir: './e2e',
@@ -28,7 +29,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: externalURL ? undefined : {
-    command: `npm run build:local && node_modules/.bin/serve . -l tcp://127.0.0.1:${port} -C`,
+    command: `${prebuilt ? '' : 'npm run build:local && '}node_modules/.bin/serve ${prebuilt ? 'site' : '.'}${prebuilt ? ' -c ../serve.json' : ''} -l tcp://127.0.0.1:${port} -C`,
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000,

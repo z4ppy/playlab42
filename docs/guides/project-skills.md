@@ -14,11 +14,17 @@ versionnées avec le projet, pas dans les skills personnels de l'utilisateur.
 | [playlab-create-game](../../.github/skills/playlab-create-game/SKILL.md) | Moteur, règles, bots, manifeste et client d'un jeu | « Ajoute un jeu de dés déterministe et testable. » |
 | [playlab-create-epic](../../.github/skills/playlab-create-epic/SKILL.md) | Parcours, manifests, slides et build | « Transforme ce cours en trois slides avec un exercice. » |
 | [playlab-release](../../.github/skills/playlab-release/SKILL.md) | Branche, validations, PR et publication encadrée | « Prépare le handoff de cette branche sans merger. » |
+| [playlab-review](../../.github/skills/playlab-review/SKILL.md) | Revue du diff, contrats, conception, tests et risques | « Revois ce changement sans le corriger ni le publier. » |
 
 Chaque dossier contient un `SKILL.md` avec un frontmatter YAML `name` /
 `description`, des références dans `references/` et des scénarios dans
 `evals/evals.json`. Le corps principal reste court ; les références sont lues
 seulement quand elles servent à la tâche.
+
+Le [guide qualité](software-quality.md) porte les bonnes pratiques communes.
+`playlab-review` traite les constats et leurs preuves ; `playlab-release` prépare
+la livraison. Il n'est pas nécessaire d'ajouter un skill distinct pour chaque
+linter, métrique ou commande du pipeline.
 
 Les chemins de sources indiqués en code sont relatifs à la racine du dépôt ;
 les liens vers les références internes sont relatifs au fichier du skill.
@@ -80,3 +86,5 @@ respectent leurs assertions dans Docker, y compris les interactions Chromium
 du compteur. Ce petit échantillon ne démontre pas un gain : la baseline réussit
 aussi. Les autres scénarios et les cas de déclenchement restent à évaluer ;
 les preuves et le visualiseur comparatif sont conservés hors du dépôt.
+Les scénarios du nouveau skill de revue sont définis et contrôlés structurellement,
+mais aucune comparaison d'agents ni gain d'efficacité n'est revendiqué.

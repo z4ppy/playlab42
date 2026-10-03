@@ -20,8 +20,6 @@ on:
 # Permissions minimales (principe du moindre privilège)
 permissions:
   contents: read
-  security-events: write  # Pour uploader les résultats SARIF vers Security tab
-  pull-requests: write    # Pour commenter les PRs avec le rapport
 
 jobs:
   # Job 1 : Audit des dépendances npm
@@ -43,9 +41,9 @@ jobs:
 
       - name: Audit npm (niveau modéré et au-dessus)
         run: |
-          npm audit --audit-level=moderate || {
+          npm run audit:dependencies || {
             echo "⚠️ Vulnérabilités détectées dans les dépendances npm"
-            npm audit --audit-level=moderate --json > npm-audit-results.json
+            npm run --silent audit:dependencies -- --json > npm-audit-results.json
             exit 1
           }
 
@@ -200,6 +198,9 @@ jobs:
     name: Sécurité Docker
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout du code
         uses: actions/checkout@v7
@@ -232,56 +233,15 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v7
 
-      - name: Télécharger tous les artifacts
-        uses: actions/download-artifact@v8
-        continue-on-error: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '26'
 
       - name: Générer le rapport consolidé
-        run: |
-          echo "# 🔒 Rapport de Sécurité Consolidé" > security-report.md
-          echo "" >> security-report.md
-          echo "**Date**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> security-report.md
-          echo "**Commit**: ${{ github.sha }}" >> security-report.md
-          echo "**Branch**: ${{ github.ref_name }}" >> security-report.md
-          echo "" >> security-report.md
-
-          echo "## 📊 Résultats par outil" >> security-report.md
-          echo "" >> security-report.md
-
-          # npm audit
-          if [ -f npm-audit-results/npm-audit-results.json ]; then
-            echo "### npm audit" >> security-report.md
-            echo '```json' >> security-report.md
-            cat npm-audit-results/npm-audit-results.json | jq '.metadata' >> security-report.md || echo "Erreur parsing npm-audit" >> security-report.md
-            echo '```' >> security-report.md
-          else
-            echo "### npm audit" >> security-report.md
-            echo "✅ Aucune vulnérabilité détectée" >> security-report.md
-          fi
-          echo "" >> security-report.md
-
-          # ESLint
-          if [ -f eslint-security-results/eslint-security-results.json ]; then
-            echo "### ESLint Security" >> security-report.md
-            ESLINT_ERRORS=$(cat eslint-security-results/eslint-security-results.json | jq '[.[].errorCount] | add' || echo "0")
-            ESLINT_WARNINGS=$(cat eslint-security-results/eslint-security-results.json | jq '[.[].warningCount] | add' || echo "0")
-            echo "- Erreurs: $ESLINT_ERRORS" >> security-report.md
-            echo "- Warnings: $ESLINT_WARNINGS" >> security-report.md
-          else
-            echo "### ESLint Security" >> security-report.md
-            echo "✅ Aucun problème détecté" >> security-report.md
-          fi
-          echo "" >> security-report.md
-
-          # Trivy
-          if [ -f trivy-results/trivy-results.json ]; then
-            echo "### Trivy" >> security-report.md
-            cat trivy-results/trivy-results.json | jq '.Results[].Vulnerabilities | length' >> security-report.md || echo "Voir artifacts" >> security-report.md
-          fi
-          echo "" >> security-report.md
-
-          echo "---" >> security-report.md
-          echo "Pour plus de détails, consultez les artifacts du workflow." >> security-report.md
+        env:
+          SECURITY_JOB_RESULTS: ${{ toJSON(needs) }}
+          REPORT_BRANCH: ${{ github.ref_name }}
+        run: node scripts/build-security-report.js > security-report.md
 
       - name: Upload du rapport consolidé
         uses: actions/upload-artifact@v7

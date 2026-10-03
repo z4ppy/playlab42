@@ -1,6 +1,8 @@
 {
   "id": "03-architecture",
   "title": "L'architecture",
+  "description": "Plateforme 100 % statique : portail, modules, bibliothèques et vue d'ensemble de l'usine logicielle",
   "type": "content",
-  "icon": "🏗️"
+  "icon": "🏗️",
+  "duration": "6 min"
 }

@@ -7,27 +7,29 @@ test('apprentissage : catalogue réel complet, liens et progression de reprise',
   await page.goto('/');
   await expect(page.locator(cardSelector)).toBeVisible();
   const catalogue = await (await page.request.get('/data/parcours.json')).json();
+  const epic = catalogue.epics.find(epic => epic.id === epicId);
+  const percent = Math.round(200 / epic.slideCount);
   await expect(page.locator('#panel-parcours .epic-card')).toHaveCount(catalogue.epics.length);
   const ids = await page.locator('#panel-parcours [id]').evaluateAll(elements => elements.map(element => element.id));
   expect(new Set(ids).size).toBe(ids.length);
   await expect(page.locator('#discovery-options')).not.toHaveAttribute('open', '');
   await expect(page.locator(cardSelector)).toHaveAttribute('href', `#/parcours/${epicId}`);
-  await expect(page.locator(cardSelector)).toContainText('15 min');
+  await expect(page.locator(cardSelector)).toContainText(epic.duration);
   await activate(page.locator(cardSelector));
   const frame = page.locator('.pv-slide-frame');
   await expect(frame).toHaveAttribute('src', /01-bienvenue\/index\.html$/);
   await expect(page.frameLocator('.pv-slide-frame').locator('.slide')).toContainText('PlayLab42');
   await activate(page.locator('.pv-btn-next'));
   await expect(frame).toHaveAttribute('src', /02-methodologies\/index\.html$/);
-  await expect(page.locator('.pv-progress-text')).toHaveText('Étape 2 sur 7');
-  await expect(page.locator('.pv-progress-summary')).toHaveText('2 parcourues · 29 %');
-  await expect(page.locator('[role="progressbar"]')).toHaveAttribute('aria-valuenow', '29');
+  await expect(page.locator('.pv-progress-text')).toHaveText(`Étape 2 sur ${epic.slideCount}`);
+  await expect(page.locator('.pv-progress-summary')).toHaveText(`2 parcourues · ${percent} %`);
+  await expect(page.locator('[role="progressbar"]')).toHaveAttribute('aria-valuenow', String(percent));
   await activate(page.locator('.pv-btn-close'));
   await expect(page.locator('[data-collection="continue"]')).toContainText('Continuer votre lecture');
   await expect(page.locator(cardSelector)).toBeFocused();
-  await expect(page.locator(cardSelector)).toContainText('Continuer · 29 % parcouru');
+  await expect(page.locator(cardSelector)).toContainText(`Continuer · ${percent} % parcouru`);
   await page.reload();
-  await expect(page.locator(cardSelector)).toContainText('Continuer · 29 % parcouru');
+  await expect(page.locator(cardSelector)).toContainText(`Continuer · ${percent} % parcouru`);
   await activate(page.locator(cardSelector));
   await expect(frame).toHaveAttribute('src', /02-methodologies\/index\.html$/);
   await expect(page).toHaveURL(/#\/parcours\/hello-playlab42\/02-methodologies$/);
@@ -38,6 +40,9 @@ test('apprentissage mobile : plan clavier, lien profond, thème et modèle parta
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
+  const catalogue = await (await page.request.get('/data/parcours.json')).json();
+  const epic = catalogue.epics.find(epic => epic.id === epicId);
+  const percent = Math.round(100 / epic.slideCount);
   await activate(page.locator('#btn-settings'));
   await activate(page.locator('#theme-light'));
   await activate(page.locator('#btn-close-settings'));
@@ -52,7 +57,7 @@ test('apprentissage mobile : plan clavier, lien profond, thème et modèle parta
   await expect.poll(() => frame.evaluate(element =>
     element.contentDocument.documentElement.scrollWidth <= element.contentWindow.innerWidth,
   )).toBe(true);
-  await expect(page.locator('.pv-progress-summary')).toHaveText('1 parcourue · 14 %');
+  await expect(page.locator('.pv-progress-summary')).toHaveText(`1 parcourue · ${percent} %`);
   const menu = page.locator('.pv-btn-menu');
   await expectVisibleHitTarget(menu);
   await activate(menu);
@@ -68,7 +73,7 @@ test('apprentissage mobile : plan clavier, lien profond, thème et modèle parta
   await expectNoOverflow(page);
   await page.keyboard.press('Escape');
   await expect(page.locator('#view-catalogue')).toBeVisible();
-  await expect(page.locator(cardSelector)).toContainText('Continuer · 14 % parcouru');
+  await expect(page.locator(cardSelector)).toContainText(`Continuer · ${percent} % parcouru`);
   const template = await page.request.get('/parcours/_shared/slide-template.html');
   expect(template.ok()).toBe(true);
   expect(await template.text()).toContain('<article class="slide" aria-label="{{TITLE}}">');

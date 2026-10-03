@@ -1,11 +1,12 @@
 # Dependencies
 node_modules/
 
-# Build (générés par npm run build:ts, le workflow deploy.yml les génère)
+# Build (générés par les scripts npm, reconstruits par la CI de livraison)
 dist/
 build/
 assets/vendor/
 docs/site/
+site/
 
 # IDE
 .idea/

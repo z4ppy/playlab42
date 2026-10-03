@@ -21,12 +21,14 @@
 - [ ] Le contenu fonctionne en mode sombre ET clair
 - [ ] Le contenu est responsive (mobile + desktop)
 - [ ] Les commentaires sont en français
+- [ ] Change OpenSpec lié, ou absence justifiée selon le périmètre
+- [ ] Résultats des contrôles pertinents indiqués, validations non exécutées signalées
 
 ### Pour un Tool
 
-- [ ] Fichier `index.html` standalone
+- [ ] Point d'entrée `index.html` autonome (modules locaux possibles)
 - [ ] Fichier `tool.json` avec tous les champs requis
-- [ ] Utilise `/lib/theme.css` et `/lib/theme.js`
+- [ ] Chemins relatifs vers `lib/theme.css` et `lib/theme.js`
 - [ ] Catalogue régénéré avec `make npm CMD="run build:catalogue"`
 
 ### Pour un Game
@@ -34,16 +36,17 @@
 - [ ] Dossier complet avec `index.html`, `engine.js`, `bots.js`, `game.json`
 - [ ] Moteur isomorphe (pas de dépendance DOM dans engine.js)
 - [ ] Au moins un bot fonctionnel
-- [ ] Vignette `thumb.png` (200x200px, < 50KB)
+- [ ] Vignette `thumb.png` (380x180px, 19:9, < 50KB)
+- [ ] Tests du moteur et des interactions modifiées
 - [ ] Catalogue régénéré avec `make npm CMD="run build:catalogue"`
 
 ### Pour un Epic
 
 - [ ] Dossier complet avec `epic.json` et slides
 - [ ] Chaque slide a `slide.json` + `index.html`
-- [ ] Slides utilisent `/lib/theme.css`, `/lib/theme.js` et `/parcours/_shared/slide-base.css`
+- [ ] Styles partagés en chemins relatifs et initialisation par `slide-utils.js`
 - [ ] Assets optimisés (images < 500KB)
-- [ ] Catalogue régénéré avec `node scripts/build-parcours.js`
+- [ ] Catalogue régénéré dans Docker avec `make build-parcours`
 
 ## Screenshots
 

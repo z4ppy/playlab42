@@ -1,6 +1,8 @@
 {
   "id": "05-creer-jeu",
   "title": "Créer un jeu",
+  "description": "Séparer moteur isomorphe, client et manifest, avec un moteur déterministe utilisable dans le navigateur et dans Node.",
   "type": "content",
+  "duration": "7 min",
   "icon": "🎮"
 }

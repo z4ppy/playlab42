@@ -59,31 +59,33 @@ Pour un nouveau module, suivre aussi le [workflow OpenSpec](./openspec-workflow.
    └── Attendre review
 
 8. MERGE
-   └── Après approbation, contenu disponible sur le site
+   └── Après décision de merge, CI complète puis publication de l'archive testée
+   └── Contrôle HTTP du commit publié ; un merge seul ne prouve pas une livraison
 ```
 
 ---
 
 ## Contribuer un Tool
 
-Les outils sont des fichiers HTML autonomes et simples.
+Les outils sont autonomes, en HTML unique ou en modules locaux. Le
+[kit](contribution-kit.md) fournit un point de départ compatible avec le portail.
 
 ### Structure
 
 ```
 tools/
 └── mon-outil/
-    ├── index.html    # L'outil (tout inclus : CSS + JS)
-    └── tool.json     # Métadonnées
+    ├── index.html    # Point d'entrée (styles/scripts locaux possibles)
+    ├── tool.json     # Métadonnées
+    └── src/          # Modules ou TypeScript, si nécessaire
 ```
 
 ### Checklist Tool
 
-- [ ] Fichier `index.html` standalone
+- [ ] Point d'entrée `index.html` autonome, servi en HTTP si imports/ressources
 - [ ] Fichier `tool.json` avec champs requis
-- [ ] Utilise `/lib/theme.css` pour les styles
-- [ ] Utilise `/lib/theme.js` pour le thème (dark/light)
-- [ ] Charge `/lib/ui.css` pour le focus visible et les préférences de mouvement
+- [ ] Chemins relatifs vers `lib/theme.css` et `lib/theme.js` (clair/sombre/système)
+- [ ] Charge `lib/ui.css` pour le focus visible et les préférences de mouvement
 - [ ] Contrôles utilisables au clavier, formulaires étiquetés et états annoncés
 - [ ] Fonctionne en mode sombre et clair
 - [ ] Responsive (mobile + desktop)
@@ -136,7 +138,7 @@ games/
 - [ ] `bots.js` avec au moins un bot
 - [ ] `thumb.png` vignette (380x180px, 19:9, < 50KB)
 - [ ] Fonctionne en mode sombre et clair
-- [ ] Tests du moteur (optionnel mais recommandé)
+- [ ] Tests du moteur : replay, actions légales/illégales, immutabilité et fin
 
 ### Exemple game.json
 
@@ -194,8 +196,8 @@ parcours/
 - [ ] Dossier complet `parcours/epics/mon-epic/`
 - [ ] `epic.json` avec champs requis
 - [ ] Au moins 1 slide avec `slide.json` + `index.html`
-- [ ] Slides utilisent `/lib/theme.css` et `/parcours/_shared/slide-base.css`
-- [ ] Slides utilisent `/lib/theme.js` pour le thème
+- [ ] Chemins relatifs vers `lib/theme.css` et `parcours/_shared/slide-base.css`
+- [ ] Slides initialisées avec `slide-utils.js` pour thème et footer
 - [ ] Contrôles natifs accessibles et styles de composants partagés (cartes, tableaux, formulaires)
 - [ ] Assets optimisés (images < 500KB)
 - [ ] `thumbnail.png` vignette (380x180px, 19:9, < 50KB) - optionnel
@@ -238,7 +240,7 @@ parcours/
 ### Régénérer le catalogue
 
 ```bash
-node scripts/build-parcours.js
+make build-parcours
 ```
 
 ---
@@ -248,11 +250,10 @@ node scripts/build-parcours.js
 Avant de soumettre une PR, testez toujours en local :
 
 ```bash
-# Démarrer le serveur
+# Préparer le site sans collecte réseau puis connaître l'URL du worktree
+make npm CMD="run build:local"
+make info
 make serve
-
-# Ouvrir dans le navigateur
-http://localhost:5242
 ```
 
 Vérifiez :
@@ -260,6 +261,11 @@ Vérifiez :
 - Il fonctionne correctement
 - Il s'affiche bien en mode sombre ET clair
 - Il est responsive (testez sur mobile)
+
+Lancer les contrôles adaptés : `make test`, `make lint`, `make typecheck`,
+`make openspec-validate`, puis `make test-e2e` pour les interactions.
+Commencer par les tests ciblés sans les présenter comme une CI complète.
+`make build` construit l'image Docker ; le build du site est un script npm.
 
 ---
 
@@ -273,7 +279,7 @@ Vérifiez :
 
 2. **Poussez** vers votre fork :
    ```bash
-   git push origin main
+   git push -u origin feat/mon-contenu
    ```
 
 3. **Ouvrez une PR** sur GitHub :
@@ -295,9 +301,9 @@ Vérifiez :
 
 - **Commentaires** en français
 - **Nommage** : kebab-case pour les fichiers, camelCase pour les variables
-- **Simplicité** : un fichier HTML = un outil complet
+- **Simplicité** : HTML/CSS/JS natifs, fichier unique ou modules selon le besoin
 - **Pas de frameworks** sans justification
-- **Pas de dépendances externes** pour les tools
+- **Dépendances maîtrisées** : réutiliser les distributions runtime et documenter les besoins réseau
 
 ### Contenu
 
@@ -347,6 +353,7 @@ En attendant, respecter la limite de 50 Ko impose de quantiser la palette
 
 - Consultez les [guides existants](./README.md)
 - Regardez les [composants en action dans la galerie UI](../../tools/ui-kit/index.html)
+- Lisez [l'usine logicielle et sa feuille de route](software-factory.md)
 - Ouvrez une issue sur GitHub
 
 Merci de contribuer à PlayLab42 ! 🎉

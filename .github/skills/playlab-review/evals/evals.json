@@ -1,0 +1,33 @@
+{
+  "skill_name": "playlab-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Revois le diff de cette branche avec la base explicitement indiquée par l'opérateur. Tu es en lecture seule : aucun Docker, npm sur le host, changement, commit ni GitHub. Cherche les régressions de contrats et explique ce que les contrôles existants prouvent réellement.",
+      "expected_output": "Constats localisés et proportionnés au diff, confiance et impact, commandes Docker adaptées transmises et validations non exécutées explicites.",
+      "files": ["AGENTS.md", "docs/guides/software-quality.md", "scripts/build-site.js", ".github/workflows/ci.yml"],
+      "assertions": [
+        "La revue décrit la base, les fichiers et contrats réellement inspectés.",
+        "Aucun runtime ni changement du dépôt ou de GitHub n'est exécuté.",
+        "Un risque non vérifié n'est pas présenté comme un défaut confirmé.",
+        "La réponse distingue les inspections des validations non exécutées."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Nous avons un audit npm en échec réseau, Hadolint ignoré et un job Trivy consultatif réussi. Est-ce une preuve que la contribution est sûre ? Revois la procédure de rapport et indique le handoff nécessaire, sans correction ni publication.",
+      "expected_output": "Distinction entre échec, analyse non exécutée et succès consultatif, absence de certification et handoff sans contournement.",
+      "files": ["scripts/build-security-report.js", "docs/guides/software-quality.md", ".github/workflows/security-audit.yml"],
+      "assertions": [
+        "Une panne d'audit ne devient pas zéro vulnérabilité.",
+        "Hadolint ignoré n'est pas présenté comme une analyse réussie.",
+        "Le succès Trivy consultatif ne prouve pas une absence de diagnostics.",
+        "Aucun fix forcé, réduction de seuil ou déploiement n'est proposé pour masquer le problème."
+      ]
+    }
+  ],
+  "trigger_cases": [
+    {"query": "Revois ce diff et les bonnes pratiques logicielles avant la PR.", "should_trigger": true},
+    {"query": "Crée un nouveau jeu avec son moteur et son client.", "should_trigger": false}
+  ]
+}

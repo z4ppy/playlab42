@@ -8,6 +8,7 @@ describe('Lecteur statique des guides', () => {
   test('échapper les métadonnées et les URL, sans autoriser des schémas exécutables', () => {
     expect(escapeHtml('A < B & "C"')).toBe('A &lt; B &amp; &quot;C&quot;');
     const context = { source: '/repo/docs/a.md', output: '/repo/docs/site/a.html', pages: new Map() };
+    // eslint-disable-next-line no-script-url -- Vérifie le rejet de cette entrée malveillante.
     for (const href of ['javascript:alert(1)', 'data:text/html,test', '//example.test/']) {
       expect(resolveGuideLink(href, context.source, context.output, context.pages).href).toBe('#');
     }
@@ -47,8 +48,21 @@ describe('Lecteur statique des guides', () => {
       source, output, pages,
     }).html;
     expect(document.querySelector('.source-label').textContent).toBe('(fichier source)');
-    expect(document.querySelector('.source-link').getAttribute('href')).toBe('../../../scripts/build-guides.js');
+    expect(document.querySelector('.source-link').getAttribute('href')).toBe('https://github.com/z4ppy/playlab42/blob/main/scripts/build-guides.js');
     expect(document.querySelector('a[href$="example.html"]').classList.contains('source-link')).toBe(false);
+  });
+
+  test('lier les fichiers réservés au dépôt sans publier la configuration des agents', () => {
+    const source = '/repo/docs/guides/a.md';
+    const output = '/repo/docs/site/guides/a.html';
+    for (const path of [
+      '.github/skills/playlab-ui/SKILL.md', '.github/workflows/ci.yml',
+      '.claude/commands/openspec/apply.md', 'templates/game/engine.js.tpl', 'Makefile',
+    ]) {
+      expect(resolveGuideLink(`../../${path}#source`, source, output, new Map())).toEqual({
+        href: `https://github.com/z4ppy/playlab42/blob/main/${path}#source`, source: true,
+      });
+    }
   });
 
   test('générer un accueil éditorial et les références sans altérer les sources', () => {

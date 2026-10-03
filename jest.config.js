@@ -81,15 +81,11 @@ export default {
     '!**/dist/**',
   ],
 
-  // Seuils de couverture (optionnel, à activer progressivement)
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 50,
-  //     functions: 50,
-  //     lines: 50,
-  //     statements: 50,
-  //   },
-  // },
+  coverageThreshold: {
+    './lib/seeded-random.js': { branches: 100, functions: 100, lines: 100, statements: 100 },
+    './scripts/build-site.js': { branches: 80, functions: 100, lines: 80, statements: 80 },
+    './scripts/check-deployment.js': { branches: 80, functions: 100, lines: 80, statements: 80 },
+  },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
   moduleNameMapper: {

@@ -1,6 +1,8 @@
 {
   "id": "07-aller-plus-loin",
-  "title": "Pour aller plus loin",
+  "title": "Conclusion et fil rouge",
+  "description": "Relier les 11 étapes du parcours, retrouver les sources et préparer l'exercice hello-usine.",
   "type": "content",
+  "duration": "3 min",
   "icon": "🚀"
 }

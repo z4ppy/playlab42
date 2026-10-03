@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const skills = ['playlab-ui', 'playlab-create-game', 'playlab-create-epic', 'playlab-release'];
+const skills = ['playlab-ui', 'playlab-create-game', 'playlab-create-epic', 'playlab-release', 'playlab-review'];
 
 describe('Skills de projet versionnés', () => {
   test.each(skills)('%s possède des métadonnées et références utilisables', name => {
