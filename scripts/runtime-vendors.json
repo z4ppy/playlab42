@@ -24,6 +24,18 @@
       "copy": ["chtml.js", "chtml", "svg.js", "svg"],
       "destination": "mathjax-newcm-font",
       "licenseFrom": "mathjax"
+    },
+    {
+      "package": "three",
+      "version": "0.186.1",
+      "copy": ["build/three.module.js", "build/three.core.js", "examples/jsm/controls/OrbitControls.js"],
+      "destination": "three"
+    },
+    {
+      "package": "lil-gui",
+      "version": "0.21.0",
+      "copy": ["dist/lil-gui.esm.js"],
+      "destination": "lil-gui"
     }
   ]
 }
