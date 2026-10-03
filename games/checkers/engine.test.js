@@ -5,6 +5,28 @@
 
 import { CheckersEngine } from './engine.js';
 
+function positionState(placements, currentPlayer = 0) {
+  const state = new CheckersEngine().init({ seed: 42, playerIds: ['p1', 'p2'] });
+  state.board = Array.from({ length: 10 }, () => Array(10).fill(null));
+  state.currentPlayer = currentPlayer;
+  for (const [row, col, player, type = 'pawn'] of placements) {
+    state.board[row][col] = { player, type };
+  }
+  return state;
+}
+
+function freezeInput(value) {
+  if (value && typeof value === 'object') {
+    Object.values(value).forEach(freezeInput);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+function jsonCopy(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 describe('CheckersEngine', () => {
   let engine;
 
@@ -588,5 +610,229 @@ describe('CheckersEngine', () => {
       expect(newState.status).toBe('draw');
     });
 
+  });
+
+  describe('Contrat des rafles et des métadonnées', () => {
+    const zigzag = () => positionState([
+      [2, 1, 0], [3, 2, 1], [5, 2, 1], [8, 9, 1], [0, 9, 0],
+    ]);
+    const zigzagAction = {
+      type: 'move',
+      from: { row: 2, col: 1 },
+      to: { row: 6, col: 1 },
+      captured: [{ row: 3, col: 2 }, { row: 5, col: 2 }],
+    };
+
+    it('énumère uniquement la rafle complète changeant de diagonale', () => {
+      const state = freezeInput(zigzag());
+      expect(engine.getValidActions(state, 'p1')).toEqual([zigzagAction]);
+      expect(engine.isValidAction(state, {
+        type: 'move', from: zigzagAction.from, to: { row: 4, col: 3 },
+      }, 'p1')).toBe(false);
+    });
+
+    it.each([
+      ['l’action légale complète', zigzagAction],
+      ['captured absent', {
+        type: 'move', from: zigzagAction.from, to: zigzagAction.to,
+      }],
+      ['captured vide', { ...zigzagAction, captured: [] }],
+      ['captured contradictoire', {
+        ...zigzagAction, captured: [{ row: 0, col: 9 }, { row: 8, col: 9 }],
+      }],
+    ])('applique les captures exactes avec %s, sans muter les entrées', (_name, input) => {
+      const state = freezeInput(zigzag());
+      const action = freezeInput(jsonCopy(input));
+      const beforeState = jsonCopy(state);
+      const beforeAction = jsonCopy(action);
+      const next = engine.applyAction(state, action, 'p1');
+      const expectedBoard = jsonCopy(state.board);
+      expectedBoard[2][1] = null;
+      expectedBoard[3][2] = null;
+      expectedBoard[5][2] = null;
+      expectedBoard[6][1] = { player: 0, type: 'pawn' };
+      expect(next.board).toEqual(expectedBoard);
+      expect(next.moveHistory).toEqual([{
+        from: zigzagAction.from, to: zigzagAction.to, captures: zigzagAction.captured,
+      }]);
+      expect(next).toMatchObject({
+        currentPlayer: 1, status: 'playing', winner: null, seed: '42',
+      });
+      expect(jsonCopy(state)).toEqual(beforeState);
+      expect(jsonCopy(action)).toEqual(beforeAction);
+    });
+
+    it('ne fabrique aucune capture à partir des métadonnées d’un déplacement simple', () => {
+      const state = freezeInput(engine.init({ seed: 42, playerIds: ['p1', 'p2'] }));
+      const legal = engine.getValidActions(state, 'p1')[0];
+      const forged = freezeInput({ ...legal, captured: [{ row: 6, col: 1 }] });
+      expect(engine.isValidAction(state, forged, 'p1')).toBe(true);
+      expect(engine.applyAction(state, forged, 'p1'))
+        .toEqual(engine.applyAction(state, legal, 'p1'));
+      expect(engine.applyAction(state, forged, 'p1').board[6][1])
+        .toEqual({ player: 1, type: 'pawn' });
+    });
+
+    it('caractérise la limite actuelle : les prises non majoritaires restent proposées', () => {
+      // La règle française de prise majoritaire manque au moteur actuel :
+      // ce lot protège le comportement, sans introduire un changement de règles.
+      const state = positionState([
+        [2, 1, 0], [3, 2, 1], [5, 2, 1], [2, 7, 0], [3, 8, 1],
+      ]);
+      const actions = engine.getValidActions(state, 'p1');
+      expect(actions).toEqual([
+        zigzagAction,
+        {
+          type: 'move', from: { row: 2, col: 7 }, to: { row: 4, col: 9 },
+          captured: [{ row: 3, col: 8 }],
+        },
+      ]);
+      for (const action of actions) {
+        const next = engine.applyAction(state, freezeInput(action), 'p1');
+        expect(next.moveHistory[0].captures).toEqual(action.captured);
+        for (const capture of action.captured) {
+          expect(next.board[capture.row][capture.col]).toBeNull();
+        }
+      }
+    });
+
+    it.each([
+      [0, 'p1', [[5, 4, 0], [4, 3, 1]], { row: 5, col: 4 }, { row: 3, col: 2 }],
+      [1, 'p2', [[4, 3, 1], [5, 4, 0]], { row: 4, col: 3 }, { row: 6, col: 5 }],
+    ])('permet au pion du joueur %i de capturer en arrière', (player, id, pieces, from, to) => {
+      const state = freezeInput(positionState(pieces, player));
+      const actions = engine.getValidActions(state, id);
+      expect(actions).toHaveLength(1);
+      expect(actions[0]).toMatchObject({ from, to });
+      const next = engine.applyAction(state, freezeInput(actions[0]), id);
+      expect(next.board[to.row][to.col]).toEqual({ player, type: 'pawn' });
+      expect(next).toMatchObject({ status: 'won', winner: player });
+    });
+
+    it('ne promeut pas pendant une rafle qui quitte la dernière rangée', () => {
+      const state = positionState([[7, 2, 0], [8, 3, 1], [8, 5, 1]]);
+      const actions = engine.getValidActions(state, 'p1');
+      expect(actions).toEqual([{
+        type: 'move', from: { row: 7, col: 2 }, to: { row: 7, col: 6 },
+        captured: [{ row: 8, col: 3 }, { row: 8, col: 5 }],
+      }]);
+      const next = engine.applyAction(state, actions[0], 'p1');
+      expect(next.board[7][6]).toEqual({ player: 0, type: 'pawn' });
+      expect(next).toMatchObject({ status: 'won', winner: 0 });
+    });
+
+    it('promeut à la fin d’une capture atteignant la dernière rangée', () => {
+      const state = positionState([[7, 2, 0], [8, 3, 1]]);
+      const action = engine.getValidActions(state, 'p1')[0];
+      const next = engine.applyAction(state, action, 'p1');
+      expect(next.board[9][4]).toEqual({ player: 0, type: 'king' });
+      expect(next).toMatchObject({ status: 'won', winner: 0 });
+      expect(engine.getValidActions(next, 'p2')).toEqual([]);
+      expect(engine.isValidAction(next, action, 'p1')).toBe(false);
+    });
+
+    it('une dame peut atterrir sur chaque case libre au-delà de la prise', () => {
+      const state = freezeInput(positionState([[2, 1, 0, 'king'], [4, 3, 1]]));
+      const actions = engine.getValidActions(state, 'p1');
+      expect(actions.map((action) => action.to)).toEqual([
+        { row: 5, col: 4 }, { row: 6, col: 5 }, { row: 7, col: 6 },
+        { row: 8, col: 7 }, { row: 9, col: 8 },
+      ]);
+      for (const action of actions) {
+        expect(action.captured).toEqual([{ row: 4, col: 3 }]);
+        const next = engine.applyAction(state, freezeInput(action), 'p1');
+        expect(next.board[4][3]).toBeNull();
+        expect(next.board[action.to.row][action.to.col]).toEqual({ player: 0, type: 'king' });
+        expect(next).toMatchObject({ status: 'won', winner: 0 });
+      }
+    });
+
+    it('une dame ne traverse pas deux adversaires contigus ni une pièce alliée', () => {
+      const blocked = positionState([[2, 1, 0, 'king'], [4, 3, 1], [5, 4, 1]]);
+      expect(engine.getValidActions(blocked, 'p1').every((action) => !action.captured)).toBe(true);
+      const ally = positionState([[2, 1, 0, 'king'], [4, 3, 0], [5, 4, 1]]);
+      const kingActions = engine.getValidActions(ally, 'p1')
+        .filter((action) => action.from.row === 2);
+      expect(kingActions).toEqual([]);
+    });
+
+    it('préserve les trajets légaux distincts partageant les mêmes extrémités', () => {
+      const state = freezeInput(positionState([
+        [6, 7, 0, 'king'], [4, 1, 1], [7, 8, 1], [4, 5, 1], [7, 4, 1],
+      ]));
+      const alternatives = engine.getValidActions(state, 'p1')
+        .filter((action) => action.to.row === 5 && action.to.col === 0);
+      expect(alternatives).toEqual([
+        {
+          type: 'move', from: { row: 6, col: 7 }, to: { row: 5, col: 0 },
+          captured: [{ row: 7, col: 8 }, { row: 4, col: 5 }, { row: 4, col: 1 }],
+        },
+        {
+          type: 'move', from: { row: 6, col: 7 }, to: { row: 5, col: 0 },
+          captured: [{ row: 4, col: 5 }, { row: 4, col: 1 }],
+        },
+      ]);
+      for (const action of alternatives) {
+        const next = engine.applyAction(state, freezeInput(action), 'p1');
+        expect(next.moveHistory[0].captures).toEqual(action.captured);
+        expect(next.board[7][8] === null).toBe(action.captured.length === 3);
+        expect(next.board[7][4]).toEqual({ player: 1, type: 'pawn' });
+      }
+      // Sans trajet légal fourni, l'ordre déterministe des actions tranche l'ambiguïté.
+      const { captured: _captured, ...withoutRoute } = alternatives[0];
+      expect(engine.applyAction(state, freezeInput(withoutRoute), 'p1'))
+        .toEqual(engine.applyAction(state, alternatives[0], 'p1'));
+      expect(engine.applyAction(state, { ...withoutRoute, captured: [{ row: 7, col: 4 }] }, 'p1'))
+        .toEqual(engine.applyAction(state, alternatives[0], 'p1'));
+    });
+
+    it('refuse une action illégale sans modifier état, historique ou action', () => {
+      const state = freezeInput(zigzag());
+      const action = freezeInput({
+        type: 'move', from: { row: 0, col: 9 }, to: { row: 1, col: 8 },
+        captured: zigzagAction.captured,
+      });
+      const before = jsonCopy({ state, action });
+      expect(engine.isValidAction(state, action, 'p1')).toBe(false);
+      expect(() => engine.applyAction(state, action, 'p1')).toThrow('Invalid action');
+      expect(jsonCopy({ state, action })).toEqual(before);
+    });
+  });
+
+  describe('Replay JSON avec le moteur réel', () => {
+    it('reprend une partie légale et conserve chaque état, action, capture et seed', () => {
+      const config = { seed: 314159, playerIds: ['p1', 'p2'] };
+      let state = engine.init(config);
+      let restored = jsonCopy(state);
+      const recorded = [];
+      const expectedStates = [];
+      for (let turn = 0; turn < 24 && state.status === 'playing'; turn++) {
+        const id = state.playerIds[state.currentPlayer];
+        freezeInput(state);
+        freezeInput(restored);
+        const legal = engine.getValidActions(state, id);
+        expect(engine.getValidActions(restored, id)).toEqual(legal);
+        const action = freezeInput(legal[(turn * 7) % legal.length]);
+        const snapshot = jsonCopy({ state, action });
+        const inputState = state;
+        recorded.push(jsonCopy(action));
+        state = engine.applyAction(state, action, id);
+        restored = jsonCopy(engine.applyAction(restored, jsonCopy(action), id));
+        expect(restored).toEqual(jsonCopy(state));
+        expect(jsonCopy(inputState)).toEqual(snapshot.state);
+        expect(jsonCopy(action)).toEqual(snapshot.action);
+        expect(state.seed).toBe('314159');
+        expectedStates.push(jsonCopy(state));
+      }
+      expect(recorded).toHaveLength(24);
+      expect(recorded.some((action) => action.captured?.length > 0)).toBe(true);
+      let replay = engine.init(config);
+      jsonCopy(recorded).forEach((action, index) => {
+        const id = replay.playerIds[replay.currentPlayer];
+        expect(engine.getValidActions(replay, id)).toContainEqual(action);
+        replay = engine.applyAction(freezeInput(replay), freezeInput(action), id);
+        expect(jsonCopy(replay)).toEqual(expectedStates[index]);
+      });
+    });
   });
 });
