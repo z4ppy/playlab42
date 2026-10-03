@@ -3,7 +3,7 @@
 - [x] 3. Produire et vérifier inventaire, SBOM et provenance non signée.
 - [x] 4. Comparer deux builds réels et exercer corruption/restauration.
 - [x] 5. Actualiser documentation, parcours et skills ; vérifier tous les gates.
-- [ ] 6. Ouvrir la PR et constater ses contrôles natifs.
+- [x] 6. Ouvrir la PR et constater ses contrôles natifs.
 - [ ] 7. Livraison/synchronisation/archivage sur décision distincte.
 
 Preuves avant ouverture : Docker, réseau désactivé (`--network none`), deux
@@ -26,4 +26,17 @@ Cette preuve initiale ne suffit donc pas à clôturer le lot.
 Correction : snapshot avec trois images locales revues et 98 références HTTP(S),
 pas de repli implicite sur le cache au build, copie des seules images locales
 référencées et contrôle de ces références dans l'archive vérifiée.
-Les contrôles du correctif et du dernier head restent à constater avant tâche 6.
+Correctif propre b18b891 : 98 suites / 2 043 tests, lint JS/HTML/TS et sécurité,
+types, audit sans CVE connue et 28 validations OpenSpec strictes réussis.
+Deux vrais builds Docker sans réseau : 972 fichiers et manifestes identiques.
+Un troisième build depuis les seuls fichiers Git, sans cache OG et avec les
+mêmes dépendances physiques installées, produit exactement le même manifeste.
+Reprise tar réussie dans les deux contextes. Trois images locales référencées
+livrées ; aucun téléchargement ignoré publié. SBOM locale : 511 composants.
+64 Chromium, manifeste inchangé et inventaire/references revérifiés ensuite.
+
+PR #143 : CI 37140120440 et sécurité 37140120209 réussies sur b18b891.
+Les logs natifs confirment les deux builds, comparaison et reprise à 972
+fichiers ; Chromium valide l'archive extraite (64 scénarios). Le SHA natif
+de l'artefact est celui du merge de PR eabd9d3, pas celui de la branche.
+La livraison et l'archivage restent soumis à une décision distincte (tâche 7).
