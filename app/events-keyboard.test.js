@@ -121,4 +121,22 @@ describe('Priorité des raccourcis du portail', () => {
     expect(document.body.classList.contains('fullscreen')).toBe(true);
     expect(state.preferences.sound).toBe(false);
   });
+
+  it('Échap au catalogue et une touche inconnue ne déplacent pas le focus', () => {
+    const focused = document.activeElement;
+    expect(key(focused, 'Escape').defaultPrevented).toBe(false);
+    expect(key(focused, 'inconnue').defaultPrevented).toBe(false);
+    expect(state.currentView).toBe('catalogue');
+    expect(document.activeElement).toBe(focused);
+  });
+
+  it.each([
+    { activeTab: 'parcours', parcoursCategory: null },
+    { activeTab: 'games', parcoursCategory: 'dev' },
+  ])('Backspace sans catégorie parcours active reste natif : %p', (updates) => {
+    setState(updates);
+    expect(key(document.body, 'Backspace').defaultPrevented).toBe(false);
+    expect(state.parcoursCategory).toBe(updates.parcoursCategory);
+    expect(state.activeTab).toBe(updates.activeTab);
+  });
 });

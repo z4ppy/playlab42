@@ -83,6 +83,47 @@ describe('Isolation des chargements réels du portail', () => {
     expect(el.gameTitle.textContent).toBe(type === 'game' ? 'Jeu B' : 'b');
   });
 
+  it.each([['game', 'tool'], ['tool', 'game']])(
+    'partage l’intention entre HEAD %s A et %s B sans attribuer A à B',
+    async (typeA, typeB) => {
+      const a = deferred();
+      const b = deferred();
+      fetch.mockReturnValueOnce(a.promise).mockReturnValueOnce(b.promise);
+      const pendingA = (typeA === 'game' ? openGame : openTool)('a');
+      const pendingB = (typeB === 'game' ? openGame : openTool)('b');
+      b.resolve({ ok: true });
+      await pendingB;
+      a.resolve({ ok: true });
+      await pendingA;
+      expectCurrent('b', typeB, `${typeB === 'game' ? 'games' : 'tools'}/b/index.html`);
+      expect(state.recentGames).toHaveLength(1);
+    },
+  );
+
+  it.each(['game', 'tool'])(
+    'préserve le moment de lecture du nom catalogue %s pendant le HEAD',
+    async (type) => {
+      state.catalogue = {
+        games: [{ id: 'a', name: 'Nom initial' }],
+        tools: [{ id: 'a', name: 'Nom initial', path: 'tools/a.html' }],
+      };
+      const a = deferred();
+      fetch.mockReturnValueOnce(a.promise);
+      const pendingA = (type === 'game' ? openGame : openTool)('a');
+      state.catalogue = {
+        games: [{ id: 'a', name: 'Nom arrivé pendant HEAD' }],
+        tools: [{ id: 'a', name: 'Nom arrivé pendant HEAD', path: 'tools/autre.html' }],
+      };
+      a.resolve({ ok: true });
+      await pendingA;
+      const name = type === 'game' ? 'Nom arrivé pendant HEAD' : 'Nom initial';
+      expect(state.currentGame.name).toBe(name);
+      expect(el.gameTitle.textContent).toBe(name);
+      expectCurrent('a', type, type === 'game' ? 'games/a/index.html' : 'tools/a.html');
+      expect(fetch).toHaveBeenCalledTimes(1);
+    },
+  );
+
   it.each([
     ['game', 'rejet'], ['game', '404'], ['tool', 'rejet'], ['tool', '404'],
   ])('ignore le HEAD %s A (%s) après B sans modifier son hash', async (type, failure) => {
