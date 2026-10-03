@@ -40,3 +40,13 @@ Les logs natifs confirment les deux builds, comparaison et reprise à 972
 fichiers ; Chromium valide l'archive extraite (64 scénarios). Le SHA natif
 de l'artefact est celui du merge de PR eabd9d3, pas celui de la branche.
 La livraison et l'archivage restent soumis à une décision distincte (tâche 7).
+
+Correction de livraison du 3 octobre : #140/#142/#143 ont été fusionnées
+dans des branches intermédiaires déjà livrées, pas dans main. Le déploiement
+37142017084 de main f567fc3 ne contient pas ces lots. Une PR corrective unique
+depuis main reprend les neuf commits manquants et conserve ses pins actuels.
+Le contrat HTTP refuse désormais un SHA correct sans manifeste de fabrication
+ou avec des empreintes lockfile/snapshot différentes du checkout attendu.
+L'ancestralité seule n'est pas probante après squash. Les validations historiques
+ci-dessus ne constituent ni une livraison main ni les checks de cette correction.
+La tâche 7 reste ouverte ; aucun merge, déploiement ou archivage n'est demandé.

@@ -8,6 +8,11 @@ describe('Contrôle HTTP de publication', () => {
   beforeEach(() => {
     payload = {
       'build-info.json': { version: '0.2.0', commit },
+      'build-manifest.json': {
+        formatVersion: 1, version: '0.2.0', commit,
+        inputs: { packageLock: 'b'.repeat(64), ogSnapshot: 'c'.repeat(64) },
+        files: [{ path: 'index.html' }],
+      },
       'index.html': '<!doctype html><html>Portail</html>',
       'docs/site/index.html': '<html>Guides</html>',
       'data/catalogue.json': { tools: [{ path: 'tools/x/index.html' }], games: [{ path: 'games/x/index.html' }] },
@@ -29,10 +34,10 @@ describe('Contrôle HTTP de publication', () => {
   });
   afterEach(() => jest.restoreAllMocks());
 
-  test('vérifier neuf ressources sur un sous-chemin Pages, sans slash initial obligatoire', async () => {
+  test('vérifier dix ressources sur un sous-chemin Pages, sans slash initial obligatoire', async () => {
     await expect(checkDeployment('https://example.test/playlab42', commit))
-      .resolves.toEqual({ version: '0.2.0', commit, checked: 9 });
-    expect(request).toHaveBeenCalledTimes(9);
+      .resolves.toEqual({ version: '0.2.0', commit, checked: 10 });
+    expect(request).toHaveBeenCalledTimes(10);
     expect(request.mock.calls.every(([url]) => new URL(url).pathname.startsWith('/playlab42/'))).toBe(true);
   });
 
@@ -40,6 +45,39 @@ describe('Contrôle HTTP de publication', () => {
     await expect(checkDeployment('https://example.test/playlab42/', 'b'.repeat(40)))
       .rejects.toThrow('Commit publié différent');
     expect(request).toHaveBeenCalledTimes(1);
+  });
+
+  test('un SHA main publié ne prouve pas la livraison des lots mergés dans une branche intermédiaire', async () => {
+    delete payload['build-manifest.json'];
+    await expect(checkDeployment('https://example.test/playlab42/', commit))
+      .rejects.toThrow('HTTP 404');
+  });
+
+  test('vérifier les entrées attendues même après squash, sans exiger l’ancestralité du head de PR', async () => {
+    const inputs = { packageLock: 'b'.repeat(64), ogSnapshot: 'c'.repeat(64) };
+    await expect(checkDeployment('https://example.test/playlab42/', commit, inputs))
+      .resolves.toMatchObject({ commit, checked: 10 });
+    payload['build-manifest.json'].inputs.ogSnapshot = 'd'.repeat(64);
+    await expect(checkDeployment('https://example.test/playlab42/', commit, inputs))
+      .rejects.toThrow('Contenu publié différent');
+    delete payload['build-manifest.json'].inputs;
+    await expect(checkDeployment('https://example.test/playlab42/', commit, inputs))
+      .rejects.toThrow('Contenu publié différent');
+  });
+
+  test('refuser une fabrication incohérente avec l’identité ou sans inventaire', async () => {
+    const manifest = payload['build-manifest.json'];
+    for (const changes of [
+      { formatVersion: 2 }, { commit: 'b'.repeat(40) }, { version: 'old' },
+      { files: undefined }, { files: [] },
+    ]) {
+      payload['build-manifest.json'] = { ...manifest, ...changes };
+      await expect(checkDeployment('https://example.test/playlab42/', commit))
+        .rejects.toThrow('Manifeste de fabrication');
+    }
+    payload['build-manifest.json'] = null;
+    await expect(checkDeployment('https://example.test/playlab42/', commit))
+      .rejects.toThrow('Manifeste de fabrication');
   });
 
   test('accepter la représentation hexadécimale du même SHA sans dépendre de la casse', async () => {

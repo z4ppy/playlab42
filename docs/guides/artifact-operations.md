@@ -43,11 +43,12 @@ git status --short # arrêter si les sources ne correspondent pas au commit
 SHA=$(git rev-parse HEAD)
 EPOCH=$(git show -s --format=%ct "$SHA")
 docker compose exec -T -e GITHUB_SHA="$SHA" -e SOURCE_DATE_EPOCH="$EPOCH" dev sh -c '
+  mkdir -p .docker &&
   npm run build &&
   npm run verify:site &&
-  cp site/build-manifest.json /tmp/playlab-first-manifest.json &&
+  cp site/build-manifest.json .docker/playlab-first-manifest.json &&
   npm run build &&
-  cmp /tmp/playlab-first-manifest.json site/build-manifest.json &&
+  cmp .docker/playlab-first-manifest.json site/build-manifest.json &&
   npm run verify:site &&
   npm run check:recovery
 '
@@ -111,7 +112,8 @@ Cela prouve une reprise de fichiers locaux, pas une reprise Pages en production.
 
 `site-monitor.yml` prépare un contrôle quotidien à 06:23 UTC et manuel. Le cron
 ne s'active qu'après intégration à la branche par défaut. Il utilise main comme
-identité attendue et contrôle neuf ressources, pas tous les hashes distants,
+identité attendue et contrôle dix ressources, dont le manifeste et ses empreintes
+lockfile/snapshot comparées au checkout main, pas tous les hashes distants,
 l'audio, les inférences ML ou l'intégralité des interactions.
 Configurer `PLAYLAB_SITE_URL` si l'URL Pages change et les notifications d'échec
 GitHub Actions ; vérifier leur réception et désigner un responsable.

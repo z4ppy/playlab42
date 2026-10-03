@@ -3,14 +3,36 @@
  */
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hashFile } from './lib/artifact-inventory.js';
+import { getRootDir } from './lib/build-utils.js';
+
+/**
+ * Vérifie le contenu attendu indépendamment du graphe Git (merge squash possible).
+ * @param {object} manifest Manifeste publié.
+ * @param {object} identity Identité publiée.
+ * @param {object} expectedInputs Empreintes des sources attendues.
+ * @returns {void}
+ */
+function checkPublishedManifest(manifest, identity, expectedInputs) {
+  if (manifest?.formatVersion !== 1 || manifest.commit !== identity.commit
+    || manifest.version !== identity.version || !Array.isArray(manifest.files) || !manifest.files.length) {
+    throw new Error('Manifeste de fabrication publié absent ou incohérent.');
+  }
+  for (const [name, hash] of Object.entries(expectedInputs)) {
+    if (manifest.inputs?.[name] !== hash) {
+      throw new Error(`Contenu publié différent des sources attendues : ${name}.`);
+    }
+  }
+}
 
 /**
  * Vérifie le commit, les catalogues et quelques ressources de la publication.
  * @param {string} baseURL URL du site, avec son éventuel sous-chemin Pages.
  * @param {string|null} expectedCommit SHA attendu ; null pour un build local.
+ * @param {object} expectedInputs Empreintes des entrées de fabrication attendues.
  * @returns {Promise<{version: string, commit: string|null, checked: number}>} Résultat vérifié.
  */
-export async function checkDeployment(baseURL, expectedCommit = null) {
+export async function checkDeployment(baseURL, expectedCommit = null, expectedInputs = {}) {
   const base = new URL(baseURL);
   if (!['http:', 'https:'].includes(base.protocol) || base.search || base.hash || base.username || base.password) {
     throw new Error('URL de publication invalide : utiliser HTTP(S), sans identifiants, requête ou fragment.');
@@ -50,6 +72,7 @@ export async function checkDeployment(baseURL, expectedCommit = null) {
   if (expectedCommit && identity.commit?.toLowerCase() !== expectedCommit.toLowerCase()) {
     throw new Error(`Commit publié différent : attendu ${expectedCommit}, reçu ${identity.commit}.`);
   }
+  checkPublishedManifest(await resource('build-manifest.json', true), identity, expectedInputs);
   await resource('index.html');
   await resource('docs/site/index.html');
   const catalogue = await resource('data/catalogue.json', true);
@@ -88,7 +111,11 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     process.exitCode = 1;
   } else {
     try {
-      const result = await checkDeployment(process.argv[2], process.argv[3] || null);
+      const root = getRootDir(import.meta.url);
+      const result = await checkDeployment(process.argv[2], process.argv[3] || null, {
+        packageLock: hashFile(resolve(root, 'package-lock.json')),
+        ogSnapshot: hashFile(resolve(root, 'metadata/bookmarks-og.json')),
+      });
       console.log(`Publication vérifiée : ${result.version}, commit ${result.commit ?? 'local'}, ${result.checked} ressources.`);
     } catch (error) {
       console.error(`Contrôle de publication échoué : ${error.message}`);

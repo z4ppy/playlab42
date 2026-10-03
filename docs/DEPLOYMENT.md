@@ -130,10 +130,32 @@ Le SHA ci-dessus est un exemple. En CI, la valeur réelle est `GITHUB_SHA` ;
 en local, elle vaut `null`, sauf identité explicitement fournie au build.
 Ce fichier identifie les sources mais **n'est pas une attestation signée**.
 
-Après publication, le job `smoke` vérifie neuf ressources : identité du build,
+Après publication, le job `smoke` vérifie dix ressources : identité du build,
+manifeste de fabrication,
 portail, accueil des guides, trois catalogues, premier outil, premier jeu et
 première slide. Il compare le commit au SHA du run et rejette un catalogue vide
 ou invalide, une erreur HTTP ou une ressource hors du sous-chemin publié.
+La CLI compare également les empreintes du lockfile et du snapshot éditorial
+avec les sources du checkout attendu. Un SHA publié correct ne prouve pas
+qu'une ancienne pile de PR a effectivement atteint main.
+
+### Ne pas confondre fusion et livraison
+
+Le 3 octobre 2026, #140, #142 et #143 ont été fusionnées dans leurs branches
+intermédiaires après livraison des parents. Main `f567fc3` et son déploiement
+réussi `37142017084` ne contenaient donc pas les lots lint/qualité/fabrication.
+La correction rassemble leurs neuf commits manquants sur une branche neuve
+depuis main, sans réintroduire les anciennes références d'actions.
+
+Avant chaque merge d'une pile, lire la **base effective** avec
+`gh pr view NUMERO --json state,baseRefName,headRefName,mergeCommit`.
+Un état `MERGED` dans une branche intermédiaire n'est pas une livraison à main.
+Recibler l'enfant vers main et vérifier son diff et ses checks avant le merge
+humain. Après squash, l'absence d'ancestralité du head n'est pas davantage une
+preuve d'absence : inspecter le contenu attendu dans main, les contrôles du
+commit de publication et son manifeste/SHA effectivement servis.
+Cette PR corrective ne constate ni merge à main ni nouvelle publication ;
+les changes OpenSpec restent actifs, sans archivage implicite.
 
 Il effectue au plus cinq tentatives, annoncées dans les logs et espacées de
 10 secondes, pour la propagation Pages. Un échec final fait échouer le workflow :
@@ -178,7 +200,7 @@ Un lancement manuel sur `main` redéploie son état courant : **ce n'est pas un
 rollback vers un ancien artefact**. Aucun `push --force` n'est une procédure
 normale de récupération. `check:recovery` exerce une vraie archive tar localement,
 sans toucher la production. Le monitoring quotidien préparé dans
-`site-monitor.yml` vérifiera main et neuf ressources après son intégration à la
+`site-monitor.yml` vérifiera main et dix ressources après son intégration à la
 branche par défaut ; configurer `PLAYLAB_SITE_URL` et les notifications GitHub.
 Il ne surveille pas en continu et ne republie pas automatiquement un ancien
 artefact. Le [runbook](guides/artifact-operations.md) décrit cette décision distincte.

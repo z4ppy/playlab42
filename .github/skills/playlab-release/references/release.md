@@ -32,7 +32,12 @@ de la déclarer validée. La publication réutilise la CI et cette même archive
 Vérifier les images locales réellement référencées, pas seulement les hashes :
 le cache OG ignoré ne doit pas entrer dans l'archive. Une nouvelle image OG
 utilise son URL distante, sauf revue et versionnement local explicites.
-Le smoke HTTP vérifie ensuite le SHA publié, sans rollback automatique.
+Le smoke HTTP vérifie ensuite le SHA publié et les empreintes lockfile/snapshot
+du manifeste, sans rollback automatique. `MERGED` dans une branche intermédiaire
+ne signifie pas livré à main. Avant chaque merge empilé, vérifier la base
+effective et recibler l'enfant vers main après livraison du parent.
+Après squash, vérifier le contenu attendu plutôt que la seule ancestralité :
+diff main, contrôles du commit publié, manifeste et identité HTTP.
 La SBOM npm décrit la fabrication, pas tout le runtime du navigateur.
 L'inventaire est hashé mais non signé ; consulter le
 [runbook](../../../../docs/guides/artifact-operations.md) avant récupération.
