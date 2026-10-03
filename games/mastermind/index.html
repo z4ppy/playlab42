@@ -434,7 +434,9 @@
       // Initialiser le jeu
       function initGame() {
         const seed = Date.now();
-        state = engine.init({ seed, playerId: 'human' });
+        state = state
+          ? engine.applyAction(state, { type: 'reset', seed }, 'human')
+          : engine.init({ seed, playerId: 'human' });
         currentCode = ['', '', '', ''];
         attemptsGrid.innerHTML = '';
         gameOverDiv.style.display = 'none';

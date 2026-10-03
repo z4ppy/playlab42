@@ -57,6 +57,13 @@ Le jeu utilise un moteur isomorphe déterministe :
 - État immutable et sérialisable (JSON)
 - Fog of war : le code secret est caché pendant le jeu, révélé à la fin
 
+La commande de configuration `{ type: 'reset', seed }` exige une seed entière
+sûre (zéro et entiers négatifs acceptés, normalisés par le RNG existant).
+Une seed absente, non numérique ou non entière est refusée explicitement.
+L'interface fournit l'heure lors de la nouvelle partie ; le moteur ne consulte
+jamais l'horloge. Conserver cette seed avec les actions permet de rejouer les
+resets. Le format des anciens états JSON reste inchangé.
+
 ## Fichiers
 
 - `engine.js` : Moteur de jeu isomorphe

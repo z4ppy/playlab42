@@ -203,7 +203,7 @@ describe('MastermindEngine', () => {
     });
 
     it('should accept reset action', () => {
-      const action = { type: 'reset' };
+      const action = { type: 'reset', seed: 1001 };
       expect(engine.isValidAction(state, action, 'p1')).toBe(true);
     });
   });
@@ -271,12 +271,12 @@ describe('MastermindEngine', () => {
       expect(state.attempts).toHaveLength(2);
 
       // Reset
-      const newState = engine.applyAction(state, { type: 'reset' }, 'p1');
+      const newState = engine.applyAction(state, { type: 'reset', seed: 1001 }, 'p1');
 
       expect(newState.attempts).toHaveLength(0);
       expect(newState.gameOver).toBe(false);
       expect(newState.winner).toBeNull();
-      // Le code secret devrait être différent (nouveau seed basé sur Date.now())
+      expect(newState).toEqual(engine.init({ seed: 1001, playerId: 'p1' }));
     });
   });
 

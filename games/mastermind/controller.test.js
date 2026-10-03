@@ -39,7 +39,7 @@ describe('Mastermind : contrôleur réel de nouvelle partie', () => {
 
   it('préserve les tentatives si le joueur annule la confirmation', () => {
     const colors = document.querySelectorAll('[data-color]');
-    for (let i = 0; i < 4; i++) colors[0].click();
+    for (let i = 0; i < 4; i++) { colors[0].click(); }
     document.getElementById('submit-btn').click();
     expect(document.getElementById('attempt-count').textContent).toBe('1 / 10');
     confirm.mockReturnValue(false);

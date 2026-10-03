@@ -42,6 +42,7 @@ import { SeededRandom } from '../../lib/seeded-random.js';
  * @typedef {Object} MastermindAction
  * @property {'submit'|'reset'} type - Type d'action
  * @property {Color[]} [code] - Code à soumettre (pour submit)
+ * @property {number} [seed] - Seed entière explicite de nouvelle partie (pour reset)
  */
 
 /**
@@ -97,9 +98,7 @@ export class MastermindEngine {
     }
 
     if (action.type === 'reset') {
-      // Générer un nouveau seed aléatoire pour la nouvelle partie
-      const newSeed = Date.now();
-      return this.init({ seed: newSeed, playerId });
+      return this.init({ seed: action.seed, playerId });
     }
 
     // Action 'submit'
@@ -143,7 +142,7 @@ export class MastermindEngine {
     }
 
     if (action.type === 'reset') {
-      return true; // Reset toujours valide
+      return Number.isSafeInteger(action.seed);
     }
 
     if (action.type === 'submit') {
