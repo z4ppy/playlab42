@@ -231,9 +231,15 @@ export class CheckersEngine {
       }
     }
 
-    // Si des captures sont possibles, seules les captures sont valides (prise obligatoire)
+    // Prise obligatoire et majoritaire, sans priorité entre pions et dames.
     if (allCaptures.length > 0) {
-      return allCaptures.map((move) => ({ type: 'move', ...move }));
+      const maxCaptures = allCaptures.reduce(
+        (maximum, move) => Math.max(maximum, move.captured.length),
+        0,
+      );
+      return allCaptures
+        .filter((move) => move.captured.length === maxCaptures)
+        .map((move) => ({ type: 'move', ...move }));
     }
 
     return allMoves.map((move) => ({ type: 'move', ...move }));
