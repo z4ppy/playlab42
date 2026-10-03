@@ -26,9 +26,9 @@
       <table>
         <thead><tr><th scope="col">Workflow</th><th scope="col">Déclencheurs</th><th scope="col">Jobs</th></tr></thead>
         <tbody>
-          <tr><td><code>ci.yml</code> (CI)</td><td>PR vers <code>main</code>, manuel, appel depuis Deploy sur push <code>main</code></td><td>Lint, Security lint, Tests, TypeScript, Dependency audit, OpenSpec, Build, Browser</td></tr>
+          <tr><td><code>ci.yml</code> (CI)</td><td>PR toute base, manuel, appel depuis Deploy sur push <code>main</code></td><td>Lint, Security lint, Tests, TypeScript, Dependency audit, OpenSpec, Build, Browser</td></tr>
           <tr><td><code>ui-e2e.yml</code> (UI browser)</td><td>Appel depuis CI, manuel</td><td>Chromium interactions (15 min max)</td></tr>
-          <tr><td><code>security-audit.yml</code></td><td>push et PR sur <code>main</code>, tous les jours à 6 h UTC, manuel</td><td>npm-audit, ESLint Security, Trivy, gitleaks, packages obsolètes, Docker, rapport</td></tr>
+          <tr><td><code>security-audit.yml</code></td><td>push sur <code>main</code>, PR toute base, tous les jours à 6 h UTC, manuel</td><td>npm-audit, ESLint Security, Trivy, gitleaks, packages obsolètes, Docker, rapport</td></tr>
         </tbody>
       </table>
     </div>

@@ -17,6 +17,7 @@ Exécuter uniquement dans un rôle autorisé à utiliser Docker.
 | TypeScript | `make typecheck` et `make build-ts` |
 | Interaction navigateur | `make test-e2e` |
 | Préparation locale sans collecte OpenGraph | `make npm CMD="run build:local"` |
+| Transport/enrichissement OG | Tests `scripts/og-fetcher.test.js`, `scripts/og-fetcher-process.test.js`, `scripts/build-bookmarks-offline.test.js`, puis vrai build réseau chronométré |
 | Livraison complète | `make lint`, `make npm CMD="run test:coverage"`, `make typecheck`, `make npm CMD="run audit:dependencies"`, OpenSpec et build selon AGENTS/CI |
 
 Ne pas supposer qu'un test existe : vérifier son chemin avant de le cibler.
@@ -26,6 +27,10 @@ Le build complet prépare `site/`. La CI navigateur teste l'archive publique
 extraite avec `PLAYWRIGHT_PREBUILT=1` ; ne pas reconstruire cette archive avant
 de la déclarer validée. La publication réutilise la CI et cette même archive.
 Le smoke HTTP vérifie ensuite le SHA publié, sans rollback automatique.
+Si le travail est terminé mais que le processus reste vivant, examiner minuteurs
+et corps HTTP abandonnés ; ne pas ajouter de sortie forcée. Un test de transport
+doit couvrir la lecture du corps et la sortie naturelle, pas seulement un mock
+qui résout les en-têtes. Comparer la durée native sans retirer de gate.
 Pour une vérification manuelle, `make serve` lance le serveur et `make info`
 affiche le port du worktree. Ne pas coder un port local fixe.
 

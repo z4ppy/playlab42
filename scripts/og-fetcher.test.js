@@ -137,3 +137,45 @@ describe('og-fetcher: repli de fetchOGMetadata sur échec réseau', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
+
+describe('og-fetcher: délai et libération du corps HTTP', () => {
+  afterEach(() => jest.useRealTimers());
+
+  it('libère une requête terminée sans modifier ses métadonnées ni son cache', async () => {
+    jest.useFakeTimers();
+    let signal;
+    jest.spyOn(global, 'fetch').mockImplementation((_url, options) => {
+      signal = options.signal;
+      return Promise.resolve({ ok: true, text: () => Promise.resolve('<title>Fixture</title>') });
+    });
+    const cache = {};
+    const result = await fetchOGMetadata(ABSENT_URL, cache);
+    expect(result).toMatchObject({ meta: { ogTitle: 'Fixture' }, fromCache: false });
+    expect(cache[ABSENT_URL]).toBe(result.meta);
+    expect(signal.aborted).toBe(true);
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('interrompt aussi un corps bloqué après réception des en-têtes', async () => {
+    jest.useFakeTimers();
+    let signal;
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(global, 'fetch').mockImplementation((_url, options) => {
+      signal = options.signal;
+      return Promise.resolve({
+        ok: true,
+        text: () => new Promise((resolve, reject) => {
+          signal.addEventListener('abort', () => reject(new DOMException('Timeout', 'AbortError')), { once: true });
+        }),
+      });
+    });
+    const cache = {};
+    const pending = fetchOGMetadata(ABSENT_URL, cache);
+    await jest.advanceTimersByTimeAsync(8000);
+    expect(signal.aborted).toBe(true);
+    expect(await pending).toEqual({ meta: null, fromCache: false, failed: true });
+    expect(cache).toEqual({});
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('timeout'));
+    expect(jest.getTimerCount()).toBe(0);
+  });
+});
