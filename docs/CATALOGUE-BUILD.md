@@ -86,7 +86,18 @@ Les scripts valident les manifests au build :
 - Formats corrects (IDs en kebab-case, etc.)
 - Fichiers référencés existants
 
-En cas d'erreur, le build échoue avec un message explicite.
+En cas d'erreur, le build échoue avec un message explicite et conserve le dernier
+catalogue. Un manifest d'outil simple sans son `tools/[id].html` est une erreur
+bloquante, comme un outil complexe sans `index.html` ; il n'est pas ignoré même
+si d'autres outils sont valides.
+
+Les slides Markdown sont régénérées à chaque build, y compris après une
+modification du titre ou du template. Le marqueur de sortie distingue le HTML
+généré du HTML auteur ; les paires sans marqueur sont refusées. Voir le
+[contrat des sources et la migration](guides/create-epic.md#3-créer-les-slides).
+La conservation du catalogue ne constitue pas une transaction de toutes les
+slides : certaines sorties générées peuvent avoir été actualisées avant qu'une
+autre entrée ne fasse échouer le build.
 
 ## CI/CD
 

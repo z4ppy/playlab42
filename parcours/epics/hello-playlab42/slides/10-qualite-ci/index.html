@@ -104,6 +104,15 @@
       et la protection de branche sont deux mécanismes distincts.
     </p>
 
+    <p class="guide-note">
+      Les lots 3 à 5 sont intégrés à main et publiés via la PR #144.
+      Dans <code>fix/review-software-factory</code>, un correctif prépare Build, déjà requis,
+      comme gate exigeant le succès de Security lint et de Trivy HIGH/CRITICAL via un
+      workflow réutilisable partagé ; un gate ignoré ne doit pas autoriser la suite.
+      Il reste local : ni intégré à main, ni validé par une CI native.
+      Les neuf checks GitHub actuellement requis restent distincts de ce correctif préparé.
+    </p>
+
     <h2>Lancer les mêmes contrôles en local (Docker)</h2>
     <pre class="code-block"><code>make info          # instance, port, URL du worktree
 make lint

@@ -14,6 +14,25 @@ Ce guide décrit le code versionné et les réglages observés le **3 octobre 20
 Une correction préparée dans une branche n'est disponible en production qu'après
 livraison ; un fichier de workflow ne constitue pas une preuve d'exécution réussie.
 
+### Livraison constatée et correctifs locaux
+
+Les lots 3 à 5 sont **intégrés à `main` et publiés** : la
+[PR #144](https://github.com/z4ppy/playlab42/pull/144) a été fusionnée le
+3 octobre 2026 à 18:24:44 UTC, au commit
+`283b1cb359ef3363c7f70ef7fa0aef57a93ddc11`. Le
+[run de publication 37144090802](https://github.com/z4ppy/playlab42/actions/runs/37144090802)
+et le [run de sécurité 37144090475](https://github.com/z4ppy/playlab42/actions/runs/37144090475)
+ont réussi sur ce commit. Cette preuve concerne cette livraison, pas les
+modifications ultérieures du worktree `fix/review-software-factory`.
+
+Les correctifs de revue des builders, de préservation des images OG et du mode
+d'écriture atomique sont préparés dans ce worktree. Il prépare aussi un gate
+sur **Build, déjà requis**, exigeant le succès de Security lint et de Trivy
+HIGH/CRITICAL via un workflow réutilisable partagé ; un gate ignoré ne doit
+pas autoriser la suite. Ces correctifs ne sont **ni intégrés à `main`, ni
+validés par une CI native**. Les neuf checks GitHub requis restent le réglage
+actuellement observé ; aucune mutation distante n'est impliquée.
+
 ## Carte de l'usine
 
 | Étape | Brique Playlab42 | Preuve / décision |
@@ -77,7 +96,7 @@ ouvrir une PR et suivre les décisions humaines.
 
 ## Les garanties automatisées
 
-### CI et publication
+### CI et publication livrées
 
 Sur une PR, `ci.yml` exécute lint qualité et sécurité JS ciblée, Jest/coverage, types, audit npm requis, validation OpenSpec stricte,
 build et navigateur. Sur push `main`, `deploy.yml` appelle cette même CI dans
@@ -93,7 +112,24 @@ réservés au dépôt sont accessibles par les liens GitHub du lecteur documenta
 ### Identité et contrôle après publication
 
 `build-info.json` indique la version et le SHA CI. Le smoke test HTTP compare
-ce SHA et contrôle neuf ressources, dont les catalogues et des points d'entrée.
+ce SHA et contrôle **dix ressources HTTP**, distinctes des **neuf checks GitHub
+requis**. Le manifeste est la dixième ressource ajoutée au contrat de smoke :
+il vérifie l'identité et les empreintes lockfile/snapshot attendues, pas tous
+les hashes des fichiers distants.
+
+| Ressource contrôlée | Rôle |
+|---------------------|------|
+| `build-info.json` | Version et commit publiés |
+| `build-manifest.json` | Identité et empreintes des entrées attendues |
+| `index.html` | Portail |
+| `docs/site/index.html` | Lecteur documentaire |
+| `data/catalogue.json` | Catalogue des outils et jeux |
+| `data/parcours.json` | Catalogue des parcours |
+| `data/bookmarks.json` | Catalogue des bookmarks |
+| `catalogue.tools[0].path` | Point d'entrée du premier outil |
+| `catalogue.games[0].path` | Point d'entrée du premier jeu |
+| `${epic.path}/slides/${slide.id}/index.html` | Première slide du premier parcours |
+
 Une erreur finale rend le workflow rouge, mais ne retire pas le site déjà publié.
 Cette identité n'est pas une provenance signée ni une attestation SLSA.
 
@@ -135,7 +171,7 @@ déjà livrées. Les priorités sont adaptées à un support de formation.
 | Moyenne | Actions SHA, images digest et binaires scanners vérifiés dans le lot 2 ; bases/paquets OS évolutifs | Maintenir ces références avec Dependabot ; isoler ensuite les sources de variabilité du build |
 | Moyenne | Snapshot OG séparé du build ; refresh éditorial explicite | Relire ses changements, suivre les métadonnées absentes et conserver les preuves de reproductibilité |
 | Moyenne | Pas de prévisualisation de PR publiée | Donner aux reviewers une URL temporaire, sur une origine adaptée, sans secrets ni privilèges de production |
-| Moyenne | Smoke ponctuel, monitor quotidien préparé et reprise locale exercée | Activer les notifications après intégration, définir responsable/cadence, décider humainement d'une reprise en production |
+| Moyenne | Smoke de publication réussi, workflow de monitoring quotidien intégré et reprise locale exercée | Constater séparément un run planifié, vérifier les notifications et définir responsable/cadence ; décider humainement d'une reprise en production |
 | Progressive | SBOM de fabrication et manifeste hashé non signé | Ajouter une attestation signée de l'archive sur autorisation ; ne pas annoncer de niveau SLSA sans conformité vérifiée |
 | Progressive | Retour d'expérience peu instrumenté | Mesurer durée des checks, délai de première contribution, erreurs récurrentes et livraison ; choisir peu d'indicateurs utiles |
 | Progressive | Scénarios d'évaluation des skills partiels | Comparer des demandes identiques sur environnements isolés, conserver les preuves, compléter les cas non testés sans revendiquer un gain statistique |

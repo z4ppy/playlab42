@@ -152,7 +152,7 @@ async function scanSimpleTools() {
     const htmlPath = join(TOOLS_DIR, htmlFile);
 
     if (!(await fileExistsAsync(htmlPath))) {
-      console.log(`${colors.yellow}  ⚠ ${jsonFile}: No ${htmlFile} found, skipping${colors.reset}`);
+      errors.push(`${jsonFile}: No ${htmlFile} found`);
       continue;
     }
 

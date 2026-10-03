@@ -1,0 +1,53 @@
+# Scan partagé par la CI de PR/publication et l'audit complémentaire.
+name: Trivy scan
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: Nom unique du rapport dans le run appelant
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Trivy HIGH/CRITICAL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Installation de Trivy
+        run: bash scripts/install-security-scanner.sh trivy
+
+      - name: Scan du filesystem
+        id: scan
+        run: |
+          trivy fs . \
+            --db-repository ghcr.io/aquasecurity/trivy-db:2 \
+            --scanners vuln,secret \
+            --include-dev-deps \
+            --exit-code 1 \
+            --severity CRITICAL,HIGH \
+            --cache-dir "$RUNNER_TEMP/trivy-cache" \
+            --format json \
+            --output trivy-results.json
+
+      - name: Upload des résultats Trivy
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: trivy-results.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Résumé du scan
+        if: always()
+        env:
+          SCAN_RESULT: ${{ steps.scan.outcome }}
+        run: |
+          printf 'Trivy vuln/secret HIGH/CRITICAL (dépendances de développement incluses) : %s\n' "$SCAN_RESULT" >> "$GITHUB_STEP_SUMMARY"

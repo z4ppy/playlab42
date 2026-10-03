@@ -13,6 +13,7 @@ const workflows = Object.fromEntries(readdirSync(join(root, '.github/workflows')
 const ci = workflows['ci.yml'];
 const audit = workflows['security-audit.yml'];
 const deploy = workflows['deploy.yml'];
+const trivyScan = workflows['trivy-scan.yml'].jobs.scan;
 const fixtureRoot = join(root, `.pinned-chain-tests-${process.pid}`);
 let sequence = 0;
 
@@ -153,7 +154,7 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
   test('les rapports existent même en échec et leur absence est une erreur explicite', () => {
     for (const job of [
       ci.jobs['security-lint'], audit.jobs['eslint-security'], audit.jobs['npm-audit'],
-      audit.jobs['trivy-scan'], audit.jobs.gitleaks,
+      trivyScan, audit.jobs.gitleaks,
     ]) {
       expect(job['continue-on-error']).toBeUndefined();
       const upload = job.steps.find(step => step.uses?.startsWith('actions/upload-artifact@'));
@@ -161,7 +162,7 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
       expect(upload.with['if-no-files-found']).toBe('error');
       expect(job.steps.every(step => !step['continue-on-error'])).toBe(true);
     }
-    expect(audit.jobs['trivy-scan'].steps.filter(step => step.run?.includes('trivy fs'))).toHaveLength(1);
+    expect(trivyScan.steps.filter(step => step.run?.includes('trivy fs'))).toHaveLength(1);
     const hadolint = audit.jobs['docker-security'];
     expect(hadolint.name).toContain('consultatif');
     expect(hadolint.strategy.matrix.include.map(entry => entry.dockerfile))
@@ -229,7 +230,7 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
       [ci.jobs['security-lint'], 'npm', 'npm run lint:security'],
       [audit.jobs['eslint-security'], 'npm', 'npm run lint:security'],
       [audit.jobs['npm-audit'], 'npm', 'npm run --silent audit:dependencies'],
-      [audit.jobs['trivy-scan'], 'trivy', 'trivy fs'],
+      [trivyScan, 'trivy', 'trivy fs'],
       [audit.jobs.gitleaks, 'gitleaks', 'gitleaks git'],
     ];
     for (const [job, command, prefix] of gates) {

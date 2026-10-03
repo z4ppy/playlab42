@@ -26,6 +26,8 @@ const OUTPUT_FILE = join(ROOT, 'data', 'parcours.json');
 const CONFIG_FILE = join(PARCOURS_DIR, 'index.json');
 const SLIDE_TEMPLATE_FILE = join(PARCOURS_DIR, '_shared', 'slide-template.html');
 const GLOBAL_GLOSSARY_FILE = join(PARCOURS_DIR, 'glossary.json');
+// Seul ce marqueur autorise le remplacement d'un HTML existant par du Markdown.
+const GENERATED_SLIDE_MARKER = '<!-- playlab42:generated-from-index.md -->';
 
 // Statistiques
 const stats = {
@@ -138,7 +140,7 @@ function convertMarkdownSlide(slideDir, template, slideData) {
     const fullHtml = injectInTemplate(template, title, htmlContent);
 
     // Écrire le fichier HTML généré
-    writeFileSync(htmlPath, fullHtml);
+    writeFileSync(htmlPath, `${GENERATED_SLIDE_MARKER}\n${fullHtml}`);
     stats.markdownConverted++;
 
     return true;
@@ -171,22 +173,37 @@ function validateEpic(epic, epicDir, template) {
       const slideJson = join(slideDir, 'slide.json');
       if (!existsSync(slideJson)) {
         errors.push(`slide.json manquant pour: ${slideId}`);
+        continue;
       }
 
-      const hasHtml = existsSync(join(slideDir, 'index.html'));
+      const htmlPath = join(slideDir, 'index.html');
+      const hasHtml = existsSync(htmlPath);
       const hasMd = existsSync(join(slideDir, 'index.md'));
+      const htmlContent = hasHtml ? readFileSync(htmlPath, 'utf-8') : '';
+      const isGenerated = htmlContent.startsWith(`${GENERATED_SLIDE_MARKER}\n`)
+        || htmlContent.startsWith(`${GENERATED_SLIDE_MARKER}\r\n`);
 
-      // Convertir Markdown en HTML si nécessaire
-      if (hasMd && !hasHtml && template) {
+      if (hasMd && hasHtml && !isGenerated) {
+        errors.push(`Sources ambiguës pour ${slideId}: index.md et index.html sans marqueur généré. `
+          + 'Choisir une source : conserver index.html et retirer index.md, ou sauvegarder puis '
+          + 'supprimer index.html pour le régénérer depuis index.md.');
+      } else if (hasMd && !template) {
+        errors.push(`Template Markdown manquant (${SLIDE_TEMPLATE_FILE}) pour: ${slideId}`);
+      } else if (hasMd) {
         const slideData = readJSONSync(slideJson, stats);
+        if (!slideData) {
+          errors.push(`slide.json invalide pour: ${slideId}`);
+          continue;
+        }
         const converted = convertMarkdownSlide(slideDir, template, slideData);
         if (!converted) {
           errors.push(`Échec conversion Markdown pour: ${slideId}`);
         }
+      } else if (isGenerated) {
+        errors.push(`Source index.md manquante pour le HTML généré: ${slideId}. `
+          + 'Restaurer index.md ou retirer le marqueur pour adopter index.html comme source auteur.');
       } else if (!hasHtml && !hasMd) {
         errors.push(`Contenu manquant (index.html ou index.md) pour: ${slideId}`);
-      } else if (hasMd && !template) {
-        warnings.push(`Slide Markdown sans template, non convertie: ${slideId}`);
       }
     }
   }

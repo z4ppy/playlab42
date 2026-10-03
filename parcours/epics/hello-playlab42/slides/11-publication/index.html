@@ -34,7 +34,9 @@
       <li><strong>validate</strong> : appelle <code>ci.yml</code> pour le même commit. Lint, tests, types et OpenSpec doivent réussir.</li>
       <li><strong>Build → Browser</strong> : prépare <code>site/</code>, archive <code>github-pages</code>, puis teste l'archive extraite sans reconstruction.</li>
       <li><strong>deploy</strong> (<code>needs: validate</code>) : publie cette même archive après le succès de toute la CI.</li>
-      <li><strong>smoke</strong> : compare le SHA publié au commit du run et vérifie neuf ressources HTTP.</li>
+      <li><strong>smoke</strong> : compare le SHA publié au commit du run et vérifie <strong>dix ressources HTTP</strong>,
+        dont <code>build-manifest.json</code> (identité et empreintes lockfile/snapshot).
+        Ces dix ressources ne sont pas les neuf checks GitHub requis.</li>
     </ol>
 
     <h2>Que fait <code>npm run build</code> ?</h2>
@@ -66,6 +68,12 @@
       Le smoke test effectue au plus cinq tentatives pour la propagation Pages. Son échec rend le run rouge,
       mais le site est déjà publié : <strong>aucun rollback automatique</strong>.
       <code>build-info.json</code> identifie le commit ; ce n'est pas une attestation signée.
+    </p>
+    <p class="guide-note">
+      Les lots 3 à 5 sont intégrés à main et publiés via la PR #144 le 3 octobre 2026.
+      Le workflow de monitoring est versionné, mais cela ne prouve pas un run cron exécuté.
+      Les correctifs de revue du worktree restent distincts de cette livraison :
+      ni intégrés à main, ni validés par une CI native.
     </p>
 
     <h2>Tester le résultat chez vous (Docker)</h2>

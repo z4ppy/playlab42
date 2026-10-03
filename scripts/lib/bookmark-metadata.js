@@ -52,12 +52,12 @@ export function loadOGSnapshot(path, optional = false) {
 export function editorialMetadata(result, url, previous = {}) {
   if (result.failed && previous[url]) {return { ...previous[url] };}
   const meta = { ...result.meta };
-  if (!meta.ogImage?.startsWith('data/bookmarks-images/')) {return meta;}
   const curated = previous[url]?.ogImage;
   if (curated?.startsWith('data/bookmarks-images/')) {
     meta.ogImage = curated;
     return meta;
   }
+  if (!meta.ogImage?.startsWith('data/bookmarks-images/')) {return meta;}
   if (meta.ogImageOriginal) {
     const remote = new URL(decodeHTMLEntities(meta.ogImageOriginal), url);
     if (!['http:', 'https:'].includes(remote.protocol) || remote.username || remote.password) {

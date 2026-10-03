@@ -20,6 +20,7 @@ Exécuter uniquement dans un rôle autorisé à utiliser Docker.
 | Préparation locale sans enrichissement OG | `make npm CMD="run build:local"` ; production utilise un snapshot revu sans collecte |
 | Transport/refresh éditorial OG | Tests `scripts/og-fetcher.test.js`, `scripts/og-fetcher-process.test.js`, `scripts/build-bookmarks-offline.test.js` ; refresh réseau uniquement s'il est autorisé, puis relire snapshot/images |
 | Artefact/provenance/reprise | `scripts/artifact-integrity.test.js`, `make npm CMD="run verify:site"`, `make npm CMD="run check:recovery"` ; comparer deux builds avec mêmes sources/outils/epoch |
+| Gates CI/sécurité/forks | `scripts/ci-security-gates.test.js`, `scripts/quality-policy.test.js`, `scripts/pinned-chain.test.js`, `scripts/software-delivery.test.js`, `scripts/build-security-report.test.js` ; puis lint des tests et OpenSpec |
 | Helpers/builders/cache JSON | Tests `scripts/build-utils.test.js`, `scripts/build-input-errors.test.js`, `scripts/og-quality.test.js`, `scripts/quality-lint.test.js`, puis couverture ciblée requise ; pas de baisse de seuil |
 | Livraison complète | `make lint`, `make npm CMD="run test:coverage"`, `make typecheck`, `make npm CMD="run audit:dependencies"`, OpenSpec et build selon AGENTS/CI |
 
@@ -29,6 +30,16 @@ Ne pas exécuter un refresh éditorial juste pour verdir une fabrication.
 Le build complet prépare `site/`. La CI navigateur teste l'archive publique
 extraite avec `PLAYWRIGHT_PREBUILT=1` ; ne pas reconstruire cette archive avant
 de la déclarer validée. La publication réutilise la CI et cette même archive.
+Le check distant déjà requis `Build` exige les succès Security lint et Trivy :
+son guard s'exécute même après un échec et refuse aussi skipped/cancelled, avant
+fabrication. Ne pas remplacer ce refus explicite par un simple `needs`, ni
+annoncer des checks distants supplémentaires : les neuf checks de main sont
+inchangés. Trivy est partagé entre CI et audit ; vérifier les noms de rapports
+distincts et le maintien du scan vuln/secret HIGH/CRITICAL avec devDependencies.
+Pour un fork, artefact et summary restent produits, mais pas de commentaire PR
+avec un token public en lecture seule. Les contrats locaux ne prouvent ni une
+CI native ni une durée sur runner ; mesurer le nouveau chemin critique après
+autorisation de livraison.
 Vérifier les images locales réellement référencées, pas seulement les hashes :
 le cache OG ignoré ne doit pas entrer dans l'archive. Une nouvelle image OG
 utilise son URL distante, sauf revue et versionnement local explicites.

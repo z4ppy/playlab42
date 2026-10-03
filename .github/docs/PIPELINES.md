@@ -12,6 +12,7 @@ s'exécutent dans Docker ; les runners GitHub sont des environnements CI isolés
 | `deploy.yml` | Push `main`, manuel | Appelle CI, puis publie et contrôle le site |
 | `ui-e2e.yml` | Appel depuis CI, manuel | Interactions Chromium |
 | `security-audit.yml` | Push `main`, PR toute base, quotidien 6 h UTC, manuel | Audits et rapport séparés |
+| `trivy-scan.yml` | Appel depuis CI et Security Audit | Même scan bloquant et rapports nommés par appelant |
 
 Une PR ne déploie pas de site. Un push `main` appelle CI **via Deploy**, sans
 second déclenchement indépendant de CI. Le lancement manuel de Deploy hors
@@ -27,15 +28,21 @@ restent distinctes du déclenchement des workflows.
 |-----|----------------------|-------|
 | Lint | `npm run lint` : ESLint JS/scripts HTML puis Biome `.ts` | Erreurs et avertissements bloquants ; tsc reste distinct |
 | Security lint | `npm run lint:security`, rapport JSON | Règles JS/scripts HTML ciblées, pas TS ; sans installation à la volée |
+| Trivy Security Scan | Appelle `trivy-scan.yml` | Vulnérabilités/secrets HIGH/CRITICAL, dépendances de développement incluses ; erreur d'outil bloquante |
 | Tests | `npm run test:coverage`, puis Codecov | Tests ou seuils ciblés échoués ; upload Codecov non bloquant |
 | Dependency audit | `npm run audit:dependencies` | CVE modérée ou plus ; panne d'audit également bloquante |
 | TypeScript | `npm run typecheck` | Erreurs de types ; la transpilation appartient à Build |
 | OpenSpec | `npm run openspec:validate` | Validation stricte des specs/changes |
-| Build | `npm run build`, archive `site/` | Build ou upload de l'archive |
+| Build | Attend Security lint et Trivy, refuse tout statut différent de `success`, puis `npm run build`, archive `site/` | Gate sécurité, build ou upload de l'archive |
 | Browser | Attend Build, appelle `ui-e2e.yml` avec `prebuilt: true` | Test navigateur échoué |
 
-Tous les jobs sauf Browser peuvent commencer en parallèle. Browser attend
-l'archive Build. Un succès du job Build seul ne signifie pas que toute la CI est verte.
+Les analyses, tests, types et OpenSpec peuvent commencer en parallèle. Build
+attend seulement Security lint et Trivy ; Browser attend l'archive Build.
+Build utilise `if: always()` et un premier guard Bash : `failure`, `skipped`,
+`cancelled` ou un statut absent/inconnu donnent un **échec explicite avant checkout,
+installation, fabrication ou archive**, pas un job Build ignoré. Un simple
+`needs` laisserait Build ignoré après échec, état accepté par une protection
+GitHub de check requis. Un succès de Build ne signifie pas que toute la CI est verte.
 OpenSpec valide la structure des spécifications, pas la conformité du code.
 
 ## Navigateur
@@ -68,8 +75,11 @@ les limites, les réglages GitHub et la récupération après incident.
 
 ## Audits de sécurité : politique réelle
 
-Le workflow de sécurité complémentaire reste indépendant. L'audit npm est aussi
-un job requis de la CI appelée avant publication.
+Le workflow de sécurité complémentaire reste indépendant. L'audit npm,
+Security lint et le scan Trivy partagé sont aussi bloquants dans la CI appelée
+avant publication et sur PR. Les noms de rapports Trivy sont distincts
+(`ci-trivy-results`, `audit-trivy-results`) pour éviter une collision si les deux
+appelants utilisent un même run.
 Il faut distinguer les codes de sortie des outils de leur caractère obligatoire
 avant un merge, qui dépend des règles GitHub.
 Les permissions par défaut sont `contents: read` ; seuls Docker/SARIF et le
@@ -80,14 +90,18 @@ rapport/commentaire PR reçoivent les droits d'écriture nécessaires.
 | npm audit | Échec au niveau modéré et au-dessus |
 | Gitleaks | Analyse de l'historique ; détection = échec |
 | ESLint Security | Gate ciblé avec configuration flat, plugins verrouillés ; diagnostics JSON, pas d'erreur masquée |
-| Trivy | Vulnérabilités/secrets HIGH/CRITICAL bloquants ; scan JSON unique puis affichage, outil vérifié avant exécution |
+| Trivy | Workflow réutilisable commun ; un scan JSON par invocation, vulnérabilités/secrets HIGH/CRITICAL incluant devDependencies ; outil versionné/checksum vérifié, échec bloquant |
 | Packages obsolètes | Informatif |
 | Hadolint | Push/manuel seulement, deux Dockerfiles, `no-fail: true` ; consultatif |
-| Rapport | Attend les six analyses, `if: always()`, états réels des jobs ; artefact et commentaire PR |
+| Rapport | Attend les six analyses, `if: always()`, états réels des jobs y compris Trivy réutilisé ; artefact et summary sur les forks aussi ; commentaire uniquement PR du même dépôt |
 
 Le rapport ne déduit pas un succès d'un fichier absent et distingue échec,
 annulation, analyse ignorée et succès consultatif. Les logs et artefacts conservent
 les diagnostics détaillés ; ce résumé ne certifie pas l'absence de problème.
+Le commentaire attend l'appel API : une erreur est explicite. Sur une PR de fork,
+le token public est en lecture seule ; aucun commentaire n'est tenté, mais le
+rapport reste archivé et ajouté au résumé du run. Aucun `pull_request_target`,
+secret supplémentaire ou élévation globale n'est introduit.
 
 Gitleaks 8.30.1 et Trivy 0.75.0 sont téléchargés par version puis vérifiés par
 checksum avant extraction. Les actions sont épinglées par SHA ; images Node et
@@ -113,6 +127,14 @@ Les heuristiques de lint consultatives sont accessibles par
   Aucun force-push ni suppression. Zéro approbation externe obligatoire tant
   qu'un seul reviewer habilité est disponible. Voir le
   [réglage et la transition des noms de checks](../../docs/DEPLOYMENT.md#protection-de-main--activée-sur-github).
+- La correction locale `close-ci-review-gaps` ne modifie **aucun réglage distant** :
+  les neuf checks exacts restent `Lint`, `Tests`, `TypeScript`, `Build`,
+  `Audit dépendances npm`, `Détection de secrets`, `Browser / Chromium interactions`,
+  `OpenSpec` et `Dependency audit`. `Security lint` et Trivy ne deviennent pas
+  des checks distants requis supplémentaires ; le check déjà requis **Build**
+  agrège leur succès et ferme le trou de merge de Security lint.
+  Cette couverture effective dépend de l'intégration des workflows corrigés ;
+  aucune nouvelle CI native, fusion ou publication n'est attestée par ces tests locaux.
 
 ## Vérifier avant une PR
 
@@ -157,6 +179,14 @@ le refresh éditorial : la CI fixe SOURCE_DATE_EPOCH, compare deux manifestes,
 vérifie les fichiers et exerce une restauration tar locale. Le navigateur
 revérifie l'archive reçue sans la reconstruire. Mesurer le nouveau run, sans
 présenter ces anciens timings comme ceux du pipeline changé.
+
+La correction `close-ci-review-gaps` ajoute Trivy sur le chemin critique :
+Build et Browser attendent le plus lent des deux gates de sécurité.
+L'audit complémentaire conserve son invocation indépendante du même workflow ;
+cela partage la logique, pas l'exécution ni la base téléchargée entre runs.
+Installation et mise à jour CVE peuvent rallonger la CI ou échouer avec le réseau.
+Les tests locaux de contrat ne mesurent pas cette durée native ; l'observer
+après livraison sans réduire les seuils ni rendre le scanner consultatif.
 
 ## Évolution
 

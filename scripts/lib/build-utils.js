@@ -6,7 +6,7 @@
  */
 
 import { readFile, access } from 'fs/promises';
-import { readFileSync, existsSync, writeFileSync, mkdirSync, renameSync, rmSync, statSync, openSync, closeSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync, renameSync, rmSync, statSync, openSync, closeSync, fchmodSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
@@ -115,6 +115,7 @@ function reportJSONError(path, cause, stats) {
 
 /**
  * Remplace un JSON par renommage dans le même répertoire, sans tronquer l'ancien.
+ * Préserve ses permissions ; pour un fichier nouveau, respecte l'umask courant.
  * @param {string} path - Fichier généré
  * @param {object} data - Données sérialisables
  */
@@ -125,10 +126,12 @@ export function writeJSONAtomicSync(path, data) {
   }
   mkdirSync(dirname(path), { recursive: true });
   const temporary = join(dirname(path), `.${basename(path)}.${randomUUID()}.tmp`);
-  const mode = existsSync(path) ? statSync(path).mode & 0o777 : 0o666;
-  const descriptor = openSync(temporary, 'wx', mode);
+  const mode = existsSync(path) ? statSync(path).mode & 0o777 : null;
+  const descriptor = openSync(temporary, 'wx', mode ?? 0o666);
   try {
     try {
+      // openSync applique l'umask, même au mode hérité du fichier précédent.
+      if (mode !== null) {fchmodSync(descriptor, mode);}
       writeFileSync(descriptor, content);
     } finally {
       closeSync(descriptor);

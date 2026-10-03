@@ -53,6 +53,44 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     }
   });
 
+  it('énumère dix ressources HTTP et ne les confond pas avec les checks GitHub', () => {
+    const factory = readFileSync(resolve(root, 'docs/guides/software-factory.md'), 'utf8');
+    const smokeSection = factory.split('### Identité et contrôle après publication')[1]
+      .split('### Ce qui reste distinct')[0];
+    const resources = [...smokeSection.matchAll(/^\| `([^`]+)` \|/gm)]
+      .map(([, resource]) => resource);
+    expect(resources).toEqual([
+      'build-info.json', 'build-manifest.json', 'index.html', 'docs/site/index.html',
+      'data/catalogue.json', 'data/parcours.json', 'data/bookmarks.json',
+      'catalogue.tools[0].path', 'catalogue.games[0].path',
+      '${epic.path}/slides/${slide.id}/index.html',
+    ]);
+    expect(resources).toHaveLength(10);
+    expect(smokeSection).toMatch(/dix ressources HTTP/);
+    expect(smokeSection).toMatch(/neuf checks GitHub\s+requis/);
+    const publication = readFileSync(resolve(epicDir, 'slides/11-publication/index.html'), 'utf8');
+    expect(publication).toContain('dix ressources HTTP');
+    expect(publication).toContain('build-manifest.json');
+    expect(publication).toContain('neuf checks GitHub requis');
+    expect(publication).not.toMatch(/(?:neuf|9) ressources HTTP/);
+  });
+
+  it('distingue livraison du socle, correctifs locaux et preuves opérationnelles', () => {
+    const factory = readFileSync(resolve(root, 'docs/guides/software-factory.md'), 'utf8');
+    const quality = readFileSync(resolve(root, 'docs/guides/software-quality.md'), 'utf8');
+    const operations = readFileSync(resolve(root, 'docs/guides/artifact-operations.md'), 'utf8');
+    const readme = readFileSync(resolve(epicDir, 'README.md'), 'utf8');
+    for (const document of [factory, quality, operations, readme]) {
+      expect(document).toMatch(/intégrés? à `?main`? et publiés?/);
+      expect(document).toContain('fix/review-software-factory');
+      expect(document).toMatch(/ni intégrés à `?main`?, ni\s+validés par une\s+CI\s+native/);
+    }
+    expect(operations).toMatch(/pas qu'un run planifié a été exécuté/);
+    expect(operations).toContain('Cela prouve une reprise de fichiers locaux, pas une reprise Pages en production.');
+    expect(operations).toContain('Le manifeste est **non signé**');
+    expect(readme).toContain("l'archivage nécessite une autorisation distincte");
+  });
+
   describe.each(ids)('Slide %s', id => {
     const path = resolve(epicDir, 'slides', id, 'index.html');
 

@@ -82,35 +82,9 @@ jobs:
   # Job 3 : Scan avec Trivy (vulnérabilités et secrets)
   trivy-scan:
     name: Trivy Security Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout du code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Installation de Trivy
-        run: bash scripts/install-security-scanner.sh trivy
-
-      - name: Scan du filesystem
-        run: |
-          trivy fs . \
-            --db-repository ghcr.io/aquasecurity/trivy-db:2 \
-            --scanners vuln,secret \
-            --include-dev-deps \
-            --exit-code 1 \
-            --severity CRITICAL,HIGH \
-            --cache-dir "$RUNNER_TEMP/trivy-cache" \
-            --format json \
-            --output trivy-results.json
-        # La base CVE reste actualisée ; la configuration Docker est consultative via Hadolint.
-
-      - name: Upload des résultats Trivy
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: trivy-results
-          path: trivy-results.json
-          if-no-files-found: error
-          retention-days: 30
+    uses: ./.github/workflows/trivy-scan.yml
+    with:
+      artifact-name: audit-trivy-results
 
   # Job 4 : Détection de secrets avec GitLeaks
   gitleaks:
@@ -240,16 +214,18 @@ jobs:
           retention-days: 90
 
       - name: Afficher le rapport
-        run: cat security-report.md
+        run: |
+          cat security-report.md
+          cat security-report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Commenter la PR avec le rapport
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('security-report.md', 'utf8');
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,

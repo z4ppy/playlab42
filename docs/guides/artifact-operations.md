@@ -1,6 +1,11 @@
 # Fabrication vérifiable et reprise
 
-Ce runbook décrit le lot 5 préparé, pas un déploiement déjà réalisé.
+Ce runbook décrit le lot 5 **intégré à `main` et publié** avec les lots 3 et 4
+via la PR #144 le 3 octobre 2026. Les runs de publication et de sécurité sur
+le commit livré sont référencés dans la
+[preuve de livraison](software-factory.md#livraison-constatée-et-correctifs-locaux).
+Les correctifs de revue préparés dans `fix/review-software-factory` restent
+distincts : ni intégrés à `main`, ni validés par une CI native.
 Application statique, pas de backend ou plateforme d'exploitation ajoutée.
 
 ## Actualisation éditoriale et fabrication
@@ -110,8 +115,10 @@ Cela prouve une reprise de fichiers locaux, pas une reprise Pages en production.
 
 ## Monitoring et incident
 
-`site-monitor.yml` prépare un contrôle quotidien à 06:23 UTC et manuel. Le cron
-ne s'active qu'après intégration à la branche par défaut. Il utilise main comme
+`site-monitor.yml` est intégré à la branche par défaut ; il déclare un contrôle
+quotidien à 06:23 UTC et manuel. Cette intégration et le smoke de publication
+réussi ne prouvent **pas qu'un run planifié a été exécuté** : relever séparément
+son run et son résultat avant de l'affirmer. Il utilise main comme
 identité attendue et contrôle dix ressources, dont le manifeste et ses empreintes
 lockfile/snapshot comparées au checkout main, pas tous les hashes distants,
 l'audio, les inférences ML ou l'intégralité des interactions.

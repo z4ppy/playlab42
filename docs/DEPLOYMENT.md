@@ -13,8 +13,8 @@ PR toute base → CI réutilisable → contrôles + archive publique + navigateu
 Push main / lancement manuel sur main
   → check-ref
   → validate : appelle la même CI
-      ├─ lint qualité/sécurité JS, tests Jest et seuils ciblés, types, audit npm, OpenSpec
-      └─ build → archive github-pages → navigateur sur cette archive
+      ├─ lint qualité/sécurité JS, Trivy HIGH/CRITICAL, tests Jest et seuils ciblés, types, audit npm, OpenSpec
+      └─ Build : exige succès Security lint + Trivy → fabrication → archive github-pages → navigateur
   → deploy : publie cette archive après le succès de toute la CI
   → smoke : contrôle HTTP du site et du commit
 ```
@@ -27,7 +27,10 @@ Un contrôle requis échoué empêche `deploy` de démarrer.
 Le workflow CI ne se déclenche pas séparément sur push : le workflow de livraison
 l'appelle, sans doubler les suites. Les PR et les lancements manuels de CI restent
 possibles. Les analyses de sécurité complémentaires restent séparées, mais
-l'audit npm au seuil modéré est requis dans la CI et peut bloquer `deploy`.
+l'audit npm au seuil modéré, Security lint et Trivy vulnérabilités/secrets
+HIGH/CRITICAL (dépendances de développement incluses) sont bloquants dans la CI
+et peuvent empêcher `deploy`. Trivy utilise le même workflow réutilisable que
+l'audit complémentaire, avec des noms d'artefact distincts par appelant.
 
 ## Configuration GitHub
 
@@ -62,6 +65,30 @@ plus que `main` est dépourvue de protection.
 Ces noms ont été observés sur une PR native réussie, pas déduits des noms de
 workflows. Les contrôles consultatifs et le job Docker ignoré sur PR ne sont
 pas requis.
+
+**Correction locale `close-ci-review-gaps` : protection distante inchangée.**
+Les neuf noms ci-dessus restent exactement les mêmes ; ni `Security lint` ni
+Trivy ne sont ajoutés à cette configuration. Avant cette correction, une PR
+pouvait donc satisfaire les neuf checks malgré un Security lint rouge, même
+si la CI appelée avant publication refusait ce résultat.
+Le job déjà requis **Build** attend maintenant les deux gates et s'exécute
+avec `if: always()`. Sa toute première étape exige chaque résultat `success`
+et échoue pour `failure`, `skipped`, `cancelled` ou un résultat absent/inconnu,
+avant installation, build ou création d'archive. Un simple `needs` ne suffirait
+pas : un check ignoré est accepté par la protection GitHub.
+Le check Build requis couvre ainsi effectivement les deux gates sans mutation
+distante, lorsque ces workflows sont intégrés ; les tests Docker de cette
+correction ne constituent **pas une nouvelle CI native exécutée**.
+
+Les autres contrôles restent parallèles ; seul Build attend Security lint et
+Trivy, puis le navigateur attend Build. Le téléchargement vérifié et la base
+CVE ajoutent du temps et une dépendance réseau au chemin critique : mesurer
+ce pipeline natif après livraison, sans affaiblir le scan.
+
+Le rapport complémentaire conserve artefact et résumé pour les PR de forks
+avec token public en lecture seule. Il commente uniquement les PR de branches
+du même dépôt, avec appel API attendu et erreurs explicites ; aucun
+`pull_request_target` ni secret supplémentaire n'est nécessaire.
 
 **Limite assumée : zéro approbation externe obligatoire**, car l'API ne listait
 qu'un mainteneur capable de revoir les PR. Les PR et checks restent obligatoires

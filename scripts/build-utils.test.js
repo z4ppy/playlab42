@@ -1,12 +1,24 @@
 import { mkdtempSync, readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync, chmodSync, statSync } from 'node:fs';
+import * as fs from 'node:fs';
 import { jest } from '@jest/globals';
-import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import * as build from './lib/build-utils.js';
+
+const atomicIO = {
+  openSync: jest.fn(fs.openSync),
+  closeSync: jest.fn(fs.closeSync),
+  fchmodSync: jest.fn(fs.fchmodSync),
+  writeFileSync: jest.fn(fs.writeFileSync),
+  renameSync: jest.fn(fs.renameSync),
+};
+jest.unstable_mockModule('fs', () => ({ ...fs, ...atomicIO }));
+const build = await import('./lib/build-utils.js');
 
 let directory;
-beforeEach(() => { directory = mkdtempSync(join(tmpdir(), 'playlab-build-quality-')); });
-afterEach(() => rmSync(directory, { recursive: true, force: true }));
+beforeEach(() => { directory = mkdtempSync(join(process.cwd(), '.playlab-build-quality-')); });
+afterEach(() => {
+  rmSync(directory, { recursive: true, force: true });
+  jest.clearAllMocks();
+});
 
 describe('Contrats des utilitaires de fabrication', () => {
   test.each([
@@ -63,6 +75,73 @@ describe('Contrats des utilitaires de fabrication', () => {
     expect(readdirSync(directory)).toEqual(['output.json']);
     expect(statSync(path).mode & 0o777).toBe(0o600);
   });
+
+  test.each([0o022, 0o077])('préserver explicitement le mode 0664 malgré l’umask %s', mask => {
+    const path = join(directory, 'output.json');
+    writeFileSync(path, '{"old":true}');
+    chmodSync(path, 0o664);
+    const previousMask = process.umask(mask);
+    try {
+      build.writeJSONAtomicSync(path, { current: true });
+      expect(JSON.parse(readFileSync(path, 'utf8'))).toEqual({ current: true });
+      expect(statSync(path).mode & 0o777).toBe(0o664);
+      expect(readdirSync(directory)).toEqual(['output.json']);
+      expect(process.umask()).toBe(mask);
+    } finally {
+      process.umask(previousMask);
+    }
+  });
+
+  test.each([0o022, 0o077])('respecter l’umask %s pour un fichier nouveau', mask => {
+    const path = join(directory, 'nested', 'output.json');
+    const previousMask = process.umask(mask);
+    try {
+      build.writeJSONAtomicSync(path, { current: true });
+      expect(JSON.parse(readFileSync(path, 'utf8'))).toEqual({ current: true });
+      expect(statSync(path).mode & 0o777).toBe(0o666 & ~mask);
+      expect(readdirSync(join(directory, 'nested'))).toEqual(['output.json']);
+      expect(atomicIO.fchmodSync).not.toHaveBeenCalled();
+      expect(process.umask()).toBe(mask);
+    } finally {
+      process.umask(previousMask);
+    }
+  });
+
+  test('ne pas confondre un mode existant 0000 avec un fichier nouveau', () => {
+    const path = join(directory, 'output.json');
+    writeFileSync(path, '{"old":true}');
+    chmodSync(path, 0o000);
+    try {
+      build.writeJSONAtomicSync(path, { current: true });
+      expect(statSync(path).mode & 0o777).toBe(0o000);
+      expect(atomicIO.fchmodSync).toHaveBeenCalledWith(expect.any(Number), 0o000);
+      expect(readdirSync(directory)).toEqual(['output.json']);
+    } finally {
+      chmodSync(path, 0o600);
+    }
+    expect(JSON.parse(readFileSync(path, 'utf8'))).toEqual({ current: true });
+  });
+
+  test.each(['fchmodSync', 'writeFileSync', 'renameSync'])(
+    'préserver l’ancien contenu et nettoyer après un échec de %s',
+    operation => {
+      const path = join(directory, 'output.json');
+      writeFileSync(path, '{"old":true}');
+      chmodSync(path, 0o664);
+      const error = new Error(`Échec simulé : ${operation}`);
+      atomicIO[operation].mockImplementationOnce(() => { throw error; });
+      expect(() => build.writeJSONAtomicSync(path, { current: true })).toThrow(error);
+      expect(readFileSync(path, 'utf8')).toBe('{"old":true}');
+      expect(statSync(path).mode & 0o777).toBe(0o664);
+      expect(readdirSync(directory)).toEqual(['output.json']);
+      const descriptor = atomicIO.openSync.mock.results[0].value;
+      expect(atomicIO.closeSync).toHaveBeenCalledWith(descriptor);
+      expect(() => fs.fstatSync(descriptor)).toThrow(expect.objectContaining({ code: 'EBADF' }));
+      if (operation !== 'renameSync') {
+        expect(atomicIO.renameSync).not.toHaveBeenCalled();
+      }
+    },
+  );
 
   test('préserver le fichier précédent sur sérialisation impossible', () => {
     const path = join(directory, 'output.json');

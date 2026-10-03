@@ -1,5 +1,4 @@
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, symlinkSync } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -10,7 +9,7 @@ test.each([
   ['bookmarks', 'bookmarks', 'index.json', '{'],
   ['parcours', 'parcours', 'index.json', 'null'],
 ])('le vrai builder %s échoue explicitement sans remplacer son dernier catalogue', (builder, folder, filename, content) => {
-  const root = mkdtempSync(join(tmpdir(), 'playlab-library-input-quality-'));
+  const root = mkdtempSync(join(getRootDir(import.meta.url), '.builder-input-quality-'));
   try {
     mkdirSync(join(root, 'scripts'));
     mkdirSync(join(root, folder), { recursive: true });

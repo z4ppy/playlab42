@@ -15,6 +15,12 @@ permissions:
   contents: read
 
 jobs:
+  trivy-scan:
+    name: Trivy Security Scan
+    uses: ./.github/workflows/trivy-scan.yml
+    with:
+      artifact-name: ci-trivy-results
+
   security-lint:
     name: Security lint
     runs-on: ubuntu-latest
@@ -122,8 +128,26 @@ jobs:
   # Job de build (vérifie que le build fonctionne)
   build:
     name: Build
+    needs: [security-lint, trivy-scan]
+    # Un job ignoré satisfait la protection GitHub : échouer explicitement plutôt que sauter Build.
+    if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: Exiger le succès des gates de sécurité
+        shell: bash
+        env:
+          SECURITY_LINT_RESULT: ${{ needs.security-lint.result }}
+          TRIVY_SCAN_RESULT: ${{ needs.trivy-scan.result }}
+        run: |
+          require_success() {
+            if [ "$2" != "success" ]; then
+              echo "::error::Le contrôle $1 doit réussir (statut : $2)."
+              exit 1
+            fi
+          }
+          require_success security-lint "$SECURITY_LINT_RESULT"
+          require_success trivy-scan "$TRIVY_SCAN_RESULT"
+
       - name: Checkout du code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 

@@ -16,12 +16,13 @@ Ce guide est la référence commune aux contributeurs et aux skills ; la
 | Jest | Tests avec seuils ciblés ci-dessous | Couverture de lignes, pas qualité des assertions |
 | Playwright | Interactions, clavier, thèmes et ressources du site préparé | Socle Chromium, pas tous les navigateurs |
 | npm audit | Seuil modéré bloquant, dépendances de fabrication incluses | CVE connues au moment de l'exécution ; panne du registre = échec |
-| Trivy | Outil 0.75.0 vérifié ; vulnérabilités/secrets HIGH et CRITICAL bloquants dans le workflow complémentaire | Base évolutive ; pas un gate complet de configuration Docker |
+| Trivy | Outil 0.75.0 vérifié ; scan partagé CI/audit, vulnérabilités/secrets HIGH et CRITICAL bloquants, dépendances de développement incluses | Base évolutive ; pas un gate complet de configuration Docker |
 | OpenSpec | Structure stricte des exigences et changes | Ne vérifie pas le comportement du code |
 
 La CI réutilisée avant publication exige lint qualité JS/HTML/TS et sécurité JS/HTML, tests, types,
-audit npm, OpenSpec, navigateur et build. Trivy appartient au workflow
-complémentaire, qui reste séparé et conserve certains diagnostics consultatifs. Le
+audit npm, Trivy, OpenSpec, navigateur et build. Build exige le succès de
+Security lint et du scan Trivy partagé. Le workflow d'audit complémentaire
+reste séparé et conserve certains diagnostics consultatifs. Le
 rapport de sécurité affiche les états réels des jobs : une analyse annulée,
 ignorée ou sans résultat exploitable ne devient pas « aucun problème ».
 Un succès peut conserver des diagnostics hors du périmètre bloquant :
@@ -135,6 +136,10 @@ son auto-formatage. Une régression à horloge contrôlée couvre cette concurre
 
 ### Contrats critiques de fabrication (lot 4)
 
+Le socle des lots 3 à 5 est intégré à `main` et publié via la PR #144 le
+3 octobre 2026 ; voir la [preuve datée](software-factory.md#livraison-constatée-et-correctifs-locaux).
+Les garanties ci-dessous décrivent ce socle, pas une certification globale.
+
 ESLint impose une **complexité cyclomatique ≤ 10** aux fonctions de
 `scripts/lib/build-utils.js` et `scripts/og-fetcher.js`. L'extraction OG mesurée
 passe de **14 à 8**, l'orchestration de **17 à 6** : parsing des attributs,
@@ -162,6 +167,13 @@ Ce n'est ni une transaction couvrant tous les assets/slides, ni une sérialisati
 de builds concurrents, ni une garantie de durabilité après coupure électrique.
 La couverture mesurée est 100 % sur les helpers ; OG dépasse les seuils ciblés,
 sans prétendre couvrir tout le dépôt ou le réseau réel par des mocks.
+
+La revue prépare dans `fix/review-software-factory` des corrections des builders,
+de préservation des images OG et du mode d'écriture atomique. Elle prépare aussi
+Build, déjà requis, comme gate exigeant le succès de Security lint et de Trivy
+HIGH/CRITICAL dans un workflow réutilisable partagé ; un gate ignoré ne doit
+pas être accepté. Ces correctifs ne sont **ni intégrés à `main`, ni validés par une
+CI native** ; ils ne changent pas les neuf checks GitHub actuellement requis.
 
 ## Tester les bons comportements
 
@@ -209,9 +221,14 @@ de vulnérabilités.
 | 1 — socle, PR #135 intégrée | Lint strict, audit npm requis, seuils ciblés, rapports fidèles, guide/revue | Checks natifs constatés et code intégré à main ; archivage sur décision distincte |
 | 2 — sécurité et reproductibilité, PR #136 intégrée | Moderniser ESLint Security, épingler actions/scanners/images, définir gates et exceptions | Outils exécutés, références vérifiables, intégration à main constatée ; archive distincte |
 | Avant 3 — optimisation CI | Corriger l'attente HTTP après enrichissement OG ; installations/cache/parallélisme conservés après mesure | Fixtures quittant naturellement sous 3 s, comparaison native avant/après ; gates et archive inchangés |
-| 3 — couverture du lint, PR #140 | Biome TS, ESLint scripts HTML et corrections de l'existant, alignement local/CI | Vrais CLI, entrées interdites refusées ; checks natifs constatés, intégration distincte |
-| 4 — qualité du code, PR #142 validée | Contrats JSON/cache, responsabilités, complexité ciblée, persistance atomique et idempotence Diese & Mat | Défauts reproduits et checks natifs constatés ; intégration distincte |
-| 5 — fabrication et exploitation préparée | Snapshot OG séparé, inventaire/SBOM, provenance non signée, monitoring et reprise locale | Deux fabrications comparées, archive vérifiée et restauration tar exercée ; publication/monitoring natif distincts |
+| 3 — couverture du lint, livré via PR #144 | Biome TS, ESLint scripts HTML et corrections de l'existant, alignement local/CI | Vrais CLI, entrées interdites refusées ; intégré à main et publié |
+| 4 — qualité du code, livré via PR #144 | Contrats JSON/cache, responsabilités, complexité ciblée, persistance atomique et idempotence Diese & Mat | Défauts reproduits, checks natifs constatés ; intégré à main et publié |
+| 5 — fabrication et exploitation, livré via PR #144 | Snapshot OG séparé, inventaire/SBOM, provenance non signée, workflow de monitoring intégré et reprise locale | Deux fabrications comparées, archive vérifiée et restauration tar exercée ; publication constatée, run planifié à constater séparément |
+
+Historique au 3 octobre 2026 : les PR #140 (lot 3) et #142 (lot 4) portaient
+les validations intermédiaires de la pile. La PR #144 a livré les lots 3 à 5
+ensemble ; leur ancien état « préparé » ne décrit plus la livraison actuelle.
+L'archivage OpenSpec exige toujours une autorisation distincte.
 
 La **protection classique de `main` est désormais active sur GitHub** :
 PR, neuf checks natifs après observation de la PR #135, discussions résolues et historique linéaire, sans bypass

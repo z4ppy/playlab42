@@ -177,6 +177,25 @@ function hello() {
 - Coloration syntaxique automatique pour le code
 - Conversion automatique lors du `build:parcours`
 
+**Source et sorties générées :**
+- `index.md` est la source ; chaque build régénère `index.html` avec le Markdown,
+  le titre de `slide.json` et le template courant `parcours/_shared/slide-template.html`.
+- La sortie commence exactement par `<!-- playlab42:generated-from-index.md -->`
+  suivi d'un saut de ligne LF à l'écriture. La reconnaissance accepte LF ou CRLF
+  (par exemple après un checkout Git), mais uniquement ce commentaire exact
+  en première ligne. Ne pas modifier cette sortie ni retirer son marqueur :
+  les modifications manuelles seraient perdues au prochain build.
+- Un `index.html` auteur seul reste intact et ne nécessite pas le template.
+- Une paire `index.md` / `index.html` sans marqueur est ambiguë : le build échoue,
+  sans écraser le HTML ni remplacer `data/parcours.json`. Aucun choix de source
+  ne dépend de dates, du contenu ou du champ optionnel `format`.
+- Pour migrer une ancienne sortie sans marqueur, relire et sauvegarder le HTML
+  hors des sources, puis supprimer **uniquement cette sortie** et reconstruire
+  depuis `index.md`. Si le HTML est la source à conserver, retirer `index.md`.
+- Un template absent avec du Markdown, ou un HTML marqué dont `index.md` a
+  disparu, fait échouer le build. Pour adopter volontairement une sortie comme
+  HTML auteur, retirer le Markdown et le marqueur après revue.
+
 ### 4. Organiser avec des sections
 
 Pour structurer un epic avec plusieurs slides, utilisez des sections :

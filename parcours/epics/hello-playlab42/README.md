@@ -1,7 +1,8 @@
 # PlayLab42 — Guide et usine logicielle
 
-Parcours débutant actualisé le **3 octobre 2026**, depuis `main` (`407dd25`), puis
-complété avec les corrections de livraison de ce worktree. Il distingue code
+Parcours débutant actualisé le **3 octobre 2026**. Sa première révision partait
+de `main` (`407dd25`, référence historique) ; les lots 3 à 5 ont depuis été
+intégrés à `main` et publiés via la PR #144. Il distingue code
 préparé, livraison réelle et améliorations proposées, sans inventer de backend.
 
 ## Organisation
@@ -37,20 +38,35 @@ l'archive publique testée puis publiée et le smoke HTTP.
 et le skill de revue. Une protection classique de `main` a ensuite été activée
 sur autorisation : PR et neuf checks requis après observation de la PR #135, sans bypass admin. La revue
 indépendante attend un second reviewer. L'extension des seuils, prévisualisations,
-provenance signée et surveillance périodique restent proposées.
+provenance signée restent proposées. Le workflow de surveillance périodique
+est intégré ; son exécution planifiée et ses notifications demandent des preuves distinctes.
 
 Le lot 1 est intégré à `main` via la [PR #135](https://github.com/z4ppy/playlab42/pull/135)
 (`b20c1e1`). Le change actif `pin-and-modernize-quality-toolchain`
 décrit le lot 2 intégré via la PR #136 (`b55ecb9`) : lint de sécurité JS ciblé, références
 immuables, scanners vérifiés, corrections du glossaire et du formateur JSON.
-La fusion est constatée ; déploiement et archivage restent des étapes distinctes.
-Le lot 3 priorise la couverture du lint (TS et scripts HTML pertinents), sans
-forcer les dépendances ; le lot 4 traite la qualité du code. Les heuristiques
-consultatives restent une dette de triage explicite.
-Dans le worktree du lot 3, `complete-source-lint-coverage` ajoute Biome 2.5.15
-pour les `.ts` et eslint-plugin-html 8.2.1 pour les scripts, corrige les sources
-et migre les attributs événementiels. Les règles de sécurité ESLint restent
-limitées à JS/HTML et le contrôle strict tsc demeure séparé.
+Les fusions précédentes sont des jalons historiques ; le déploiement et
+l'archivage restent des décisions et observations distinctes.
+Le lot 3 livré (`complete-source-lint-coverage`) fournit Biome 2.5.15 pour
+les `.ts` et eslint-plugin-html 8.2.1 pour les scripts, corrige les sources
+et migre les attributs événementiels. Le lot 4 livre les contrats de fabrication
+et la persistance atomique ; le lot 5 livre le snapshot OG, l'inventaire/SBOM
+non signé, le workflow de monitoring et la reprise locale.
+La [preuve datée de livraison](../../../docs/guides/software-factory.md#livraison-constatée-et-correctifs-locaux)
+référence la PR #144 et les runs de publication et sécurité réussis sur le
+commit main livré. Les règles de sécurité ESLint restent limitées à JS/HTML
+et le contrôle strict tsc demeure séparé. Les heuristiques consultatives
+restent une dette de triage explicite.
+
+Les correctifs de revue des builders, des images OG et du mode d'écriture
+atomique sont préparés dans `fix/review-software-factory`, pas livrés.
+Le gate préparé sur Build, déjà requis, exige le succès de Security lint et
+Trivy HIGH/CRITICAL via un workflow réutilisable partagé, sans accepter un
+gate ignoré. Ces correctifs ne sont **ni intégrés à main, ni validés par une CI
+native**. Les neuf checks GitHub requis ne sont pas les dix ressources HTTP
+du smoke, qui incluent désormais le manifeste.
+Aucun run cron réussi, rollback de production ou archivage OpenSpec n'est
+déduit de la publication ; l'archivage nécessite une autorisation distincte.
 
 ## Présentation et validation
 
