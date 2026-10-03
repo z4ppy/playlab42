@@ -31,6 +31,7 @@ export function buildSite({ root = getRootDir(import.meta.url), commit = process
   }
   const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
   if (typeof version !== 'string' || !version) {throw new Error('Version du projet absente.');}
+  const images = referencedBookmarkImages(root);
   const output = join(root, 'site');
   if (existsSync(output)) {
     if (lstatSync(output).isSymbolicLink() || !existsSync(join(output, 'build-info.json'))) {
@@ -41,7 +42,9 @@ export function buildSite({ root = getRootDir(import.meta.url), commit = process
   mkdirSync(output);
   writeFileSync(join(output, 'build-info.json'), `${JSON.stringify({ version, commit }, null, 2)}\n`);
   const filter = source => {
-    if (!isPublicSitePath(relative(root, source))) {return false;}
+    const path = relative(root, source).split(/[\\/]/).join('/');
+    if (!isPublicSitePath(path)) {return false;}
+    if (path.startsWith('data/bookmarks-images/') && !images.has(path)) {return false;}
     if (lstatSync(source).isSymbolicLink()) {
       throw new Error(`Lien symbolique non publiable : ${relative(root, source)}`);
     }
@@ -57,6 +60,35 @@ export function buildSite({ root = getRootDir(import.meta.url), commit = process
     if (!existsSync(join(output, name))) {throw new Error(`Build préalable incomplet : ${name}`);}
   }
   return output;
+}
+
+/**
+ * @param {string} root Racine des sources ou du site extrait
+ * @returns {Set<string>} Images locales référencées, présentes et régulières
+ */
+export function referencedBookmarkImages(root) {
+  const catalogue = JSON.parse(readFileSync(join(root, 'data/bookmarks.json'), 'utf8'));
+  if (!Array.isArray(catalogue.categories)) {throw new Error('Catalogue bookmarks invalide : categories requises.');}
+  const images = new Set();
+  for (const category of catalogue.categories) {
+    if (!Array.isArray(category.bookmarks)) {throw new Error('Catalogue bookmarks invalide : bookmarks requis.');}
+    for (const bookmark of category.bookmarks) {
+      const image = bookmark.meta?.ogImage || bookmark.image;
+      if (!image?.startsWith('data/bookmarks-images/')) {continue;}
+      if (!/^data\/bookmarks-images\/[a-z\d][a-z\d._-]*\.(?:png|jpe?g|webp|gif|svg)$/i.test(image)) {
+        throw new Error(`Chemin image bookmark invalide : ${image}`);
+      }
+      let stat;
+      try {
+        stat = lstatSync(join(root, image));
+      } catch (cause) {
+        throw new Error(`Image bookmark locale indisponible : ${image} (${cause.message})`, { cause });
+      }
+      if (!stat.isFile()) {throw new Error(`Image bookmark locale non régulière : ${image}`);}
+      images.add(image);
+    }
+  }
+  return images;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

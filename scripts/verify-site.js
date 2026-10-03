@@ -2,6 +2,7 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getRootDir, readJSONSync } from './lib/build-utils.js';
 import { inventorySite } from './lib/artifact-inventory.js';
+import { referencedBookmarkImages } from './build-site.js';
 
 /**
  * Vérifie tous les fichiers de l'artefact contre son manifeste et le commit attendu.
@@ -26,6 +27,7 @@ export function verifySite(site, expectedCommit = null) {
   if (JSON.stringify(actual) !== JSON.stringify(manifest.files)) {
     throw new Error('Intégrité du site invalide : fichiers modifiés, absents, supplémentaires ou inventaire non canonique.');
   }
+  referencedBookmarkImages(site);
   return { version: manifest.version, commit: manifest.commit, checked: actual.length };
 }
 

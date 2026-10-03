@@ -26,6 +26,10 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   elles ne correspondaient plus à aucune URL du catalogue
 
 ### Changed
+- Images OG : un téléchargement ignoré par Git n'est plus référencé comme image
+  locale persistante ; URL distante d'origine utilisée, entités HTML décodées,
+  images éditoriales locales conservées et vérifiées. Cache non référencé exclu
+  du site, métadonnées précédentes conservées sur échec de refresh.
 - Le build normal ne collecte plus les métadonnées OG distantes :
   `refresh:bookmarks` produit le snapshot à relire ; `build:local` omet
   l'enrichissement. Les échecs et limites restent explicites.

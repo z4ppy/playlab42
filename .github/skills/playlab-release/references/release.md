@@ -29,6 +29,9 @@ Ne pas exécuter un refresh éditorial juste pour verdir une fabrication.
 Le build complet prépare `site/`. La CI navigateur teste l'archive publique
 extraite avec `PLAYWRIGHT_PREBUILT=1` ; ne pas reconstruire cette archive avant
 de la déclarer validée. La publication réutilise la CI et cette même archive.
+Vérifier les images locales réellement référencées, pas seulement les hashes :
+le cache OG ignoré ne doit pas entrer dans l'archive. Une nouvelle image OG
+utilise son URL distante, sauf revue et versionnement local explicites.
 Le smoke HTTP vérifie ensuite le SHA publié, sans rollback automatique.
 La SBOM npm décrit la fabrication, pas tout le runtime du navigateur.
 L'inventaire est hashé mais non signé ; consulter le

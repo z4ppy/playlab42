@@ -22,7 +22,7 @@ const CONFIG = {
   // User-Agent réaliste pour éviter les blocages
   userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
   // Re-télécharger les images OG déjà présentes dans data/bookmarks-images/.
-  // Désactivé par défaut : ces fichiers sont versionnés et peuvent avoir été
+  // Désactivé par défaut : des fichiers sont versionnés et peuvent avoir été
   // optimisés (redimensionnement/recompression). Un re-téléchargement écraserait
   // ce travail par l'original pleine taille à la première expiration du cache
   // de métadonnées (cacheDays), y compris quand data/bookmarks-cache.json est
@@ -109,8 +109,10 @@ function decodeCodePoint(value, radix) {
 
 /**
  * Décode les entités HTML (nommées et numériques)
+ * @param {string} str Texte ou attribut HTML
+ * @returns {string} Valeur décodée
  */
-function decodeHTMLEntities(str) {
+export function decodeHTMLEntities(str) {
   // Entités nommées courantes (utilise codes Unicode pour éviter pb encodage)
   const namedEntities = {
     '&amp;': '&',
@@ -242,18 +244,18 @@ export function findExistingImage(pageUrl) {
 }
 
 /**
- * Construit des métadonnées de repli à partir des fichiers versionnés.
+ * Construit des métadonnées de repli à partir des fichiers locaux disponibles.
  *
- * Les images de data/bookmarks-images/ sont versionnées : elles restent
- * exploitables même quand la page n'est pas joignable (CI sans réseau sortant,
- * site hors ligne, domaine qui bloque le User-Agent du build). Sans ce repli,
- * un échec réseau vidait la preview de son image alors que le fichier était là.
+ * Ce dossier mêle quelques images versionnées et le cache technique ignoré.
+ * Le repli de transport ne décide pas de leur publication : editorialMetadata
+ * conserve une référence locale uniquement si le snapshot précédent la contient.
+ * Le flag historique fromVersionedImage ne prouve pas le suivi Git.
  *
  * Le repli ne porte volontairement pas de `fetchedAt` : il ne doit pas entrer
  * dans le cache ni empêcher une vraie tentative réseau au build suivant.
  *
  * @param {string} url - URL de la page
- * @returns {object|null} Métadonnées minimales, ou null si aucune image versionnée
+ * @returns {object|null} Métadonnées minimales, ou null si aucune image locale
  */
 export function buildFallbackMeta(url) {
   const existing = findExistingImage(url);
@@ -332,7 +334,7 @@ async function downloadImage(imageUrl, pageUrl) {
  * @param {object} cache - Cache des métadonnées
  * @returns {Promise<{meta: object|null, fromCache: boolean, failed?: boolean}>}
  *   `failed` signale un échec réseau. `meta` peut malgré tout être renseigné,
- *   via le repli sur les images versionnées (cf. buildFallbackMeta).
+ *   via le repli sur les images locales (cf. buildFallbackMeta).
  */
 export async function fetchOGMetadata(url, cache) {
   // Vérifier le cache
@@ -386,16 +388,19 @@ function reportMetadata(url, meta) {
 
 function failedMetadata(url, message) {
   const meta = buildFallbackMeta(url);
-  console.log(`  ${message}${meta ? ' (image versionnée conservée)' : ''}`);
+  console.log(`  ${message}${meta ? ' (image locale disponible)' : ''}`);
   return { meta, fromCache: false, failed: true };
 }
 
 async function enrichImage(meta, url) {
   if (meta.ogImage) {
-    const localImage = await downloadImage(meta.ogImage, url);
+    const imageURL = new URL(decodeHTMLEntities(meta.ogImage), url).href;
+    const localImage = await downloadImage(imageURL, url);
     if (localImage) {
       meta.ogImageOriginal = meta.ogImage;
       meta.ogImage = localImage;
+    } else {
+      meta.ogImage = imageURL;
     }
     return;
   }

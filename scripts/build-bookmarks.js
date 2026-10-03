@@ -6,8 +6,8 @@
 
 import { existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { fetchOGMetadata, loadCache, saveCache, buildFallbackMeta } from './og-fetcher.js';
-import { loadOGSnapshot, validateOGSnapshot } from './lib/bookmark-metadata.js';
+import { fetchOGMetadata, loadCache, saveCache } from './og-fetcher.js';
+import { loadOGSnapshot, validateOGSnapshot, editorialMetadata } from './lib/bookmark-metadata.js';
 import {
   getRootDir,
   extractDomain,
@@ -270,6 +270,7 @@ function deduplicateBookmarks(categories, moduleBookmarks) {
  */
 async function enrichWithOGMetadata(categories) {
   const cache = loadCache();
+  const previous = loadOGSnapshot(SNAPSHOT_FILE, true);
   const entries = {};
   const allBookmarks = [];
 
@@ -290,12 +291,8 @@ async function enrichWithOGMetadata(categories) {
       if (result.fromCache) {
         stats.ogCached++;
       } else if (result.failed) {
-        // L'échec réseau reste un échec : le repli fournit l'image versionnée,
-        // pas le titre ni la description à jour.
+        // Les métadonnées précédentes restent utilisables, pas à jour pour autant.
         stats.ogFailed++;
-        if (result.meta?.fromVersionedImage) {
-          stats.ogImageRecovered++;
-        }
       } else if (result.meta) {
         stats.ogFetched++;
       } else {
@@ -303,14 +300,17 @@ async function enrichWithOGMetadata(categories) {
       }
 
       // Enrichir le bookmark (titre/description/image manuels prioritaires, OG en fallback)
-      entries[bookmark.url] = { ...result.meta };
-      bookmark.meta = { ...result.meta };
+      entries[bookmark.url] = editorialMetadata(result, bookmark.url, previous);
+      bookmark.meta = { ...entries[bookmark.url] };
+      if (result.failed && bookmark.meta.ogImage?.startsWith('data/bookmarks-images/')) {
+        stats.ogImageRecovered++;
+      }
       // Si une image est spécifiée manuellement dans le bookmark, l'utiliser
       if (bookmark.image) {
         bookmark.meta.ogImage = bookmark.image;
       }
-      bookmark.displayTitle = bookmark.title || result.meta?.ogTitle;
-      bookmark.displayDescription = bookmark.description || result.meta?.ogDescription;
+      bookmark.displayTitle = bookmark.title || bookmark.meta.ogTitle;
+      bookmark.displayDescription = bookmark.description || bookmark.meta.ogDescription;
     }));
   }
 
@@ -330,7 +330,7 @@ function enrichFromSnapshot(categories) {
     for (const bookmark of category.bookmarks) {
       const meta = entries[bookmark.url];
       if (!meta || !Object.keys(meta).length) {stats.warnings.push(`Métadonnées OG absentes du snapshot : ${bookmark.url}`);}
-      bookmark.meta = { ...(meta || buildFallbackMeta(bookmark.url)) };
+      bookmark.meta = { ...meta };
       if (bookmark.image) {bookmark.meta.ogImage = bookmark.image;}
       bookmark.displayTitle = bookmark.title || bookmark.meta.ogTitle;
       bookmark.displayDescription = bookmark.description || bookmark.meta.ogDescription;
