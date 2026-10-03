@@ -606,6 +606,11 @@ du cœur entier. Après les garde-fous finaux, **122 suites / 2 636 tests** et
 lint/types/audit npm/OpenSpec sont verts dans Docker ; les treize seuils
 hérités et les onze nouveaux sélecteurs sont appliqués. La CI native du head
 final reste à consigner une fois effectivement réalisée.
+Au commit `74ebcef`, deux builds Docker **hors réseau** produisent le même
+manifeste de hashes, avec `SOURCE_DATE_EPOCH=1791061551` (main de référence).
+Les **1 024 fichiers** sont vérifiés, la restauration tar détecte une corruption
+et les **70 scénarios Chromium** passent sur ce site préparé, vérifié à nouveau
+après les interactions. Ces preuves locales ne se substituent pas à la CI native.
 
 ## Maintenance des références et exceptions
 

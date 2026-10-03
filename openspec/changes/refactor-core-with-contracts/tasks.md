@@ -24,6 +24,6 @@
 - [x] Collecte et budgets ciblés après mesure, sans baisse des seuils hérités.
 - [x] Guides et parcours alignés, avec limites et preuves datées.
 - [x] Revue et validation intégrée complète dans Docker.
-- [ ] Builds reproductibles, archive vérifiée et Chromium réel.
+- [x] Builds reproductibles, archive vérifiée et Chromium réel.
 - [ ] PR et dernière tête native vérifiées.
 - [ ] Livraison constatée et décision explicite d'archivage, hors autorisation actuelle.
