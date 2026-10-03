@@ -35,6 +35,8 @@
  * @property {'move'} type - Type d'action
  * @property {Position} from - Position de départ
  * @property {Position} to - Position d'arrivée
+ * @property {Position[]} [captured] - Trajet proposé : utilisé seulement s'il
+ * correspond à une action légale. Sinon, premier trajet légal pour from/to.
  *
  * @typedef {Object} CheckersConfig
  * @property {number} seed - Seed pour le RNG
@@ -101,7 +103,8 @@ export class CheckersEngine {
       throw new Error('Not your turn');
     }
 
-    if (!this.isValidAction(state, action, playerId)) {
+    const legalAction = this.#getLegalAction(state, action, playerId);
+    if (!legalAction) {
       throw new Error('Invalid action');
     }
 
@@ -109,8 +112,8 @@ export class CheckersEngine {
     const newBoard = state.board.map((row) => [...row]);
     const piece = newBoard[action.from.row][action.from.col];
 
-    // Calculer les captures (utiliser action.captured si fourni, sinon calculer)
-    const captures = action.captured || this.#getCapturesForMove(state, action.from, action.to);
+    // Seul un trajet produit par le moteur peut autoriser des captures.
+    const captures = legalAction.captured || [];
 
     // Déplacer la pièce
     newBoard[action.to.row][action.to.col] = piece;
@@ -162,19 +165,38 @@ export class CheckersEngine {
    * @returns {boolean}
    */
   isValidAction(state, action, playerId) {
-    if (state.status !== 'playing') {return false;}
+    return Boolean(this.#getLegalAction(state, action, playerId));
+  }
 
-    const playerIndex = state.playerIds.indexOf(playerId);
-    if (playerIndex !== state.currentPlayer) {return false;}
-
-    const validActions = this.getValidActions(state, playerId);
-    return validActions.some(
+  /**
+   * Résout les extrémités et, si fourni, un trajet légal pour les départager.
+   * Les métadonnées absentes ou contradictoires ne changent pas la validité
+   * de from/to : le premier trajet légal fait foi dans ce cas.
+   * @param {CheckersState} state
+   * @param {CheckersAction} action
+   * @param {string} playerId
+   * @returns {CheckersAction | undefined}
+   */
+  #getLegalAction(state, action, playerId) {
+    const matchingActions = this.getValidActions(state, playerId).filter(
       (a) =>
         a.from.row === action.from.row &&
         a.from.col === action.from.col &&
         a.to.row === action.to.row &&
         a.to.col === action.to.col,
     );
+    if (matchingActions.length === 0) {return undefined;}
+    if (Array.isArray(action.captured)) {
+      const matchingRoute = matchingActions.find((a) =>
+        (a.captured || []).length === action.captured.length &&
+        (a.captured || []).every((capture, index) =>
+          capture.row === action.captured[index]?.row &&
+          capture.col === action.captured[index]?.col,
+        ),
+      );
+      if (matchingRoute) {return matchingRoute;}
+    }
+    return matchingActions[0];
   }
 
   /**
@@ -455,37 +477,6 @@ export class CheckersEngine {
     }
 
     return sequences;
-  }
-
-  /**
-   * Calcule les pièces capturées pour un mouvement
-   * @param {CheckersState} state
-   * @param {Position} from
-   * @param {Position} to
-   * @returns {Position[]}
-   * @private
-   */
-  #getCapturesForMove(state, from, to) {
-    const piece = state.board[from.row][from.col];
-    if (!piece) {return [];}
-
-    const dr = Math.sign(to.row - from.row);
-    const dc = Math.sign(to.col - from.col);
-    const distance = Math.max(Math.abs(to.row - from.row), Math.abs(to.col - from.col));
-
-    const captures = [];
-
-    // Parcourir le chemin
-    for (let step = 1; step < distance; step++) {
-      const checkPos = { row: from.row + dr * step, col: from.col + dc * step };
-      const checkPiece = state.board[checkPos.row][checkPos.col];
-
-      if (checkPiece && checkPiece.player !== piece.player) {
-        captures.push(checkPos);
-      }
-    }
-
-    return captures;
   }
 
   /**
