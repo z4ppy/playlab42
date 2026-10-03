@@ -16,7 +16,7 @@ const sdkSource = execFileSync('node_modules/.bin/esbuild', [
 
 const { state, setState } = await import('./state.js');
 const { el } = await import('./dom-cache.js');
-const { openGame, unloadGame } = await import('./game-loader.js');
+const { openGame, openTool, unloadGame } = await import('./game-loader.js');
 const { setupEventListeners } = await import('./events.js');
 setupEventListeners();
 
@@ -75,6 +75,7 @@ describe('Préférence ready et reprise de la session affichée', () => {
     const postMessage = jest.spyOn(window, 'postMessage').mockImplementation((data) => {
       setTimeout(() => send(data, source), 0);
     });
+    postMessage.mockClear();
     sdk.init('a');
     expect(postMessage).toHaveBeenCalledTimes(1);
     expect(postMessage).toHaveBeenCalledWith({ type: 'ready', game: 'a' }, '*');
@@ -136,4 +137,43 @@ describe('Préférence ready et reprise de la session affichée', () => {
     expect(window.location.hash).toBe('#/');
     expect(el.gameIframe.src).toBe('about:blank');
   });
+
+  it.each(['game', 'tool'])(
+    'le même %s actif garde son SDK, mais sa réouverture après unload le recrée',
+    async (type) => {
+      const open = type === 'game' ? openGame : openTool;
+      fetch.mockResolvedValue({ ok: true });
+      el.tabGames.focus();
+      await open('a');
+      const sourceA = await initializeDisplayedSdk();
+      const sdkA = sdk;
+      const sessionA = state.currentGame;
+      await open('a');
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(state.currentGame).toBe(sessionA);
+      expect(el.gameIframe.contentWindow).toBe(sourceA);
+      expect(sourceA.PlaylabGameKit.GameKit).toBe(sdkA);
+      expect(sdkA._initialized).toBe(true);
+      expect(sdkA.isSoundEnabled()).toBe(false);
+
+      unloadGame();
+      await jest.advanceTimersByTimeAsync(0);
+      expect(sdkA._initialized).toBe(false);
+      await open('a');
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(state.currentGame).not.toBe(sessionA);
+      expect(el.gameIframe.contentWindow).not.toBe(sourceA);
+      const sourceB = await initializeDisplayedSdk();
+      expect(sourceB.PlaylabGameKit.GameKit).not.toBe(sdkA);
+      expect(sdk._initialized).toBe(true);
+      expect(sdk.isSoundEnabled()).toBe(false);
+      el.gameIframe.onload();
+      jest.advanceTimersByTime(100);
+      expect(state.currentView).toBe('game');
+      expect(window.location.hash).toBe(`#/${type === 'game' ? 'games' : 'tools'}/a`);
+      expect(el.loading.classList.contains('hidden')).toBe(true);
+      expect(document.activeElement).toBe(el.btnBack);
+      expect(state.recentGames).toHaveLength(1);
+    },
+  );
 });
