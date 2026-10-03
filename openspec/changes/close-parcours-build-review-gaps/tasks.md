@@ -15,4 +15,7 @@
 
 ## Delivery
 
-Aucun commit, push, merge, publication ou archivage n'est demandé ni réalisé.
+La préparation initiale n'incluait aucun commit, push, merge, publication ou
+archivage. L'utilisateur a ensuite demandé l'ouverture de la PR #145 vers main :
+commit/push et PR sont réalisés, avec une première validation native datée
+sur `a5598b2`. Aucun merge, publication ou archivage n'est demandé ni réalisé.

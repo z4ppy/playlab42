@@ -83,7 +83,7 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     for (const document of [factory, quality, operations, readme]) {
       expect(document).toMatch(/intégrés? à `?main`? et publiés?/);
       expect(document).toContain('fix/review-software-factory');
-      expect(document).toMatch(/ni intégrés à `?main`?, ni\s+validés par une\s+CI\s+native/);
+      expect(document).toMatch(/non intégrés à `?main`? et non\s+déployés/);
     }
     expect(operations).toMatch(/pas qu'un run planifié a été exécuté/);
     expect(operations).toContain('Cela prouve une reprise de fichiers locaux, pas une reprise Pages en production.');

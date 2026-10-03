@@ -168,12 +168,14 @@ de builds concurrents, ni une garantie de durabilité après coupure électrique
 La couverture mesurée est 100 % sur les helpers ; OG dépasse les seuils ciblés,
 sans prétendre couvrir tout le dépôt ou le réseau réel par des mocks.
 
-La revue prépare dans `fix/review-software-factory` des corrections des builders,
-de préservation des images OG et du mode d'écriture atomique. Elle prépare aussi
+La PR de revue propose des corrections des builders, de préservation des images
+OG et du mode d'écriture atomique depuis `fix/review-software-factory`. Elle ajoute aussi
 Build, déjà requis, comme gate exigeant le succès de Security lint et de Trivy
 HIGH/CRITICAL dans un workflow réutilisable partagé ; un gate ignoré ne doit
-pas être accepté. Ces correctifs ne sont **ni intégrés à `main`, ni validés par une
-CI native** ; ils ne changent pas les neuf checks GitHub actuellement requis.
+pas être accepté. Ces correctifs restent **non intégrés à `main` et non déployés** ;
+ils ne changent pas les neuf checks GitHub actuellement requis. La
+[validation native datée de la PR](software-factory.md#livraison-constatée-et-correctifs-locaux)
+est distincte de sa livraison et ne remplace pas les checks de sa tête courante.
 
 ## Tester les bons comportements
 

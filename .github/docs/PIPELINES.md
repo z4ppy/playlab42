@@ -134,7 +134,9 @@ Les heuristiques de lint consultatives sont accessibles par
   des checks distants requis supplémentaires ; le check déjà requis **Build**
   agrège leur succès et ferme le trou de merge de Security lint.
   Cette couverture effective dépend de l'intégration des workflows corrigés ;
-  aucune nouvelle CI native, fusion ou publication n'est attestée par ces tests locaux.
+  les tests locaux ne suffisent pas à attester une CI native, fusion ou publication.
+  La [preuve native datée de la PR](../../docs/guides/software-factory.md#livraison-constatée-et-correctifs-locaux)
+  est désormais disponible ; elle ne constitue pas une livraison.
 
 ## Vérifier avant une PR
 
@@ -185,8 +187,12 @@ Build et Browser attendent le plus lent des deux gates de sécurité.
 L'audit complémentaire conserve son invocation indépendante du même workflow ;
 cela partage la logique, pas l'exécution ni la base téléchargée entre runs.
 Installation et mise à jour CVE peuvent rallonger la CI ou échouer avec le réseau.
-Les tests locaux de contrat ne mesurent pas cette durée native ; l'observer
-après livraison sans réduire les seuils ni rendre le scanner consultatif.
+Les tests locaux de contrat ne mesurent pas cette durée native. Sur la première
+CI de la PR #145 (head `a5598b2`, run `37148235271`), les jobs ont pris 14 s
+pour Trivy, 21 s pour Build et 101 s pour Browser, soit 149 s entre le premier
+départ et la dernière fin. C'est une seule observation, pas une comparaison
+contrôlée ou un budget garanti ; suivre les prochains runs sans réduire les
+seuils ni rendre le scanner consultatif.
 
 ## Évolution
 
