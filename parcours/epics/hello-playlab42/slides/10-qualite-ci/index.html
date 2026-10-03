@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qualité et CI - PlayLab42</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../playlab-guide.css">
+  <script type="module">
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
+  </script>
+</head>
+<body class="playlab-guide">
+  <article class="slide">
+    <p class="guide-kicker">Partie 3 · L'usine logicielle</p>
+    <h1>Qualité et CI</h1>
+    <p class="guide-lead">
+      À chaque pull request vers <code>main</code>, GitHub Actions rejoue les contrôles.
+      La publication réutilise cette même CI ; l'audit de sécurité reste un workflow séparé.
+    </p>
+
+    <h2>Qui se déclenche quand ?</h2>
+    <div class="guide-table-scroll" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Workflow</th><th scope="col">Déclencheurs</th><th scope="col">Jobs</th></tr></thead>
+        <tbody>
+          <tr><td><code>ci.yml</code> (CI)</td><td>PR vers <code>main</code>, manuel, appel depuis Deploy sur push <code>main</code></td><td>Lint, Tests, TypeScript, Dependency audit, OpenSpec, Build, Browser</td></tr>
+          <tr><td><code>ui-e2e.yml</code> (UI browser)</td><td>Appel depuis CI, manuel</td><td>Chromium interactions (15 min max)</td></tr>
+          <tr><td><code>security-audit.yml</code></td><td>push et PR sur <code>main</code>, tous les jours à 6 h UTC, manuel</td><td>npm-audit, ESLint Security, Trivy, gitleaks, packages obsolètes, Docker, rapport</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>CI : sept contrôles complémentaires</h2>
+    <p>Les jobs utilisent Node 26 et <code>npm ci</code>. Browser attend l'archive du job Build :</p>
+    <ul class="guide-checklist">
+      <li><strong>Lint</strong> : <code>npm run lint</code>, erreurs et avertissements bloquants.</li>
+      <li><strong>Tests</strong> : <code>npm run test:coverage</code>, seuils ciblés sur le déterminisme et la livraison ; upload Codecov non bloquant.</li>
+      <li><strong>Dépendances</strong> : <code>npm run audit:dependencies</code>, seuil modéré ; une panne d'audit bloque aussi.</li>
+      <li><strong>TypeScript</strong> : <code>npm run typecheck</code> ; la transpilation est réalisée dans Build.</li>
+      <li><strong>OpenSpec</strong> : <code>npm run openspec:validate</code>, strictement sur specs et changes actifs.</li>
+      <li><strong>Build</strong> : <code>npm run build</code> (TypeScript, runtime, catalogues, guides et dossier public <code>site/</code>).</li>
+      <li><strong>Browser</strong> : Playwright sur l'archive construite, avant publication.</li>
+    </ul>
+    <p class="guide-resource"><a href="../../../../../docs/site/guides/software-quality.html" target="_top">Lire la politique qualité et le plan de progression</a> : conception, erreurs, tests et revue.</p>
+
+    <h2>Navigateur : tester ce qui sera publié</h2>
+    <p>
+      Le job « Chromium interactions » installe Chromium, extrait l'archive <code>github-pages</code>
+      et lance <code>npm run test:e2e</code> avec <code>PLAYWRIGHT_PREBUILT=1</code> :
+      le serveur sert <code>site/</code> sans reconstruire les catalogues.
+      En cas d'échec, il publie l'artefact <code>ui-e2e-failure</code> (rapport et traces, 14 jours).
+    </p>
+    <p class="guide-note">
+      Ne mélangez pas trois idées : les <strong>tests Jest</strong> vérifient la logique, les <strong>tests navigateur</strong>
+      vérifient l'interface réelle, et <code>openspec validate</code> vérifie seulement la <strong>structure des specs</strong>.
+      Aucun ne remplace les autres. Le job OpenSpec est désormais intégré à la CI ;
+      vous pouvez également l'exécuter dans Docker avec <code>make openspec-validate</code>.
+    </p>
+
+    <h2>Sécurité : échec ou simple avertissement ?</h2>
+    <div class="guide-table-scroll" tabindex="0">
+      <table>
+        <thead><tr><th scope="col">Contrôle</th><th scope="col">Effet dans le workflow</th></tr></thead>
+        <tbody>
+          <tr><td>npm audit (niveau modéré et plus)</td><td><strong>Requis pour publier</strong> ; audit complémentaire avec JSON en cas d'échec</td></tr>
+          <tr><td>gitleaks (historique complet)</td><td><strong>Échec</strong> si un secret est détecté</td></tr>
+          <tr><td>ESLint Security</td><td><strong>Avertissement</strong> : les problèmes sont affichés mais n'échouent pas le job</td></tr>
+          <tr><td>Trivy (vuln, secret, misconfig)</td><td>Rapport et artefact <code>trivy-results</code>, sans code de sortie dédié dans le workflow</td></tr>
+          <tr><td>Packages obsolètes</td><td>Information seulement</td></tr>
+          <tr><td>Hadolint (Dockerfile)</td><td>Push et manuel seulement, <code>no-fail</code>, résultats dans l'onglet Security</td></tr>
+          <tr><td>Rapport consolidé</td><td>États réels : échec, ignoré, annulé, succès consultatif ; pas de faux « aucun problème »</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Ce que ces workflows ne garantissent pas</h2>
+    <p class="guide-note">
+      Les fichiers décrivent <em>ce qui s'exécute</em>. Savoir quels checks sont <strong>obligatoires</strong> avant un merge
+      dépend des réglages GitHub. Une protection classique a été activée et relue via l'API le
+      <strong>3 octobre 2026</strong> : PR, neuf checks natifs et discussions résolues, même pour l'admin.
+      Aucun force-push ni suppression. Avec un seul mainteneur, aucune approbation externe
+      n'est encore obligatoire ; une revue indépendante reste à organiser.
+      Les noms requis ont été ajustés aux résultats natifs de la PR #135 ; le garde-fou de publication
+      et la protection de branche sont deux mécanismes distincts.
+    </p>
+
+    <h2>Lancer les mêmes contrôles en local (Docker)</h2>
+    <pre class="code-block"><code>make info          # instance, port, URL du worktree
+make lint
+make typecheck
+make test
+make test-e2e
+make openspec-validate</code></pre>
+    <p>Aucune installation sur votre machine : tout passe par Docker. Les secrets et jetons ne s'affichent jamais, ni dans les logs ni dans les slides.</p>
+
+    <h2>hello-usine, étape qualité</h2>
+    <div class="guide-exercise">
+      <p>La contribution <code>hello-usine</code> (imaginaire) arrive en PR. Avant de la demander en revue, vérifiez :</p>
+      <ul class="guide-checklist">
+        <li>le test du moteur ou de l'outil passe dans Docker ;</li>
+        <li>lint et build passent ;</li>
+        <li>aucun secret n'a été ajouté ;</li>
+        <li>vous n'affirmez pas « CI verte » sans avoir lu les résultats réels.</li>
+      </ul>
+    </div>
+
+    <details class="guide-exercise">
+      <summary>Mini-question : ESLint Security signale un problème, la PR est-elle bloquée ?</summary>
+      <p>Pas par ce job : il affiche un avertissement et continue. Une règle de branche éventuelle reste à vérifier dans les réglages GitHub.</p>
+    </details>
+
+    <p class="guide-resource">
+      Sources :
+      <a href="https://github.com/z4ppy/playlab42/blob/main/.github/workflows/ci.yml" target="_blank" rel="noopener">ci.yml</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/.github/workflows/ui-e2e.yml" target="_blank" rel="noopener">ui-e2e.yml</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/.github/workflows/security-audit.yml" target="_blank" rel="noopener">security-audit.yml</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/Makefile" target="_blank" rel="noopener">Makefile</a>.
+    </p>
+
+    <footer><p data-slide-footer></p></footer>
+  </article>
+</body>
+</html>

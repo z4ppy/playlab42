@@ -1,0 +1,8 @@
+{
+  "id": "10-qualite-ci",
+  "title": "Qualité et CI",
+  "description": "Workflows GitHub Actions, tests unitaires et navigateur, audits de sécurité et limites des garanties",
+  "type": "content",
+  "icon": "✅",
+  "duration": "5 min"
+}

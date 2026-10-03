@@ -1,18 +1,19 @@
 name: UI browser
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      prebuilt:
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
   group: ui-e2e-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ !inputs.prebuilt }}
 
 jobs:
   browser:
@@ -31,8 +32,21 @@ jobs:
         run: npm ci
       - name: Chromium and system dependencies
         run: npx playwright install --with-deps chromium
+      - name: Archive construite par la CI
+        if: inputs.prebuilt
+        uses: actions/download-artifact@v8
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/pages-artifact
+      - name: Extraire le site sans le reconstruire
+        if: inputs.prebuilt
+        run: |
+          mkdir -p site
+          tar -xf "$RUNNER_TEMP/pages-artifact/artifact.tar" -C site
       - name: Real browser suite
         run: npm run test:e2e
+        env:
+          PLAYWRIGHT_PREBUILT: ${{ inputs.prebuilt && '1' || '0' }}
       - name: Failure report and traces
         if: failure()
         uses: actions/upload-artifact@v4

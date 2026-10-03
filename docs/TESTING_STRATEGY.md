@@ -94,6 +94,13 @@ Ce document décrit l'approche de test, les objectifs de coverage, et les bonnes
 
 **Statut** : Suite Playwright obligatoire en CI (`.github/workflows/ui-e2e.yml`).
 
+La CI appelle ce workflow après le build et lui transmet l'archive publique.
+Avec `PLAYWRIGHT_PREBUILT=1`, le serveur sert `site/` sans reconstruire :
+les fichiers testés sont ceux qui seront publiés. Les commandes locales et le
+lancement manuel du workflow navigateur gardent la préparation `build:local`.
+Le serveur réutilise `serve.json` de la racine pour conserver les URL `.html`
+et ne pas casser les chemins relatifs des modules.
+
 **Objectif** : Un petit socle de contrats utilisateur dans Chromium réel, sans ferme de captures.
 Les tests vivent dans `e2e/`, séparés de la découverte Jest.
 
@@ -253,7 +260,7 @@ navigateur officiel installé pour la version exacte du runner.
 
 ### Targets par module
 
-| Module | Coverage actuel | Target | Justification |
+| Module | Repère historique, à remesurer | Target | Justification |
 |--------|-----------------|--------|---------------|
 | `lib/seeded-random.js` | 100% | 100% | Bibliothèque critique, déterministe |
 | `lib/gamekit.js` | N/A | 90%+ | SDK utilisé par tous les jeux |
@@ -276,19 +283,24 @@ coverage:
         threshold: 1%     # Tolérance -1%
     patch:
       default:
-        target: 80%       # Nouveau code doit être >= 80%
+        target: 80%       # Cible du code modifié
+        threshold: 5%     # Tolérance configurée
 ```
 
 **Interprétation** :
 
 - **Project target: auto** : Codecov ajuste le target automatiquement en fonction de l'historique
 - **Threshold: 1%** : Autoriser une baisse de 1% maximum
-- **Patch target: 80%** : Tout nouveau code doit avoir au moins 80% de coverage
+- **Patch target: 80%** : Cible sur le code modifié, avec tolérance de 5%
+- Les seuils Jest sont bloquants sur SeededRandom et les scripts packaging/smoke,
+  pas sur tout le code. Voir la [politique qualité](guides/software-quality.md).
+- L'envoi Codecov est non bloquant. Un statut Codecov et son caractère obligatoire
+  dépendent aussi de l'intégration et des règles GitHub, pas de ce guide.
 
 **Statut dans les PRs** :
 
 - ✅ : Coverage maintenu ou amélioré
-- ❌ : Coverage baisse de plus de 1% OU nouveau code < 80%
+- ❌ : Statut selon les cibles et tolérances de `codecov.yml`
 
 ---
 
@@ -764,13 +776,17 @@ describe('TicTacToeEngine', () => {
 
 ### Workflow GitHub Actions
 
-**Fichiers** : `.github/workflows/ci.yml` (lint/Jest/types/build) et
-`.github/workflows/ui-e2e.yml` (contrats navigateur sur PR et main).
+**Fichiers** : `.github/workflows/ci.yml` (lint/Jest/types/audit npm/OpenSpec/build et appel
+navigateur), `.github/workflows/ui-e2e.yml` (workflow réutilisé) et
+`.github/workflows/deploy.yml` (publication après cette CI).
 
 Le job navigateur suit Node 26 et `npm ci`, installe Chromium avec la commande
 supportée `npx playwright install --with-deps chromium`, puis lance `test:e2e`.
 Il ne dépend d'aucun DNS de laboratoire, serveur partagé ou accès CDN au runtime.
-Le build hors réseau `build:local` est lancé par le serveur géré Playwright.
+En CI, il extrait l'archive `github-pages` et sert `site/` avec
+`PLAYWRIGHT_PREBUILT=1`, sans second build. La préparation locale habituelle
+reste `build:local`. Le build de production conserve sa collecte Open Graph ;
+les fixtures isolent les requêtes externes du navigateur, pas cette collecte.
 Le rapport et les
 traces sont publiés comme artefact pendant 14 jours uniquement en cas d'échec.
 Tout échec UI doit être corrigé avant fusion ; ne pas le rendre optionnel ni
@@ -778,7 +794,8 @@ remplacer les vraies bibliothèques par des globals factices pour verdir la CI.
 
 ### Statut dans les PRs
 
-Codecov ajoute automatiquement un commentaire sur chaque PR :
+Une intégration Codecov configurée et un upload réussi peuvent ajouter un
+commentaire sur la PR, par exemple :
 
 ```markdown
 ## Codecov Report
@@ -794,7 +811,10 @@ The diff coverage is `85.71%`.
 
 - Si coverage baisse : Ajouter des tests
 - Si patch < 80% : Ajouter des tests pour nouveau code
-- Si échec : Bloquer le merge
+- Si échec : corriger avant merge ; le blocage automatique nécessite les règles GitHub
+
+Le [guide de l'usine](guides/software-factory.md) distingue ces recommandations,
+les garanties automatisées et les améliorations restantes.
 
 ---
 

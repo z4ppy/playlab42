@@ -3,128 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bienvenue - PlayLab42</title>
+  <title>Bienvenue sur PlayLab42</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../playlab-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .hero {
-      text-align: center;
-      padding: var(--space-xl) 0;
-    }
-    .hero-emoji {
-      font-size: 4rem;
-      margin-bottom: var(--space-md);
-    }
-    .hero h1 {
-      border: none;
-      padding: 0;
-    }
-    .tagline {
-      font-size: var(--font-size-lg);
-      color: var(--color-text-muted);
-      margin-bottom: var(--space-xl);
-    }
-    .objectives {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--space-md);
-      margin: var(--space-xl) 0;
-    }
-    .objective {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      text-align: center;
-      transition: transform var(--transition-normal);
-    }
-    .objective:hover {
-      transform: translateY(-4px);
-    }
-    .objective-icon {
-      font-size: 2.5rem;
-      margin-bottom: var(--space-sm);
-    }
-    .objective h3 {
-      margin: var(--space-sm) 0;
-      font-size: var(--font-size-md);
-    }
-    .objective p {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      margin: 0;
-    }
-    .callout-highlight {
-      background: linear-gradient(135deg, var(--color-accent), #ff8a80);
-      color: white;
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-xl) 0;
-      text-align: center;
-    }
-    .callout-highlight strong {
-      display: block;
-      font-size: var(--font-size-lg);
-      margin-bottom: var(--space-sm);
-    }
-  </style>
 </head>
-<body>
+<body class="playlab-guide">
   <article class="slide">
-    <div class="hero">
-      <div class="hero-emoji">👋</div>
-      <h1>Bienvenue sur PlayLab42 !</h1>
-      <p class="tagline">La plateforme collaborative pour apprendre à développer avec l'IA</p>
-    </div>
-
-    <h2>Qu'est-ce que PlayLab42 ?</h2>
-
-    <p>
-      <strong>PlayLab42</strong> est une plateforme modulaire de jeux et d'outils,
-      conçue comme support de formation au <strong>développement assisté par Intelligence Artificielle</strong>.
+    <p class="guide-kicker">Étape 1 · 4 min · Débutant</p>
+    <h1>Bienvenue sur PlayLab42</h1>
+    <p class="guide-lead">
+      PlayLab42 est une plateforme pédagogique statique : on y apprend, on y essaie des outils et des jeux,
+      puis on y ajoute sa propre contribution avec l'aide d'un agent IA.
     </p>
 
+    <h2>Ce que contient le portail</h2>
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>Parcours</h3>
+        <p>Des slides HTML pour apprendre à son rythme. Votre progression est mémorisée.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Outils</h3>
+        <p>Des utilitaires et simulations, chacun avec son <code>tool.json</code>.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Jeux</h3>
+        <p>Des jeux avec moteur de règles et bots, décrits par un <code>game.json</code>.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Liens</h3>
+        <p>Une sélection de ressources externes, filtrable par thème.</p>
+      </section>
+    </div>
     <p>
-      Le projet a une particularité : il s'enrichit des contributions de chaque session de formation.
-      Chaque participant peut créer et ajouter ses propres outils, jeux ou contenus pédagogiques.
+      Outils et jeux partagent le même catalogue unifié, généré au build à partir des manifests.
+      Il n'y a ni compte ni backend applicatif : le serveur local ne fait que servir des fichiers statiques.
     </p>
 
-    <h2>Les objectifs pédagogiques</h2>
+    <h2>Utiliser le portail</h2>
+    <ol class="guide-flow">
+      <li>Choisissez un onglet : <strong>Parcours</strong>, <strong>Outils</strong>, <strong>Jeux</strong> ou <strong>Liens</strong>.</li>
+      <li>Tapez dans la recherche (raccourci <kbd>/</kbd>) : elle porte sur la section affichée et ignore les accents.</li>
+      <li>Ouvrez « Affiner la sélection » pour filtrer par tag ou catégorie, puis « Tout afficher » pour revenir à la liste complète.</li>
+      <li>Sur un parcours entamé, la carte affiche « Continuer · N % parcouru » et rouvre la slide de reprise.</li>
+      <li>Dans les paramètres, réglez pseudo, son et thème (Auto, Sombre, Clair), ou effacez vos données.</li>
+      <li>Le lien <strong>Guides</strong> du portail ouvre le lecteur statique des guides du dépôt.</li>
+    </ol>
 
-    <div class="objectives">
-      <div class="objective">
-        <div class="objective-icon">🤖</div>
-        <h3>Développement assisté par IA</h3>
-        <p>Apprendre à collaborer efficacement avec les assistants IA pour coder</p>
-      </div>
-      <div class="objective">
-        <div class="objective-icon">📋</div>
-        <h3>Méthodologie OpenSpec</h3>
-        <p>Découvrir une approche structurée pour spécifier et implémenter</p>
-      </div>
-      <div class="objective">
-        <div class="objective-icon">🎮</div>
-        <h3>Création de jeux</h3>
-        <p>Concevoir des moteurs isomorphes et des IA de jeu</p>
-      </div>
-      <div class="objective">
-        <div class="objective-icon">🔧</div>
-        <h3>Outils pratiques</h3>
-        <p>Créer des utilitaires HTML autonomes et réutilisables</p>
-      </div>
+    <h2>Vos données restent dans le navigateur</h2>
+    <p>
+      Préférences, scores et progression sont stockés en <code>localStorage</code>, sur cet appareil et cette origine.
+      L'outil <a href="../../../../../tools/local-data/index.html" target="_blank" rel="noopener">Mes données locales</a>
+      exporte un fichier JSON (5 Mio maximum) et le réimporte sur demande : rien n'est restauré automatiquement.
+      Une sauvegarde contient votre pseudo et vos scores : ne la publiez pas.
+    </p>
+
+    <section class="guide-exercise">
+      <h2>Mini-exercice</h2>
+      <p>Dans le portail, retrouvez ce parcours en tapant seulement « Bienvenue » dans la recherche de l'onglet Parcours, puis effacez le filtre.</p>
+      <details>
+        <summary>Correction</summary>
+        <p>
+          Onglet <strong>Parcours</strong>, champ de recherche, saisie : la carte de « Bienvenue sur PlayLab42 » reste affichée.
+          Le filtre ignore accents et majuscules. Le bouton « Tout afficher » réinitialise la recherche et les filtres.
+        </p>
+      </details>
+    </section>
+
+    <div class="guide-note">
+      <p>
+        Le projet est publié sous licence
+        <a href="https://github.com/z4ppy/playlab42/blob/main/LICENSE" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>
+        (attribution, pas d'utilisation commerciale, partage dans les mêmes conditions) : code source ouvert à la lecture et à la réutilisation encadrée, sans prétendre à une licence OSI.
+      </p>
     </div>
 
-    <div class="callout-highlight">
-      <strong>100% Open Source et statique</strong>
-      Tout fonctionne sans serveur backend. Déployable sur GitHub Pages en un clic !
-    </div>
-
-    <blockquote>
-      "La meilleure façon d'apprendre le développement IA, c'est de pratiquer sur un vrai projet collaboratif."
-    </blockquote>
+    <footer><p data-slide-footer>Bienvenue sur PlayLab42</p></footer>
   </article>
 </body>
 </html>

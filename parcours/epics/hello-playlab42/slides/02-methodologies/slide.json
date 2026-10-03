@@ -1,6 +1,8 @@
 {
   "id": "02-methodologies",
-  "title": "Les méthodologies",
+  "title": "Méthodes : agents, OpenSpec et skills",
+  "description": "Comprendre AGENTS.md, OPSX OpenSpec 1.14, les skills du dépôt et la frontière entre proposition et livraison.",
   "type": "content",
+  "duration": "6 min",
   "icon": "🧠"
 }

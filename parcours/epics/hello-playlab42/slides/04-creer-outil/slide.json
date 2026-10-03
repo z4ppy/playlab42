@@ -1,6 +1,8 @@
 {
   "id": "04-creer-outil",
   "title": "Créer un outil",
+  "description": "Générer un outil local avec son manifest, l'essayer dans le portail et réutiliser la galerie UI.",
   "type": "content",
+  "duration": "7 min",
   "icon": "🔧"
 }

@@ -1,6 +1,8 @@
 {
   "id": "06-creer-bot",
   "title": "Créer un bot",
+  "description": "Écrire un bot déterministe pour un jeu et le distinguer d'un agent IA de code.",
   "type": "content",
+  "duration": "5 min",
   "icon": "🤖"
 }

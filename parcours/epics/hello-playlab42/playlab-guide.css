@@ -1,0 +1,134 @@
+/**
+ * Présentation locale du guide Playlab42, sur les primitives partagées.
+ */
+.playlab-guide .slide.slide {
+  max-width: 960px;
+  overflow-wrap: anywhere;
+}
+
+.playlab-guide .guide-kicker {
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.playlab-guide .guide-lead {
+  max-width: 65ch;
+  font-size: var(--font-size-lg);
+}
+
+.playlab-guide .guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-md);
+  margin-block: var(--space-lg);
+}
+
+.playlab-guide .guide-card,
+.playlab-guide .guide-note,
+.playlab-guide .guide-exercise {
+  min-width: 0;
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
+}
+
+.playlab-guide .guide-note,
+.playlab-guide .guide-exercise {
+  margin-block: var(--space-lg);
+  border-left: 4px solid var(--color-info);
+}
+
+.playlab-guide .guide-exercise {
+  border-left-color: var(--color-accent);
+}
+
+.playlab-guide :is(.guide-card, .guide-note, .guide-exercise) > :first-child {
+  margin-top: 0;
+}
+
+.playlab-guide :is(.guide-card, .guide-note, .guide-exercise) > :last-child {
+  margin-bottom: 0;
+}
+
+.playlab-guide .guide-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+  padding-left: var(--space-lg);
+}
+
+.playlab-guide .guide-flow > li {
+  min-width: 0;
+  padding: var(--space-md);
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.playlab-guide .guide-checklist > li {
+  padding-block: var(--space-xs);
+}
+
+.playlab-guide .guide-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.playlab-guide .guide-table-scroll table {
+  display: table;
+  min-width: 32rem;
+}
+
+.playlab-guide .slide pre {
+  max-width: 100%;
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+  white-space: pre;
+}
+
+.playlab-guide .slide pre code {
+  color: inherit;
+  background: transparent;
+  padding: 0;
+}
+
+.playlab-guide .guide-resource,
+.playlab-guide [data-slide-footer] {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.playlab-guide .guide-resource {
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.playlab-guide details {
+  margin-block: var(--space-md);
+}
+
+.playlab-guide summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding-block: var(--space-sm);
+}
+
+.playlab-guide :is(a, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .playlab-guide :is(.guide-card, .guide-note, .guide-exercise) {
+    padding: var(--space-md);
+  }
+
+  .playlab-guide .guide-lead {
+    font-size: var(--font-size-md);
+  }
+}

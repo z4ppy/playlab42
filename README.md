@@ -36,7 +36,7 @@ Le code fait lui aussi partie du cours. Moteurs de jeux déterministes, tests au
 | **Jeux** | Des jeux autonomes, avec des moteurs de règles et des bots pour expérimenter la logique et la stratégie. | [Morpion](https://z4ppy.github.io/playlab42/games/tictactoe/), [Mastermind](https://z4ppy.github.io/playlab42/games/mastermind/), [Go 9×9](https://z4ppy.github.io/playlab42/games/go-9x9/) |
 | **Bookmarks** | Une sélection de ressources externes sur l’écosystème IA et le développement. | [Modèles & API](bookmarks/models-apis.json), [MCP](bookmarks/mcp-protocols.json), [Prompt engineering](bookmarks/prompt-engineering.json) |
 
-**Première visite ?** Ouvrez [la plateforme](https://z4ppy.github.io/playlab42/) et commencez par le parcours **« Bienvenue sur PlayLab42 »**.
+**Première visite ?** Ouvrez [la plateforme](https://z4ppy.github.io/playlab42/) et commencez par le parcours **« PlayLab42 — Guide et usine logicielle »**.
 
 ## Architecture
 
@@ -172,6 +172,7 @@ playlab42/
 ├── lib/                          # GameKit, thèmes, viewer et utilitaires
 ├── scripts/                      # Génération des catalogues et build TS
 ├── data/                         # Catalogues générés, non versionnés
+├── site/                         # Archive publique préparée, non versionnée
 ├── docs/                         # Guides et documentation
 ├── templates/                    # Gabarits de jeux, outils et parcours
 ├── e2e/                          # Parcours navigateur Playwright
@@ -190,6 +191,7 @@ playlab42/
 | Appliquer le workflow de spécification | [Workflow OpenSpec](docs/guides/openspec-workflow.md) |
 | Utiliser les skills du projet | [Skills de projet](docs/guides/project-skills.md) |
 | Comprendre la stratégie de tests | [Stratégie de tests](docs/TESTING_STRATEGY.md) |
+| Comprendre l'usine et ses limites | [Usine logicielle et feuille de route](docs/guides/software-factory.md) |
 | Déployer la plateforme | [Guide de déploiement](docs/DEPLOYMENT.md) |
 | Résoudre un problème local | [Dépannage](docs/TROUBLESHOOTING.md) |
 | Consulter l’évolution du projet | [Changelog](CHANGELOG.md) |

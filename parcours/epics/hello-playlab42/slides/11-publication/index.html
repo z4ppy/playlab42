@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publication - PlayLab42</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../playlab-guide.css">
+  <script type="module">
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
+  </script>
+</head>
+<body class="playlab-guide">
+  <article class="slide">
+    <p class="guide-kicker">Partie 3 · L'usine logicielle</p>
+    <h1>Publication</h1>
+    <p class="guide-lead">
+      Dernière étape : publier ce qui a été vérifié. <code>deploy.yml</code> appelle la CI,
+      attend ses contrôles et publie la même archive sur GitHub Pages. L'application reste statique.
+    </p>
+
+    <h2>Quand se déclenche-t-il ?</h2>
+    <ul class="guide-checklist">
+      <li>À chaque <strong>push sur <code>main</code></strong> (donc après un merge de PR).</li>
+      <li>Manuellement (<code>workflow_dispatch</code>) depuis Actions, <strong>sur main uniquement</strong> ; une autre référence fait échouer le contrôle.</li>
+      <li>Seul le job de publication reçoit écriture Pages et <code>id-token</code>. Un seul déploiement à la fois (<code>concurrency: pages</code>, sans annulation du déploiement en cours).</li>
+    </ul>
+
+    <h2>Le DAG : validation, publication, contrôle</h2>
+    <ol class="guide-flow">
+      <li><strong>check-ref</strong> : refuse de publier une autre référence que <code>main</code>.</li>
+      <li><strong>validate</strong> : appelle <code>ci.yml</code> pour le même commit. Lint, tests, types et OpenSpec doivent réussir.</li>
+      <li><strong>Build → Browser</strong> : prépare <code>site/</code>, archive <code>github-pages</code>, puis teste l'archive extraite sans reconstruction.</li>
+      <li><strong>deploy</strong> (<code>needs: validate</code>) : publie cette même archive après le succès de toute la CI.</li>
+      <li><strong>smoke</strong> : compare le SHA publié au commit du run et vérifie neuf ressources HTTP.</li>
+    </ol>
+
+    <h2>Que fait <code>npm run build</code> ?</h2>
+    <ol class="guide-flow">
+      <li><code>build:ts</code> : transpile les contenus TypeScript vers <code>dist/</code>.</li>
+      <li><code>build:runtime</code> : génère les bibliothèques navigateur (Tone, VexFlow, MathJax…) dans <code>assets/vendor/</code> depuis les versions épinglées dans <code>package.json</code> et vérifiées par <code>scripts/runtime-vendors.json</code>.</li>
+      <li><code>build:catalogue</code> : lit les manifests <code>tool.json</code> et <code>game.json</code>, écrit <code>data/catalogue.json</code>.</li>
+      <li><code>build:parcours</code> : lit <code>epic.json</code> et <code>slide.json</code>, écrit <code>data/parcours.json</code>.</li>
+      <li><code>build:bookmarks</code> : écrit <code>data/bookmarks.json</code>.</li>
+      <li><code>build:guides</code> : transforme les Markdown de <code>docs/</code> en pages HTML dans <code>docs/site/</code>.</li>
+      <li><code>build:site</code> : copie les ressources publiques dans <code>site/</code>, avec <code>build-info.json</code> (version et commit CI).</li>
+    </ol>
+    <p>
+      Les fichiers générés (<code>dist/</code>, catalogues, <code>assets/vendor/</code>, <code>docs/site/</code>, <code>site/</code>) sont ignorés par Git :
+      ne les commitez pas, la CI les recrée à chaque fois.
+    </p>
+
+    <h2>Ce qui n'est PAS automatique</h2>
+    <p class="guide-note">
+      Seul le dossier public est archivé : pas de <code>node_modules/</code>, tests, caches ou configuration d'agents.
+      Le build production conserve la collecte Open Graph ; il n'est donc pas entièrement sans réseau.
+      Le workflow n'archive pas les changes OpenSpec et ne crée pas de release.
+      L'archivage demande une <strong>livraison effective</strong> puis une <strong>décision explicite</strong>
+      du mainteneur (<code>openspec-archive-change</code>). Et aucun skill ne fusionne une PR à votre place.
+    </p>
+    <p class="guide-note">
+      Le smoke test effectue au plus cinq tentatives pour la propagation Pages. Son échec rend le run rouge,
+      mais le site est déjà publié : <strong>aucun rollback automatique</strong>.
+      <code>build-info.json</code> identifie le commit ; ce n'est pas une attestation signée.
+    </p>
+
+    <h2>Tester le résultat chez vous (Docker)</h2>
+    <pre class="code-block"><code>make info          # nom d'instance, port, URL
+make up            # démarre le conteneur du worktree
+make npm CMD="run build:local"
+make serve         # sert sur le port affiché par make info</code></pre>
+    <p>
+      Chaque worktree Git a son projet Docker et son port (plage 5200-5299, calculé depuis le nom du dossier) :
+      plusieurs branches peuvent tourner en parallèle sans conflit. Pour reconstruire comme le fait le déploiement,
+      le mode local prépare aussi <code>site/</code>, sans la collecte Open Graph du build de production.
+    </p>
+
+    <h2>hello-usine : le trajet complet</h2>
+    <ol class="guide-flow">
+      <li>Spec OpenSpec de l'outil, approuvée par vous.</li>
+      <li>Skill <code>playlab-ui</code>, kit <code>scaffold</code>, implémentation.</li>
+      <li>Tests, lint et build dans Docker.</li>
+      <li>PR : checks CI et audit de sécurité.</li>
+      <li>Merge décidé par un humain, puis <code>deploy.yml</code>.</li>
+      <li>L'outil apparaît dans le catalogue du site publié.</li>
+      <li>Contrôle du commit publié, puis décision explicite de synchronisation/archivage.</li>
+    </ol>
+
+    <details class="guide-exercise">
+      <summary>Mini-question : j'ai ajouté un manifeste, quand apparaît-il dans le portail ?</summary>
+      <p>Après le build qui régénère les catalogues JSON : en local avec <code>make build-catalogue</code>, en ligne après le déploiement sur <code>main</code>.</p>
+    </details>
+
+    <p class="guide-resource">
+      Sources :
+      <a href="https://github.com/z4ppy/playlab42/blob/main/.github/workflows/deploy.yml" target="_blank" rel="noopener">deploy.yml</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/package.json" target="_blank" rel="noopener">package.json</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/scripts/runtime-vendors.json" target="_blank" rel="noopener">runtime-vendors.json</a>,
+      <a href="https://github.com/z4ppy/playlab42/blob/main/.github/skills/playlab-release/SKILL.md" target="_blank" rel="noopener">skill playlab-release</a>.
+    </p>
+
+    <footer><p data-slide-footer></p></footer>
+  </article>
+</body>
+</html>

@@ -74,12 +74,17 @@ for (const { theme, scheme } of [
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
     await page.addInitScript(theme => {
-      localStorage.setItem('playlab42.theme', JSON.stringify(theme));
+      localStorage.setItem('playlab42.theme', theme);
     }, theme);
     const epic = await (await page.request.get(`${root}/epic.json`)).json();
     for (const { id } of epic.content) {
       await page.goto(`${root}/slides/${id}/index.html`);
       await expect(page.locator('[data-slide-footer]')).toContainText('/7)');
+      if (theme === 'system') {
+        await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+      } else {
+        await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+      }
       const quiz = page.locator('[data-guide-quiz]');
       if (await quiz.count()) {
         await activate(quiz.locator('[data-guide-answer="correct"]'));

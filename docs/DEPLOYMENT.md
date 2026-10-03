@@ -1,579 +1,198 @@
-# Guide de Déploiement
+# Guide de déploiement
 
-Ce document décrit le processus de déploiement et de release de Playlab42.
+Le site est statique et publié sur [GitHub Pages](https://z4ppy.github.io/playlab42/).
+Ce guide décrit les workflows versionnés ; une modification de workflow n'est
+effective en production qu'après sa livraison. Les réglages GitHub sont distincts
+des fichiers du dépôt.
 
-## Vue d'ensemble
+## La chaîne de livraison
 
-Playlab42 utilise **GitHub Pages** pour l'hébergement. Le déploiement est **automatique** sur chaque push vers `main`.
+```text
+PR vers main → CI réutilisable → contrôles + archive publique + navigateur
 
-```
-┌────────────────┐
-│  git push main │
-└───────┬────────┘
-        │
-        ▼
-┌────────────────┐
-│  CI Workflow   │  ← Tests, lint, build
-└───────┬────────┘
-        │ (si ✅)
-        ▼
-┌────────────────┐
-│ Deploy Workflow│  ← Build + Deploy GitHub Pages
-└───────┬────────┘
-        │
-        ▼
-┌────────────────┐
-│   🌐 Production│  ← https://z4ppy.github.io/playlab42/
-└────────────────┘
+Push main / lancement manuel sur main
+  → check-ref
+  → validate : appelle la même CI
+      ├─ lint, tests Jest et seuils ciblés, types, audit npm, OpenSpec
+      └─ build → archive github-pages → navigateur sur cette archive
+  → deploy : publie cette archive après le succès de toute la CI
+  → smoke : contrôle HTTP du site et du commit
 ```
 
-## Prérequis
+[deploy.yml](../.github/workflows/deploy.yml) appelle
+[ci.yml](../.github/workflows/ci.yml) dans le **même run**, sur le même commit.
+Il ne se contente pas de supposer qu'une ancienne CI de PR était verte.
+Un contrôle requis échoué empêche `deploy` de démarrer.
 
-### 1. Configuration GitHub Pages
+Le workflow CI ne se déclenche pas séparément sur push : le workflow de livraison
+l'appelle, sans doubler les suites. Les PR et les lancements manuels de CI restent
+possibles. Les analyses de sécurité complémentaires restent séparées, mais
+l'audit npm au seuil modéré est requis dans la CI et peut bloquer `deploy`.
 
-Le dépôt doit avoir GitHub Pages activé :
+## Configuration GitHub
 
-1. Aller dans **Settings** > **Pages**
-2. Source : **GitHub Actions**
-3. Branch : N/A (géré par le workflow)
+- **Settings → Pages** : source « GitHub Actions ».
+- L'environnement de publication est `github-pages`.
+- Le token GitHub fourni au job de publication reçoit `contents: read`,
+  `pages: write` et `id-token: write`. Les jobs de validation ont seulement
+  `contents: read`.
+- `CODECOV_TOKEN` sert à l'envoi des rapports, si configuré. L'échec d'envoi
+  ne fait pas échouer les tests ; il ne faut pas en déduire un rapport disponible.
+- `concurrency: pages`, avec `cancel-in-progress: false`, évite deux publications
+  simultanées sans interrompre celle en cours.
 
-### 2. Secrets GitHub
+Le contrôle de référence fait **échouer** un lancement manuel hors `main`.
+Les workflows ne réalisent pas de merge, de revue ou d'archivage OpenSpec.
 
-Configurer les secrets suivants :
+### Protection de main : activée sur GitHub
 
-| Secret | Usage | Requis |
-|--------|-------|--------|
-| `CODECOV_TOKEN` | Upload coverage vers Codecov | Oui (CI) |
-| `GITHUB_TOKEN` | Déploiement Pages (auto-fourni) | Auto |
+Après autorisation utilisateur, une **protection de branche classique** a été
+activée et relue via l'API le **3 octobre 2026** : `protected: true`.
+Elle est distincte des rulesets ; une liste de rulesets vide ne signifie donc
+plus que `main` est dépourvue de protection.
 
-Voir [.github/docs/SECRETS_MANAGEMENT.md](../.github/docs/SECRETS_MANAGEMENT.md) pour les détails.
+- PR obligatoire, contrôles à jour avec `main`, discussions résolues.
+- Règles appliquées aussi aux administrateurs, sans contournement.
+- Historique linéaire : squash ou rebase, tous deux disponibles dans le dépôt.
+- Force-push et suppression de `main` interdits.
+- Neuf checks requis, rattachés à GitHub Actions (app ID `15368`) :
+  `Lint`, `Tests`, `TypeScript`, `Build`, `Browser / Chromium interactions`,
+  `OpenSpec`, `Dependency audit`, `Audit dépendances npm` et `Détection de secrets`.
 
-### 3. Permissions du workflow
+Ces noms ont été observés sur une PR native réussie, pas déduits des noms de
+workflows. Les contrôles consultatifs et le job Docker ignoré sur PR ne sont
+pas requis.
 
-Le workflow de déploiement nécessite les permissions suivantes (configurées dans le workflow) :
+**Limite assumée : zéro approbation externe obligatoire**, car l'API ne listait
+qu'un mainteneur capable de revoir les PR. Les PR et checks restent obligatoires
+pour lui ; cela ne constitue pas une revue indépendante. Passer à au moins une
+approbation dès qu'un second reviewer habilité est disponible.
 
-```yaml
-permissions:
-  contents: read    # Lire le code
-  pages: write      # Écrire sur GitHub Pages
-  id-token: write   # Authentification
-```
+Les `check-runs` de la PR #135 ont permis d'ajuster le contexte navigateur
+réutilisé et d'ajouter OpenSpec/Dependency audit, sans désactiver les autres
+protections. Une ancienne PR doit intégrer ce pipeline avant sa fusion ;
+ne pas contourner un check requis absent. Refaire cette observation après tout
+changement de nom ou structure. Les workflows seuls ne remplacent pas ce réglage.
 
-## Processus de déploiement
+## Build et contenu publié
 
-### Déploiement automatique (recommandé)
-
-**Déclencheur** : Push vers `main`
+Dans Docker :
 
 ```bash
-# 1. Développer sur une branche feature
-git checkout -b feature/ma-fonctionnalite
-
-# 2. Faire les modifications
-# ... éditer, coder, tester ...
-
-# 3. Commit et push
-git add .
-git commit -m "feat: ajout de ma fonctionnalité"
-git push origin feature/ma-fonctionnalite
-
-# 4. Ouvrir une Pull Request sur GitHub
-# → Les checks CI s'exécutent automatiquement
-
-# 5. Merger la PR vers main (après review)
-# → Le déploiement se déclenche automatiquement
+make npm CMD="run build"        # TypeScript, runtime, catalogues, OG, guides, site
+make npm CMD="run build:local"  # même chaîne, sans collecte distante Open Graph
 ```
 
-**Étapes automatiques** :
+`npm run build` inclut désormais `build:ts` ; le workflow n'a pas à ajouter
+une compilation séparée. Le build de production conserve l'enrichissement
+Open Graph des bookmarks. Il n'est donc **pas hermétique** : le réseau et les
+métadonnées distantes peuvent influencer les sorties. `build:local` ne prouve
+pas que cette collecte réseau de production a fonctionné.
 
-1. **CI Workflow** s'exécute :
-   - Lint du code
-   - Tests avec coverage
-   - Build des catalogues
-2. **Deploy Workflow** s'exécute (si CI ✅) :
-   - Build des données (catalogue, parcours, bookmarks)
-   - Upload de l'artifact
-   - Déploiement sur GitHub Pages
+`build:site` prépare **`site/`**, pas une copie aveugle du dépôt :
 
-**Durée** : 3-5 minutes de la fusion PR à la mise en production
+| Publié | Non publié |
+|--------|------------|
+| Portail, `app/`, `lib/`, outils, jeux, parcours | `node_modules/`, scripts et gabarits de développement |
+| `assets/`, dont les distributions runtime générées | Tests, mocks, couverture et rapports |
+| Catalogues et images de bookmarks | Cache de collecte Open Graph |
+| Guides HTML, Markdown de référence et specs | `.github/`, `.claude/`, fichiers cachés et secrets |
+| README, conventions, licence et éventuel CNAME | Dockerfile, Makefile, package/lockfile de développement |
 
-### Déploiement manuel
+Le lecteur de guides renvoie vers GitHub pour les fichiers réservés au dépôt.
+Les fichiers générés restent ignorés par Git, **y compris `site/`**. `.gitignore`
+ne constitue pas un filtre de publication ; c'est le script de packaging qui
+définit le contenu public. Un lien symbolique dans une ressource publique fait
+échouer le packaging plutôt que copier des fichiers externes.
 
-**Déclencheur** : Manuel via l'interface GitHub Actions
+Le job build archive `site/` dans `github-pages` (rétention 7 jours).
+Le navigateur extrait cette archive et utilise `PLAYWRIGHT_PREBUILT=1`, sans
+reconstruire les catalogues. `deploy-pages` publie **la même archive**, pas un
+second build. Les rapports d'échec navigateur sont conservés 14 jours.
 
-```bash
-# Interface GitHub :
-1. Aller dans "Actions" > "Deploy to GitHub Pages"
-2. Cliquer sur "Run workflow"
-3. Sélectionner la branche "main"
-4. Cliquer sur "Run workflow"
-```
+## Vérifier une publication
 
-**Cas d'usage** :
-- Redéployer après un rollback
-- Déployer sans nouveau commit
-- Tester le workflow de déploiement
-
-## Ce qui est déployé
-
-### Fichiers statiques
-
-```
-/
-├── index.html           # Portail principal
-├── style.css           # Styles globaux
-├── app.js              # Logique du portail
-├── favicon.ico
-├── assets/             # Images, icônes
-├── lib/                # Bibliothèques (gamekit.js, etc.)
-├── tools/              # Tous les outils HTML
-│   └── [tool-name]/
-│       ├── index.html
-│       └── tool.json
-├── games/              # Tous les jeux
-│   └── [game-id]/
-│       ├── index.html
-│       ├── game.js
-│       ├── game.json
-│       └── assets/
-├── parcours/           # Contenus pédagogiques
-│   └── epics/
-│       └── [epic-id]/
-└── data/               # Catalogues générés (build)
-    ├── catalogue.json
-    ├── parcours.json
-    └── bookmarks.json
-```
-
-### Fichiers générés (build)
-
-Le workflow exécute `npm run build`, qui génère :
-
-1. **data/catalogue.json** :
-   - Liste de tous les tools et games
-   - Métadonnées (titre, description, tags, etc.)
-   - Script : `src/scripts/build-catalogue.js`
-
-2. **data/parcours.json** :
-   - Liste des parcours pédagogiques (epics)
-   - Structure des slides
-   - Script : `scripts/build-parcours.js`
-
-3. **data/bookmarks.json** :
-   - Liens utiles et ressources
-   - Script : `scripts/build-bookmarks.js`
-
-### Fichiers exclus
-
-```
-# Pas déployés (listés dans .gitignore) :
-node_modules/
-.env
-.env.local
-*.log
-coverage/
-.DS_Store
-```
-
-## Vérification du déploiement
-
-### 1. Vérifier le workflow
-
-```bash
-# GitHub Actions > Deploy to GitHub Pages
-✅ Build job completed
-✅ Deploy job completed
-```
-
-### 2. Vérifier l'URL de déploiement
-
-**Production** : https://z4ppy.github.io/playlab42/
-
-**Récupérer l'URL via API** :
-
-```bash
-gh api repos/z4ppy/playlab42/pages
-```
-
-### 3. Tests post-déploiement
-
-Vérifier manuellement :
-
-- [ ] Page d'accueil charge correctement
-- [ ] Catalogue affiche les tools et games
-- [ ] Un tool s'ouvre en iframe
-- [ ] Un game se lance
-- [ ] Pas d'erreurs JavaScript dans la console
-- [ ] Vérifier les données : `/data/catalogue.json`
-
-**Checklist automatisée** (à venir) :
-
-```bash
-# Smoke tests (TODO : à implémenter)
-npm run test:e2e:smoke
-```
-
-## Rollback (annuler un déploiement)
-
-Si un déploiement introduit un bug critique :
-
-### Méthode 1 : Rollback via historique GitHub Pages
-
-**Pas disponible** : GitHub Pages ne conserve qu'une version.
-
-### Méthode 2 : Revert du commit
-
-```bash
-# 1. Identifier le commit problématique
-git log --oneline
-
-# 2. Créer un commit de revert
-git revert <commit-hash>
-
-# 3. Pusher le revert
-git push origin main
-
-# 4. Le déploiement automatique se déclenche
-# → Retour à la version précédente
-```
-
-**Durée** : 3-5 minutes
-
-### Méthode 3 : Redéployer une version antérieure
-
-```bash
-# 1. Identifier le dernier commit stable
-git log --oneline
-
-# 2. Créer une branche de hotfix depuis ce commit
-git checkout -b hotfix/rollback <commit-hash-stable>
-
-# 3. Forcer le push vers main (ATTENTION : destructif)
-git push origin hotfix/rollback:main --force
-
-# ⚠️ ATTENTION : --force écrase l'historique
-# Alternative : Créer une PR depuis le hotfix et merger
-```
-
-**⚠️ Risques** :
-- `--force` écrase l'historique Git
-- Peut causer des conflits pour les contributeurs
-
-**Recommandation** : Préférer la **Méthode 2 (revert)** dans 99% des cas.
-
-## Stratégie de versioning
-
-### Semantic Versioning (SemVer)
-
-Playlab42 suit [Semantic Versioning 2.0.0](https://semver.org/) :
-
-```
-MAJOR.MINOR.PATCH
-0.1.0
-```
-
-- **MAJOR** : Breaking changes (incompatibilité API)
-- **MINOR** : Nouvelles fonctionnalités (rétrocompatible)
-- **PATCH** : Corrections de bugs (rétrocompatible)
-
-### Version actuelle
-
-Voir `package.json` :
+`site/build-info.json` fournit :
 
 ```json
 {
-  "version": "0.1.0"
+  "version": "0.2.0",
+  "commit": "0123456789abcdef0123456789abcdef01234567"
 }
 ```
 
-**Phase actuelle** : MVP (v0.x.x)
-- Pas de garantie de stabilité API
-- Peut introduire breaking changes entre versions mineures
+Le SHA ci-dessus est un exemple. En CI, la valeur réelle est `GITHUB_SHA` ;
+en local, elle vaut `null`, sauf identité explicitement fournie au build.
+Ce fichier identifie les sources mais **n'est pas une attestation signée**.
 
-### Créer une release
+Après publication, le job `smoke` vérifie neuf ressources : identité du build,
+portail, accueil des guides, trois catalogues, premier outil, premier jeu et
+première slide. Il compare le commit au SHA du run et rejette un catalogue vide
+ou invalide, une erreur HTTP ou une ressource hors du sous-chemin publié.
 
-**Après un déploiement majeur** :
+Il effectue au plus cinq tentatives, annoncées dans les logs et espacées de
+10 secondes, pour la propagation Pages. Un échec final fait échouer le workflow :
+**le site a cependant déjà été publié**. Il n'y a pas de rollback automatique.
+Ce smoke test HTTP ne vérifie ni toutes les interactions, ni tous les contenus,
+ni la disponibilité continue.
 
-```bash
-# 1. Mettre à jour la version dans package.json
-npm version minor  # ou major, patch
-
-# 2. Mettre à jour CHANGELOG.md
-# Voir section "Changelog" ci-dessous
-
-# 3. Commit et tag
-git add package.json CHANGELOG.md
-git commit -m "chore: release v0.2.0"
-git tag v0.2.0
-
-# 4. Push avec tags
-git push origin main --tags
-
-# 5. Créer une GitHub Release
-gh release create v0.2.0 \
-  --title "Version 0.2.0" \
-  --notes "Voir CHANGELOG.md pour les détails"
-```
-
-**GitHub Release** :
-
-1. Aller dans **Releases** > **Draft a new release**
-2. Tag : `v0.2.0`
-3. Title : `Version 0.2.0`
-4. Description : Copier depuis CHANGELOG.md
-5. Publier
-
-## Changelog
-
-Tenir à jour le fichier `CHANGELOG.md` :
-
-**Format** : [Keep a Changelog](https://keepachangelog.com/)
-
-**Exemple** :
-
-```markdown
-# Changelog
-
-## [Unreleased]
-
-### Added
-- Nouveau tool : JSON Formatter
-- Support des parcours pédagogiques
-
-### Changed
-- Amélioration UI du catalogue
-
-### Fixed
-- Correction bug chargement iframe
-
-## [0.1.0] - 2025-12-14
-
-### Added
-- Version initiale MVP
-- Catalogue tools et games
-- Portail principal
-```
-
-**Convention de commits** :
-
-```
-feat: Nouvelle fonctionnalité       → Added
-fix: Correction de bug               → Fixed
-chore: Maintenance                   → Changed
-docs: Documentation                  → Changed
-refactor: Refactoring                → Changed
-perf: Performance                    → Changed
-test: Tests                          → (pas dans changelog)
-```
-
-## Environnements
-
-| Environnement | URL | Branch | Déploiement |
-|---------------|-----|--------|-------------|
-| **Production** | https://z4ppy.github.io/playlab42/ | `main` | Automatique |
-| **Staging** | N/A | N/A | Pas configuré |
-| **Local** | http://localhost:5242 | Toutes | Manuel (`make serve`) |
-
-### Staging (optionnel, à configurer)
-
-Pour ajouter un environnement de staging :
-
-**Option 1 : Branche staging + GitHub Pages**
-
-```yaml
-# .github/workflows/deploy-staging.yml
-on:
-  push:
-    branches: [staging]
-
-# Déploie sur gh-pages-staging
-```
-
-**Option 2 : Netlify/Vercel**
+Pour tester le dossier préparé, avec `make serve` déjà actif :
 
 ```bash
-# netlify.toml
-[build]
-  command = "npm run build"
-  publish = "."
+# Dans le conteneur, 5242 est le port interne ; make info donne le port externe.
+make npm CMD="run check:deployment -- http://127.0.0.1:5242/site/"
 ```
 
-## Monitoring et logs
+Pour contrôler une URL publique, ajouter un SHA réel si disponible :
 
-### Logs de déploiement
-
-**Accéder aux logs** :
-
-1. GitHub Actions > Deploy to GitHub Pages > Run #123
-2. Cliquer sur le job (Build ou Deploy)
-3. Lire les logs étape par étape
-
-**Logs typiques** :
-
-```
-Run npm ci
-npm ci
-added 123 packages in 15s
-
-Run npm run build
-> playlab42@0.1.0 build
-> npm run build:catalogue && ...
-
-✅ Catalogue généré : 12 items
-✅ Parcours générés : 3 epics
-
-Run actions/upload-pages-artifact@v3
-Artifact Size: 2.3 MB
+```bash
+make npm CMD="run check:deployment -- https://z4ppy.github.io/playlab42/ SHA_COMPLET"
 ```
 
-### Monitoring post-déploiement
+Remplacer `SHA_COMPLET`, ne pas exécuter l'exemple littéralement.
+Ne pas annoncer une CI native ou une publication validée sur la seule base de
+tests locaux ; consulter les résultats GitHub du commit concerné.
 
-**Outils disponibles** :
+## Rollback et incidents
 
-1. **GitHub Pages Status** :
-   - Settings > Pages > "Your site is live at..."
-   - Indicateur vert/rouge
+1. Identifier le commit déployé dans `build-info.json` et le dernier état valide.
+2. Créer une **branche de correction et une PR de revert** :
 
-2. **Uptime monitoring** (à configurer) :
-   - [UptimeRobot](https://uptimerobot.com/)
-   - [Pingdom](https://www.pingdom.com/)
-   - Configuration : Ping https://z4ppy.github.io/playlab42/ toutes les 5 min
-
-3. **Analytics** (optionnel) :
-   - Google Analytics
-   - Plausible (privacy-focused)
-
-### Alertes
-
-**Configurées** :
-- Notifications GitHub Actions (par défaut sur échec)
-
-**À configurer** :
-- Slack/Discord notifications
-- Email sur échec de déploiement
-
-## Sécurité du déploiement
-
-### Bonnes pratiques
-
-1. **Ne jamais déployer directement vers main** :
    ```bash
-   # ❌ Mauvais
-   git push origin main
-
-   # ✅ Bon
-   git push origin feature/ma-feature
-   # → Ouvrir PR → Review → Merge
+   git switch -c fix/revert-publication
+   git revert COMMIT_PROBLEMATIQUE
+   git push -u origin fix/revert-publication
    ```
 
-2. **Vérifier les checks CI avant merge** :
-   - ✅ Lint passing
-   - ✅ Tests passing
-   - ✅ Build succeeds
-   - ✅ Security audit OK
+3. Faire relire les contrôles et décider explicitement du merge.
+4. Vérifier le nouveau run de publication et le smoke test.
+5. Noter l'incident et sa résolution ; ne synchroniser/archiver OpenSpec qu'après
+   livraison et décision explicite.
 
-3. **Review obligatoire** :
-   - Au moins 1 review requise (configurer branch protection)
+Un lancement manuel sur `main` redéploie son état courant : **ce n'est pas un
+rollback vers un ancien artefact**. Aucun `push --force` n'est une procédure
+normale de récupération. La restauration d'un artefact connu, le suivi de
+disponibilité et les notifications d'incident restent des évolutions proposées.
 
-4. **Pas de secrets dans le code** :
-   - Vérifier avec `make security-audit`
-   - GitLeaks scan automatique dans CI
+## Versions et maintenance
 
-### Branch Protection Rules (recommandé)
+La version courante vient de `package.json`. Ne pas la dupliquer dans les guides
+à chaque release. Tags, changelog et GitHub Releases ne sont pas créés
+automatiquement ; toute commande `npm version` s'exécute dans Docker et exige
+une décision de release. Elle peut créer un commit/tag : inspecter son effet,
+ne pas la combiner avec une création de commit présentée comme indépendante.
 
-Configurer dans **Settings** > **Branches** > **Branch protection rules** :
+En cas de ressource manquante, vérifier le build, le contenu de `site/` et les
+chemins relatifs compatibles avec `/playlab42/`, plutôt que modifier `.gitignore`
+ou supposer que `make build` construit le site : cette cible construit **l'image Docker**.
 
-```yaml
-Branch: main
-☑ Require pull request before merging
-  ☑ Require approvals (1)
-☑ Require status checks to pass
-  ☑ lint
-  ☑ test
-  ☑ build
-☑ Require conversation resolution
-☐ Require signed commits
-☐ Require linear history
-☑ Include administrators
-```
+## Références
 
-## Troubleshooting
+- [L'usine logicielle et sa feuille de route](guides/software-factory.md)
+- [Pipelines](../.github/docs/PIPELINES.md)
+- [Stratégie de tests](TESTING_STRATEGY.md)
+- [Dépannage](TROUBLESHOOTING.md)
+- [GitHub Pages](https://docs.github.com/en/pages)
+- [Livraison continue DORA](https://dora.dev/capabilities/continuous-delivery/)
 
-### Déploiement échoue
-
-**Symptôme** : Deploy workflow en échec
-
-**Solutions** :
-
-1. Vérifier les logs du workflow
-2. Vérifier les permissions GitHub Pages (Settings > Pages)
-3. Vérifier que le build local fonctionne :
-   ```bash
-   make build
-   ```
-4. Consulter [docs/TROUBLESHOOTING.md](./TROUBLESHOOTING.md)
-
-### Site inaccessible après déploiement
-
-**Symptôme** : 404 sur https://z4ppy.github.io/playlab42/
-
-**Solutions** :
-
-1. Vérifier que le workflow Deploy est terminé (✅)
-2. Attendre 1-2 minutes (propagation DNS/CDN)
-3. Vider le cache navigateur (Ctrl+Shift+R)
-4. Vérifier le statut GitHub Pages (Settings > Pages)
-
-### Fichiers manquants en production
-
-**Symptôme** : Fichiers présents localement mais pas en production
-
-**Causes** :
-
-1. Fichier dans `.gitignore` → Pas committé
-2. Fichier non build → Vérifier `npm run build`
-3. Path incorrect → Vérifier chemins relatifs
-
-**Solution** :
-
-```bash
-# Vérifier que le fichier est committé
-git ls-files | grep "mon-fichier.js"
-
-# Vérifier le build local
-make build
-ls -la data/
-```
-
-### Erreurs JavaScript en production
-
-**Symptôme** : Console affiche des erreurs
-
-**Causes** :
-
-1. Chemin absolu au lieu de relatif
-2. Fichier manquant (voir ci-dessus)
-3. CORS (chargement ressources externes)
-
-**Solution** :
-
-```javascript
-// ❌ Mauvais (chemin absolu)
-fetch('/data/catalogue.json')
-
-// ✅ Bon (chemin relatif depuis racine GitHub Pages)
-fetch('./data/catalogue.json')
-```
-
-## Ressources
-
-- [GitHub Pages Documentation](https://docs.github.com/en/pages)
-- [GitHub Actions Deployment](https://docs.github.com/en/actions/deployment)
-- [Semantic Versioning](https://semver.org/)
-- [Keep a Changelog](https://keepachangelog.com/)
-- Pipeline Documentation : [.github/docs/PIPELINES.md](../.github/docs/PIPELINES.md)
-
----
-
-*Document maintenu par l'équipe Docaposte*
-*Dernière mise à jour : 2025-12-14*
+Actualisé le 3 octobre 2026.

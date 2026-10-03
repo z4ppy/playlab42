@@ -34,10 +34,15 @@ Support de formation où les participants créent des outils, jeux et parcours a
 Le projet s'enrichit des contributions de chaque session.
 
 **Qualité code** : Ce projet étant un support de cours, le code doit être exemplaire :
-- Bien commenté en français
+- Commentaires utiles en français pour les décisions non évidentes
 - Nommage explicite
 - Tests unitaires systématiques
-- Documentation JSDoc exhaustive
+- JSDoc des contrats publics et documentation cohérente avec le comportement
+
+Le [guide qualité](docs/guides/software-quality.md) fixe les pratiques communes :
+conception simple, contrats, déterminisme, erreurs visibles, tests de comportement
+et revue. Les seuils ciblés et l'audit npm sont bloquants dans la CI ; ni couverture
+ni audit vert ne certifient l'absence de défauts.
 
 ## Environnement Docker-first
 
@@ -87,7 +92,7 @@ et [le kit de contribution](docs/guides/contribution-kit.md).
 Les corps des skills sont versionnés uniquement dans **`.github/skills/`**.
 Le lien `.claude/skills -> ../.github/skills` expose cette même source à
 Claude sans seconde copie. Les skills OpenSpec générés se placent donc dans
-`.github/skills/openspec-*`, à côté des quatre skills métier `playlab-*`.
+`.github/skills/openspec-*`, à côté des cinq skills métier `playlab-*`.
 Ce lien ne crée pas de commandes `/opsx:*` ; leur disponibilité dépend de
 l'intégration de commandes du client.
 
@@ -213,7 +218,10 @@ make build-ts           # Regénérer les fichiers dist/
 
 Les fichiers `dist/` sont **générés automatiquement** par le workflow de déploiement (`deploy.yml`). Pas besoin de les versionner.
 
-Le workflow exécute `npm run build:ts` avant le déploiement, ce qui génère les fichiers JavaScript transpilés pour tous les tools TypeScript.
+Le build complet `npm run build` inclut `build:ts`, puis prépare le dossier
+public `site/`. La CI teste l'archive produite dans Chromium avant que le workflow
+de publication ne déploie cette même archive. Le contrôle HTTP après publication
+vérifie le commit ; il ne remplace pas les tests ni les protections GitHub.
 
 ### Types disponibles
 
@@ -291,7 +299,7 @@ playlab42/
 │   └── dom-cache.js          # Cache éléments DOM
 ├── tools/                    # Outils HTML standalone
 │   ├── [tool-name]/
-│   │   ├── index.html        # Un fichier = un outil
+│   │   ├── index.html        # Point d'entrée, modules locaux possibles
 │   │   └── tool.json         # Manifest
 ├── games/                    # Jeux autonomes
 │   └── [game-id]/
@@ -351,6 +359,7 @@ Les specs détaillées sont dans `openspec/specs/` :
 - `docs/guides/openspec-workflow.md` - OPSX, CLI Docker et compatibilité des anciens alias
 - `docs/guides/project-skills.md` - Skills métier et source commune des conventions
 - `docs/guides/contribution-kit.md` - Gabarits game/tool/epic et galerie UI
+- `docs/guides/software-factory.md` - Chaîne de livraison, preuves et améliorations restantes
 - `openspec/legacy/README.md` - Brouillons historiques conservés sans déclaration de livraison
 
 ## Guidelines pour agents IA

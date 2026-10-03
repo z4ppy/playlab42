@@ -3,197 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pour aller plus loin - PlayLab42</title>
+  <title>Conclusion et fil rouge</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../playlab-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .congrats {
-      text-align: center;
-      padding: var(--space-xl) 0;
-    }
-    .congrats-emoji {
-      font-size: 4rem;
-      margin-bottom: var(--space-md);
-    }
-    .congrats h1 {
-      border: none;
-      padding: 0;
-    }
-    .resources {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: var(--space-md);
-      margin: var(--space-xl) 0;
-    }
-    .resource {
-      background: var(--color-bg-secondary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-lg);
-      border-left: 4px solid var(--color-accent);
-    }
-    .resource h4 {
-      margin: 0 0 var(--space-sm) 0;
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-    .resource p {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      margin: 0 0 var(--space-sm) 0;
-    }
-    .resource code {
-      display: block;
-      background: var(--color-bg-card);
-      padding: var(--space-sm);
-      border-radius: var(--radius-sm);
-      font-size: var(--font-size-sm);
-    }
-    .next-steps {
-      background: linear-gradient(135deg, var(--color-accent), #ff8a80);
-      color: white;
-      padding: var(--space-xl);
-      border-radius: var(--radius-lg);
-      margin: var(--space-xl) 0;
-      text-align: center;
-    }
-    .next-steps h3 {
-      margin: 0 0 var(--space-lg) 0;
-      font-size: var(--font-size-xl);
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: var(--space-md);
-    }
-    .action {
-      background: rgba(255,255,255,0.2);
-      padding: var(--space-md) var(--space-lg);
-      border-radius: var(--radius-lg);
-      font-weight: 500;
-    }
-    .action .icon {
-      font-size: 1.5rem;
-      display: block;
-      margin-bottom: var(--space-xs);
-    }
-    .contribution-note {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-      text-align: center;
-    }
-    .contribution-note h4 {
-      margin: 0 0 var(--space-sm) 0;
-    }
-    .contribution-note p {
-      margin: 0;
-      color: var(--color-text-muted);
-    }
-  </style>
 </head>
-<body>
+<body class="playlab-guide">
   <article class="slide">
-    <div class="congrats">
-      <div class="congrats-emoji">🎉</div>
-      <h1>Félicitations !</h1>
-      <p>Vous avez terminé le parcours d'introduction à PlayLab42.</p>
-    </div>
+    <p class="guide-kicker">Étape 11 · 3 min · Débutant</p>
+    <h1>Conclusion et fil rouge</h1>
+    <p class="guide-lead">
+      Vous avez parcouru les 11 étapes : du portail à la publication. Voici la carte, puis un dernier exercice
+      qui les enchaîne.
+    </p>
 
-    <h2>Ressources disponibles</h2>
+    <h2>Les 11 étapes en un coup d'œil</h2>
+    <ol class="guide-flow">
+      <li><strong>Bienvenue</strong> : le portail, la recherche, la reprise et les données locales.</li>
+      <li><strong>Méthodes</strong> : <code>AGENTS.md</code>, OPSX et skills.</li>
+      <li><strong>Architecture</strong> : site statique, manifests, build.</li>
+      <li><strong>Créer un outil</strong> : <code>tools/&lt;id&gt;/</code> et <code>tool.json</code>.</li>
+      <li><strong>Créer un jeu</strong> : moteur isomorphe, client, <code>game.json</code>.</li>
+      <li><strong>Créer un bot</strong> : joueur automatique déterministe.</li>
+      <li><strong>Specs et skills</strong> : de la proposition à l'implémentation.</li>
+      <li><strong>Kit de contribution</strong> : gabarits et galerie UI.</li>
+      <li><strong>Qualité et CI</strong> : tests, lint, validation OpenSpec.</li>
+      <li><strong>Publication</strong> : PR, revue, merge et déploiement par des humains.</li>
+      <li><strong>Conclusion</strong> : cette synthèse et l'exercice fil rouge.</li>
+    </ol>
 
-    <div class="resources">
-      <div class="resource">
-        <h4>📚 Documentation</h4>
-        <p>Guides détaillés pour chaque type de contribution</p>
-        <code>docs/guides/</code>
-      </div>
-      <div class="resource">
-        <h4>📋 Spécifications</h4>
-        <p>Specs techniques complètes au format OpenSpec</p>
-        <code>openspec/specs/</code>
-      </div>
-      <div class="resource">
-        <h4>🎮 Exemple Tic-Tac-Toe</h4>
-        <p>Jeu de référence avec moteur, client et 3 bots</p>
-        <code>games/tictactoe/</code>
-      </div>
-      <div class="resource">
-        <h4>🔧 Exemple JSON Formatter</h4>
-        <p>Outil de référence avec thème et persistance</p>
-        <code>tools/json-formatter/</code>
-      </div>
-    </div>
-
-    <div class="next-steps">
-      <h3>Prêt à contribuer ?</h3>
-      <div class="actions">
-        <div class="action">
-          <span class="icon">🔧</span>
-          Créer un outil
-        </div>
-        <div class="action">
-          <span class="icon">🎮</span>
-          Créer un jeu
-        </div>
-        <div class="action">
-          <span class="icon">🤖</span>
-          Créer un bot
-        </div>
-        <div class="action">
-          <span class="icon">📚</span>
-          Créer un parcours
-        </div>
-      </div>
-    </div>
-
-    <div class="contribution-note">
-      <h4>💡 Comment contribuer ?</h4>
+    <section class="guide-exercise">
+      <h2>Exercice fil rouge : l'outil « hello-usine »</h2>
       <p>
-        Toutes les contributions se font via <strong>Pull Request</strong> sur GitHub.<br>
-        Créez une branche, ajoutez votre contenu, et soumettez votre PR pour revue !
+        <code>hello-usine</code> est un outil <strong>illustratif, non implémenté</strong> : un petit tableau qui liste
+        les étapes d'une contribution. Planifiez sa livraison comme un architecte qui pilote un agent :
+        quelles étapes, dans quel ordre, et où s'arrêter pour une décision humaine ?
       </p>
+      <details>
+        <summary>Correction</summary>
+        <ol>
+          <li>Explorer, puis demander le skill <code>openspec-propose</code> : il s'arrête aux artefacts. L'humain relit et autorise l'implémentation.</li>
+          <li>Générer le squelette : <code>make scaffold TYPE=tool ID=hello-usine TITLE="Hello usine"</code>, puis implémenter avec <code>openspec-apply-change</code>.</li>
+          <li>Vérifier dans Docker : <code>make test</code>, <code>make lint</code>, <code>make openspec-validate</code>, et régénérer le catalogue.</li>
+          <li>Ouvrir une PR et attendre la revue humaine et la CI réelle : aucune approbation n'est simulée.</li>
+          <li>Après merge et déploiement, si applicable, décider explicitement de synchroniser et d'archiver le change.</li>
+        </ol>
+      </details>
+    </section>
+
+    <h2>Aller plus loin : les points manquants</h2>
+    <p>Les validations et la publication du même artefact sont maintenant reliées.
+      Une usine s'améliore aussi après livraison : les pistes suivantes restent à réaliser.</p>
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>Organiser la revue indépendante</h3>
+        <p>Main est protégée depuis le 3 octobre 2026 : PR et neuf checks requis, même pour l'admin.
+          Ajouter un second reviewer puis imposer une approbation indépendante.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Fiabiliser les preuves</h3>
+        <p>Étendre les audits bloquants et les seuils de couverture déjà ciblés,
+          épingler actions et scanners, puis envisager SBOM et provenance signée.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Mieux relire et récupérer</h3>
+        <p>Prévisualisations de PR, surveillance périodique et récupération d'une version connue.
+          Le smoke HTTP existe, mais ne surveille pas le site en continu et ne réalise pas de rollback.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Apprendre de l'atelier</h3>
+        <p>Mesurer les frictions, compléter les évaluations de skills et séparer la collecte
+          Open Graph du build. Pas besoin de Kubernetes pour commencer.</p>
+      </section>
+    </div>
+    <p class="guide-resource">
+      <a href="../../../../../docs/site/guides/software-factory.html" target="_top">Lire le guide de l'usine et sa feuille de route</a> :
+      pratiques DORA, CNCF, SLSA et GitHub, avec les garanties réelles et leurs limites.
+    </p>
+
+    <h2>Continuer à explorer</h2>
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>Guides</h3>
+        <p>Le lien <strong>Guides</strong> du portail et le dossier <code>docs/guides/</code>.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Specs</h3>
+        <p><code>openspec/specs/</code> décrit le comportement attendu de la plateforme.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Exemples</h3>
+        <p><code>games/tictactoe/</code> et <code>tools/local-data/</code> servent de références.</p>
+      </section>
     </div>
 
-    <h2>Commandes utiles</h2>
+    <h2>Sources</h2>
+    <div class="guide-resource">
+      <ul>
+        <li><a href="https://github.com/z4ppy/playlab42/blob/main/README.md" target="_blank" rel="noopener">README</a> · <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/README.md" target="_blank" rel="noopener">Index des guides</a> · <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/contributing.md" target="_blank" rel="noopener">Contribuer</a> · <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/local-data.md" target="_blank" rel="noopener">Données locales</a> · <a href="https://github.com/z4ppy/playlab42/tree/main/openspec/specs" target="_blank" rel="noopener">Specs OpenSpec</a></li>
+      </ul>
+    </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Commande</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>make serve</code></td>
-          <td>Lancer le serveur de développement</td>
-        </tr>
-        <tr>
-          <td><code>make lint</code></td>
-          <td>Vérifier le code avec ESLint</td>
-        </tr>
-        <tr>
-          <td><code>make test</code></td>
-          <td>Lancer les tests</td>
-        </tr>
-        <tr>
-          <td><code>make build</code></td>
-          <td>Régénérer les catalogues</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <blockquote>
-      "Le voyage de mille lieues commence par un pas." — Lao Tseu<br>
-      <small>Votre premier outil ou jeu vous attend !</small>
-    </blockquote>
+    <footer><p data-slide-footer>Conclusion et fil rouge</p></footer>
   </article>
 </body>
 </html>
