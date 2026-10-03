@@ -86,6 +86,20 @@ describe('Contrats de progression et notifications', () => {
       .toEqual(['streak10', 'streak25']);
   });
 
+  test('une progression partielle migrée reçoit aussi ses propres collections par défaut', async () => {
+    GameKit.loadProgress.mockResolvedValue({ version: 1, globalXP: 42 });
+    await tracker.load();
+    const other = new ProgressTracker();
+    await other.load();
+    tracker.recordSession({ exerciseId: 'migrée', skill: 'chords', xp: 5 });
+    tracker.setSetting('notation', 'english');
+    tracker.checkAchievements({ bestStreak: 10 });
+    expect(other.progress).toEqual({
+      version: 1, globalXP: 42, skills: {}, sessions: [], achievements: [],
+      settings: { notation: 'french', defaultDifficulty: 1 },
+    });
+  });
+
   test('sauvegarde les mutations puis notifie avec le même objet', async () => {
     const update = jest.fn();
     tracker.onUpdate(update);

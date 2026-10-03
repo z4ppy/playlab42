@@ -30,6 +30,9 @@ const SESSION_STATES = {
 /**
  * Moteur d'exercices
  *
+ * Orchestration avec horloge murale : les pauses restent incluses dans les
+ * durées et le bonus temps. Ce n'est pas un moteur de plateau déterministe.
+ *
  * @fires ExerciseEngine#session-start - Quand une session démarre
  * @fires ExerciseEngine#session-end - Quand une session se termine
  * @fires ExerciseEngine#question-start - Quand une nouvelle question commence
@@ -90,24 +93,25 @@ export class ExerciseEngine extends EventEmitter {
    * @returns {Object} Première question
    */
   startSession(exercise) {
+    const config = exercise.config || {};
     this.exercise = exercise;
-    this.totalQuestions = exercise.config?.questionsCount || 20;
+    this.totalQuestions = config.questionsCount || 20;
     this.currentIndex = 0;
     this.hintsUsed = 0;
     this.sessionStartTime = Date.now();
     this.sessionEndTime = null;
 
-    // Créer le générateur
+    // Les valeurs par défaut des questions appartiennent au générateur.
     this.generator = new QuestionGenerator({
-      clef: exercise.config?.clef || 'treble',
-      range: exercise.config?.range,
-      accidentals: exercise.config?.accidentals || false,
-      difficulty: exercise.config?.difficulty || 1,
+      clef: config.clef,
+      range: config.range,
+      accidentals: config.accidentals,
+      difficulty: config.difficulty,
     });
 
     // Créer le calculateur
     this.calculator = new ScoreCalculator({
-      timeBonus: exercise.config?.timing === 'timed',
+      timeBonus: config.timing === 'timed',
     });
 
     this.state = SESSION_STATES.RUNNING;
@@ -155,6 +159,7 @@ export class ExerciseEngine extends EventEmitter {
    */
   _generateQuestion() {
     const mode = this.exercise?.mode || 'visual-to-name';
+    const config = this.exercise?.config || {};
 
     switch (mode) {
       case 'visual-to-name':
@@ -163,19 +168,19 @@ export class ExerciseEngine extends EventEmitter {
 
       case 'interval':
         return this.generator.generateInterval({
-          types: this.exercise.config?.intervalTypes,
+          types: config.intervalTypes,
         });
 
       case 'chord':
         return this.generator.generateChord({
-          types: this.exercise.config?.chordTypes,
+          types: config.chordTypes,
         });
 
       case 'rhythm':
         return this.generator.generateRhythm({
-          durations: this.exercise.config?.durations,
-          beatsPerMeasure: this.exercise.config?.beatsPerMeasure,
-          tempo: this.exercise.config?.tempo,
+          durations: config.durations,
+          beatsPerMeasure: config.beatsPerMeasure,
+          tempo: config.tempo,
         });
 
       default:
@@ -482,6 +487,7 @@ export class ExerciseEngine extends EventEmitter {
 
   /**
    * Met en pause la session
+   * Bloque les réponses et l'avancement sans décaler les timestamps.
    */
   pause() {
     if (this.state === SESSION_STATES.RUNNING) {
