@@ -40,7 +40,7 @@
     <h2>Moteur isomorphe</h2>
     <p>
       « Isomorphe » veut dire : le même moteur s'exécute dans le navigateur et dans Node (c'est ce que font les tests Jest).
-      Il n'utilise donc ni DOM, ni réseau, ni fichiers, ni <code>Math.random()</code>.
+      Il n'utilise donc ni DOM, ni réseau, ni fichiers, ni <code>Math.random()</code> ou <code>Date.now()</code>.
       Aucun serveur de jeu n'est déployé aujourd'hui : la compatibilité Node sert aux tests et prépare l'avenir.
     </p>
     <pre class="code-block"><code>init(config)                          // état initial depuis une seed
@@ -49,6 +49,13 @@ getValidActions(state, playerId)
 applyAction(state, action, playerId)  // retourne un nouvel état
 getPlayerView(state, playerId)        // ce que le joueur a le droit de voir
 isGameOver(state)  getWinners(state)  getCurrentPlayer(state)</code></pre>
+    <p class="guide-note">
+      Une nouvelle partie reçoit une <strong>seed explicite</strong> depuis le client :
+      l'horloge appartient à l'interface, pas aux règles. Vérifiez qu'une suite d'actions
+      donne le même résultat après sauvegarde puis restauration JSON, sans muter l'état initial.
+      Les moteurs partagent ces contrats, pas une super-classe imposant leurs règles :
+      ils conservent leurs <strong>états JSON propres</strong>.
+    </p>
 
     <h2>Générer et vérifier</h2>
     <ol class="guide-flow">
