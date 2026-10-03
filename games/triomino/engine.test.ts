@@ -14,6 +14,9 @@ import {
   type TriominoConfig,
   type PlaceAction,
   type TriominoAction,
+  type Triomino,
+  type TriominoState,
+  type GameMode,
 } from './engine.js';
 
 // ---------------------------------------------------------------------------
@@ -25,6 +28,95 @@ const defaultConfig = (players = 2, seed = 42): TriominoConfig => ({
   playerIds: Array.from({ length: players }, (_, i) => `p${i + 1}`),
   seed,
 });
+
+function copy<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function freeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object') {
+    for (const child of Object.values(value)) freeze(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+function tile(values: [number, number, number]): Triomino {
+  const sorted = [...values].sort((a, b) => a - b);
+  const result = generateAllTiles().find((candidate) =>
+    candidate.values.every((value, index) => value === sorted[index]),
+  );
+  if (!result) throw new Error(`Tuile inconnue : ${values}`);
+  return result;
+}
+
+function position(seqX: number, row: number): Position {
+  return {
+    col: Math.floor(seqX / 2),
+    row,
+    orientation: seqX % 2 === 0 ? 'UP' : 'DOWN',
+  };
+}
+
+function key(pos: Position): string {
+  return `${pos.col},${pos.row},${pos.orientation}`;
+}
+
+function fixture(
+  board: Board,
+  racks: [Triomino[], Triomino[]],
+  mode: GameMode = 'standard',
+  drawPile: Triomino[] = [],
+): TriominoState {
+  return {
+    board,
+    players: racks.map((rack, index) => ({ id: `p${index + 1}`, rack, score: 0 })),
+    drawPile,
+    currentPlayerIndex: 0,
+    drawsThisTurn: 0,
+    phase: 'playing',
+    winners: null,
+    turn: Object.keys(board).length + 1,
+    config: { ...defaultConfig(), mode },
+    rngState: 42,
+    lastDrawnTile: null,
+  };
+}
+
+// Deux anneaux partagent le côté gauche de △(seqX=0,row=0).
+// Anneau au sommet haut : trois triangles row=-1, trois row=0.
+// Anneau au sommet bas-gauche : trois triangles row=0, trois row=1.
+// Les valeurs des sommets partagés correspondent ; les dix tuiles sont uniques.
+const twoRings: [number, number, [number, number, number]][] = [
+  [0, 0, [5, 5, 3]], // La tuile qui ferme les deux anneaux (somme = 13).
+  [-1, 0, [5, 5, 5]],
+  [1, 0, [3, 5, 2]],
+  [-1, -1, [4, 5, 5]],
+  [0, -1, [5, 4, 4]],
+  [1, -1, [4, 5, 2]],
+  [-2, 0, [5, 2, 5]],
+  [-2, 1, [0, 2, 5]],
+  [-1, 1, [5, 0, 4]],
+  [0, 1, [4, 5, 3]],
+];
+
+function ringBoard(indices: number[]): Board {
+  return Object.fromEntries(indices.map((index) => {
+    const [seqX, row, placed] = twoRings[index];
+    const pos = position(seqX, row);
+    const placedValues: [number, number, number] = [...placed];
+    return [key(pos), { triomino: tile(placed), position: pos, placed: placedValues }];
+  }));
+}
+
+function expectStocks(state: TriominoState): void {
+  const ids = [
+    ...Object.values(state.board).map((entry) => entry.triomino.id),
+    ...state.players.flatMap((player) => player.rack.map((entry) => entry.id)),
+    ...state.drawPile.map((entry) => entry.id),
+  ];
+  expect(ids.sort((a, b) => a - b)).toEqual(generateAllTiles().map((entry) => entry.id));
+}
 
 describe('GreedyBot', () => {
   test('préserve les choix légaux et refuse une liste sans action valide', async () => {
@@ -53,7 +145,7 @@ function boardWithOne(placed: [number, number, number]): Board {
   const pos: Position = { col: 0, row: 0, orientation: 'UP' };
   return {
     '0,0,UP': {
-      triomino: { id: 0, values: [placed[0], placed[1], placed[2]] as [number, number, number] },
+      triomino: tile(placed),
       position: pos,
       placed,
     },
@@ -117,7 +209,7 @@ describe('generateAllTiles', () => {
 // ---------------------------------------------------------------------------
 
 describe('isValidPlacement', () => {
-  test('premier placement toujours valide', () => {
+  test('premier placement au centre valide', () => {
     const pos: Position = { col: 0, row: 0, orientation: 'UP' };
     expect(isValidPlacement({}, pos, [1, 2, 3], true)).toBe(true);
   });
@@ -162,37 +254,292 @@ describe('detectBonus', () => {
     expect(detectBonus(board, { col: 0, row: 0, orientation: 'UP' })).toBeNull();
   });
 
-  test('bonus bridge quand 2 voisins non adjacents', () => {
-    // Construction d'un pont minimal :
-    // Tuile A en (0,0,UP), Tuile B en (1,0,UP), Tuile C (le pont) en (1,0,DOWN)
-    // C est adjacent à A via (0,0,DOWN) non, recalcul : le pont nécessite
-    // 2 voisins qui ne se touchent pas entre eux.
-    // On pose A en (0,0,UP) et B en (0,1,UP), le pont C en (0,0,DOWN)
-    // a pour voisins (0,0,UP)=A et (0,1,DOWN) qui n'existe pas ? pas de pont
-    // Posons plutôt : A en (0,0,UP) avec placed [1,2,3]
-    // et B en (1,0,UP) avec placed [1,3,4] (partage le côté droit de A)
-    // Côté droit UP: srcIndices=[0,1] de A = [1,2], nbrIndices=[0,2] de B = [1,4]
-    // ? Ne correspond pas pour B. Ajustons la valeur.
-    // A[0,1] = [1,2], B[0,2] doit = [1,2] ? B placed = [1,5,2]
-    const board: Board = {
-      '0,0,UP': {
-        triomino: { id: 0, values: [1, 2, 3] },
-        position: { col: 0, row: 0, orientation: 'UP' },
-        placed: [1, 2, 3],
-      },
-      '1,0,UP': {
-        triomino: { id: 1, values: [1, 2, 5] },
-        position: { col: 1, row: 0, orientation: 'UP' },
-        placed: [1, 5, 2],
-      },
+});
+
+describe('Transitions et replays publics', () => {
+  test.each<GameMode>(['standard', 'simplified', 'kids'])(
+    'rejoue une partie %s avec PLACE/DRAW/PASS et reprise JSON après une pioche',
+    (mode) => {
+      const engine = new TriominoEngine();
+      const config = freeze({ ...defaultConfig(2, 99), mode });
+      let state = engine.init(config);
+      let replay = new TriominoEngine().init(copy(config));
+      let restored: TriominoState | null = null;
+      const seen = new Set<string>();
+      let steps = 0;
+      // Référence observée sur 8f68836 : protège aussi l'ordre RNG, pas seulement
+      // deux exécutions d'une même implémentation éventuellement modifiée.
+      expect(state.players.map((player) => player.rack.map((entry) => entry.id))).toEqual([
+        [11, 34, 6, 13, 54, 22, 21, 49, 1],
+        [4, 30, 23, 47, 32, 52, 24, 35, 43],
+      ]);
+      expect(state.currentPlayerIndex).toBe(0);
+
+      while (!engine.isGameOver(state) && steps < 500) {
+        const before = copy(state);
+        freeze(state);
+        const playerId = engine.getCurrentPlayer(state);
+        const actions = engine.getLegalActions(state, playerId);
+        expect(actions.length).toBeGreaterThan(0);
+        for (const candidate of actions) {
+          expect(engine.isValidAction(state, candidate, playerId)).toBe(true);
+        }
+        expect(engine.getLegalActions(replay, playerId)).toEqual(actions);
+        if (restored) expect(engine.getLegalActions(restored, playerId)).toEqual(actions);
+
+        // Après la première pose, choisir volontairement trois pioches puis PASS.
+        // Les tours suivants utilisent la première pose légale, sinon DRAW/PASS.
+        const preferredType = state.turn === 2
+          ? (state.drawsThisTurn < 3 ? 'DRAW' : 'PASS')
+          : 'PLACE';
+        const action = freeze(copy(actions.find((candidate) => candidate.type === preferredType) ?? actions[0]));
+        const actionBefore = copy(action);
+        seen.add(action.type);
+        const next = engine.applyAction(state, action, playerId);
+        replay = new TriominoEngine().applyAction(replay, copy(action), playerId);
+        if (restored) restored = new TriominoEngine().applyAction(restored, copy(action), playerId);
+        else if (action.type === 'DRAW') {
+          restored = copy(next);
+          expect(restored.lastDrawnTile).not.toBeNull();
+          expect(restored.drawsThisTurn).toBe(1);
+        }
+        expect(state).toEqual(before);
+        expect(action).toEqual(actionBefore);
+        expect(next).not.toBe(state);
+        expect(next).toEqual(replay);
+        if (restored) expect(next).toEqual(restored);
+        expect(next.rngState).toBe(config.seed);
+        expectStocks(next);
+        state = next;
+        steps++;
+      }
+
+      expect(steps).toBe(73);
+      expect(state.turn).toBe(45);
+      expect(Object.keys(state.board)).toHaveLength(44);
+      expect(state.drawPile).toHaveLength(10);
+      expect(state.players.map((player) => player.rack.map((entry) => entry.id))).toEqual([[], [55, 20]]);
+      if (mode === 'standard') {
+        expect(state.players.map((player) => player.score)).toEqual([183, 134]);
+      }
+      expect(seen).toEqual(new Set(['PLACE', 'DRAW', 'PASS']));
+      expect(engine.isGameOver(state)).toBe(true);
+      expect(engine.getWinners(state)).not.toBeNull();
+      expect(engine.getLegalActions(state, engine.getCurrentPlayer(state))).toEqual([]);
+      expect(restored).toEqual(state);
+      expect(replay).toEqual(state);
+    },
+  );
+
+  test('la pioche prend la dernière tuile, garde le tour et permet de la poser', () => {
+    const engine = new TriominoEngine();
+    const first = tile([1, 1, 1]);
+    const drawn = tile([2, 2, 2]);
+    const state = freeze(fixture({}, [[first], [tile([2, 2, 3])]], 'standard', [drawn]));
+    const afterDraw = engine.applyAction(state, freeze({ type: 'DRAW' }), 'p1');
+    expect(afterDraw.drawPile).toEqual([]);
+    expect(afterDraw.players[0].rack).toEqual([first, drawn]);
+    expect(afterDraw.players[0].score).toBe(-5);
+    expect(afterDraw.turn).toBe(state.turn);
+    expect(afterDraw.currentPlayerIndex).toBe(0);
+    expect(afterDraw.lastDrawnTile).toEqual(drawn);
+    const place: PlaceAction = {
+      type: 'PLACE', triominoId: drawn.id, position: position(0, 0), placed: [2, 2, 2],
     };
-    // Le pont serait la tuile DOWN en (0,0) qui touche (0,0,UP) et doit toucher (1,0,UP)
-    // (1,0,UP) n'est pas voisin de (0,0,DOWN) ? ce n'est pas un pont
-    // Testons simplement qu'avec exactement 2 voisins non adjacents ? bridge
-    // Ce test vérifie que la fonction ne plante pas
-    const result = detectBonus(board, { col: 0, row: 0, orientation: 'UP' });
-    // Avec un seul voisin immédiat : pas de bridge
-    expect(result).toBeNull();
+    expect(engine.getLegalActions(afterDraw, 'p1')).toContainEqual(place);
+    const next = engine.applyAction(freeze(afterDraw), freeze(place), 'p1');
+    expect(next.players[0].rack).toEqual([first]);
+    expect(next.players[0].score).toBe(1); // -5 + (2+2+2).
+    expect(next.drawsThisTurn).toBe(0);
+    expect(next.lastDrawnTile).toBeNull();
+    expect(next.turn).toBe(state.turn + 1);
+    expect(next.currentPlayerIndex).toBe(1);
+  });
+
+  test.each<GameMode>(['standard', 'simplified', 'kids'])(
+    'trois pioches en %s puis PASS réinitialisent le tour sans malus supplémentaire',
+    (mode) => {
+      const engine = new TriominoEngine();
+      let state = fixture({}, [[tile([1, 1, 1])], [tile([0, 0, 0])]], mode,
+        [tile([2, 2, 2]), tile([3, 3, 3]), tile([4, 4, 4]), tile([5, 5, 5])]);
+      for (const [index, penalty] of [5, 10, 25].entries()) {
+        const before = copy(state);
+        const expectedTile = state.drawPile.at(-1);
+        state = engine.applyAction(freeze(state), freeze({ type: 'DRAW' }), 'p1');
+        expect(state.lastDrawnTile).toEqual(expectedTile);
+        expect(state.drawsThisTurn).toBe(index + 1);
+        expect(state.players[0].score).toBe(mode === 'kids' ? 0 : -penalty);
+        expect(state.turn).toBe(before.turn);
+      }
+      expect(engine.isValidAction(state, { type: 'DRAW' }, 'p1')).toBe(false);
+      const next = engine.applyAction(freeze(state), freeze({ type: 'PASS' }), 'p1');
+      expect(next.phase).toBe('playing'); // La pioche non vide interdit le blocage.
+      expect(next.players).toEqual(state.players);
+      expect(next.currentPlayerIndex).toBe(1);
+      expect(next.turn).toBe(state.turn + 1);
+      expect(next.drawsThisTurn).toBe(0);
+      expect(next.lastDrawnTile).toBeNull();
+    },
+  );
+});
+
+describe('Bonus géométriques et modes', () => {
+  const shapes = [
+    { name: 'pont', indices: [1, 2], bonus: 'bridge', standard: 40, simplified: 1 },
+    // La fermeture du premier anneau crée aussi un pont : seul +50 compte.
+    { name: 'hexagone prioritaire au pont', indices: [1, 2, 3, 4, 5], bonus: 'hexagon', standard: 50, simplified: 1 },
+    { name: 'double hexagone prioritaire', indices: [1, 2, 3, 4, 5, 6, 7, 8, 9], bonus: 'double-hexagon', standard: 60, simplified: 2 },
+  ];
+
+  test.each(shapes)('$name est réellement posé et scoré dans les trois modes', (shape) => {
+    const engine = new TriominoEngine();
+    const action: PlaceAction = {
+      type: 'PLACE', triominoId: tile([3, 5, 5]).id,
+      position: position(0, 0), placed: [5, 5, 3],
+    };
+    for (const mode of ['standard', 'simplified', 'kids'] satisfies GameMode[]) {
+      const state = freeze(fixture(ringBoard(shape.indices),
+        [[tile([3, 5, 5]), tile([0, 0, 0])], [tile([1, 1, 1])]], mode, [tile([2, 2, 2])]));
+      const before = copy(state);
+      expect(engine.getLegalActions(state, 'p1')).toContainEqual(action);
+      const next = engine.applyAction(state, freeze(action), 'p1');
+      expect(detectBonus(next.board, action.position)).toEqual({ type: shape.bonus, points: shape.standard });
+      expect(next.players[0].score).toBe(mode === 'kids' ? 0
+        : mode === 'simplified' ? 1 + shape.simplified : 13 + shape.standard);
+      expect(next.players[0].rack).toEqual([tile([0, 0, 0])]);
+      expect(next.currentPlayerIndex).toBe(1);
+      expect(state).toEqual(before);
+    }
+  });
+
+  test('un anneau incomplet et trois côtés occupés ne donnent pas un hexagone', () => {
+    const engine = new TriominoEngine();
+    const state = fixture(ringBoard([1, 2, 3, 5, 9]),
+      [[tile([3, 5, 5]), tile([0, 0, 0])], [tile([1, 1, 1])]], 'standard', [tile([2, 2, 2])]);
+    const action: PlaceAction = {
+      type: 'PLACE', triominoId: tile([3, 5, 5]).id, position: position(0, 0), placed: [5, 5, 3],
+    };
+    const next = engine.applyAction(freeze(state), freeze(action), 'p1');
+    expect(detectBonus(next.board, action.position)).toBeNull();
+    expect(next.players[0].score).toBe(13);
+  });
+});
+
+describe('Refus sans mutation et fin de partie', () => {
+  const engine = new TriominoEngine();
+
+  test('refuse les actions hors tour, tuiles absentes, réflexions et côtés incompatibles', () => {
+    const state = freeze(fixture(boardWithOne([1, 2, 3]),
+      [[tile([0, 1, 3]), tile([2, 2, 2])], [tile([5, 5, 5])]], 'standard', [tile([4, 4, 4])]));
+    const before = copy(state);
+    const legal: PlaceAction = {
+      type: 'PLACE', triominoId: tile([0, 1, 3]).id, position: position(1, 0), placed: [3, 0, 1],
+    };
+    const invalid: TriominoAction[] = [
+      { ...legal, triominoId: tile([5, 5, 5]).id },
+      { ...legal, placed: [3, 1, 0] }, // Réflexion, pas rotation.
+      { ...legal, position: position(0, 0) }, // Case occupée.
+      { ...legal, position: position(10, 10) }, // Isolée.
+      legal, // Côté gauche : [3,0] au lieu de [3,1].
+      { type: 'PASS' },
+    ];
+    for (const action of invalid) {
+      freeze(action);
+      const saved = copy(action);
+      expect(engine.isValidAction(state, action, 'p1')).toBe(false);
+      expect(() => engine.applyAction(state, action, 'p1')).toThrow('Action invalide');
+      expect(action).toEqual(saved);
+      expect(state).toEqual(before);
+    }
+    expect(engine.getLegalActions(state, 'p2')).toEqual([]);
+    expect(engine.isValidAction(state, { type: 'DRAW' }, 'p2')).toBe(false);
+    expect(() => engine.applyAction(state, { type: 'DRAW' }, 'p2')).toThrow('Action invalide');
+  });
+
+  test('première pose uniquement au centre, comme les actions proposées', () => {
+    const state = freeze(fixture({}, [[tile([1, 2, 3])], [tile([4, 4, 4])]]));
+    for (const pos of [position(2, 0), position(0, 1), position(1, 0)]) {
+      const action: PlaceAction = {
+        type: 'PLACE', triominoId: tile([1, 2, 3]).id, position: pos, placed: [1, 2, 3],
+      };
+      expect(engine.isValidAction(state, action, 'p1')).toBe(false);
+      expect(() => engine.applyAction(state, freeze(action), 'p1')).toThrow('Action invalide');
+    }
+  });
+
+  test.each<GameMode>(['standard', 'simplified', 'kids'])(
+    'dernière tuile en %s applique pose, bonus et reliquat adverse puis ferme les actions',
+    (mode) => {
+      const state = freeze(fixture({}, [[tile([1, 2, 3])], [tile([4, 4, 4]), tile([0, 0, 1])]], mode));
+      const action: PlaceAction = {
+        type: 'PLACE', triominoId: tile([1, 2, 3]).id, position: position(0, 0), placed: [1, 2, 3],
+      };
+      const next = engine.applyAction(state, freeze(action), 'p1');
+      // Reliquat adverse = 12+1 ; bonus fixe 25 (standard) ou 5 (simplified).
+      expect(next.players[0].score).toBe(mode === 'kids' ? 0 : mode === 'standard' ? 6 + 25 + 13 : 1 + 5 + 13);
+      expect(next.players[1].score).toBe(0);
+      expect(next.players[0].rack).toEqual([]);
+      expect(engine.isGameOver(next)).toBe(true);
+      expect(engine.getWinners(next)).toEqual(['p1']);
+      for (const candidate of [action, { type: 'DRAW' }, { type: 'PASS' }] satisfies TriominoAction[]) {
+        expect(engine.isValidAction(next, candidate, 'p1')).toBe(false);
+        expect(() => engine.applyAction(freeze(next), freeze(candidate), 'p1')).toThrow('Action invalide');
+      }
+      expect(engine.getLegalActions(next, 'p1')).toEqual([]);
+    },
+  );
+
+  test.each<GameMode>(['standard', 'simplified'])(
+    'vider son rack ne suffit pas à gagner en %s si le score adverse reste supérieur',
+    (mode) => {
+      const state = fixture({}, [[tile([0, 0, 0])], [tile([1, 1, 1])]], mode);
+      state.players[1].score = 100;
+      const next = engine.applyAction(freeze(state), freeze({
+        type: 'PLACE', triominoId: tile([0, 0, 0]).id, position: position(0, 0), placed: [0, 0, 0],
+      }), 'p1');
+      expect(next.players.map((player) => player.score)).toEqual([mode === 'standard' ? 28 : 9, 100]);
+      expect(engine.getWinners(next)).toEqual(['p2']);
+    },
+  );
+
+  test('égalité après la dernière pose partage la victoire en standard', () => {
+    const state = fixture({}, [[tile([0, 0, 0])], [tile([1, 1, 1])]]);
+    state.players[1].score = 28;
+    const next = engine.applyAction(freeze(state), freeze({
+      type: 'PLACE', triominoId: tile([0, 0, 0]).id, position: position(0, 0), placed: [0, 0, 0],
+    }), 'p1');
+    expect(engine.getWinners(next)).toEqual(['p1', 'p2']);
+  });
+
+  test.each<GameMode>(['standard', 'simplified', 'kids'])(
+    'pioche vide : PASS sans malus, blocage en %s avec reliquats mais sans bonus final',
+    (mode) => {
+      const state = fixture(boardWithOne([5, 5, 5]),
+        [[tile([0, 0, 1])], [tile([1, 1, 1]), tile([2, 2, 2])]], mode);
+      state.players[0].score = mode === 'kids' ? 0 : 10;
+      state.players[1].score = mode === 'kids' ? 0 : 18;
+      const before = copy(state);
+      freeze(state);
+      expect(engine.getLegalActions(state, 'p1')).toEqual([{ type: 'PASS' }]);
+      expect(engine.isValidAction(state, { type: 'DRAW' }, 'p1')).toBe(false);
+      expect(() => engine.applyAction(state, { type: 'DRAW' }, 'p1')).toThrow('Action invalide');
+      const next = engine.applyAction(state, freeze({ type: 'PASS' }), 'p1');
+      expect(next.players.map((player) => player.score)).toEqual(mode === 'kids' ? [0, 0] : [9, 9]);
+      expect(next.phase).toBe('finished');
+      expect(next.winners).toEqual(mode === 'kids' ? ['p1'] : ['p1', 'p2']);
+      expect(next.players.map((player) => player.rack)).toEqual(state.players.map((player) => player.rack));
+      expect(state).toEqual(before);
+    },
+  );
+
+  test('PASS avec pioche vide ne termine pas si un autre joueur peut encore poser', () => {
+    const state = freeze(fixture(boardWithOne([5, 5, 5]),
+      [[tile([0, 0, 0])], [tile([1, 5, 5])]]));
+    const next = engine.applyAction(state, freeze({ type: 'PASS' }), 'p1');
+    expect(next.phase).toBe('playing');
+    expect(next.players).toEqual(state.players);
+    expect(next.currentPlayerIndex).toBe(1);
+    expect(engine.getLegalActions(next, 'p2').some((action) => action.type === 'PLACE')).toBe(true);
   });
 });
 
