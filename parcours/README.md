@@ -90,4 +90,5 @@ Slides Markdown converties: 3
 
 ## Voir aussi
 
+- [Guide OpenSpec / OPSX](epics/openspec-usage-guide/README.md) - Parcours actualisé, version de référence et sources officielles
 - [Spec Parcours](../openspec/specs/parcours/spec.md) - Spécification technique complète

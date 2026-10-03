@@ -1,5 +1,7 @@
 {
   "id": "06-bonnes-pratiques",
   "title": "Bonnes pratiques et pièges à éviter",
-  "type": "content"
+  "type": "content",
+  "duration": "10 min",
+  "description": "Configurer le schéma spec-driven, adopter OpenSpec sur un projet existant et distinguer profils OpenSpec et politique Playlab42 (skills seuls, CLI Docker), et situer la migration legacy."
 }

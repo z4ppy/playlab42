@@ -1,15 +1,17 @@
 {
   "id": "openspec-usage-guide",
-  "title": "OpenSpec — Guide d'utilisation pour Playlab42",
-  "description": "Maîtrisez le workflow spec-driven development avec OpenSpec : créer des proposals, implémenter des changements, archiver les modifications. Guide complet pour contribuer à Playlab42 avec rigueur et clarté.",
+  "title": "OpenSpec — Des idées aux specs avec OPSX",
+  "description": "Découvrez OpenSpec 1.14 et le workflow OPSX : explorer, proposer, réviser, implémenter et archiver. Des bases au premier changement Playlab42, avec exemples, commandes copiables et exercices.",
   "hierarchy": ["playlab42"],
   "order": 3,
-  "tags": ["openspec", "workflow", "dev", "guide", "contribution", "specs"],
+  "tags": ["openspec", "opsx", "workflow", "dev", "guide", "contribution", "specs"],
   "metadata": {
     "author": "Playlab42",
     "created": "2025-12-15",
-    "duration": "45 min",
-    "difficulty": "intermediate"
+    "updated": "2026-10-03",
+    "duration": "75 min",
+    "difficulty": "beginner",
+    "language": "fr"
   },
   "icon": "📋",
   "thumbnail": "thumbnail.jpg",
@@ -23,6 +25,27 @@
     { "id": "06-bonnes-pratiques" }
   ],
   "bookmarks": [
+    {
+      "url": "https://github.com/Fission-AI/OpenSpec/tree/v1.14.0/docs",
+      "title": "Documentation officielle OpenSpec 1.14",
+      "description": "Documentation de la version publiée utilisée dans ce parcours",
+      "icon": "📖",
+      "tags": ["openspec", "documentation", "opsx"]
+    },
+    {
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md",
+      "title": "Commandes OPSX et profils",
+      "description": "Commandes de l'assistant, profil core et workflows supplémentaires",
+      "icon": "⌨️",
+      "tags": ["openspec", "opsx", "workflow"]
+    },
+    {
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md",
+      "title": "Référence CLI OpenSpec",
+      "description": "Installation, intégrations, validation et gestion des changements dans le terminal",
+      "icon": "🛠️",
+      "tags": ["openspec", "cli", "documentation"]
+    },
     {
       "url": "https://github.com/z4ppy/playlab42",
       "title": "Playlab42 Repository",

@@ -3,296 +3,203 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Introduction et concepts clés — OpenSpec Guide</title>
+  <title>Bases : specs, artefacts et installation - PlayLab42</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../openspec-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .concept-box {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid var(--color-accent);
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .concept-box h3 {
-      margin-top: 0;
-      color: var(--color-accent);
-      font-size: 1.2rem;
-    }
-    .concept-box ul {
-      margin: var(--space-sm) 0 0 0;
-    }
-    .concept-box li {
-      margin: var(--space-xs) 0;
-      line-height: 1.6;
-    }
-    .comparison-table {
-      margin: var(--space-lg) 0;
-      border-collapse: collapse;
-      width: 100%;
-    }
-    .comparison-table th {
-      background: var(--color-bg-secondary);
-      padding: var(--space-sm) var(--space-md);
-      text-align: left;
-      font-weight: 600;
-      color: var(--color-accent);
-    }
-    .comparison-table td {
-      padding: var(--space-sm) var(--space-md);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .folder-structure {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      white-space: pre;
-      overflow-x: auto;
-      line-height: 1.7;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .highlight-box {
-      background: #e8f4f8;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      border-left: 4px solid #17a2b8;
-    }
-    .highlight-box strong {
-      color: #0c5460;
-    }
-    .benefit-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-md);
-      margin: var(--space-lg) 0;
-    }
-    .benefit-card {
-      background: var(--color-bg-secondary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-    }
-    .benefit-card strong {
-      color: var(--color-accent);
-      display: block;
-      margin-bottom: var(--space-xs);
-    }
-    .decision-boxes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-lg);
-      margin: var(--space-lg) 0;
-    }
-    .decision-box {
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-    }
-    .do-box {
-      background: #d4edda;
-      border-left: 4px solid #28a745;
-    }
-    .do-box h3 {
-      color: #155724;
-      margin-top: 0;
-    }
-    .dont-box {
-      background: #f8d7da;
-      border-left: 4px solid #dc3545;
-    }
-    .dont-box h3 {
-      color: #721c24;
-      margin-top: 0;
-    }
-  </style>
 </head>
-<body>
+<body class="openspec-guide">
   <article class="slide">
-    <h1>Introduction et concepts clés</h1>
+    <header>
+      <p class="guide-kicker">Les bases</p>
+      <h1>Specs, artefacts et installation</h1>
+      <p class="guide-lead">
+        Dans OpenSpec, les <strong>specs</strong> décrivent le comportement actuel du système ;
+        chaque <strong>changement</strong> vit dans son propre dossier jusqu'à son archivage.
+      </p>
+    </header>
 
-    <h2>Qu'est-ce qu'OpenSpec ?</h2>
-
-    <p><strong>OpenSpec</strong> est un système de gestion de spécifications et de changements conçu pour faciliter le développement collaboratif, particulièrement avec des agents IA.</p>
-
-    <div class="concept-box">
-      <h3>🎯 Philosophie : Spec-Driven Development</h3>
-      <p>Plutôt que de modifier le code directement, on commence par <strong>spécifier le changement</strong> avant de l'implémenter. Cela garantit :</p>
-      <ul>
-        <li>Une documentation à jour automatiquement</li>
-        <li>Une vision claire avant le code</li>
-        <li>Un historique traçable des décisions</li>
-        <li>Une collaboration fluide humain-IA</li>
-      </ul>
-    </div>
-
-    <h2>Pourquoi OpenSpec dans Playlab42 ?</h2>
-
-    <p>Playlab42 est un <strong>projet pédagogique</strong> où :</p>
-    <ul>
-      <li>Des stagiaires contribuent à chaque session de formation</li>
-      <li>Des agents IA (Claude, Copilot, etc.) assistent le développement</li>
-      <li>Le code doit rester exemplaire et documenté</li>
-      <li>Les décisions d'architecture doivent être explicites</li>
-    </ul>
-
-    <div class="highlight-box">
-      <p><strong>💡 Exemple concret</strong></p>
-      <p>Sans OpenSpec : "On ajoute un nouveau jeu" → code directement → documentation oubliée → confusion pour les prochains stagiaires.</p>
-      <p>Avec OpenSpec : Proposal → validation → implémentation guidée → spec fusionnée → documentation parfaitement à jour.</p>
-    </div>
-
-    <h2>Structure des dossiers OpenSpec</h2>
-
-    <div class="folder-structure">openspec/
-├── AGENTS.md           # Instructions pour les agents IA
-├── project.md          # Conventions du projet
-├── specs/              # Spécifications des capabilities
-│   ├── platform/
-│   │   └── spec.md     # Architecture globale
-│   ├── game-engine/
-│   │   └── spec.md     # Interface des moteurs de jeu
-│   └── catalogue/
-│       └── spec.md     # Format du catalogue
-└── changes/            # Propositions de changement
-    ├── add-poker-game/
-    │   ├── proposal.md # Pourquoi, Quoi, Impact
-    │   ├── tasks.md    # Checklist d'implémentation
-    │   ├── design.md   # Décisions techniques
-    │   └── specs/      # Deltas des specs
-    └── archive/        # Changes déployés
-        └── 2025-12-01-add-poker-game/</div>
-
-    <h2>Les 3 types de fichiers OpenSpec</h2>
-
-    <table class="comparison-table">
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Location</th>
-          <th>Rôle</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Specs</strong></td>
-          <td><code>specs/[capability]/spec.md</code></td>
-          <td>Documentation technique de référence (truth source)</td>
-        </tr>
-        <tr>
-          <td><strong>Proposals</strong></td>
-          <td><code>changes/[id]/proposal.md</code></td>
-          <td>Description d'un changement proposé (why + what)</td>
-        </tr>
-        <tr>
-          <td><strong>Tasks</strong></td>
-          <td><code>changes/[id]/tasks.md</code></td>
-          <td>Checklist d'implémentation séquentielle</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>Vocabulaire essentiel</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Terme</th>
-          <th>Définition</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Capability</strong></td>
-          <td>Fonctionnalité du système (ex: game-engine, catalogue, parcours)</td>
-        </tr>
-        <tr>
-          <td><strong>Change</strong></td>
-          <td>Proposition de modification d'une ou plusieurs capabilities</td>
-        </tr>
-        <tr>
-          <td><strong>Spec</strong></td>
-          <td>Spécification technique d'une capability</td>
-        </tr>
-        <tr>
-          <td><strong>Proposal</strong></td>
-          <td>Document décrivant pourquoi et quoi changer</td>
-        </tr>
-        <tr>
-          <td><strong>Delta</strong></td>
-          <td>Modification incrémentale d'une spec (ADDED/UPDATED/REMOVED)</td>
-        </tr>
-        <tr>
-          <td><strong>Tasks</strong></td>
-          <td>Liste séquentielle des tâches d'implémentation</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>Quand créer une proposal OpenSpec ?</h2>
-
-    <div class="decision-boxes">
-      <div class="decision-box do-box">
-        <h3>✅ Créer une proposal pour :</h3>
-        <ul>
-          <li><strong>Nouvelles fonctionnalités</strong> : Nouveau jeu, nouvel outil, nouveau parcours</li>
-          <li><strong>Breaking changes</strong> : Modifications des APIs ou interfaces existantes</li>
-          <li><strong>Changements d'architecture</strong> : Refactoring majeur, nouvelle structure</li>
-          <li><strong>Travaux significatifs</strong> : Performance, sécurité, accessibilité</li>
-        </ul>
+    <section aria-labelledby="titre-sdd">
+      <h2 id="titre-sdd">Le développement piloté par les specs</h2>
+      <p>
+        Avec un assistant IA, un besoin resté dans l'historique de chat est vite oublié ou mal interprété.
+        OpenSpec le fixe dans des fichiers Markdown versionnés, relus par des humains <em>avant</em> le code.
+      </p>
+      <div class="guide-grid">
+        <div class="guide-card">
+          <h3><code>openspec/specs/</code></h3>
+          <p>La <strong>source de vérité</strong> : comportement actuel, organisé par domaine (<code>portal/</code>, <code>theme/</code>…).</p>
+        </div>
+        <div class="guide-card">
+          <h3><code>openspec/changes/</code></h3>
+          <p>Les modifications proposées : un dossier par changement, avec ses artefacts et ses deltas.</p>
+        </div>
       </div>
+    </section>
 
-      <div class="decision-box dont-box">
-        <h3>❌ Ne PAS créer de proposal pour :</h3>
-        <ul>
-          <li>Bug fixes simples (correction d'un typo, fix d'un calcul)</li>
-          <li>Mises à jour de dépendances (npm update)</li>
-          <li>Ajout de tests sur code existant</li>
-          <li>Corrections de documentation mineures</li>
-        </ul>
+    <section aria-labelledby="titre-artefacts">
+      <h2 id="titre-artefacts">Les artefacts d'un changement</h2>
+<pre><code>openspec/changes/add-dark-mode/
+├── proposal.md          # pourquoi et quoi
+├── specs/
+│   └── ui/spec.md       # delta specs : ce qui change
+├── design.md            # comment
+└── tasks.md             # checklist d'implémentation</code></pre>
+      <div class="guide-table-wrapper" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Artefact</th><th scope="col">Rôle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>proposal.md</code></td><td>Intention, périmètre, approche</td></tr>
+            <tr><td><code>specs/</code> (deltas)</td><td>Exigences <code>ADDED</code> / <code>MODIFIED</code> / <code>REMOVED</code> avec scénarios</td></tr>
+            <tr><td><code>design.md</code></td><td>Choix techniques et compromis</td></tr>
+            <tr><td><code>tasks.md</code></td><td>Tâches à cocher pendant l'implémentation</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>
+      <p class="guide-muted">
+        À l'archivage, les deltas sont fusionnés dans <code>openspec/specs/</code> et le dossier du changement
+        est déplacé dans <code>openspec/changes/archive/</code>.
+      </p>
+    </section>
 
-    <blockquote>
-      <p><strong>💡 Règle d'or</strong></p>
-      <p>Si vous hésitez, demandez-vous : "Est-ce que ce changement mérite d'être documenté dans les specs ?" Si oui → proposal. Si non → commit direct.</p>
-    </blockquote>
+    <section aria-labelledby="titre-install">
+      <h2 id="titre-install">Installer et initialiser (projet générique)</h2>
+      <p>
+        OpenSpec exige <strong>Node.js 20.19.0 ou plus</strong>. Les commandes ci-dessous valent pour un
+        <em>autre</em> projet : <strong>ne les exécutez pas dans Playlab42</strong> (voir plus bas).
+      </p>
+      <p class="guide-muted">Dans Playlab42, Node.js, npm et OpenSpec s'exécutent uniquement dans Docker
+        (<code>make</code>), jamais sur l'hôte.</p>
+      <div class="guide-terminal">
+<pre><code>node --version                              # &gt;= 20.19.0
+npm install -g @fission-ai/openspec@latest
+cd mon-projet
+openspec init</code></pre>
+      </div>
+      <p>
+        <code>openspec init</code> crée <code>openspec/</code> et génère, pour les outils choisis, les
+        <em>skills</em> et/ou <em>commandes</em> lus par l'assistant. Par défaut : profil <code>core</code>, livraison <code>both</code>.
+        Après une mise à jour du CLI, <code>openspec update</code> régénère ces fichiers selon votre profil
+        (<code>core</code> par défaut).
+      </p>
+      <div class="guide-terminal">
+<pre><code>openspec init --tools claude,cursor   # non interactif
+openspec update                       # après mise à jour du CLI
+openspec config profile               # choisir les workflows</code></pre>
+      </div>
+    </section>
 
-    <h2>Les bénéfices pour vous, stagiaire</h2>
+    <section aria-labelledby="titre-deux-moities">
+      <h2 id="titre-deux-moities">Deux endroits, deux types de commandes</h2>
+      <div class="guide-grid">
+        <div class="guide-card">
+          <span class="guide-badge">Terminal</span>
+          <h3>CLI <code>openspec</code></h3>
+          <p><code>init</code>, <code>update</code>, <code>list</code>, <code>show</code>, <code>validate</code>, <code>view</code>…</p>
+        </div>
+        <div class="guide-card guide-assistant">
+          <span class="guide-badge">Chat de l'assistant</span>
+          <h3>Commandes <code>/opsx:*</code></h3>
+          <p><code>/opsx:propose</code>, <code>/opsx:apply</code>… Elles ne fonctionnent pas dans un terminal.</p>
+        </div>
+      </div>
+      <p>
+        La forme exacte dépend de l'outil : <code>/opsx:propose</code> (Claude Code, Gemini CLI),
+        <code>/opsx-propose</code> (Cursor, GitHub Copilot dans l'IDE), <code>$openspec-propose</code> (Codex).
+        Les prompts Copilot <code>.github/prompts</code> ne sont pas pris en charge par Copilot CLI.
+      </p>
+    </section>
 
-    <div class="benefit-grid">
-      <div class="benefit-card">
-        <strong>💡 Clarté</strong>
-        <p>Vous savez exactement quoi implémenter avant de coder</p>
+    <section aria-labelledby="titre-concret">
+      <h2 id="titre-concret">Concrètement dans Playlab42</h2>
+      <div class="guide-grid">
+        <div class="guide-card guide-assistant">
+          <span class="guide-badge">Chat de l'assistant</span>
+          <h3>Demander un skill</h3>
+          <p>Citez-le par son nom : <code>openspec-explore</code>, <code>openspec-propose</code>, <code>openspec-apply-change</code>, <code>openspec-update-change</code>, <code>openspec-sync-specs</code>, <code>openspec-archive-change</code>.</p>
+        </div>
+        <div class="guide-card">
+          <span class="guide-badge">Terminal (Docker)</span>
+          <h3>CLI via make</h3>
+          <p>Jamais de npm ni de node sur le host : tout passe par <code>make</code>.</p>
+        </div>
       </div>
-      <div class="benefit-card">
-        <strong>🤝 Guidage</strong>
-        <p>Les agents IA ont un contexte précis pour vous aider</p>
+      <div class="guide-assistant">
+        <span class="guide-badge">Chat de l'assistant</span>
+<pre><code>Utilise le skill openspec-propose pour créer le changement add-dark-mode</code></pre>
       </div>
-      <div class="benefit-card">
-        <strong>📝 Traçabilité</strong>
-        <p>Vos contributions sont documentées et valorisées</p>
+      <div class="guide-terminal">
+<pre><code>make openspec-list
+make openspec-validate
+make npm CMD="exec -- openspec --version"
+make npm CMD="exec -- openspec list --specs"</code></pre>
       </div>
-      <div class="benefit-card">
-        <strong>🎓 Apprentissage</strong>
-        <p>Vous apprenez à penser architecture avant code</p>
-      </div>
-      <div class="benefit-card">
-        <strong>👥 Collaboration</strong>
-        <p>Les autres stagiaires comprennent vos choix</p>
-      </div>
-    </div>
+    </section>
 
-    <p style="margin-top: var(--space-xl); text-align: center;">
-      <strong>Maintenant que vous comprenez les concepts, passons au workflow pratique ! 👉</strong>
+    <section aria-labelledby="titre-legacy">
+      <h2 id="titre-legacy">Legacy vs moderne (en général)</h2>
+      <div class="guide-table-wrapper" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col"></th><th scope="col">Legacy</th><th scope="col">Moderne (OPSX)</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Commandes</th><td><code>/openspec:proposal</code>, <code>apply</code>, <code>archive</code></td><td><code>/opsx:propose</code>, <code>explore</code>, <code>apply</code>…</td></tr>
+            <tr><th scope="row">Consignes</th><td><code>openspec/AGENTS.md</code>, <code>project.md</code></td><td>Skills/commandes générés + <code>openspec/config.yaml</code></td></tr>
+            <tr><th scope="row">Flux</th><td>Phases tout-en-un</td><td>Actions, retour en arrière possible</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <aside class="guide-callout">
+        <h3>Dans Playlab42 : déjà en place</h3>
+        <p>
+          Le dépôt est sur le workflow actuel : schéma <code>spec-driven</code> dans
+          <code>openspec/config.yaml</code>, CLI <code>@fission-ai/openspec</code> <code>1.14.0</code> en
+          <strong>devDependency locale épinglée</strong> (Node 26 dans Docker) et skills du profil
+          <code>core</code> déjà générés dans <code>.github/skills/openspec-*</code>
+          (<code>.claude/skills</code> est un lien vers ce dossier). Pas d'installation globale à faire.
+        </p>
+        <p>
+          La livraison est <strong>skills-only</strong> : les commandes <code>/opsx:*</code> ne sont pas
+          disponibles automatiquement. Les trois alias <code>/openspec:proposal|apply|archive</code> de
+          <code>.claude/commands/openspec/</code> sont de simples alias locaux de compatibilité.
+        </p>
+        <p>
+          <strong>N'exécutez pas</strong> <code>openspec init --force</code> ni <code>openspec update</code>
+          directement dans le worktree : ils supprimeraient ces alias et <code>openspec/AGENTS.md</code>. Le
+          rafraîchissement des skills est une procédure de mainteneur, dans un projet temporaire isolé
+          (voir le <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/openspec-workflow.md" target="_blank" rel="noopener noreferrer">guide OpenSpec de Playlab42</a>).
+        </p>
+      </aside>
+    </section>
+
+    <section class="guide-exercise" aria-labelledby="titre-exo">
+      <h2 id="titre-exo">Vérifiez-vous</h2>
+      <div class="guide-card" data-guide-quiz>
+        <p>Où tapez-vous <code>/opsx:propose add-dark-mode</code> ?</p>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="Le terminal sert au CLI openspec, pas aux commandes slash.">Dans le terminal</button>
+        <button type="button" data-guide-answer="correct" data-guide-explanation="Les commandes /opsx:* sont des instructions données à l'assistant.">Dans le chat de l'assistant</button>
+        <p data-guide-quiz-result></p>
+      </div>
+    </section>
+
+    <p class="guide-source">
+      Sources :
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/how-commands-work.md" target="_blank" rel="noopener noreferrer">How Commands Work</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md" target="_blank" rel="noopener noreferrer">CLI</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/supported-tools.md" target="_blank" rel="noopener noreferrer">Supported Tools</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/migration-guide.md" target="_blank" rel="noopener noreferrer">Migration Guide</a>.
     </p>
+    <footer class="guide-footer">
+      <p class="guide-muted" data-slide-footer></p>
+    </footer>
   </article>
+  <script type="module" src="../../openspec-guide.js"></script>
 </body>
 </html>

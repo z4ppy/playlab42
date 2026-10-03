@@ -3,384 +3,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bonnes pratiques et pièges à éviter — OpenSpec Guide</title>
+  <title>Bonnes pratiques OpenSpec — OpenSpec Guide</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../openspec-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .practice-card {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .practice-card h3 {
-      margin-top: 0;
-      color: var(--color-accent);
-      font-size: 1.2rem;
-    }
-    .do-dont-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-lg);
-      margin: var(--space-lg) 0;
-    }
-    .do-box {
-      background: #d4edda;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #28a745;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .do-box h4 {
-      margin-top: 0;
-      color: #155724;
-    }
-    .dont-box {
-      background: #f8d7da;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #dc3545;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .dont-box h4 {
-      margin-top: 0;
-      color: #721c24;
-    }
-    .tip-box {
-      background: #e8f4f8;
-      color: #0c5460;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #17a2b8;
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .tip-box strong {
-      color: #0c5460;
-    }
-    .antipattern-box {
-      background: #fff3cd;
-      color: #856404;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #ffc107;
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .antipattern-box h3 {
-      margin-top: 0;
-      color: #856404;
-    }
-    .checklist {
-      list-style: none;
-      padding-left: 0;
-      margin: var(--space-sm) 0;
-    }
-    .checklist li {
-      margin: var(--space-xs) 0;
-      line-height: 1.6;
-    }
-    .checklist li::before {
-      content: "✓ ";
-      color: #28a745;
-      font-weight: bold;
-      margin-right: var(--space-xs);
-    }
-  </style>
 </head>
-<body>
+<body class="openspec-guide">
   <article class="slide">
+    <p class="guide-kicker">Étape 6 · Bonnes pratiques</p>
     <h1>Bonnes pratiques et pièges à éviter</h1>
+    <p class="guide-lead">Quelques habitudes rendent le workflow fluide, illustrées sur le même fil rouge : le change <code>add-dark-mode</code>.</p>
 
-    <p>Vous maîtrisez maintenant le workflow OpenSpec. Voici les bonnes pratiques pour des contributions de qualité.</p>
+    <h2>Pratiques qui paient</h2>
 
-    <h2>✅ Les bonnes pratiques</h2>
-
-    <div class="practice-card">
-      <h3>1. Proposal avant code</h3>
-      <p><strong>Principe :</strong> Toujours documenter avant d'implémenter pour les changements significatifs.</p>
-      <div class="tip-box">
-        <p><strong>💡 Pourquoi ?</strong> Cela force à réfléchir à l'architecture, facilite la review, et garantit que les specs restent à jour.</p>
-      </div>
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>Explorer quand le plan manque</h3>
+        <p><code>/opsx:explore</code> est dans le profil par défaut. Utilisez-le quand vous avez un problème mais pas encore de plan ; il n'écrit rien tant que vous ne le demandez pas.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Un nom de change précis</h3>
+        <p>Kebab-case, verbe d'abord : <code>add-dark-mode</code>, pas <code>update</code>, <code>wip</code> ni <code>changes</code>.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Des tâches petites et vérifiables</h3>
+        <p>Une tâche = une responsabilité, testable. Test mental : un autre développeur pourrait-il la faire sans contexte supplémentaire ?</p>
+      </section>
+      <section class="guide-card">
+        <h3>Des specs honnêtes</h3>
+        <p>Avant d'archiver, les deltas décrivent ce que le code fait vraiment : ils deviennent la source de vérité.</p>
+      </section>
     </div>
 
-    <div class="practice-card">
-      <h3>2. Change ID descriptif</h3>
-      <p><strong>Format :</strong> <code>[verbe]-[nom-descriptif]</code> en kebab-case</p>
-      <ul class="checklist">
-        <li><code>add-poker-game</code> ✅</li>
-        <li><code>update-catalogue-builder</code> ✅</li>
-        <li><code>refactor-parcours-viewer</code> ✅</li>
-      </ul>
-      <p><strong>À éviter :</strong></p>
-      <ul>
-        <li><code>poker</code> ❌ (trop vague)</li>
-        <li><code>my-changes</code> ❌ (pas descriptif)</li>
-        <li><code>update_stuff</code> ❌ (snake_case au lieu de kebab-case)</li>
-      </ul>
-    </div>
+    <h2>Le schéma spec-driven</h2>
 
-    <div class="practice-card">
-      <h3>3. Tasks séquentielles et atomiques</h3>
-      <p>Chaque tâche doit être :</p>
-      <ul>
-        <li><strong>Atomique</strong> : Une seule responsabilité claire</li>
-        <li><strong>Testable</strong> : On peut vérifier qu'elle est terminée</li>
-        <li><strong>Ordonnée</strong> : Prépare la tâche suivante</li>
-      </ul>
-      <div class="tip-box">
-        <p><strong>💡 Test mental :</strong> "Est-ce qu'un autre développeur pourrait faire cette tâche sans contexte additionnel ?" Si non, découpez-la.</p>
-      </div>
-    </div>
+    <p>Schéma par défaut : les artefacts forment un graphe de dépendances. Les dépendances disent ce qui est <em>possible</em>, pas ce qui est obligatoire.</p>
 
-    <div class="practice-card">
-      <h3>4. Documenter les décisions dans design.md</h3>
-      <p>Si vous faites un choix technique non évident, documentez-le :</p>
-      <ul>
-        <li>Décision prise</li>
-        <li>Rationale (pourquoi)</li>
-        <li>Alternatives considérées</li>
-        <li>Trade-offs</li>
-      </ul>
-    </div>
+<pre><code>proposal ──► specs ──┐
+        └──► design ─┴──► tasks ──► apply</code></pre>
 
-    <div class="practice-card">
-      <h3>5. Tester régulièrement pendant l'implémentation</h3>
-      <p>Ne pas attendre la fin pour tester. Après chaque tâche :</p>
-      <pre><code>make test
-make lint
-make serve  # Si applicable</code></pre>
-    </div>
-
-    <hr>
-
-    <h2>❌ Les pièges à éviter</h2>
-
-    <div class="antipattern-box">
-      <h3>Piège #1 : Over-specification</h3>
-      <p><strong>Symptôme :</strong> Proposal de 10 pages pour ajouter un bouton.</p>
-      <p><strong>Solution :</strong> Adapter le niveau de détail à la complexité du changement. Pour un petit changement, une proposal d'une demi-page suffit.</p>
-    </div>
-
-    <div class="antipattern-box">
-      <h3>Piège #2 : Dévier du plan sans documenter</h3>
-      <p><strong>Symptôme :</strong> "En implémentant, j'ai changé l'approche mais j'ai oublié de mettre à jour tasks.md"</p>
-      <p><strong>Solution :</strong> Si vous découvrez qu'une tâche est obsolète, mettez à jour tasks.md ET documentez pourquoi dans design.md.</p>
-    </div>
-
-    <div class="antipattern-box">
-      <h3>Piège #3 : Archiver trop tôt</h3>
-      <p><strong>Symptôme :</strong> Archiver dès que le code est mergé, même si pas encore déployé.</p>
-      <p><strong>Solution :</strong> Attendre le déploiement en production et confirmation qu'il n'y a pas de régression.</p>
-    </div>
-
-    <div class="antipattern-box">
-      <h3>Piège #4 : Proposals génériques</h3>
-      <p><strong>Symptôme :</strong> "Améliorer le projet", "Refactorer le code"</p>
-      <p><strong>Solution :</strong> Être spécifique. "Refactorer parcours-viewer pour séparer UI et logique"</p>
-    </div>
-
-    <div class="antipattern-box">
-      <h3>Piège #5 : Ignorer les specs existantes</h3>
-      <p><strong>Symptôme :</strong> Créer un jeu qui ne respecte pas l'interface game-engine.</p>
-      <p><strong>Solution :</strong> Toujours lire les specs concernées AVANT d'écrire la proposal.</p>
-    </div>
-
-    <hr>
-
-    <h2>Do / Don't — Résumé visuel</h2>
-
-    <div class="do-dont-grid">
-      <div class="do-box">
-        <h4>✅ À faire</h4>
-        <ul>
-          <li>Lire les specs avant de proposer</li>
-          <li>Change ID en kebab-case avec verbe</li>
-          <li>Tasks séquentielles et testables</li>
-          <li>Cocher les tâches au fur et à mesure</li>
-          <li>Commiter régulièrement</li>
-          <li>Tester avant de cocher une tâche</li>
-          <li>Archiver après déploiement confirmé</li>
-        </ul>
-      </div>
-
-      <div class="dont-box">
-        <h4>❌ À éviter</h4>
-        <ul>
-          <li>Coder avant de spécifier (pour gros changements)</li>
-          <li>Change ID vague ou avec typo</li>
-          <li>Tasks trop grosses ou floues</li>
-          <li>Cocher toutes les tâches d'un coup</li>
-          <li>Un seul gros commit à la fin</li>
-          <li>Implémenter sans tester</li>
-          <li>Archiver avant déploiement</li>
-        </ul>
-      </div>
-    </div>
-
-    <hr>
-
-    <h2>Travailler avec des agents IA : Best practices</h2>
-
-    <div class="practice-card">
-      <h3>Donnez du contexte maximal</h3>
-      <p>Les agents IA sont plus efficaces quand vous leur donnez :</p>
-      <ul>
-        <li>Le fichier de spec concerné (<code>@openspec/specs/game-engine/spec.md</code>)</li>
-        <li>La proposal complète (<code>@openspec/changes/add-poker-game/proposal.md</code>)</li>
-        <li>Les tâches en cours (<code>@openspec/changes/add-poker-game/tasks.md</code>)</li>
-      </ul>
-      <div class="tip-box">
-        <p><strong>Exemple de bon prompt :</strong></p>
-        <pre><code>@claude Implémente la tâche "Tests unitaires du moteur"
-dans @openspec/changes/add-poker-game/tasks.md.
-Utilise Jest et respecte @openspec/specs/game-engine/spec.md.
-Les tests doivent couvrir init, applyAction, et getPlayerView.</code></pre>
-      </div>
-    </div>
-
-    <div class="practice-card">
-      <h3>Utilisez les slash commands</h3>
+    <div class="guide-table-wrapper" tabindex="0">
       <table>
         <thead>
-          <tr>
-            <th>Command</th>
-            <th>Usage</th>
-          </tr>
+          <tr><th>Artefact</th><th>Rôle pour add-dark-mode</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td><code>/openspec:proposal</code></td>
-            <td>Créer une nouvelle proposal guidée</td>
-          </tr>
-          <tr>
-            <td><code>/openspec:apply</code></td>
-            <td>Implémenter une proposal existante</td>
-          </tr>
-          <tr>
-            <td><code>/openspec:archive</code></td>
-            <td>Archiver après déploiement</td>
-          </tr>
+          <tr><td><code>proposal.md</code></td><td>Pourquoi et quoi : intention, périmètre, approche</td></tr>
+          <tr><td><code>specs/ui/spec.md</code></td><td>Delta : exigences et scénarios (ADDED/MODIFIED/REMOVED)</td></tr>
+          <tr><td><code>design.md</code></td><td>Décisions : variables CSS, stockage de la préférence</td></tr>
+          <tr><td><code>tasks.md</code></td><td>Checklist d'implémentation numérotée</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="practice-card">
-      <h3>Validez toujours le travail de l'agent</h3>
-      <p>Ne pas faire confiance aveuglément. Après chaque génération :</p>
-      <ul class="checklist">
-        <li>Lire le code généré</li>
-        <li>Vérifier la conformité aux specs</li>
-        <li>Lancer les tests</li>
-        <li>Vérifier le lint</li>
-      </ul>
+    <h2>Configurer openspec/config.yaml</h2>
+
+    <p>Le moyen le plus simple d'adapter OpenSpec à votre équipe : schéma par défaut, contexte injecté dans tous les artefacts, règles par artefact et conseils pour apply et archive.</p>
+
+    <p class="guide-muted">Exemple <strong>illustratif</strong>, générique : ne le copiez pas. Dans Playlab42, ouvrez le vrai fichier <code>openspec/config.yaml</code> : il référence <code>AGENTS.md</code> et le guide <code>docs/guides/openspec-workflow.md</code> comme source commune de la stack et des conventions.</p>
+
+<pre><code>schema: spec-driven
+
+context: |
+  Application web statique, JavaScript sans framework.
+  Tests : Jest. Interface en français.
+
+rules:
+  specs:
+    - Utiliser le format Given/When/Then
+  proposal:
+    - Inclure un plan de retour arrière
+
+operations:
+  apply:
+    guidance:
+      - Lancer les tests ciblés avant la suite complète</code></pre>
+
+    <p>Le <code>context</code> est injecté dans <em>tous</em> les artefacts ; les <code>rules</code> seulement dans l'artefact visé. Restez concis : ce texte accompagne chaque requête de planification. L'ordre de résolution du schéma est : option <code>--schema</code>, métadonnées du change, <code>config.yaml</code>, puis <code>spec-driven</code>.</p>
+
+    <h2>Adopter OpenSpec sur un projet existant</h2>
+
+    <p>Inutile de spécifier tout le code : on écrit les specs de ce que l'on s'apprête à modifier, et elles s'accumulent change après change grâce aux deltas.</p>
+
+<pre><code>openspec init            # dans un dépôt existant sans OpenSpec, crée openspec/</code></pre>
+
+    <p class="guide-muted">Playlab42 est déjà initialisé : n'y relancez pas <code>init</code>.</p>
+
+    <ol class="guide-steps">
+      <li><code>/opsx:explore</code> : faire lire à l'assistant la zone concernée.</li>
+      <li><code>/opsx:propose</code> sur un petit changement réel dont vous avez besoin.</li>
+      <li><code>/opsx:apply</code>, puis <code>/opsx:archive</code> : la spec de cette zone existe désormais.</li>
+    </ol>
+
+    <p>Vos documents existants (PRD, etc.) servent de matière première pour l'exploration, pas de specs à convertir en bloc. Pour un tour guidé sur votre code, <code>/opsx:onboard</code> existe, mais seulement dans le profil expanded.</p>
+
+    <h2>Quelle commande pour quel profil ?</h2>
+
+    <div class="guide-table-wrapper" tabindex="0">
+      <table>
+        <thead>
+          <tr><th>Profil</th><th>Commandes d'assistant (docs v1.14.0)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>core</code> (défaut)</td><td><code>explore</code>, <code>propose</code>, <code>apply</code>, <code>update</code>, <code>sync</code>, <code>archive</code></td></tr>
+          <tr><td>Expanded (<code>openspec config profile</code> puis <code>openspec update</code>)</td><td>en plus : <code>new</code>, <code>continue</code>, <code>ff</code>, <code>verify</code>, <code>bulk-archive</code>, <code>onboard</code></td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <hr>
+    <p class="guide-muted">Le profil core compte six commandes dans la doc v1.14.0 (le README de la branche main peut en annoncer moins). <code>/opsx:update</code> (chat, révise le plan, jamais le code) est distinct de <code>openspec update</code> (terminal, régénère les intégrations).</p>
 
-    <h2>Checklist du contributeur exemplaire</h2>
+    <p><code>/opsx:propose</code> est le nom canonique. Cursor et GitHub Copilot (IDE) enregistrent <code>/opsx-propose</code> ; Codex <code>$openspec-propose</code>. Selon la documentation OpenSpec, Copilot CLI ne charge pas directement les prompts <code>.github/prompts/*.prompt.md</code> générés pour les extensions IDE. Vérifiez toujours quelles intégrations <em>votre</em> outil prend en charge.</p>
 
-    <div class="practice-card">
-      <h3>Avant de commencer</h3>
-      <ul class="checklist">
-        <li>J'ai lu les specs concernées</li>
-        <li>J'ai vérifié qu'aucune proposal similaire n'existe</li>
-        <li>Mon changement mérite une proposal (pas un simple bugfix)</li>
-      </ul>
-
-      <h3>Pendant la proposal</h3>
-      <ul class="checklist">
-        <li>Mon Change ID est descriptif et en kebab-case</li>
-        <li>J'ai documenté Motivation + Description + Impact</li>
-        <li>Mes tasks sont séquentielles et atomiques</li>
-        <li>J'ai identifié les specs impactées</li>
-      </ul>
-
-      <h3>Pendant l'implémentation</h3>
-      <ul class="checklist">
-        <li>Je suis tasks.md séquentiellement</li>
-        <li>Je coche chaque tâche après complétion</li>
-        <li>Je teste régulièrement</li>
-        <li>Je commite au fil de l'eau</li>
-        <li>Je documente les décisions dans design.md</li>
-      </ul>
-
-      <h3>Avant l'archivage</h3>
-      <ul class="checklist">
-        <li>Le changement est déployé en production</li>
-        <li>Tous les tests passent</li>
-        <li>Aucune régression détectée</li>
-        <li>Les deltas de specs sont prêts à être fusionnés</li>
-      </ul>
+    <div class="guide-callout">
+      <p><strong>Dans Playlab42 (politique du projet) :</strong> profil <code>core</code> en livraison skills seuls. Demandez le skill par son nom canonique : <code>openspec-explore</code>, <code>openspec-propose</code>, <code>openspec-apply-change</code>, <code>openspec-update-change</code>, <code>openspec-sync-specs</code>, <code>openspec-archive-change</code>. Les sources vivent dans <code>.github/skills/</code> ; <code>.claude/skills</code> n'en est qu'un lien. Le CLI 1.14.0 est épinglé et s'exécute dans Docker :</p>
+<pre><code>make openspec-list
+make openspec-validate
+make npm CMD="exec -- openspec status --change add-dark-mode --json"</code></pre>
     </div>
 
-    <hr>
+    <details>
+      <summary>Approfondir : instructions legacy (/openspec:*) et migration</summary>
+      <p>Les commandes <code>/openspec:proposal</code>, <code>/openspec:apply</code> et <code>/openspec:archive</code> sont l'ancien workflow ; elles fonctionnent encore mais OPSX est recommandé. Procédure officielle générale de migration d'un projet qui les utilise :</p>
+      <ol>
+        <li>Mettre à jour la CLI, puis lancer <code>openspec init</code> ou <code>openspec update</code> : les fichiers legacy sont détectés et un nettoyage est proposé.</li>
+        <li>Les anciens fichiers de commandes, <code>openspec/AGENTS.md</code> et les blocs de marqueurs OpenSpec dans <code>CLAUDE.md</code>/<code>AGENTS.md</code> sont retirés ; votre contenu reste.</li>
+        <li>Déplacer le contexte utile de <code>openspec/project.md</code> vers le champ <code>context</code> de <code>openspec/config.yaml</code>, puis supprimer <code>project.md</code> vous-même.</li>
+        <li>Changes actifs, archives et specs principales sont conservés.</li>
+      </ol>
+      <p><strong>Dans Playlab42, ce n'est pas à rejouer :</strong> le dépôt applique déjà OPSX core en skills seuls. Les trois alias Claude <code>/openspec:proposal</code>, <code>/openspec:apply</code> et <code>/openspec:archive</code> sont conservés comme alias locaux de compatibilité. Le guide du projet interdit <code>openspec init --force</code> et <code>openspec update</code> directement dans le dépôt, pour préserver ces alias et instructions ; le rafraîchissement des intégrations est fait par le mainteneur dans un projet temporaire isolé, selon <code>docs/guides/openspec-workflow.md</code>.</p>
+    </details>
 
-    <h2>Ressources et liens utiles</h2>
+    <h2>Pièges fréquents</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Ressource</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>openspec/AGENTS.md</code></td>
-          <td>Instructions complètes pour agents IA</td>
-        </tr>
-        <tr>
-          <td><code>openspec/project.md</code></td>
-          <td>Conventions du projet Playlab42</td>
-        </tr>
-        <tr>
-          <td><code>openspec/specs/</code></td>
-          <td>Toutes les spécifications techniques</td>
-        </tr>
-        <tr>
-          <td><code>AGENTS.md</code> (racine)</td>
-          <td>Instructions générales pour agents IA</td>
-        </tr>
-        <tr>
-          <td><code>docs/CONCEPTS.md</code></td>
-          <td>Glossaire et définitions</td>
-        </tr>
-      </tbody>
-    </table>
+    <ul class="guide-checklist">
+      <li>Sur-spécifier : une demi-page suffit pour un petit changement.</li>
+      <li>Dévier du plan sans mettre à jour <code>tasks.md</code>, <code>design.md</code> ou le delta.</li>
+      <li>Confondre <code>openspec validate</code> (structure), <code>/opsx:verify</code> (code vs artefacts) et les tests (comportement à l'exécution).</li>
+      <li>Recommander une commande absente du profil de l'équipe.</li>
+      <li>Croire qu'archiver déploie.</li>
+    </ul>
 
-    <hr>
+    <h2>Mini exercice</h2>
 
-    <h2>🎉 Conclusion</h2>
-
-    <p>Vous avez maintenant toutes les clés pour contribuer à Playlab42 avec OpenSpec !</p>
-
-    <div class="practice-card">
-      <h3>Ce que vous avez appris</h3>
-      <ul class="checklist">
-        <li>La philosophie spec-driven development</li>
-        <li>Le workflow en 3 étapes : Proposal → Apply → Archive</li>
-        <li>Comment créer une proposal structurée</li>
-        <li>Comment implémenter avec rigueur</li>
-        <li>Comment archiver proprement</li>
-        <li>Les bonnes pratiques et pièges à éviter</li>
-      </ul>
+    <div class="guide-exercise">
+      <div class="guide-card" data-guide-quiz>
+        <p id="quiz-bp-q">Vous venez d'installer OpenSpec avec le profil par défaut. Quelle commande n'est PAS disponible tant que vous n'avez pas activé de workflows supplémentaires ?</p>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="/opsx:apply fait partie du profil core.">/opsx:apply</button>
+        <button type="button" data-guide-answer="correct" data-guide-explanation="/opsx:verify est un workflow expanded, à activer via openspec config profile puis openspec update.">/opsx:verify</button>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="/opsx:archive fait partie du profil core.">/opsx:archive</button>
+        <p data-guide-quiz-result></p>
+      </div>
     </div>
 
-    <div class="tip-box">
-      <p><strong>🚀 Prochaine étape</strong></p>
-      <p>Créez votre première proposal pour un petit changement (ajout d'un tool simple, amélioration de la doc) et suivez le workflow complet. C'est en pratiquant qu'on maîtrise !</p>
-    </div>
+    <p class="guide-source">Sources : OpenSpec v1.14.0 (<a href="https://github.com/Fission-AI/OpenSpec/tree/v1.14.0" target="_blank" rel="noopener">tag</a>) — <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/customization.md" target="_blank" rel="noopener">customization</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/concepts.md" target="_blank" rel="noopener">concepts</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/existing-projects.md" target="_blank" rel="noopener">existing-projects</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/migration-guide.md" target="_blank" rel="noopener">migration-guide</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener">commands</a>. Politique locale : <code>AGENTS.md</code> et <code>docs/guides/openspec-workflow.md</code>.</p>
 
-    <p style="text-align: center; margin-top: var(--space-2xl); font-size: 1.25rem;">
-      <strong>Bon développement avec OpenSpec ! 🎮📋</strong>
-    </p>
+    <p><strong>Vous avez fait le tour : à vous de jouer avec un vrai change ! 🎉</strong></p>
+    <footer class="guide-footer">
+      <p class="guide-muted" data-slide-footer></p>
+    </footer>
   </article>
+  <script type="module" src="../../openspec-guide.js"></script>
 </body>
 </html>
