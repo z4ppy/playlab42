@@ -26,7 +26,7 @@ esac
 install_dir="$RUNNER_TEMP/security-scanners/$1"
 mkdir -p "$install_dir"
 curl --fail --silent --show-error --location "$url" --output "$install_dir/$archive"
-printf '%s  %s\n' "$checksum" "$install_dir/$archive" | sha256sum -c -s
+printf '%s  %s\n' "$checksum" "$install_dir/$archive" | sha256sum -c
 tar -xzf "$install_dir/$archive" -C "$install_dir" "$1"
 "$install_dir/$1" --version
 printf '%s\n' "$install_dir" >> "$GITHUB_PATH"

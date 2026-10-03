@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
@@ -61,7 +62,7 @@ done`);
 read -r checksum archive
 test "$checksum" = "$EXPECTED_CHECKSUM"
 test -f "$archive"
-test "$*" = "-c -s"
+test "$*" = "-c"
 printf 'checksum\\n' >> "$FIXTURE_LOG"`);
   }
   executable(state.directory, 'tar', `
@@ -179,7 +180,9 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
 
   test.each(['gitleaks', 'trivy'])('une archive %s corrompue ne peut ni être extraite ni atteindre PATH', scanner => {
     const state = installerFixture(scanner, { realChecksum: true });
-    expect(install(scanner, state).status).not.toBe(0);
+    const result = install(scanner, state);
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toMatch(/checksum.*(?:mismatch|did NOT match)/i);
     expect(readFileSync(state.log, 'utf8')).toBe('download\n');
     expect(readFileSync(state.pathFile, 'utf8')).toBe('');
     expect(existsSync(join(state.directory, 'security-scanners', scanner, scanner))).toBe(false);
@@ -191,6 +194,33 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
     expect(readFileSync(state.log, 'utf8')).toBe('download\n');
     expect(readFileSync(state.pathFile, 'utf8')).toBe('');
     expect(install('unsupported', state).status).toBe(2);
+  });
+
+  test.each([true, false])('la commande réelle de checksum valide ou rejette une archive (intègre : %s)', intact => {
+    const state = fixture();
+    const content = 'fixture archive\n';
+    const archive = 'fixture.tar.gz';
+    writeFileSync(join(state.directory, archive), intact ? content : 'corrupt archive\n');
+    const verification = read('scripts/install-security-scanner.sh').split('\n')
+      .find(line => line.includes('| sha256sum'));
+    expect(verification).toBeDefined();
+    const result = spawnSync('bash', ['-e', '-o', 'pipefail', '-c', verification], {
+      cwd: state.directory,
+      env: {
+        ...state.env,
+        checksum: createHash('sha256').update(content).digest('hex'),
+        install_dir: state.directory,
+        archive,
+      },
+      encoding: 'utf8',
+    });
+    if (intact) {
+      expect(result.stderr).toBe('');
+      expect(result.status).toBe(0);
+    } else {
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toMatch(/checksum.*(?:mismatch|did NOT match)/i);
+    }
   });
 
   test.each([1, 42])('les gates conservent les erreurs de scanner/lint (code %i)', exitCode => {

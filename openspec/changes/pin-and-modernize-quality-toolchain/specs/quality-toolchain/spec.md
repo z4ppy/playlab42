@@ -18,6 +18,11 @@ et exécution et rendre tout échec d'installation explicite.
 - **THEN** le scanner n'est pas extrait ni exécuté
 - **AND** le contrôle échoue sans annoncer une analyse réussie
 
+#### Scenario: Valid archive on supported runtimes
+- **WHEN** une archive intègre est vérifiée avec GNU coreutils ou BusyBox
+- **THEN** la commande réelle de checksum réussit avant extraction
+- **AND** une archive corrompue reste refusée avec un diagnostic de checksum
+
 ### Requirement: Reproducible security lint
 Le lint de sécurité SHALL utiliser la configuration flat et les dépendances
 verrouillées du projet, sur les fichiers réellement présents.
