@@ -1,5 +1,5 @@
-FROM node:26-bookworm-slim AS node
-FROM mcr.microsoft.com/playwright:v1.63.0-noble
+FROM node:26-bookworm-slim@sha256:662933cf47f013bc8e4beb31a6116448427a82057ba7c42c97e4c5ba766504c2 AS node
+FROM mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
 
 # Conserver les navigateurs officiels, sans dependre de la version Node de Noble.
 COPY --from=node /usr/local/ /usr/local/

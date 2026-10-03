@@ -62,7 +62,7 @@ fusion ou déploiement. **Pas de merge automatique.**
 
 ## Évaluations légères
 
-Les fichiers `evals/evals.json` contiennent chacun deux demandes réalistes,
+Les fichiers `evals/evals.json` contiennent au moins deux demandes réalistes,
 leur `expected_output`, les fichiers de contexte et des assertions observables.
 Les `trigger_cases` couvrent un déclenchement attendu et un cas voisin hors
 périmètre. Ils servent à la revue ; ils ne constituent pas un runner installé.
@@ -88,3 +88,6 @@ aussi. Les autres scénarios et les cas de déclenchement restent à évaluer ;
 les preuves et le visualiseur comparatif sont conservés hors du dépôt.
 Les scénarios du nouveau skill de revue sont définis et contrôlés structurellement,
 mais aucune comparaison d'agents ni gain d'efficacité n'est revendiqué.
+Le skill release inclut aussi le cas de mise à jour d'un scanner et de parser
+incompatible : vérifier la source officielle et les limites, sans forcer les
+dépendances ni neutraliser un gate pour accélérer la livraison.

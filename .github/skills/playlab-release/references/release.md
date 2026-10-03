@@ -10,6 +10,7 @@ Exécuter uniquement dans un rôle autorisé à utiliser Docker.
 | Moteur d'un jeu | `make npm CMD="test -- --runTestsByPath games/mon-jeu/engine.test.js"` |
 | Helpers DOM/thème | `make npm CMD="test -- --runTestsByPath lib/dom.test.js lib/theme.test.js"` |
 | JS modifié | `make npm CMD="exec -- eslint chemin/du/fichier.js --max-warnings=0"` |
+| Sécurité JavaScript | `make npm CMD="run lint:security"` ; diagnostics consultatifs séparés, pas de verdict global |
 | Manifeste tool/game | `make build-catalogue` |
 | Epic/slides | `make build-parcours` puis parcours dans le viewer |
 | Logique de parcours | `make npm CMD="test -- --runTestsByPath scripts/parcours-utils.test.js"` |
@@ -41,6 +42,12 @@ affiche le port du worktree. Ne pas coder un port local fixe.
 - `docs/guides/contributing.md`, `docs/guides/contribution-kit.md` :
   workflow contributeur et fichiers attendus.
 - `openspec/AGENTS.md` : proposition, implémentation, archivage après déploiement.
+
+Pour une référence d'action/image/scanner, vérifier la valeur officielle puis
+les contrats d'épinglage et l'exécution de l'outil. Un SHA/digest/checksum n'est
+pas une preuve de conformité SLSA. Ne pas exécuter un téléchargement avant sa
+vérification. Le lint TS demeure non supporté avec les peers du parser actuel ;
+`make typecheck` reste nécessaire mais ne remplace pas ce lint.
 
 ## Inspection Git et branche
 

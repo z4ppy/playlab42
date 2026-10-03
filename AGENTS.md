@@ -43,6 +43,10 @@ Le [guide qualité](docs/guides/software-quality.md) fixe les pratiques communes
 conception simple, contrats, déterminisme, erreurs visibles, tests de comportement
 et revue. Les seuils ciblés et l'audit npm sont bloquants dans la CI ; ni couverture
 ni audit vert ne certifient l'absence de défauts.
+Le lint de sécurité utilise la configuration et les plugins verrouillés du dépôt.
+Les références d'actions/images/scanners sont vérifiées avant mise à jour.
+Ne pas masquer un échec avec `|| true`, forcer des peers incompatibles ou
+inventer une validation TS : tsc est le contrôle de types, pas un linter.
 
 ## Environnement Docker-first
 

@@ -1,376 +1,98 @@
-# Configuration de la Sécurité - Playlab42
+# Configuration de la sécurité
 
-Ce document explique comment mettre en place les outils de sécurité pour le projet Playlab42.
+## Dépendances et compatibilité
 
-## 📋 Table des matières
+La configuration sécurité utilise ESLint 10 avec Node.js 26 dans Docker :
 
-1. [Installation des outils](#installation-des-outils)
-2. [Configuration ESLint Security](#configuration-eslint-security)
-3. [Activation de Dependabot](#activation-de-dependabot)
-4. [Workflow GitHub Actions](#workflow-github-actions)
-5. [Corrections prioritaires](#corrections-prioritaires)
+| Dépendance | Version exacte | Rôle |
+|---|---|---|
+| `eslint-plugin-security` | `4.2.0` | Heuristiques sécurité JavaScript |
+| `eslint-plugin-no-unsanitized` | `4.1.5` | Sinks HTML dans le DOM |
 
----
-
-## 🔧 Installation des outils
-
-### Plugins ESLint de sécurité
-
-Installer les plugins ESLint pour détecter les failles de sécurité :
+Ces versions sont enregistrées dans `package.json` et `package-lock.json`.
+Leurs exports `rules` ont été vérifiés dans le conteneur ; la configuration
+n'utilise que des noms de règles réellement exportés. Les tests exécutent ces
+plugins avec l'ESLint du lockfile, pas une installation globale.
 
 ```bash
-# Dans le container Docker
-make shell
-
-# Ou directement avec npm
-npm install --save-dev eslint-plugin-security eslint-plugin-no-unsanitized
+make up
+docker compose exec -T dev npm ci
+make security-eslint
 ```
 
-### Outils supplémentaires (optionnels)
+Pour mettre à jour un plugin, vérifier ses contraintes de runtime et de peers,
+modifier son pin puis installer et tester **dans Docker**. Le lockfile doit
+faire partie de la modification. Ne pas ajouter d'installation `--no-save`
+dans un workflow ou un target Make, ni utiliser les anciens arguments
+`--plugin` avec la flat config.
+
+## Deux niveaux d'analyse explicites
+
+- `eslint.security.config.js` définit les règles bloquantes.
+  `npm run lint:security` propage tout échec et permet l'export JSON.
+- `scripts/security-lint-advisory.config.js` étend ce gate avec des diagnostics
+  heuristiques en warnings, accessibles par `npm run lint:security:advisory`.
+- `eslint.config.js` demeure la configuration de qualité existante, sans
+  modification de ses motifs ni mélange avec le gate sécurité.
+
+Les contrôles d'exécution dynamique, de méthodes DOM non sanitizées, de buffers
+et de caractères bidi sont bloquants. Les propriétés DOM, accès calculés,
+regex, chemins dynamiques et autres heuristiques nécessitant davantage de
+contexte sont publiés séparément. Aucun preset « recommended » complet n'est
+activé implicitement et aucune nouvelle exception générale n'est inventée.
+
+La liste exacte, les commandes Make et les limites sont documentées dans
+[SECURITY_LOCAL_TESTING.md](./SECURITY_LOCAL_TESTING.md).
+
+## Intégration CI et diagnostics
+
+Après une installation depuis le lockfile, le contrat du job sécurité est :
 
 ```bash
-# Snyk CLI pour scanner les vulnérabilités
-npm install -g snyk
-
-# GitLeaks pour détecter les secrets
-brew install gitleaks  # macOS
-# ou
-wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+npm run lint:security -- \
+  --format json --output-file eslint-security-results.json
 ```
 
----
-
-## 🛡️ Configuration ESLint Security
-
-### Option 1 : Configuration inline (utilisée par le workflow)
-
-Le workflow GitHub Actions utilise déjà les règles de sécurité sans modification permanente du code.
-
-### Option 2 : Configuration permanente
-
-Pour ajouter les règles de sécurité de manière permanente, modifier `eslint.config.js` :
-
-```javascript
-import js from '@eslint/js';
-import globals from 'globals';
-import security from 'eslint-plugin-security';
-import noUnsanitized from 'eslint-plugin-no-unsanitized';
-
-export default [
-  js.configs.recommended,
-  security.configs.recommended,
-
-  {
-    plugins: {
-      security,
-      'no-unsanitized': noUnsanitized,
-    },
-    languageOptions: {
-      ecmaVersion: 2024,
-      sourceType: 'module',
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-    },
-    rules: {
-      // Règles existantes...
-      'no-eval': 'error',
-      'no-implied-eval': 'error',
-
-      // Règles de sécurité
-      'security/detect-object-injection': 'warn',
-      'security/detect-non-literal-regexp': 'warn',
-      'security/detect-unsafe-regex': 'error',
-      'security/detect-buffer-noassert': 'error',
-      'security/detect-eval-with-expression': 'error',
-      'security/detect-no-csrf-before-method-override': 'warn',
-      'security/detect-possible-timing-attacks': 'warn',
-      'no-unsanitized/method': 'error',
-      'no-unsanitized/property': 'error',
-    },
-  },
-];
-```
-
----
-
-## 🤖 Activation de Dependabot
-
-### Étapes dans GitHub
-
-1. Aller dans **Settings** → **Security & analysis**
-2. Activer **Dependabot alerts**
-3. Activer **Dependabot security updates**
-4. Le fichier `.github/dependabot.yml` est déjà configuré ✅
-
-### Vérification
-
-Dependabot créera automatiquement des PRs pour :
-- Vulnérabilités de sécurité (immédiatement)
-- Mises à jour hebdomadaires (tous les lundis à 6h)
-
----
-
-## ⚙️ Workflow GitHub Actions
-
-### Workflow `security-audit.yml`
-
-Le workflow est déjà configuré dans `.github/workflows/security-audit.yml` et s'exécute :
-
-- ✅ Sur chaque push vers `main`
-- ✅ Sur chaque pull request
-- ✅ Quotidiennement à 6h UTC (détection de nouvelles CVE)
-- ✅ Manuellement via l'onglet Actions
-
-### Jobs exécutés
-
-1. **npm-audit** : Scan des vulnérabilités npm
-2. **eslint-security** : Analyse statique du code
-3. **trivy-scan** : Scan des vulnérabilités et secrets
-4. **gitleaks** : Détection de secrets dans le code
-5. **outdated-check** : Packages obsolètes
-6. **docker-security** : Sécurité du Dockerfile
-7. **security-report** : Rapport consolidé
-
-### Activer CodeQL (recommandé)
-
-Pour une analyse encore plus poussée, activer CodeQL :
-
-1. Aller dans **Settings** → **Code security and analysis**
-2. Cliquer sur **Set up** pour CodeQL analysis
-3. GitHub créera automatiquement un workflow `.github/workflows/codeql.yml`
-
----
-
-## 🚨 Corrections Prioritaires
-
-Voici les correctifs à appliquer en priorité (voir `docs/SECURITY_AUDIT.md` pour le détail) :
-
-### Priorité 1 : URGENT
-
-#### 1. Validation d'origine pour postMessage
-
-**Fichier** : `lib/gamekit.js`
-
-```javascript
-// AVANT
-_postMessage(message) {
-  if (window.parent !== window) {
-    window.parent.postMessage(message, '*');  // ❌ Dangereux
-  }
-}
-
-// APRÈS
-_postMessage(message) {
-  if (window.parent !== window) {
-    const allowedOrigin = window.location.origin;
-    window.parent.postMessage(message, allowedOrigin);  // ✅ Sécurisé
-  }
-}
-```
-
-**Fichier** : `app.js`
-
-```javascript
-// AVANT
-on(window, 'message', (e) => {
-  if (!e.data || !e.data.type) {return;}  // ❌ Pas de vérification d'origine
-  // ...
-});
-
-// APRÈS
-on(window, 'message', (e) => {
-  // Valider l'origine
-  const allowedOrigins = [
-    window.location.origin,
-    'https://z4ppy.github.io',  // GitHub Pages
-  ];
-
-  if (!allowedOrigins.includes(e.origin)) {
-    console.warn('[Security] Message from untrusted origin:', e.origin);
-    return;
-  }
-
-  if (!e.data || !e.data.type) {return;}
-  // ...
-});
-```
-
-#### 2. Ajouter Content Security Policy
-
-**Fichier** : `index.html`
-
-Ajouter après `<meta charset="UTF-8">` :
-
-```html
-<meta http-equiv="Content-Security-Policy" content="
-  default-src 'self';
-  script-src 'self';
-  style-src 'self' 'unsafe-inline';
-  img-src 'self' data: https:;
-  font-src 'self';
-  connect-src 'self';
-  frame-src 'self';
-  base-uri 'self';
-  form-action 'self';
-">
-```
-
-#### 3. Restreindre le sandbox des iframes
-
-**Fichier** : `index.html`
-
-```html
-<!-- AVANT -->
-<iframe id="game-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
-
-<!-- APRÈS -->
-<iframe id="game-iframe" sandbox="allow-scripts"></iframe>
-```
-
-**⚠️ Impact** : Les jeux n'auront plus accès au localStorage du portail. Utiliser uniquement `postMessage` pour la communication.
-
-### Priorité 2 : IMPORTANT
-
-#### 4. Valider les protocoles des URLs
-
-**Fichier** : `scripts/build-bookmarks.js`
-
-```javascript
-// AVANT
-try {
-  new URL(bookmark.url);
-} catch {
-  stats.errors.push(`URL invalide: ${bookmark.url} (${source})`);
-  return false;
-}
-
-// APRÈS
-try {
-  const url = new URL(bookmark.url);
-  const allowedProtocols = ['http:', 'https:'];
-  if (!allowedProtocols.includes(url.protocol)) {
-    stats.errors.push(`Protocole non autorisé (${url.protocol}): ${bookmark.url} (${source})`);
-    return false;
-  }
-} catch {
-  stats.errors.push(`URL invalide: ${bookmark.url} (${source})`);
-  return false;
-}
-```
-
-#### 5. Validation de schéma pour localStorage
-
-Ajouter un fichier `lib/storage-validator.js` :
-
-```javascript
-/**
- * Valide les données localStorage avant utilisation
- */
-
-export function validatePlayerData(data) {
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Invalid player data type');
-  }
-  if (data.name !== undefined && typeof data.name !== 'string') {
-    throw new Error('Invalid player name type');
-  }
-  if (data.name && data.name.length > 50) {
-    throw new Error('Player name too long');
-  }
-  return true;
-}
-
-export function validatePreferencesData(data) {
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Invalid preferences data type');
-  }
-  if (data.sound !== undefined && typeof data.sound !== 'boolean') {
-    throw new Error('Invalid sound preference type');
-  }
-  return true;
-}
-
-export function validateScoreData(data) {
-  if (!Array.isArray(data)) {
-    throw new Error('Scores must be an array');
-  }
-  for (const entry of data) {
-    if (typeof entry.score !== 'number') {
-      throw new Error('Invalid score type');
-    }
-    if (typeof entry.date !== 'number') {
-      throw new Error('Invalid date type');
-    }
-    if (typeof entry.player !== 'string') {
-      throw new Error('Invalid player type');
-    }
-  }
-  return true;
-}
-```
-
-Utiliser dans `app.js` :
-
-```javascript
-import { validatePlayerData, validatePreferencesData } from './lib/storage-validator.js';
-
-function loadPreferences() {
-  try {
-    const player = localStorage.getItem(STORAGE_KEYS.PLAYER);
-    if (player) {
-      const parsed = JSON.parse(player);
-      validatePlayerData(parsed);  // ✅ Validation
-      state.preferences.pseudo = parsed.name || 'Anonyme';
-    }
-    // ...
-  } catch (e) {
-    console.warn('Erreur chargement préférences, réinitialisation:', e);
-    localStorage.removeItem(STORAGE_KEYS.PLAYER);
-  }
-}
-```
-
----
-
-## 📊 Monitoring continu
-
-### Surveiller les alertes de sécurité
-
-1. **GitHub Security tab** : Consulter régulièrement
-2. **Dependabot PRs** : Reviewer et merger rapidement
-3. **Workflow security-audit** : Vérifier les échecs
-4. **npm audit** : Exécuter localement avant chaque commit
-
-### Commandes utiles
+Le job doit préserver le statut ESLint et collecter le rapport même en cas
+d'échec. Les warnings advisory ne doivent pas être présentés comme un gate
+strict ni comme une preuve d'absence de vulnérabilité. La configuration des
+workflows, scanners, exceptions et protections GitHub est distincte de ce
+contrat local ; consulter leurs fichiers versionnés et la politique du projet.
+
+Le contrôle npm utilise `npm run audit:dependencies` (seuil `moderate`,
+dépendances de développement incluses). Les targets Make ne masquent plus ses
+erreurs. Le scanner de secrets et le scan des images restent complémentaires ;
+ces plugins ne réalisent pas ces analyses.
+
+## Décision TypeScript
+
+Le compilateur du projet reste TypeScript 7.0.2 (contrainte existante `^7.0.2`).
+Le parser `typescript-eslint` 8.71.0 supporte officiellement
+`>=4.8.4 <6.1.0` : il ne constitue pas une solution supportée ici.
+
+**Le lint TypeScript est différé jusqu'à un parser compatible et supporté.**
+Ni rétrogradation du compilateur, ni installation forcée, ni contournement des
+peers n'est effectué. `make typecheck` et les tests TypeScript restent utiles,
+mais ne sont pas des preuves de lint sécurité TS. Les scripts JS issus du build
+dans `dist/` sont exclus pour éviter d'analyser des sorties générées.
+
+## Vérification avant évolution des règles
 
 ```bash
-# Audit npm local
-npm audit
-
-# Audit avec fix automatique (patch/minor)
-npm audit fix
-
-# Audit complet avec analyse détaillée
-npm audit --json > audit-report.json
-
-# Vérifier les packages obsolètes
-npm outdated
-
-# Mettre à jour un package spécifique
-npm update package-name
+docker compose exec -T dev npm test -- --runInBand scripts/security-lint.test.js
+make security-eslint
+make security-eslint-advisory
+make security-npm
 ```
 
----
+Avant de promouvoir une règle advisory en erreur, examiner les diagnostics
+réels et corriger les sinks concernés. Une fonction d'échappement locale ne doit
+pas être déclarée sûre par commodité ; sa sécurité dépend du contexte de sortie.
+L'analyse statique ne suit pas tous les flux et ne remplace pas une revue
+contextualisée des données non fiables.
 
-## 🔗 Ressources
-
-- [Rapport d'audit complet](./SECURITY_AUDIT.md)
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [GitHub Security Best Practices](https://docs.github.com/en/code-security)
-- [npm Security Best Practices](https://docs.npmjs.com/security-best-practices)
-
----
-
-**Dernière mise à jour** : 2025-12-14
+Ressources :
+- [ESLint flat config](https://eslint.org/docs/latest/use/configure/configuration-files)
+- [eslint-plugin-security](https://github.com/eslint-community/eslint-plugin-security)
+- [eslint-plugin-no-unsanitized](https://github.com/mozilla/eslint-plugin-no-unsanitized)
+- [OWASP](https://owasp.org/www-project-top-ten/)

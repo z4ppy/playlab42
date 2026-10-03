@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 
 const analyses = [
   ['npm-audit', 'npm audit', 'Audit bloquant au seuil modéré ; les problèmes de niveau faible restent possibles.'],
-  ['eslint-security', 'ESLint Security', 'Analyse consultative ; consulter les diagnostics et artefacts.'],
-  ['trivy-scan', 'Trivy', 'Analyse consultative ; consulter les diagnostics et artefacts.'],
+  ['eslint-security', 'ESLint Security', 'Gate JavaScript ciblé terminé ; règles DOM-property et heuristiques consultatives séparées.'],
+  ['trivy-scan', 'Trivy', 'Scan vulnérabilités/secrets terminé sans résultat bloquant HIGH/CRITICAL ; base évolutive.'],
   ['gitleaks', 'Gitleaks', 'Scan terminé sans détection bloquante ; pas une garantie exhaustive.'],
   ['outdated-check', 'Packages obsolètes', 'Inventaire consultatif, pas un verdict de sécurité.'],
   ['docker-security', 'Hadolint', 'Analyse consultative ; consulter les diagnostics et artefacts.'],

@@ -266,6 +266,7 @@
     let lastValidJSON = null;
     let hasValidJSON = false;
     const indentSize = 2;
+    const autoFormat = debounce(formatJSON, 300);
 
     /**
      * Applique la coloration syntaxique au JSON (sans innerHTML dangereux)
@@ -289,6 +290,7 @@
      * Formate le JSON avec indentation
      */
     function formatJSON() {
+      autoFormat.cancel();
       const input = inputEl.value.trim();
       hasValidJSON = false;
       inputEl.removeAttribute('aria-invalid');
@@ -378,7 +380,7 @@
     on(btnCopy, 'click', copyOutput);
 
     // Auto-format au fur et à mesure (débounce)
-    on(inputEl, 'input', debounce(formatJSON, 300));
+    on(inputEl, 'input', autoFormat);
 
     // Raccourci clavier Ctrl+Enter
     on(inputEl, 'keydown', (e) => {

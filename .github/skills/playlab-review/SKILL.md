@@ -26,6 +26,11 @@ le change et ses scénarios comme critères ; ne pas inventer une architecture.
    Séparer défaut confirmé, risque à vérifier et recommandation non bloquante.
    Sans constat confirmé, expliquer le périmètre et les limites, pas « aucun défaut ».
 
+Sur la chaîne d'outillage, revoir aussi références immuables, checksum avant
+exécution, vrais codes de sortie et compatibilités de peers. Une suppression
+de diagnostic doit avoir une portée précise et une justification vérifiable ;
+suivre les champs et dates du guide qualité, sans exception générale.
+
 Ne pas corriger, installer, commiter, pousser, merger, publier ou archiver sans
 demande distincte. Ne pas certifier la sécurité à partir de lint/npm audit.
 Pour un audit approfondi, annoncer le périmètre spécifique nécessaire.

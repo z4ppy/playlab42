@@ -22,6 +22,7 @@ second déclenchement indépendant de CI. Le lancement manuel de Deploy hors
 | Job | Commande / dépendance | Échec |
 |-----|----------------------|-------|
 | Lint | `npm run lint` | Erreurs et avertissements ESLint |
+| Security lint | `npm run lint:security`, rapport JSON | Erreurs des règles JS ciblées, sans installation de plugins à la volée |
 | Tests | `npm run test:coverage`, puis Codecov | Tests ou seuils ciblés échoués ; upload Codecov non bloquant |
 | Dependency audit | `npm run audit:dependencies` | CVE modérée ou plus ; panne d'audit également bloquante |
 | TypeScript | `npm run typecheck` | Erreurs de types ; la transpilation appartient à Build |
@@ -74,25 +75,29 @@ rapport/commentaire PR reçoivent les droits d'écriture nécessaires.
 |----------|----------------------|
 | npm audit | Échec au niveau modéré et au-dessus |
 | Gitleaks | Analyse de l'historique ; détection = échec |
-| ESLint Security | Erreurs affichées, mais converties en avertissement du job |
-| Trivy | Rapports vulnérabilités/secrets/configuration, pas de `--exit-code` dédié |
+| ESLint Security | Gate ciblé avec configuration flat, plugins verrouillés ; diagnostics JSON, pas d'erreur masquée |
+| Trivy | Vulnérabilités/secrets HIGH/CRITICAL bloquants ; scan JSON unique puis affichage, outil vérifié avant exécution |
 | Packages obsolètes | Informatif |
-| Hadolint | Push/manuel seulement, `no-fail: true` |
+| Hadolint | Push/manuel seulement, deux Dockerfiles, `no-fail: true` ; consultatif |
 | Rapport | Attend les six analyses, `if: always()`, états réels des jobs ; artefact et commentaire PR |
 
 Le rapport ne déduit pas un succès d'un fichier absent et distingue échec,
 annulation, analyse ignorée et succès consultatif. Les logs et artefacts conservent
 les diagnostics détaillés ; ce résumé ne certifie pas l'absence de problème.
 
-Les versions de scanners ne sont pas toutes épinglées : Gitleaks est téléchargé
-depuis la dernière release et les plugins ESLint sont ajoutés sans version.
-Ce sont des limites de reproductibilité, pas une preuve d'analyse complète ou
-une liste de vulnérabilités confirmées.
+Gitleaks 8.30.1 et Trivy 0.75.0 sont téléchargés par version puis vérifiés par
+checksum avant extraction. Les actions sont épinglées par SHA ; images Node et
+Playwright par digest. Les paquets OS installés et bases CVE restent évolutifs.
+Ce n'est ni une build hermétique ni une signature/provenance SLSA.
+Le scan de secrets utilise la redaction ; ne pas publier les valeurs détectées.
+Les heuristiques de lint consultatives sont accessibles par
+`npm run lint:security:advisory`, distinct du gate de publication.
 
 ## Dépendances et couverture
 
 - Dependabot : npm, GitHub Actions et Docker, chaque lundi à 6 h Europe/Paris.
   La configuration regroupe les mises à jour npm mineures/patch et limite les PR.
+  Les Dockerfiles de `/docker` sont aussi suivis.
 - Codecov : cible projet automatique avec tolérance 1 %, cible patch 80 % avec
   tolérance 5 %, plage d'affichage 60–100 %.
 - Les seuils Jest sont bloquants pour SeededRandom (100 %) et packaging/smoke
@@ -109,6 +114,7 @@ une liste de vulnérabilités confirmées.
 
 ```bash
 make lint
+make security-eslint
 make test
 make npm CMD="run test:coverage"
 make npm CMD="run audit:dependencies"

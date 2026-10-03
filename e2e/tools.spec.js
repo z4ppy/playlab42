@@ -20,6 +20,19 @@ test('JSON: action sur la saisie courante, valeurs falsy et erreur annoncee', as
   await expect(page.locator('#output')).toContainText('"recovered": true');
 });
 
+test('JSON: la minification explicite annule le formatage differe de la saisie', async ({ page }) => {
+  await page.goto('/tools/json-formatter.html');
+  await expect(page.locator('#input')).toBeVisible();
+  await page.clock.pauseAt(new Date('2026-01-01T12:00:01Z'));
+  await page.locator('#input').fill('{"minified":[1,2]}');
+  await activate(page.locator('#btn-minify'));
+  await page.clock.runFor(350);
+  await expect(page.locator('#output')).toHaveText('{"minified":[1,2]}');
+  await page.locator('#input').fill('{"edited":true}');
+  await page.clock.runFor(350);
+  await expect(page.locator('#output')).toHaveText('{\n  "edited": true\n}');
+});
+
 test('Particle Life: vrai rendu, pause accessible et matrice editable/randomisee', async ({ page }) => {
   await page.goto('/tools/particle-life/index.html');
   const matrix = page.locator('input[aria-label^="Attraction"]');

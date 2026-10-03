@@ -60,6 +60,7 @@ help:
 	@echo "  make security-audit     - Audit complet de sécurité"
 	@echo "  make security-npm       - Audit npm (vulnérabilités CVE)"
 	@echo "  make security-eslint    - Analyse statique ESLint Security"
+	@echo "  make security-eslint-advisory - Diagnostics de sécurité non bloquants"
 	@echo "  make security-yaml      - Validation syntaxe YAML"
 	@echo "  make security-deps      - Vérifier packages obsolètes"
 	@echo "  make security-report    - Générer rapport consolidé"
@@ -208,45 +209,51 @@ clean:
 # === Sécurité ===
 
 # Audit complet de sécurité (tous les tests)
+.PHONY: security-audit security-npm security-eslint security-eslint-advisory security-yaml security-deps security-report
+
 security-audit:
 	@echo "🔒 Audit de sécurité complet"
 	@echo ""
 	@echo "1/5 - npm audit..."
-	@docker compose exec dev npm audit --audit-level=moderate || true
+	@$(MAKE) security-npm
 	@echo ""
 	@echo "2/5 - ESLint Security..."
-	@docker compose exec dev sh -c "npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized && npx eslint lib/ src/ games/ --plugin security --plugin no-unsanitized --rule 'security/detect-unsafe-regex: error' --rule 'no-unsanitized/method: error' --rule 'no-unsanitized/property: error' --format compact && npm uninstall --no-save eslint-plugin-security eslint-plugin-no-unsanitized" || true
+	@$(MAKE) security-eslint
 	@echo ""
 	@echo "3/5 - Validation YAML..."
-	@docker compose exec dev python3 -c "import yaml; import sys; files = ['.github/workflows/security-audit.yml', '.github/workflows/ci.yml', '.github/workflows/deploy.yml', '.github/dependabot.yml']; errors = []; [print(f'✓ {f}') if yaml.safe_load(open(f)) or True else errors.append(f) for f in files]; sys.exit(1 if errors else 0)"
+	@$(MAKE) security-yaml
 	@echo ""
 	@echo "4/5 - Packages obsolètes..."
-	@docker compose exec dev npm outdated || true
+	@status=0; docker compose exec -T dev npm outdated || status=$$?; test $$status -le 1
 	@echo ""
 	@echo "5/5 - Dépendances..."
-	@docker compose exec dev npm ls --depth=0 || true
+	@docker compose exec -T dev npm ls --depth=0
 	@echo ""
 	@echo "✅ Audit terminé"
 
 # Audit npm uniquement
 security-npm:
 	@echo "🔍 npm audit - Vérification des vulnérabilités CVE"
-	@docker compose exec dev npm audit --audit-level=moderate
+	@docker compose exec -T dev npm run audit:dependencies
 
 # Analyse statique ESLint avec règles de sécurité
 security-eslint:
 	@echo "🔍 ESLint Security - Analyse statique du code"
-	@docker compose exec dev sh -c "npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized && npx eslint lib/ src/ games/ app.js --plugin security --plugin no-unsanitized --rule 'security/detect-object-injection: warn' --rule 'security/detect-unsafe-regex: error' --rule 'security/detect-eval-with-expression: error' --rule 'no-unsanitized/method: error' --rule 'no-unsanitized/property: error' && npm uninstall --no-save eslint-plugin-security eslint-plugin-no-unsanitized"
+	@docker compose exec -T dev npm run lint:security
+
+security-eslint-advisory:
+	@echo "🔍 Diagnostics heuristiques (warnings visibles, erreurs bloquantes)"
+	@docker compose exec -T dev npm run lint:security:advisory
 
 # Validation syntaxe YAML
 security-yaml:
 	@echo "🔍 Validation YAML - Workflows GitHub Actions"
-	@docker compose exec dev python3 -c "import yaml; import sys; files = ['.github/workflows/security-audit.yml', '.github/workflows/ci.yml', '.github/workflows/deploy.yml', '.github/dependabot.yml']; errors = []; [[print(f'✓ {f}: Syntaxe YAML valide'), True] if yaml.safe_load(open(f)) or True else [errors.append(f), print(f'✗ {f}: Erreur YAML')] for f in files]; print('\n✅ Tous les fichiers YAML sont valides') if not errors else [print(f'\n❌ Erreurs détectées: {errors}'), sys.exit(1)]"
+	@docker compose exec -T dev node --input-type=module -e "import fs from 'node:fs'; import { parseDocument } from 'yaml'; for (const f of ['.github/workflows/security-audit.yml', '.github/workflows/ci.yml', '.github/workflows/deploy.yml', '.github/dependabot.yml']) { const doc = parseDocument(fs.readFileSync(f, 'utf8'), { uniqueKeys: true }); if (doc.errors.length) { throw new Error(f + ': ' + doc.errors.map(e => e.message).join('; ')); } console.log('✓ ' + f); }"
 
 # Vérifier packages obsolètes
 security-deps:
 	@echo "🔍 Packages obsolètes"
-	@docker compose exec dev npm outdated
+	@docker compose exec -T dev npm outdated
 
 # Rapport consolidé
 security-report:
@@ -259,9 +266,12 @@ security-report:
 	@echo "Commit: $$(git rev-parse --short HEAD)"
 	@echo ""
 	@echo "--- npm audit ---"
-	@docker compose exec dev npm audit --json | docker compose exec -T dev node -e "const data = require('fs').readFileSync(0, 'utf-8'); const audit = JSON.parse(data); console.log('Vulnérabilités:', audit.metadata?.vulnerabilities || 'N/A');" || echo "Erreur parsing npm audit"
+	@docker compose exec -T dev npm audit --json --audit-level=moderate
+	@echo ""
+	@echo "--- ESLint Security ---"
+	@docker compose exec -T dev npm run lint:security -- --format json --output-file eslint-security-results.json
 	@echo ""
 	@echo "--- Packages obsolètes ---"
-	@docker compose exec dev npm outdated --json | docker compose exec -T dev node -e "const data = require('fs').readFileSync(0, 'utf-8'); try { const outdated = JSON.parse(data); console.log('Packages:', Object.keys(outdated).length); } catch { console.log('Aucun package obsolète'); }" || echo "Tous les packages sont à jour"
+	@status=0; docker compose exec -T dev npm outdated --json || status=$$?; test $$status -le 1
 	@echo ""
 	@echo "✅ Rapport terminé"

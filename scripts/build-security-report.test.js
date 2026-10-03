@@ -10,6 +10,8 @@ describe('Rapport de sécurité fidèle aux exécutions', () => {
     const report = buildSecurityReport(results(), metadata);
     expect(report).toContain('Analyse consultative');
     expect(report).toContain('problèmes de niveau faible restent possibles');
+    expect(report).toContain('Gate JavaScript ciblé');
+    expect(report).toContain('HIGH/CRITICAL');
     expect(report).not.toMatch(/Aucun problème|Aucune vulnérabilité détectée/);
   });
 

@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Configuration Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '26'
           cache: 'npm'
@@ -40,19 +40,15 @@ jobs:
         run: npm ci
 
       - name: Audit npm (niveau modéré et au-dessus)
-        run: |
-          npm run audit:dependencies || {
-            echo "⚠️ Vulnérabilités détectées dans les dépendances npm"
-            npm run --silent audit:dependencies -- --json > npm-audit-results.json
-            exit 1
-          }
+        run: npm run --silent audit:dependencies -- --json > npm-audit-results.json
 
       - name: Upload des résultats npm audit
-        if: failure()
-        uses: actions/upload-artifact@v7
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: npm-audit-results
           path: npm-audit-results.json
+          if-no-files-found: error
           retention-days: 30
 
   # Job 2 : Analyse statique avec ESLint Security
@@ -61,10 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Configuration Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '26'
           cache: 'npm'
@@ -72,33 +68,16 @@ jobs:
       - name: Installation des dépendances
         run: npm ci
 
-      - name: Installation plugins ESLint sécurité
-        run: npm install --no-save eslint-plugin-security eslint-plugin-no-unsanitized
-
       - name: Analyse ESLint avec règles de sécurité
-        run: |
-          # Ajouter les règles de sécurité temporairement
-          npx eslint lib/ src/ games/ \
-            --plugin security \
-            --plugin no-unsanitized \
-            --rule 'security/detect-object-injection: warn' \
-            --rule 'security/detect-non-literal-regexp: warn' \
-            --rule 'security/detect-unsafe-regex: error' \
-            --rule 'security/detect-buffer-noassert: error' \
-            --rule 'security/detect-eval-with-expression: error' \
-            --rule 'security/detect-no-csrf-before-method-override: warn' \
-            --rule 'security/detect-possible-timing-attacks: warn' \
-            --rule 'no-unsanitized/method: error' \
-            --rule 'no-unsanitized/property: error' \
-            --format json \
-            --output-file eslint-security-results.json || echo "⚠️ Problèmes de sécurité détectés"
+        run: npm run lint:security -- --format json --output-file eslint-security-results.json
 
       - name: Upload des résultats ESLint
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: eslint-security-results
           path: eslint-security-results.json
+          if-no-files-found: error
           retention-days: 30
 
   # Job 3 : Scan avec Trivy (vulnérabilités et secrets)
@@ -107,41 +86,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Installation de Trivy
-        run: |
-          # Installation via méthode moderne (apt-key est déprécié)
-          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install -y trivy
+        run: bash scripts/install-security-scanner.sh trivy
 
       - name: Scan du filesystem
         run: |
           trivy fs . \
             --db-repository ghcr.io/aquasecurity/trivy-db:2 \
-            --scanners vuln,secret,misconfig \
-            --severity CRITICAL,HIGH,MEDIUM \
+            --scanners vuln,secret \
+            --include-dev-deps \
+            --exit-code 1 \
+            --severity CRITICAL,HIGH \
+            --cache-dir "$RUNNER_TEMP/trivy-cache" \
             --format json \
             --output trivy-results.json
-
-      - name: Afficher les résultats Trivy
-        if: always()
-        run: |
-          trivy fs . \
-            --db-repository ghcr.io/aquasecurity/trivy-db:2 \
-            --scanners vuln,secret,misconfig \
-            --severity CRITICAL,HIGH,MEDIUM \
-            --format table
+        # La base CVE reste actualisée ; la configuration Docker est consultative via Hadolint.
 
       - name: Upload des résultats Trivy
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: trivy-results
           path: trivy-results.json
+          if-no-files-found: error
           retention-days: 30
 
   # Job 4 : Détection de secrets avec GitLeaks
@@ -150,32 +119,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0  # Nécessaire pour analyser l'historique git
 
-      - name: Scan GitLeaks
-        run: |
-          # Récupération de la dernière version et téléchargement du binaire
-          VERSION=$(curl -sSf https://api.github.com/repos/gitleaks/gitleaks/releases/latest \
-            | grep '"tag_name"' | sed 's/.*"v\([^"]*\)".*/\1/')
-          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" \
-            | tar -xz gitleaks
-          # Analyse de l'historique git complet
-          ./gitleaks detect --source . --log-level warn
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Installation de GitLeaks
+        run: bash scripts/install-security-scanner.sh gitleaks
+
+      - name: Scan GitLeaks (historique, rapport expurgé)
+        run: gitleaks git . --redact --gitleaks-ignore-path .gitleaksignore --report-format json --report-path gitleaks-results.json --log-level warn
+
+      - name: Upload du rapport GitLeaks expurgé
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: gitleaks-results
+          path: gitleaks-results.json
+          if-no-files-found: error
+          retention-days: 30
 
   # Job 5 : Vérification des mises à jour de sécurité disponibles
   outdated-check:
-    name: Vérification packages obsolètes
+    name: Packages obsolètes (consultatif)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Configuration Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '26'
           cache: 'npm'
@@ -185,40 +157,57 @@ jobs:
 
       - name: Vérifier les packages obsolètes
         run: |
-          echo "📦 Packages obsolètes avec des mises à jour de sécurité disponibles:"
-          npm outdated || true
-
-      - name: Liste des packages avec vulnérabilités connues
-        run: |
-          echo "🔍 Packages avec vulnérabilités connues:"
-          npm audit --parseable | head -20 || true
+          echo "📦 État consultatif des versions ; l'audit npm bloquant reste dans son job dédié."
+          if npm outdated; then
+            echo "Aucune version obsolète signalée."
+          else
+            status=$?
+            echo "::warning::npm outdated a terminé avec le code $status (consultatif, pas un audit de sécurité réussi)."
+            if [ "$status" -ne 1 ]; then exit "$status"; fi
+          fi
 
   # Job 6 : Analyse de la configuration Docker
   docker-security:
-    name: Sécurité Docker
+    name: Sécurité Docker (consultatif)
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
       security-events: write
+    strategy:
+      matrix:
+        include:
+          - dockerfile: Dockerfile
+            category: hadolint-dev
+          - dockerfile: docker/e2e.Dockerfile
+            category: hadolint-e2e
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Scan du Dockerfile avec Hadolint
-        uses: hadolint/hadolint-action@v3.5.0
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
         with:
-          dockerfile: Dockerfile
+          dockerfile: ${{ matrix.dockerfile }}
           format: sarif
           output-file: hadolint-results.sarif
           no-fail: true
 
       - name: Upload des résultats Hadolint vers Security tab
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
         if: always()
         with:
           sarif_file: hadolint-results.sarif
-          category: hadolint
+          category: ${{ matrix.category }}
+
+      - name: Archive Hadolint (consultatif, pas une certification de sécurité)
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ${{ matrix.category }}
+          path: hadolint-results.sarif
+          if-no-files-found: error
+          retention-days: 30
 
   # Job 7 : Rapport consolidé
   security-report:
@@ -231,9 +220,9 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: '26'
 
@@ -244,10 +233,11 @@ jobs:
         run: node scripts/build-security-report.js > security-report.md
 
       - name: Upload du rapport consolidé
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: security-report
           path: security-report.md
+          if-no-files-found: error
           retention-days: 90
 
       - name: Afficher le rapport
@@ -255,7 +245,7 @@ jobs:
 
       - name: Commenter la PR avec le rapport
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const fs = require('fs');

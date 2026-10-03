@@ -79,7 +79,7 @@ ouvrir une PR et suivre les décisions humaines.
 
 ### CI et publication
 
-Sur une PR, `ci.yml` exécute lint, Jest/coverage, types, audit npm requis, validation OpenSpec stricte,
+Sur une PR, `ci.yml` exécute lint qualité et sécurité JS ciblée, Jest/coverage, types, audit npm requis, validation OpenSpec stricte,
 build et navigateur. Sur push `main`, `deploy.yml` appelle cette même CI dans
 son run et attend son succès avant publication. Un lancement manuel hors `main`
 échoue explicitement.
@@ -104,8 +104,9 @@ Cette identité n'est pas une provenance signée ni une attestation SLSA.
   les navigateurs, contenus, inférences ML ou qualités audio.
 - Le build production conserve la collecte Open Graph distante ; `build:local`
   est sans cette collecte, et ne prouve pas son succès.
-- L'audit npm au seuil modéré est requis par la CI de livraison. Le workflow
-  complémentaire reste séparé : Gitleaks peut échouer, d'autres outils restent
+- L'audit npm au seuil modéré et le lint sécurité JS ciblé sont requis par la CI
+  de livraison. Le workflow complémentaire reste séparé : Gitleaks et Trivy
+  HIGH/CRITICAL peuvent échouer, Hadolint et les heuristiques lint restent
   consultatifs. Le rapport distingue les états des jobs, pas « aucun problème »
   lorsqu'un résultat manque. Aucun rapport ne garantit l'absence de défaut.
 - Les seuils Jest ciblent SeededRandom, packaging et smoke ; il n'y a pas de
@@ -127,9 +128,9 @@ déjà livrées. Les priorités sont adaptées à un support de formation.
 | Priorité | État / point restant | Évolution utile et critère observable |
 |----------|----------------------|----------------------------------------|
 | Haute | `main` protégée : PR et neuf checks requis ; noms constatés sur la PR #135 | Ajouter un second reviewer, exiger une approbation et vérifier les noms après évolution du pipeline |
-| Haute | npm requis, audits complémentaires encore partiellement consultatifs | Moderniser les analyses, définir les gates et exceptions datées ; ne jamais annoncer une analyse non exécutée comme réussie |
+| Haute | npm et lint sécurité JS ciblé requis ; Trivy et Gitleaks séparés ; heuristiques consultatives | Trier les diagnostics, étendre les gates justifiés et revoir les exceptions datées ; pas de faux succès |
 | Moyenne | Seuils ciblés sur trois composants, pas sur tout le code | Étendre progressivement aux moteurs et modules partagés, puis contrôler le code modifié avec des tests de comportement |
-| Moyenne | Tags d'actions, image Node et outils d'audit évolutifs | Épingler les références critiques (SHA/digest/version vérifiée), conserver Dependabot et une procédure de mise à jour |
+| Moyenne | Actions SHA, images digest et binaires scanners vérifiés dans le lot 2 ; bases/paquets OS évolutifs | Maintenir ces références avec Dependabot ; isoler ensuite les sources de variabilité du build |
 | Moyenne | Collecte OG mêlée au build de production | Séparer actualisation éditoriale et fabrication ; tester qu'un snapshot produit le même contenu sans réseau |
 | Moyenne | Pas de prévisualisation de PR publiée | Donner aux reviewers une URL temporaire, sur une origine adaptée, sans secrets ni privilèges de production |
 | Moyenne | Contrôle après livraison ponctuel, récupération manuelle | Ajouter vérifications périodiques, notification explicite et exercice de récupération d'une version connue |

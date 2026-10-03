@@ -13,7 +13,7 @@ PR vers main → CI réutilisable → contrôles + archive publique + navigateur
 Push main / lancement manuel sur main
   → check-ref
   → validate : appelle la même CI
-      ├─ lint, tests Jest et seuils ciblés, types, audit npm, OpenSpec
+      ├─ lint qualité/sécurité JS, tests Jest et seuils ciblés, types, audit npm, OpenSpec
       └─ build → archive github-pages → navigateur sur cette archive
   → deploy : publie cette archive après le succès de toute la CI
   → smoke : contrôle HTTP du site et du commit

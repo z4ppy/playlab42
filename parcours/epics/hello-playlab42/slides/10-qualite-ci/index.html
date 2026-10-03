@@ -26,17 +26,18 @@
       <table>
         <thead><tr><th scope="col">Workflow</th><th scope="col">Déclencheurs</th><th scope="col">Jobs</th></tr></thead>
         <tbody>
-          <tr><td><code>ci.yml</code> (CI)</td><td>PR vers <code>main</code>, manuel, appel depuis Deploy sur push <code>main</code></td><td>Lint, Tests, TypeScript, Dependency audit, OpenSpec, Build, Browser</td></tr>
+          <tr><td><code>ci.yml</code> (CI)</td><td>PR vers <code>main</code>, manuel, appel depuis Deploy sur push <code>main</code></td><td>Lint, Security lint, Tests, TypeScript, Dependency audit, OpenSpec, Build, Browser</td></tr>
           <tr><td><code>ui-e2e.yml</code> (UI browser)</td><td>Appel depuis CI, manuel</td><td>Chromium interactions (15 min max)</td></tr>
           <tr><td><code>security-audit.yml</code></td><td>push et PR sur <code>main</code>, tous les jours à 6 h UTC, manuel</td><td>npm-audit, ESLint Security, Trivy, gitleaks, packages obsolètes, Docker, rapport</td></tr>
         </tbody>
       </table>
     </div>
 
-    <h2>CI : sept contrôles complémentaires</h2>
+    <h2>CI : huit contrôles complémentaires</h2>
     <p>Les jobs utilisent Node 26 et <code>npm ci</code>. Browser attend l'archive du job Build :</p>
     <ul class="guide-checklist">
       <li><strong>Lint</strong> : <code>npm run lint</code>, erreurs et avertissements bloquants.</li>
+      <li><strong>Security lint</strong> : plugins verrouillés et règles JS ciblées ; les heuristiques consultatives restent séparées.</li>
       <li><strong>Tests</strong> : <code>npm run test:coverage</code>, seuils ciblés sur le déterminisme et la livraison ; upload Codecov non bloquant.</li>
       <li><strong>Dépendances</strong> : <code>npm run audit:dependencies</code>, seuil modéré ; une panne d'audit bloque aussi.</li>
       <li><strong>TypeScript</strong> : <code>npm run typecheck</code> ; la transpilation est réalisée dans Build.</li>
@@ -67,14 +68,17 @@
         <tbody>
           <tr><td>npm audit (niveau modéré et plus)</td><td><strong>Requis pour publier</strong> ; audit complémentaire avec JSON en cas d'échec</td></tr>
           <tr><td>gitleaks (historique complet)</td><td><strong>Échec</strong> si un secret est détecté</td></tr>
-          <tr><td>ESLint Security</td><td><strong>Avertissement</strong> : les problèmes sont affichés mais n'échouent pas le job</td></tr>
-          <tr><td>Trivy (vuln, secret, misconfig)</td><td>Rapport et artefact <code>trivy-results</code>, sans code de sortie dédié dans le workflow</td></tr>
+          <tr><td>ESLint Security</td><td><strong>Gate ciblé requis pour publier</strong> ; règles DOM-property et heuristiques explicitement consultatives</td></tr>
+          <tr><td>Trivy (vuln, secret)</td><td><strong>Échec HIGH/CRITICAL</strong>, JSON après scan unique ; binaire versionné et checksum vérifié</td></tr>
           <tr><td>Packages obsolètes</td><td>Information seulement</td></tr>
-          <tr><td>Hadolint (Dockerfile)</td><td>Push et manuel seulement, <code>no-fail</code>, résultats dans l'onglet Security</td></tr>
+          <tr><td>Hadolint (deux Dockerfiles)</td><td>Push et manuel seulement, <code>no-fail</code>, consultatif ; pas une certification de sécurité</td></tr>
           <tr><td>Rapport consolidé</td><td>États réels : échec, ignoré, annulé, succès consultatif ; pas de faux « aucun problème »</td></tr>
         </tbody>
       </table>
     </div>
+    <p class="guide-note">Actions épinglées par SHA, images par digest et scanners vérifiés avant exécution.
+      Les bases CVE et paquets OS évoluent encore. Le lint TypeScript attend un parser compatible
+      avec TS 7 ; le contrôle de types reste actif, mais n'est pas du lint.</p>
 
     <h2>Ce que ces workflows ne garantissent pas</h2>
     <p class="guide-note">

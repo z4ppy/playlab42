@@ -10,17 +10,21 @@ Ce guide est la référence commune aux contributeurs et aux skills ; la
 | Contrôle | Politique dans le dépôt | Limite |
 |----------|-------------------------|--------|
 | ESLint JavaScript | Erreurs et warnings bloquants ; pas d'eval, `Function` dynamique ni URL JavaScript | Pas une preuve de correction ou une analyse exhaustive de sécurité |
+| ESLint Security | Plugins 4.2.0 / 4.1.5 verrouillés, configuration flat, gate JS ciblé | Propriétés DOM et heuristiques explicitement consultatives ; pas de scan HTML inline ni TS |
 | TypeScript | Contrôle strict des sources TS ; JS reste autorisé | La transpilation ne vérifie pas les types |
 | Jest | Tests avec seuils ciblés ci-dessous | Couverture de lignes, pas qualité des assertions |
 | Playwright | Interactions, clavier, thèmes et ressources du site préparé | Socle Chromium, pas tous les navigateurs |
 | npm audit | Seuil modéré bloquant, dépendances de fabrication incluses | CVE connues au moment de l'exécution ; panne du registre = échec |
+| Trivy | Outil 0.75.0 vérifié ; vulnérabilités/secrets HIGH et CRITICAL bloquants dans le workflow complémentaire | Base évolutive ; pas un gate complet de configuration Docker |
 | OpenSpec | Structure stricte des exigences et changes | Ne vérifie pas le comportement du code |
 
-La CI réutilisée avant publication exige tous ces contrôles et le build.
-Les audits complémentaires restent séparés et certains consultatifs. Le
+La CI réutilisée avant publication exige lint qualité/sécurité JS, tests, types,
+audit npm, OpenSpec, navigateur et build. Trivy appartient au workflow
+complémentaire, qui reste séparé et conserve certains diagnostics consultatifs. Le
 rapport de sécurité affiche les états réels des jobs : une analyse annulée,
 ignorée ou sans résultat exploitable ne devient pas « aucun problème ».
-Un succès ESLint Security, Trivy ou Hadolint peut contenir des diagnostics.
+Un succès peut conserver des diagnostics hors du périmètre bloquant :
+ESLint cible des règles précises, Trivy le seuil HIGH/CRITICAL, Hadolint reste consultatif.
 Les jobs d'audit n'ont par défaut que la lecture du dépôt ; seuls l'upload SARIF
 et le commentaire PR reçoivent leurs permissions d'écriture respectives.
 
@@ -43,6 +47,7 @@ scénarios et couverture des erreurs. Ne pas réduire les seuils pour verdir une
 
 ```bash
 make lint
+make security-eslint
 make typecheck
 make npm CMD="run test:coverage -- --runInBand"
 make npm CMD="run audit:dependencies"
@@ -51,6 +56,33 @@ make openspec-validate
 
 Tout runtime passe par Docker. Ne pas lancer `npm audit fix --force` : proposer
 une mise à jour ciblée, vérifier ses contrats et conserver le lockfile.
+
+### Périmètre du lint de sécurité
+
+`eslint.security.config.js` active les règles d'exécution dynamique, URL de
+script, buffer obsolète, désactivation d'échappement Mustache, caractères bidi
+et `no-unsanitized/method`. Elles échouent réellement et fournissent un rapport
+JSON avec `lint:security -- --format json --output-file …`.
+Les chemins inexistants `src/`, l'installation à la volée de plugins et les
+échecs transformés en succès ont été retirés des commandes locales et CI.
+
+`make security-eslint-advisory` exécute séparément les heuristiques DOM-property,
+regex, accès calculés, chemins de fichiers, processus et timing. Les warnings
+sont visibles, non bloquants ; les erreurs du gate hérité restent bloquantes.
+La mesure initiale a montré 783 warnings, dont 71 usages de propriétés DOM :
+il faut vérifier leur provenance avant correction, pas activer tout le plugin
+pour le neutraliser ensuite par des ignores.
+
+Une correction concrète issue de cette revue échappe les termes « voir aussi »
+du glossaire : ils doivent rester du texte, pas devenir des éléments HTML.
+Cela ne prouve pas l'existence d'un attaquant contrôlant les fichiers du dépôt.
+Les autres diagnostics restent une dette de triage explicite, pas une liste
+de vulnérabilités confirmées.
+
+La validation navigateur a aussi reproduit une minification JSON écrasée par
+le formatage différé de la saisie. Les actions explicites annulent maintenant
+ce traitement en attente via le helper partagé ; une nouvelle saisie conserve
+son auto-formatage. Une régression à horloge contrôlée couvre cette concurrence.
 
 ## Concevoir du code maintenable
 
@@ -118,8 +150,8 @@ de vulnérabilités.
 
 | Lot | Résultat visé | Critère de sortie |
 |-----|---------------|-------------------|
-| 1 — socle, préparé dans cette branche | Lint strict, audit npm requis, seuils ciblés, rapports fidèles, guide/revue | Les chemins d'échec sont éprouvés ; CI native à constater après PR |
-| 2 — sécurité et reproductibilité | Moderniser ESLint Security, épingler actions/scanners/images, définir gates et exceptions | Outil réellement exécuté, références vérifiables, exception datée et revue |
+| 1 — socle, PR #135 | Lint strict, audit npm requis, seuils ciblés, rapports fidèles, guide/revue | Les chemins d'échec sont éprouvés ; vérifier les checks natifs de la PR |
+| 2 — sécurité et reproductibilité, branche empilée | Moderniser ESLint Security, épingler actions/scanners/images, définir gates et exceptions | Outil réellement exécuté, références vérifiables, limites du parser TS explicites |
 | 3 — assurance logicielle | Étendre les seuils aux moteurs, contrôle du code modifié, tests d'invariants, budget performance | Une régression représentative est détectée sans masquer le comportement |
 | 4 — fabrication et exploitation | Snapshot OG séparé, inventaire/SBOM, provenance, monitoring et récupération | Artefact reproductible, provenance vérifiée et restauration exercée |
 
@@ -133,9 +165,53 @@ une approbation. Les noms requis devront suivre la transition du pipeline :
 voir [le réglage détaillé](../DEPLOYMENT.md#protection-de-main--activée-sur-github).
 Les previews et métriques utiles viennent après ces garanties, sans plateforme
 lourde ni collecte personnelle ajoutée implicitement.
-Le lint des sources TypeScript demande encore un parser et des règles compatibles
-avec la stack actuelle ; le contrôle de types n'en tient pas lieu. Ce chantier
-fait partie du lot suivant, pas des garanties annoncées ici.
+Le lint des sources TypeScript reste **non disponible dans cette stack** :
+`typescript-eslint` 8.71.0 supporte ESLint 10, mais son peer TypeScript
+`>=4.8.4 <6.1.0` exclut TS 7. Le contrôle strict `tsc` reste requis, sans être
+présenté comme du lint. Ne pas downgrader le compilateur ni utiliser
+`--force` / `--legacy-peer-deps` pour contourner ce contrat.
+
+## Maintenance des références et exceptions
+
+Les workflows utilisent des SHAs complets avec commentaire de version ; les
+images de développement et de navigateur utilisent des digests. Un tag lisible
+ne remplace pas le digest. Dependabot couvre les actions, npm et les Dockerfiles
+de la racine et de `docker/`.
+
+Pour actualiser une référence : lire les notes de release, résoudre le tag sur
+le dépôt officiel (et l'objet annoté si nécessaire), vérifier le digest ou
+checksum publié, changer la référence avec son commentaire puis exécuter les
+tests du pipeline et les contrôles concernés. Ne pas copier une valeur d'une
+source tierce non vérifiée. Un checksum assure l'intégrité vis-à-vis de la
+valeur de référence ; ce n'est pas une signature indépendante.
+Les scanners figent leur binaire, **pas leur base de vulnérabilités** : le
+résultat dépend de la base et de la date d'analyse.
+
+Une dérogation à un diagnostic ne doit jamais prendre la forme d'un `|| true`,
+d'un catch vide ou d'une désactivation générale. La PR doit documenter :
+
+| Champ | Exigence |
+|-------|----------|
+| Portée | Règle/outil, fichier et ligne ou fingerprint précis |
+| Justification | Faux positif démontré ou risque accepté ; pas « la CI échoue » |
+| Responsable | Rôle ou équipe chargée du suivi, sans données personnelles ajoutées |
+| Dates | Décision et expiration ou date de réexamen |
+| Mesure compensatoire | Test, limitation, correctif prévu et lien de suivi |
+| Validation | Revue explicite ; un agent ne s'accorde pas une autorisation de livraison |
+
+Les ignores historiques de Gitleaks restent des données de scan, pas des
+exceptions automatiquement approuvées par cette politique. Les requalifier
+lors de leur revue, sans afficher les secrets dans les logs ou rapports.
+Les diagnostics consultatifs sont documentés comme tels : ce ne sont pas des
+dérogations silencieuses ni un résultat « zéro problème ».
+
+### Contrôle différé pour incompatibilité
+
+| Contrôle | Décision du 3 octobre 2026 | Suivi |
+|----------|---------------------------|-------|
+| Lint TypeScript | Parser 8.71.0 incompatible TS 7 ; pas d'installation forcée ni de downgrade | Mainteneur : réexaminer au plus tard le 3 novembre 2026 ou dès une release supportant TS 7 ; maintenir tsc strict et les tests |
+
+Ce report est une limite technique déclarée, pas une exception à un gate installé.
 
 ## Référentiels et niveau réel
 

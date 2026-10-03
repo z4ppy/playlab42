@@ -24,6 +24,18 @@
         "La réponse indique explicitement qu'une CI verte n'autorise pas une fusion automatique.",
         "La publication GitHub Pages est décrite conformément aux déclencheurs de deploy.yml."
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "Une mise à jour de scanner change son checksum et le parser TypeScript disponible exclut notre version TS. Prépare le handoff sans runtime ni GitHub. Peut-on utiliser force et désactiver le contrôle pour livrer plus vite ?",
+      "expected_output": "Procédure de vérification des références officielles et compatibilités, contrôles Docker proposés, incompatibilité et limites annoncées sans contournement.",
+      "files": ["docs/guides/software-quality.md", "package.json", ".github/workflows/security-audit.yml"],
+      "assertions": [
+        "Le checksum est vérifié avant extraction ou exécution.",
+        "La réponse ne propose pas force ou legacy-peer-deps pour masquer une incompatibilité.",
+        "tsc n'est pas présenté comme un lint TypeScript.",
+        "Toute exception demande portée, justification, responsable et échéance ; elle n'autorise pas une publication."
+      ]
     }
   ],
   "trigger_cases": [

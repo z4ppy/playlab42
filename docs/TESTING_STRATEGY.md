@@ -776,7 +776,7 @@ describe('TicTacToeEngine', () => {
 
 ### Workflow GitHub Actions
 
-**Fichiers** : `.github/workflows/ci.yml` (lint/Jest/types/audit npm/OpenSpec/build et appel
+**Fichiers** : `.github/workflows/ci.yml` (lint qualité/sécurité JS, Jest, types, audit npm, OpenSpec, build et appel
 navigateur), `.github/workflows/ui-e2e.yml` (workflow réutilisé) et
 `.github/workflows/deploy.yml` (publication après cette CI).
 
@@ -791,6 +791,12 @@ Le rapport et les
 traces sont publiés comme artefact pendant 14 jours uniquement en cas d'échec.
 Tout échec UI doit être corrigé avant fusion ; ne pas le rendre optionnel ni
 remplacer les vraies bibliothèques par des globals factices pour verdir la CI.
+
+Le gate JS de sécurité utilise les plugins verrouillés et une configuration flat.
+Les tests de cette politique incluent entrées interdites/sûres et sortie JSON
+avec le véritable code d'échec. Les heuristiques consultatives ne sont pas
+présentées comme bloquantes ; le parser actuel ne supporte pas TS 7.
+Voir la [politique de qualité](guides/software-quality.md).
 
 ### Statut dans les PRs
 
