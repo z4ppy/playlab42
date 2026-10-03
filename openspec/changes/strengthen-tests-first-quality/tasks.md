@@ -16,7 +16,7 @@
 
 - [x] Lint qualité/sécurité, types, audit, OpenSpec et tests complets dans Docker.
 - [x] Build vérifiable et Chromium sur l'archive intégrée.
-- [ ] PR d'implémentation et résultats natifs de son head final consignés.
+- [x] PR d'implémentation et première preuve native datée consignées ; vérifier chaque nouvelle tête.
 - [ ] Livraison constatée puis décision explicite d'archivage (hors autorisation actuelle).
 
 ## Preuves locales du 3 octobre 2026
@@ -33,3 +33,19 @@ OpenSpec strictes ; deux builds hors réseau identiques, inventaire de 986 fichi
 corruption refusée et reprise locale restaurée. 65 interactions Chromium passent
 sur l'archive extraite readonly avec intégrité vérifiée avant et après, sans rebuild.
 La CI native et la livraison restent des preuves distinctes.
+
+## Première preuve native
+
+La [PR #147](https://github.com/z4ppy/playlab42/pull/147) est ouverte vers main.
+Les runs [CI 37152623557](https://github.com/z4ppy/playlab42/actions/runs/37152623557)
+et [Security Audit 37152623539](https://github.com/z4ppy/playlab42/actions/runs/37152623539)
+ont réussi au head `41952d4` : 109 suites / 2 356 tests, 65 Chromium et tous
+les gates. Le log Jest donne S/B/F/L **76,72/73,13/79,15/76,54 %**.
+L'artefact JSON/LCOV/Markdown a été téléchargé et sa provenance vérifiée :
+SHA de merge testée `5ef51553230ec8ac984d5ac9300fc6362f22e031`,
+run `37152623557`, tentative `1`, état Tests `success`.
+
+Pour `pull_request`, `GITHUB_SHA` identifie la ref de merge effectivement
+testée, pas nécessairement le head de branche. Cette preuve concerne ce run ;
+les résultats des pushes ultérieurs sont à consulter sur la PR.
+L'implémentation n'est pas déclarée livrée ou archivée.

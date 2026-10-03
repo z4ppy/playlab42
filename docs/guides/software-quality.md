@@ -484,6 +484,23 @@ Les flags Codecov incluent désormais app/lib/games/tools/scripts, sans `src/`
 racine fantôme ; l'upload reste non bloquant. Ces preuves n'instrumentent
 pas automatiquement le code lancé dans des subprocessus ou les scripts HTML.
 
+### Première preuve native de l'application
+
+La [PR #147](https://github.com/z4ppy/playlab42/pull/147) a une première preuve
+datée au head `41952d4` :
+[CI 37152623557](https://github.com/z4ppy/playlab42/actions/runs/37152623557)
+et [audit 37152623539](https://github.com/z4ppy/playlab42/actions/runs/37152623539)
+réussis, **109 suites / 2 356 tests et 65 Chromium**.
+Le log Jest donne **76,72/73,13/79,15/76,54 %**, distinct de la mesure locale.
+L'artefact de couverture a été téléchargé et ses cinq fichiers et sa
+provenance contrôlés : run/tentative/état Tests, compteurs et familles/modules.
+La SHA `5ef51553230ec8ac984d5ac9300fc6362f22e031` est la ref de merge testée
+par GitHub pour cette PR ; elle ne se substitue pas au head de branche.
+
+Les nouveaux pushes exigent leur propre CI. Hadolint reste ignoré sur PR,
+`npm outdated` consultatif et Codecov non bloquant. Cette preuve n'autorise
+ni fusion, ni déploiement, ni archivage.
+
 ## Maintenance des références et exceptions
 
 Les workflows utilisent des SHAs complets avec commentaire de version ; les
