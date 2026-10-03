@@ -33,10 +33,11 @@ describe('Ratchet de couverture mesuré par module', () => {
       'games/tetris/engine/scoring.js',
       'games/diese-et-mat/src/engine/ExerciseEngine.js',
     ];
+    const fixtureHelper = 'lib/__tests__/engine-contract-helpers.js';
     mkdirSync(directory, { recursive: true });
     try {
       writeFileSync(join(directory, 'package.json'), '{"type":"module"}');
-      for (const source of sources) {
+      for (const source of [...sources, fixtureHelper]) {
         const filename = join(directory, source);
         mkdirSync(dirname(filename), { recursive: true });
         writeFileSync(filename, [
@@ -73,6 +74,7 @@ describe('Ratchet de couverture mesuré par module', () => {
       expect(result.status).toBe(0);
       expect(result.stderr).toContain('Tests:       1 passed');
       const metrics = JSON.parse(readFileSync(join(directory, 'results/coverage-summary.json'), 'utf8'));
+      expect(metrics[join(directory, fixtureHelper)]).toBeUndefined();
       for (const source of sources) {
         const data = metrics[join(directory, source)];
         expect({ source, instrumented: Boolean(data) }).toEqual({ source, instrumented: true });
