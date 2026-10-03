@@ -178,6 +178,9 @@ export class CheckersEngine {
    * @returns {CheckersAction | undefined}
    */
   #getLegalAction(state, action, playerId) {
+    if (!action || action.type !== 'move' || !action.from || !action.to) {
+      return undefined;
+    }
     const matchingActions = this.getValidActions(state, playerId).filter(
       (a) =>
         a.from.row === action.from.row &&
@@ -255,6 +258,17 @@ export class CheckersEngine {
     // Pas de fog of war aux Dames
     return state;
   }
+
+  /** @param {CheckersState} state @returns {boolean} */
+  isGameOver(state) { return state.status !== 'playing'; }
+
+  /** @param {CheckersState} state @returns {string[] | null} */
+  getWinners(state) {
+    return state.status === 'won' && state.winner !== null ? [state.playerIds[state.winner]] : null;
+  }
+
+  /** @param {CheckersState} state @returns {string | null} */
+  getCurrentPlayer(state) { return this.isGameOver(state) ? null : state.playerIds[state.currentPlayer]; }
 
   /**
    * Vérifie et met à jour l'état de fin de partie

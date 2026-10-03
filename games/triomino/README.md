@@ -124,3 +124,13 @@ const newState = engine.applyAction(state, action, playerId);
 const view = engine.getPlayerView(state, playerId);
 const actions = engine.getLegalActions(state, playerId);
 ```
+
+`getValidActions(state, playerId)` est le nom canonique du même contrat :
+il délègue à `getLegalActions`, conservé pour les interfaces et bots existants,
+sans changer l'ordre des coups ni le format des états JSON. Les placements
+incomplets ou aux coordonnées non entières sont refusés explicitement.
+
+La vue contient le rack du joueur, les tailles des racks adverses et de la
+pioche, jamais leurs valeurs. `lastDrawnTile` est visible uniquement au joueur
+qui vient de piocher, pas à ses adversaires. Les tests de contrat communs
+exercent le moteur réel, la reprise JSON, les refus et cette confidentialité.

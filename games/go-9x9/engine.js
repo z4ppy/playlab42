@@ -1,6 +1,24 @@
 /**
  * Go 9x9 - Moteur isomorphe
  * Règles : plateau 9x9, ko simple, suicide interdit, scoring chinois avec komi 6.5.
+ *
+ * @typedef {{type: 'place', x: number, y: number} | {type: 'pass' | 'resign'}} GoAction
+ * @typedef {{seed: number, playerIds: [string, string]}} GoConfig
+ * @typedef {Object} GoState
+ * @property {number} boardSize
+ * @property {number[][]} board
+ * @property {string | null} currentPlayerId
+ * @property {[string, string]} playerIds
+ * @property {boolean} gameOver
+ * @property {string[] | null} winners
+ * @property {number} turn
+ * @property {number} rngState
+ * @property {number} komi
+ * @property {Record<string, number>} captures
+ * @property {number} passesInARow
+ * @property {number[][] | null} previousBoard
+ * @property {GoAction | null} lastMove
+ * @property {{black: number, white: number} | null} scores
  */
 
 const EMPTY = 0;
@@ -106,6 +124,7 @@ function cloneState(state) {
 }
 
 export class Go9x9Engine {
+  /** @param {GoConfig} config @returns {GoState} */
   init(config) {
     return {
       boardSize: BOARD_SIZE,
@@ -128,6 +147,12 @@ export class Go9x9Engine {
     };
   }
 
+  /**
+   * @param {GoState} state
+   * @param {GoAction} action
+   * @param {string} playerId
+   * @returns {GoState}
+   */
   applyAction(state, action, playerId) {
     if (!this.isValidAction(state, action, playerId)) {
       throw new Error('Invalid action');
@@ -167,12 +192,20 @@ export class Go9x9Engine {
     return newState;
   }
 
+  /**
+   * @param {GoState} state
+   * @param {GoAction} action
+   * @param {string} playerId
+   * @returns {boolean}
+   */
   isValidAction(state, action, playerId) {
     if (state.gameOver || state.currentPlayerId !== playerId) {return false;}
+    if (!action || typeof action !== 'object' || Array.isArray(action)) {return false;}
     if (action.type === 'pass' || action.type === 'resign') {return true;}
 
     if (action.type !== 'place') {return false;}
     const { x, y } = action;
+    if (!Number.isInteger(x) || !Number.isInteger(y)) {return false;}
     if (!inBounds(x, y)) {return false;}
     if (state.board[y][x] !== EMPTY) {return false;}
 
@@ -188,6 +221,7 @@ export class Go9x9Engine {
     return true;
   }
 
+  /** @param {GoState} state @param {string} playerId @returns {GoAction[]} */
   getValidActions(state, playerId) {
     if (state.gameOver || state.currentPlayerId !== playerId) {return [];}
 
@@ -209,24 +243,32 @@ export class Go9x9Engine {
     return actions;
   }
 
+  /** @param {GoState} state @param {string} _playerId @returns {GoState} */
   getPlayerView(state, _playerId) {
     return state;
   }
 
+  /** @param {GoState} state @returns {boolean} */
   isGameOver(state) {
     return state.gameOver;
   }
 
+  /** @param {GoState} state @returns {string[] | null} */
   getWinners(state) {
     return state.winners;
   }
 
+  /** @param {GoState} state @returns {string | null} */
   getCurrentPlayer(state) {
     return state.currentPlayerId;
   }
 
+  /** @param {GoState} state @returns {Record<string, number> | null} */
   getScores(state) {
-    return state.scores;
+    return state.scores ? {
+      [state.playerIds[0]]: state.scores.black,
+      [state.playerIds[1]]: state.scores.white,
+    } : null;
   }
 
   #colorForPlayer(state, playerId) {

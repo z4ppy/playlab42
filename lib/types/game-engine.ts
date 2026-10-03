@@ -13,8 +13,7 @@ import type { PlayerId, Seed } from './index.js';
 // === Configuration de base ===
 
 /**
- * Configuration de base pour tous les jeux.
- * Les jeux peuvent étendre cette interface avec des options spécifiques.
+ * Configuration multijoueur réutilisable, sans obligation pour les jeux solo.
  */
 export interface BaseGameConfig {
   /** Seed pour le générateur aléatoire déterministe */
@@ -30,8 +29,8 @@ export interface BaseGameConfig {
 // === État de base ===
 
 /**
- * État de base pour tous les jeux.
- * Contient les propriétés communes à tous les états de jeu.
+ * État de base optionnel pour les consommateurs qui utilisent ce format.
+ * Le contrat moteur ne l'impose pas aux états spécifiques des jeux.
  */
 export interface BaseGameState {
   /** État du générateur aléatoire (pour replay déterministe) */
@@ -79,10 +78,10 @@ export interface BaseGameState {
  * ```
  */
 export interface GameEngine<
-  TState extends BaseGameState,
+  TState extends object,
   TAction,
   TPlayerView,
-  TConfig extends BaseGameConfig,
+  TConfig extends { seed: Seed },
 > {
   /**
    * Initialise une nouvelle partie.
@@ -114,7 +113,9 @@ export interface GameEngine<
   isValidAction(state: TState, action: TAction, playerId: PlayerId): boolean;
 
   /**
-   * Retourne les actions valides pour un joueur.
+   * Retourne des actions de gameplay concrètes, toutes acceptées par isValidAction.
+   * Les commandes de configuration (ex. reset avec seed) ne sont pas énumérées.
+   * Un jeu à entrées paramétrées peut exposer un sous-ensemble concret valide.
    *
    * @param state - État actuel
    * @param playerId - ID du joueur
@@ -164,7 +165,7 @@ export interface GameEngine<
    * @param state - État actuel
    * @returns Map playerId -> score
    */
-  getScores?(state: TState): Record<PlayerId, number>;
+  getScores?(state: TState): Record<PlayerId, number> | null;
 }
 
 // === Extensions pour jeux temps réel ===

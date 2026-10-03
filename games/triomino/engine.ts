@@ -6,6 +6,8 @@
  * @see openspec/changes/add-triomino-game/design.md
  */
 
+import type { GameEngine } from '../../lib/types/game-engine.js';
+
 // ---------------------------------------------------------------------------
 // Mini SeededRandom inline (algorithme Mulberry32, identique à lib/seeded-random.js)
 // Inliné pour éviter les problèmes d'import ESM avec ts-jest.
@@ -671,7 +673,7 @@ function highestScorers(players: PlayerState[]): string[] {
 // Moteur principal
 // ---------------------------------------------------------------------------
 
-export class TriominoEngine {
+export class TriominoEngine implements GameEngine<TriominoState, TriominoAction, PlayerView, TriominoConfig> {
   /**
    * Initialise une nouvelle partie.
    */
@@ -717,7 +719,7 @@ export class TriominoEngine {
    */
   applyAction(state: TriominoState, action: TriominoAction, playerId: string): TriominoState {
     if (!this.isValidAction(state, action, playerId)) {
-      throw new Error(`Action invalide : ${action.type} pour le joueur ${playerId}`);
+      throw new Error(`Action invalide : ${action?.type} pour le joueur ${playerId}`);
     }
 
     switch (action.type) {
@@ -735,12 +737,16 @@ export class TriominoEngine {
    */
   isValidAction(state: TriominoState, action: TriominoAction, playerId: string): boolean {
     if (state.phase === 'finished') return false;
+    if (!action || typeof action !== 'object' || Array.isArray(action)) return false;
 
     const currentPlayer = state.players[state.currentPlayerIndex];
     if (currentPlayer.id !== playerId) return false;
 
     switch (action.type) {
       case 'PLACE': {
+        if (!action.position || !Array.isArray(action.placed) || action.placed.length !== 3
+          || !Number.isInteger(action.position.col) || !Number.isInteger(action.position.row)
+          || !['UP', 'DOWN'].includes(action.position.orientation)) return false;
         const tile = currentPlayer.rack.find((t) => t.id === action.triominoId);
         if (!tile) return false;
         // Vérifier que placed est une rotation valide de la tuile
@@ -759,6 +765,8 @@ export class TriominoEngine {
       case 'PASS':
         // On peut passer si : pioche vide OU 3 tirages épuisés
         return state.drawPile.length === 0 || state.drawsThisTurn >= MAX_DRAWS_PER_TURN;
+      default:
+        return false;
     }
   }
 
@@ -793,6 +801,11 @@ export class TriominoEngine {
     return actions;
   }
 
+  /** Nom canonique ; getLegalActions reste compatible avec l'interface et les bots. */
+  getValidActions(state: TriominoState, playerId: string): TriominoAction[] {
+    return this.getLegalActions(state, playerId);
+  }
+
   /**
    * Retourne la vue d'un joueur (fog of war : valeurs des tuiles adverses masquées).
    * @throws Si le joueur n'appartient pas à la partie.
@@ -821,7 +834,7 @@ export class TriominoEngine {
       phase: state.phase,
       winners: state.winners,
       turn: state.turn,
-      lastDrawnTile: state.lastDrawnTile,
+      lastDrawnTile: me.id === state.players[state.currentPlayerIndex].id ? state.lastDrawnTile : null,
       config: state.config,
     };
   }

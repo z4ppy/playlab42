@@ -209,24 +209,23 @@ describe('MastermindEngine', () => {
   });
 
   describe('getValidActions', () => {
-    it('should return reset and submit actions for active game', () => {
+    it('retourne les 1296 combinaisons concrètes pour une partie active', () => {
       const state = engine.init({ seed: 1, playerId: 'p1' });
       const actions = engine.getValidActions(state, 'p1');
 
-      expect(actions).toHaveLength(2);
-      expect(actions[0]).toEqual({ type: 'reset' });
-      expect(actions[1].type).toBe('submit');
+      expect(actions).toHaveLength(1296);
+      expect(actions[0]).toEqual({ type: 'submit', code: ['R', 'R', 'R', 'R'] });
+      expect(actions.every((action) => engine.isValidAction(state, action, 'p1'))).toBe(true);
     });
 
-    it('should return only reset action when game is over', () => {
+    it('ne propose plus de gameplay après la fin de partie', () => {
       const state = {
         ...engine.init({ seed: 1, playerId: 'p1' }),
         gameOver: true,
       };
       const actions = engine.getValidActions(state, 'p1');
 
-      expect(actions).toHaveLength(1);
-      expect(actions[0]).toEqual({ type: 'reset' });
+      expect(actions).toEqual([]);
     });
 
     it('should return empty array for wrong player', () => {
