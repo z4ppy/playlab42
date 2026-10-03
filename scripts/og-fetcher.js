@@ -4,10 +4,11 @@
  * Télécharge les images OG en cache local
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, readdirSync } from 'fs';
 import { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
+import { readJSONSync, writeJSONAtomicSync } from './lib/build-utils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -33,33 +34,31 @@ const CONFIG = {
 /**
  * Charge le cache depuis le disque
  */
-export function loadCache() {
-  if (!existsSync(CACHE_FILE)) {
-    return {};
-  }
+export function loadCache(path = CACHE_FILE) {
   try {
-    return JSON.parse(readFileSync(CACHE_FILE, 'utf-8'));
-  } catch {
-    return {};
+    return readJSONSync(path);
+  } catch (err) {
+    if (err.cause?.code === 'ENOENT') {
+      return {};
+    }
+    throw err;
   }
 }
 
 /**
  * Sauvegarde le cache sur le disque
  */
-export function saveCache(cache) {
-  writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
+export function saveCache(cache, path = CACHE_FILE) {
+  writeJSONAtomicSync(path, cache);
 }
 
 /**
  * Vérifie si une entrée de cache est encore valide
  */
 function isCacheValid(entry) {
-  if (!entry?.fetchedAt) {return false;}
-  const fetchedAt = new Date(entry.fetchedAt);
-  const now = new Date();
-  const diffDays = (now - fetchedAt) / (1000 * 60 * 60 * 24);
-  return diffDays < CONFIG.cacheDays;
+  if (typeof entry?.fetchedAt !== 'string') {return false;}
+  const age = Date.now() - Date.parse(entry.fetchedAt);
+  return age >= 0 && age < CONFIG.cacheDays * 24 * 60 * 60 * 1000;
 }
 
 /**
@@ -68,25 +67,18 @@ function isCacheValid(entry) {
 function extractOGTags(html) {
   const meta = {};
 
-  // og:title
-  const titleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
-  if (titleMatch) {meta.ogTitle = decodeHTMLEntities(titleMatch[1]);}
-
-  // og:description
-  const descMatch = html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:description["']/i);
-  if (descMatch) {meta.ogDescription = decodeHTMLEntities(descMatch[1]);}
-
-  // og:image
-  const imgMatch = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-  if (imgMatch) {meta.ogImage = imgMatch[1];}
-
-  // og:site_name
-  const siteMatch = html.match(/<meta[^>]+property=["']og:site_name["'][^>]+content=["']([^"']+)["']/i)
-    || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:site_name["']/i);
-  if (siteMatch) {meta.ogSiteName = decodeHTMLEntities(siteMatch[1]);}
+  const tags = [...html.matchAll(/<meta\b(?:[^>"']|"[^"]*"|'[^']*')*>/gi)].map(([tag]) => new Map(
+    [...tag.matchAll(/([\w:-]+)\s*=\s*(["'])(.*?)\2/gs)].map(([, name, , value]) => [name.toLowerCase(), value]),
+  ));
+  for (const [property, field] of [
+    ['og:title', 'ogTitle'], ['og:description', 'ogDescription'],
+    ['og:image', 'ogImage'], ['og:site_name', 'ogSiteName'],
+  ]) {
+    const content = findMetaContent(tags, 'property', property);
+    if (content) {
+      meta[field] = field === 'ogImage' ? content : decodeHTMLEntities(content);
+    }
+  }
 
   // Fallback: title standard
   if (!meta.ogTitle) {
@@ -96,12 +88,23 @@ function extractOGTags(html) {
 
   // Fallback: meta description
   if (!meta.ogDescription) {
-    const metaDesc = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
-      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i);
-    if (metaDesc) {meta.ogDescription = decodeHTMLEntities(metaDesc[1]);}
+    const description = findMetaContent(tags, 'name', 'description');
+    if (description) {meta.ogDescription = decodeHTMLEntities(description);}
   }
 
   return meta;
+}
+
+function findMetaContent(tags, attribute, value) {
+  return tags.find(tag => tag.get(attribute)?.toLowerCase() === value && tag.get('content'))?.get('content');
+}
+
+function decodeCodePoint(value, radix) {
+  const code = parseInt(value, radix);
+  if (code === 0 || code > 0x10FFFF || (code >= 0xD800 && code <= 0xDFFF)) {
+    return '\uFFFD';
+  }
+  return String.fromCodePoint(code);
 }
 
 /**
@@ -137,12 +140,12 @@ function decodeHTMLEntities(str) {
 
   // Remplacer les entités numériques hexadécimales (&#xNNNN;)
   result = result.replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
-    String.fromCodePoint(parseInt(hex, 16)),
+    decodeCodePoint(hex, 16),
   );
 
   // Remplacer les entités numériques décimales (&#NNNN;)
   result = result.replace(/&#(\d+);/g, (_, dec) =>
-    String.fromCodePoint(parseInt(dec, 10)),
+    decodeCodePoint(dec, 10),
   );
 
   return result;
@@ -348,31 +351,12 @@ export async function fetchOGMetadata(url, cache) {
     }));
 
     if (page.html === null) {
-      const fallback = buildFallbackMeta(url);
-      console.log(`  ⚠️  ${url}: HTTP ${page.status}${fallback ? ' (image versionnée conservée)' : ''}`);
-      return { meta: fallback, fromCache: false, failed: true };
+      return failedMetadata(url, `⚠️  ${url}: HTTP ${page.status}`);
     }
 
     const meta = extractOGTags(page.html);
 
-    // Télécharger l'image OG en cache local
-    if (meta.ogImage) {
-      const localImage = await downloadImage(meta.ogImage, url);
-      if (localImage) {
-        meta.ogImageOriginal = meta.ogImage; // Garder l'URL originale
-        meta.ogImage = localImage;           // Utiliser le chemin local
-      }
-    }
-
-    // La page répond mais n'expose pas (ou plus) d'og:image : si une image a
-    // été téléchargée par un build précédent, elle reste la meilleure source.
-    if (!meta.ogImage) {
-      const existing = findExistingImage(url);
-      if (existing) {
-        meta.ogImage = existing;
-        meta.fromVersionedImage = true;
-      }
-    }
+    await enrichImage(meta, url);
 
     // Ajouter favicon
     meta.favicon = buildFaviconUrl(url);
@@ -383,20 +367,41 @@ export async function fetchOGMetadata(url, cache) {
     // Mettre en cache
     cache[url] = meta;
 
-    const hasOG = meta.ogTitle || meta.ogDescription || meta.ogImage;
-    const hasImg = meta.ogImage?.startsWith('data/') ? '🖼️' : '';
-    console.log(`  ${hasOG ? '✓' : '○'} ${hasImg} ${new URL(url).hostname}`);
+    reportMetadata(url, meta);
 
     return { meta, fromCache: false };
 
   } catch (err) {
-    const fallback = buildFallbackMeta(url);
-    const kept = fallback ? ' (image versionnée conservée)' : '';
-    if (err.name === 'AbortError') {
-      console.log(`  ⏱️  ${url}: timeout${kept}`);
-    } else {
-      console.log(`  ❌ ${url}: ${err.message}${kept}`);
+    return failedMetadata(url, err.name === 'AbortError'
+      ? `⏱️  ${url}: timeout`
+      : `❌ ${url}: ${err.message}`);
+  }
+}
+
+function reportMetadata(url, meta) {
+  const hasOG = meta.ogTitle || meta.ogDescription || meta.ogImage;
+  const hasImg = meta.ogImage?.startsWith('data/') ? '🖼️' : '';
+  console.log(`  ${hasOG ? '✓' : '○'} ${hasImg} ${new URL(url).hostname}`);
+}
+
+function failedMetadata(url, message) {
+  const meta = buildFallbackMeta(url);
+  console.log(`  ${message}${meta ? ' (image versionnée conservée)' : ''}`);
+  return { meta, fromCache: false, failed: true };
+}
+
+async function enrichImage(meta, url) {
+  if (meta.ogImage) {
+    const localImage = await downloadImage(meta.ogImage, url);
+    if (localImage) {
+      meta.ogImageOriginal = meta.ogImage;
+      meta.ogImage = localImage;
     }
-    return { meta: fallback, fromCache: false, failed: true };
+    return;
+  }
+  const existing = findExistingImage(url);
+  if (existing) {
+    meta.ogImage = existing;
+    meta.fromVersionedImage = true;
   }
 }

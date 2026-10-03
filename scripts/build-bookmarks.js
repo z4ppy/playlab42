@@ -4,12 +4,14 @@
  * Génère data/bookmarks.json à partir des fichiers bookmarks/ et des manifests
  */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { fetchOGMetadata, loadCache, saveCache } from './og-fetcher.js';
 import {
   getRootDir,
   extractDomain,
+  readJSONSync,
+  writeJSONAtomicSync,
 } from './lib/build-utils.js';
 
 const ROOT = getRootDir(import.meta.url);
@@ -33,18 +35,6 @@ const stats = {
   errors: [],
   warnings: [],
 };
-
-/**
- * Lit et parse un fichier JSON
- */
-function readJSON(path) {
-  try {
-    return JSON.parse(readFileSync(path, 'utf-8'));
-  } catch (err) {
-    stats.errors.push(`Erreur lecture ${path}: ${err.message}`);
-    return null;
-  }
-}
 
 /**
  * Valide un bookmark
@@ -92,7 +82,7 @@ function scanStandaloneBookmarks(config) {
 
   for (const file of files) {
     const filePath = join(BOOKMARKS_DIR, file);
-    const data = readJSON(filePath);
+    const data = readJSONSync(filePath, stats);
     if (!data) {continue;}
 
     const categoryId = data.category || file.replace('.json', '');
@@ -137,7 +127,7 @@ function scanToolsBookmarks() {
 
   for (const file of files) {
     const filePath = join(TOOLS_DIR, file);
-    const manifest = readJSON(filePath);
+    const manifest = readJSONSync(filePath, stats);
     if (!manifest?.bookmarks) {continue;}
 
     for (const bookmark of manifest.bookmarks) {
@@ -171,7 +161,7 @@ function scanGamesBookmarks() {
     const manifestPath = join(GAMES_DIR, dir, 'game.json');
     if (!existsSync(manifestPath)) {continue;}
 
-    const manifest = readJSON(manifestPath);
+    const manifest = readJSONSync(manifestPath, stats);
     if (!manifest?.bookmarks) {continue;}
 
     for (const bookmark of manifest.bookmarks) {
@@ -205,7 +195,7 @@ function scanParcoursBookmarks() {
     const manifestPath = join(EPICS_DIR, dir, 'epic.json');
     if (!existsSync(manifestPath)) {continue;}
 
-    const manifest = readJSON(manifestPath);
+    const manifest = readJSONSync(manifestPath, stats);
     if (!manifest?.bookmarks || manifest.draft) {continue;}
 
     for (const bookmark of manifest.bookmarks) {
@@ -351,7 +341,7 @@ async function main() {
   console.log('===============\n');
 
   // Charger la config
-  const config = readJSON(CONFIG_FILE) || { categories: [] };
+  const config = readJSONSync(CONFIG_FILE, stats) || { categories: [] };
   console.log('Config chargée:', CONFIG_FILE);
 
   // Scanner les sources
@@ -395,10 +385,6 @@ async function main() {
     tags: aggregateTags(categories),
   };
 
-  // Écrire le fichier
-  writeFileSync(OUTPUT_FILE, JSON.stringify(catalogue, null, 2));
-  console.log(`\nCatalogue généré: ${OUTPUT_FILE}`);
-
   // Rapport
   console.log('\n--- Rapport ---');
   console.log(`Catégories: ${sortedCategories.length}`);
@@ -420,6 +406,8 @@ async function main() {
     process.exit(1);
   }
 
+  writeJSONAtomicSync(OUTPUT_FILE, catalogue);
+  console.log(`\nCatalogue généré: ${OUTPUT_FILE}`);
   console.log('\n✅ Build terminé avec succès');
 }
 

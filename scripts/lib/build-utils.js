@@ -6,9 +6,10 @@
  */
 
 import { readFile, access } from 'fs/promises';
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { readFileSync, existsSync, writeFileSync, mkdirSync, renameSync, rmSync, statSync, openSync, closeSync } from 'fs';
+import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
+import { randomUUID } from 'crypto';
 
 /**
  * Couleurs ANSI pour la console
@@ -31,10 +32,13 @@ export const colors = {
 export function getRootDir(importMetaUrl) {
   const __filename = fileURLToPath(importMetaUrl);
   const __dirname = dirname(__filename);
-  // Les scripts sont dans scripts/ ou scripts/lib/, on remonte à la racine
-  return __dirname.includes('lib')
-    ? join(__dirname, '../..')
-    : join(__dirname, '..');
+  if (basename(__dirname) === 'scripts') {
+    return dirname(__dirname);
+  }
+  if (basename(__dirname) === 'lib' && basename(dirname(__dirname)) === 'scripts') {
+    return join(__dirname, '../..');
+  }
+  throw new Error(`Script hors scripts/ ou scripts/lib/: ${__filename}`);
 }
 
 /**
@@ -46,8 +50,11 @@ export async function fileExistsAsync(path) {
   try {
     await access(path);
     return true;
-  } catch {
-    return false;
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return false;
+    }
+    throw err;
   }
 }
 
@@ -63,14 +70,15 @@ export function fileExistsSync(path) {
 /**
  * Lit et parse un fichier JSON (version async)
  * @param {string} path - Chemin du fichier JSON
- * @returns {Promise<object|null>} Objet parsé ou null en cas d'erreur
+ * @param {object} [stats] - Collecteur d'erreurs ; sinon l'erreur est levée
+ * @returns {Promise<object|null>} Objet parsé ou null si erreur collectée
  */
-export async function readJSONAsync(path) {
+export async function readJSONAsync(path, stats = null) {
   try {
     const content = await readFile(path, 'utf-8');
-    return JSON.parse(content);
-  } catch {
-    return null;
+    return parseJSONObject(content);
+  } catch (err) {
+    return reportJSONError(path, err, stats);
   }
 }
 
@@ -78,16 +86,56 @@ export async function readJSONAsync(path) {
  * Lit et parse un fichier JSON (version sync)
  * @param {string} path - Chemin du fichier JSON
  * @param {object} [stats] - Objet stats pour collecter les erreurs (optionnel)
- * @returns {object|null} Objet parsé ou null en cas d'erreur
+ * @returns {object|null} Objet parsé ou null si erreur collectée ; sinon lève
  */
 export function readJSONSync(path, stats = null) {
   try {
-    return JSON.parse(readFileSync(path, 'utf-8'));
+    return parseJSONObject(readFileSync(path, 'utf-8'));
   } catch (err) {
-    if (stats?.errors) {
-      stats.errors.push(`Erreur lecture ${path}: ${err.message}`);
-    }
+    return reportJSONError(path, err, stats);
+  }
+}
+
+function parseJSONObject(content) {
+  const data = JSON.parse(content);
+  if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('Un objet JSON est requis');
+  }
+  return data;
+}
+
+function reportJSONError(path, cause, stats) {
+  const error = new Error(`Erreur lecture ${path}: ${cause.message}`, { cause });
+  if (stats?.errors) {
+    stats.errors.push(error.message);
     return null;
+  }
+  throw error;
+}
+
+/**
+ * Remplace un JSON par renommage dans le même répertoire, sans tronquer l'ancien.
+ * @param {string} path - Fichier généré
+ * @param {object} data - Données sérialisables
+ */
+export function writeJSONAtomicSync(path, data) {
+  const content = JSON.stringify(data, null, 2);
+  if (content === undefined) {
+    throw new Error(`JSON non sérialisable: ${path}`);
+  }
+  mkdirSync(dirname(path), { recursive: true });
+  const temporary = join(dirname(path), `.${basename(path)}.${randomUUID()}.tmp`);
+  const mode = existsSync(path) ? statSync(path).mode & 0o777 : 0o666;
+  const descriptor = openSync(temporary, 'wx', mode);
+  try {
+    try {
+      writeFileSync(descriptor, content);
+    } finally {
+      closeSync(descriptor);
+    }
+    renameSync(temporary, path);
+  } finally {
+    rmSync(temporary, { force: true });
   }
 }
 

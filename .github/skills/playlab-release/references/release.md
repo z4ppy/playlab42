@@ -19,6 +19,7 @@ Exécuter uniquement dans un rôle autorisé à utiliser Docker.
 | Interaction navigateur | `make test-e2e` |
 | Préparation locale sans collecte OpenGraph | `make npm CMD="run build:local"` |
 | Transport/enrichissement OG | Tests `scripts/og-fetcher.test.js`, `scripts/og-fetcher-process.test.js`, `scripts/build-bookmarks-offline.test.js`, puis vrai build réseau chronométré |
+| Helpers/builders/cache JSON | Tests `scripts/build-utils.test.js`, `scripts/build-input-errors.test.js`, `scripts/og-quality.test.js`, `scripts/quality-lint.test.js`, puis couverture ciblée requise ; pas de baisse de seuil |
 | Livraison complète | `make lint`, `make npm CMD="run test:coverage"`, `make typecheck`, `make npm CMD="run audit:dependencies"`, OpenSpec et build selon AGENTS/CI |
 
 Ne pas supposer qu'un test existe : vérifier son chemin avant de le cibler.
