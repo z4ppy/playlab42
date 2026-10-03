@@ -312,6 +312,74 @@ describe('parcours-utils', () => {
       const tutorials = result.find(n => n.id === 'tutorials');
       expect(tutorials.thumbnail).toBe('/path/to/thumb.png');
     });
+
+    it('produit des noeuds exacts, dans l’ordre de la configuration, avec enfants vides', () => {
+      const epics = [
+        { hierarchy: ['guides'], tags: [], thumbnail: 'g.png' },
+        { hierarchy: ['guides'], tags: [] },
+        { hierarchy: ['guides'], tags: [] },
+        { hierarchy: ['tutorials'], tags: [], thumbnail: 't.png' },
+      ];
+
+      expect(buildHierarchy(epics, baseConfig)).toEqual([
+        { id: 'guides', label: 'Guides', icon: '📘', count: 3, thumbnail: 'g.png', visible: true, children: [] },
+        { id: 'autres', label: 'Autres', icon: '📁', count: 1, thumbnail: null, visible: true, children: [] },
+      ]);
+    });
+
+    it('classe en autres les epics sans catégorie et ignore la vignette des autres catégories', () => {
+      const epics = [
+        { hierarchy: [], tags: [], thumbnail: 'perdue.png' },
+        { hierarchy: [''], tags: [] },
+        { hierarchy: ['autres'], tags: [], thumbnail: 'autres.png' },
+      ];
+
+      const [autres] = buildHierarchy(epics, baseConfig);
+
+      expect(autres).toMatchObject({ id: 'autres', count: 3, thumbnail: 'autres.png' });
+    });
+
+    it('absorbe dans autres les catégories hors configuration et les noeuds masqués, sans doubler les visibles', () => {
+      const epics = [
+        ...Array.from({ length: 3 }, () => ({ hierarchy: ['tutorials'], tags: [] })),
+        { hierarchy: ['guides'], tags: [] },
+        { hierarchy: ['inconnue'], tags: [] },
+        { hierarchy: ['inconnue'], tags: [] },
+        { hierarchy: [], tags: [] },
+      ];
+
+      const result = buildHierarchy(epics, baseConfig);
+
+      expect(result.map(n => [n.id, n.count])).toEqual([['tutorials', 3], ['autres', 4]]);
+    });
+
+    it('n’absorbe rien sans catégorie autres configurée', () => {
+      const config = { taxonomy: { threshold: 2, hierarchy: [{ id: 'guides', label: 'Guides', icon: 'g' }] } };
+      const epics = [{ hierarchy: ['guides'], tags: [] }, { hierarchy: ['x'], tags: [] }];
+
+      expect(buildHierarchy(epics, config)).toEqual([]);
+      expect(buildHierarchy([...epics, { hierarchy: ['guides'], tags: [] }], config).map(n => n.count)).toEqual([2]);
+    });
+
+    it('applique un seuil par défaut de 3 et accepte une configuration sans taxonomie', () => {
+      const epics = Array.from({ length: 3 }, () => ({ hierarchy: ['guides'], tags: [] }));
+      const sansSeuil = { taxonomy: { hierarchy: baseConfig.taxonomy.hierarchy } };
+      const seuilNul = { taxonomy: { ...sansSeuil.taxonomy, threshold: 0 } };
+
+      expect(buildHierarchy(epics, sansSeuil).map(n => n.id)).toEqual(['guides', 'autres']);
+      expect(buildHierarchy(epics.slice(1), seuilNul).map(n => n.id)).toEqual(['autres']);
+      expect(buildHierarchy(epics, {})).toEqual([]);
+      expect(buildHierarchy([], { taxonomy: {} })).toEqual([]);
+    });
+
+    it('rend visible un seuil exactement atteint et masque un seuil manqué d’une unité', () => {
+      const config = { taxonomy: { threshold: 2, hierarchy: baseConfig.taxonomy.hierarchy } };
+      const un = [{ hierarchy: ['guides'], tags: [] }];
+      const deux = [...un, ...un];
+
+      expect(buildHierarchy(un, config).map(n => n.id)).toEqual(['autres']);
+      expect(buildHierarchy(deux, config).map(n => n.id)).toEqual(['guides', 'autres']);
+    });
   });
 
   // =========================================================================
