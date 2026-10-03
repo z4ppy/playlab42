@@ -1,5 +1,7 @@
 {
   "id": "05-archiver",
-  "title": "Archiver après déploiement",
-  "type": "content"
+  "title": "Archiver un change",
+  "type": "content",
+  "duration": "8 min",
+  "description": "Synchroniser les deltas et archiver un changement avec l'assistant ou la CLI, sans confondre archivage et déploiement ; politique Playlab42 : après livraison et décision explicite."
 }

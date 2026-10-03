@@ -3,301 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Implémenter avec /openspec:apply — OpenSpec Guide</title>
+  <title>Implémenter avec /opsx:apply — OpenSpec Guide</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../openspec-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .command-box {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid var(--color-accent);
-      font-family: var(--font-mono);
-      margin: var(--space-lg) 0;
-      font-size: 1.05rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .command-box strong {
-      color: var(--color-accent);
-    }
-    .workflow-box {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .workflow-box strong {
-      color: var(--color-accent);
-    }
-    .task-example {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      font-family: var(--font-mono);
-      font-size: 0.88rem;
-      line-height: 1.6;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .checklist {
-      list-style: none;
-      padding-left: 0;
-      margin: var(--space-sm) 0;
-    }
-    .checklist li {
-      margin: var(--space-xs) 0;
-      line-height: 1.6;
-    }
-    .checklist li::before {
-      content: "✓ ";
-      color: #28a745;
-      font-weight: bold;
-      margin-right: var(--space-xs);
-    }
-    .warning-box {
-      background: #fff3cd;
-      color: #856404;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #ffc107;
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .warning-box strong {
-      color: #856404;
-    }
-    .tip-box {
-      background: #e8f4f8;
-      color: #0c5460;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #17a2b8;
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .tip-box strong {
-      color: #0c5460;
-    }
-  </style>
 </head>
-<body>
+<body class="openspec-guide">
   <article class="slide">
-    <h1>Implémenter avec /openspec:apply</h1>
+    <p class="guide-kicker">Étape 4 · Implémenter</p>
+    <h1>Implémenter avec /opsx:apply</h1>
+    <p class="guide-lead">Le change est prêt (<code>proposal.md</code>, deltas de specs, <code>design.md</code>, <code>tasks.md</code>). <code>/opsx:apply</code> demande à l'assistant de dérouler <code>tasks.md</code> ; c'est vous qui relisez, corrigez le plan et décidez quand c'est fini.</p>
 
-    <p>Une fois la proposal validée, passons à l'implémentation guidée par <code>tasks.md</code>.</p>
+    <p>Fil rouge de cette slide : le change <code>add-dark-mode</code>.</p>
 
     <h2>Lancer l'implémentation</h2>
 
-    <div class="command-box">
-      <strong>Avec un agent IA :</strong><br>
-      /openspec:apply
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>Dans le chat de l'assistant</h3>
+        <p class="guide-command"><code>/opsx:apply add-dark-mode</code></p>
+        <p>Le nom du change est optionnel : il est déduit du contexte, mais le préciser évite toute ambiguïté si plusieurs changes sont actifs.</p>
+        <span class="guide-badge">profil core</span>
+      </section>
+      <section class="guide-card">
+        <h3>Selon votre outil</h3>
+        <p>Dans la documentation OpenSpec, le nom canonique est <code>/opsx:apply</code>. Cursor et GitHub Copilot (extensions IDE) enregistrent <code>/opsx-apply</code> ; Codex utilise le préfixe <code>$</code>. Ces noms ne valent que si l'intégration a généré ces commandes.</p>
+      </section>
+      <section class="guide-card">
+        <h3>Dans le dépôt Playlab42</h3>
+        <p>Le dépôt utilise le profil <code>core</code> en livraison <em>skills seuls</em> (<code>.github/skills/</code>, exposé à Claude par le lien <code>.claude/skills</code>). Ce lien ne crée pas de commande <code>/opsx:*</code> : demandez à l'assistant d'utiliser le skill par son nom canonique.</p>
+        <p class="guide-command"><code>Utilise le skill openspec-apply-change pour add-dark-mode</code></p>
+        <p class="guide-muted">Politique du projet, pas fonctionnement général d'OpenSpec. Les trois alias Claude <code>/openspec:*</code> restent seulement des alias locaux de compatibilité.</p>
+      </section>
     </div>
 
-    <p>Ou manuellement :</p>
-
-    <div class="command-box">
-      <strong>Ouvrir le fichier tasks :</strong><br>
-      code openspec/changes/[change-id]/tasks.md
+    <div class="guide-callout">
+      <p><strong>Ce que fait apply :</strong> il lit <code>tasks.md</code>, repère les tâches non cochées, les traite une par une (code, fichiers, tests), puis coche <code>[x]</code>. Il peut reprendre là où il s'était arrêté : l'avancement est dans les cases à cocher.</p>
     </div>
 
-    <h2>Principe : Suivre tasks.md séquentiellement</h2>
+    <h2>Une tâche, une boucle avec revue humaine</h2>
 
-    <div class="workflow-box">
-      <p><strong>📋 Règle d'or</strong> : Les tâches sont <strong>ordonnées</strong>. Chaque tâche prépare la suivante.</p>
-      <ul class="checklist">
-        <li>Lire toutes les tâches avant de commencer</li>
-        <li>Implémenter tâche par tâche (pas de saut)</li>
-        <li>Cocher <code>[x]</code> immédiatement après complétion</li>
-        <li>Tester régulièrement</li>
-        <li>Commiter au fil de l'eau</li>
-      </ul>
-    </div>
-
-    <h2>Exemple : tasks.md en cours d'implémentation</h2>
-
-    <div class="task-example">
-# Tasks: add-poker-game
-
-## Phase 1 : Préparation
-- [x] Créer `games/poker/`
-- [x] Ajouter `game.json` manifest
-- [x] Créer structure HTML
-- [x] Ajouter assets (sprites cartes)
-
-## Phase 2 : Moteur
-- [x] Implémenter `engine.js` (init, actions, getPlayerView)
-- [ ] <strong style="color: var(--color-accent);">← TÂCHE EN COURS</strong> Tests unitaires du moteur
-- [ ] Validation spec game-engine
-
-## Phase 3 : Bots
-- [ ] Bot random
-- [ ] Bot intermediate
-- [ ] Tests des bots
-
-## Phase 4 : Intégration
-- [ ] Rebuild catalogue (`make build-catalogue`)
-- [ ] Tests end-to-end
-- [ ] Documentation README
-    </div>
-
-    <h2>Workflow d'implémentation</h2>
-
-    <ol>
-      <li>
-        <strong>Lire la tâche</strong>
-        <p>Comprendre ce qui est attendu avant de coder.</p>
-      </li>
-      <li>
-        <strong>Implémenter</strong>
-        <p>Écrire le code nécessaire, suivre les specs référencées.</p>
-      </li>
-      <li>
-        <strong>Tester</strong>
-        <p>Lancer <code>make test</code> et <code>make lint</code> pour valider.</p>
-      </li>
-      <li>
-        <strong>Cocher la tâche</strong>
-        <p>Modifier <code>tasks.md</code> : <code>- [ ]</code> → <code>- [x]</code></p>
-      </li>
-      <li>
-        <strong>Commiter</strong>
-        <p>Message clair : <code>feat(poker): implémentation moteur de jeu</code></p>
-      </li>
-      <li>
-        <strong>Passer à la suivante</strong>
-        <p>Répéter le cycle.</p>
-      </li>
+    <ol class="guide-steps">
+      <li><strong>Lire</strong> : l'assistant prend la prochaine tâche de <code>tasks.md</code>, avec les specs et le design en contexte.</li>
+      <li><strong>Coder</strong> : il modifie les fichiers concernés.</li>
+      <li><strong>Vérifier</strong> : il (ou vous) lance les tests et le linter du projet.</li>
+      <li><strong>Relire</strong> : vous examinez le diff. L'IA propose, l'humain valide.</li>
+      <li><strong>Cocher</strong> : la case passe à <code>[x]</code> seulement quand la tâche est réellement terminée.</li>
     </ol>
 
-    <h2>Documenter les décisions dans design.md</h2>
+    <h2>Exemple : tasks.md en cours</h2>
 
-    <p>Si vous devez faire des choix techniques importants non prévus dans la proposal :</p>
+<pre><code># Tasks
 
-    <div class="workflow-box">
-      <p>Créez <code>openspec/changes/[change-id]/design.md</code> pour documenter :</p>
-      <ul>
-        <li>Choix d'algorithmes (ex: calcul du pot au poker)</li>
-        <li>Trade-offs (performance vs lisibilité)</li>
-        <li>Patterns utilisés (state machine, observer...)</li>
-        <li>Décisions d'architecture non évidentes</li>
-      </ul>
+## 1. Infrastructure du thème
+- [x] 1.1 Définir les variables CSS clair/sombre
+- [x] 1.2 Détecter la préférence système (prefers-color-scheme)
+- [ ] 1.3 Persister le choix de l'utilisateur   ← en cours
+
+## 2. Interface
+- [ ] 2.1 Ajouter le bouton de bascule
+- [ ] 2.2 Vérifier les contrastes en mode sombre</code></pre>
+
+    <h2>Quand le plan ne tient plus : boucles de retour</h2>
+
+    <p>Il n'y a pas de phase verrouillée : tous les artefacts sont de simples fichiers Markdown, modifiables à tout moment. Les artefacts sont le plan vivant, pas un contrat signé.</p>
+
+    <div class="guide-table-wrapper" tabindex="0">
+      <table>
+        <thead>
+          <tr><th>Constat pendant apply</th><th>Boucle de retour</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Une tâche est floue ou obsolète</td><td>Modifier <code>tasks.md</code> à la main ou demander à l'assistant de le réviser, puis relancer <code>/opsx:apply</code> : il relit les fichiers actuels.</td></tr>
+          <tr><td>Un choix technique change (ex. cookie au lieu de <code>localStorage</code>)</td><td>Mettre à jour <code>design.md</code> et la tâche concernée avant de continuer.</td></tr>
+          <tr><td>Le comportement attendu n'est plus le bon</td><td>Corriger le delta de spec : il sera fusionné à l'archivage, il doit décrire ce qui est réellement livré.</td></tr>
+          <tr><td>Vous avez codé à la main</td><td>Réconcilier : soit la spec est périmée et vous la corrigez, soit le code a dérivé et vous le corrigez.</td></tr>
+          <tr><td>L'intention du change a fondamentalement changé</td><td>Démarrer un nouveau change plutôt que rapiécer l'ancien.</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <p><strong>Exemple de design.md :</strong></p>
+    <p><code>/opsx:update</code> (skill <code>openspec-update-change</code> dans ce dépôt, profil <code>core</code>) révise les artefacts de planification et les garde cohérents entre eux ; il ne modifie jamais le code. Ne le confondez pas avec la commande de terminal <code>openspec update</code>, qui régénère les fichiers d'intégration de l'assistant dans le projet. Après une révision, relancez <code>/opsx:apply</code> pour aligner le code.</p>
 
-    <div class="task-example">
-# Design: add-poker-game
+    <h2>Contrôler : vérifier n'est pas tester</h2>
 
-## Calcul du pot
-
-**Décision** : Utiliser un tableau `pots[]` pour gérer les side-pots.
-
-**Rationale** :
-- Permet all-in avec plusieurs joueurs
-- Conforme aux règles officielles du poker
-- Plus complexe mais plus correct qu'un pot unique
-
-**Alternatives considérées** :
-- Pot unique (trop simple, incorrect)
-- Calcul dynamique à chaque tour (trop coûteux)
-
-## Représentation des cartes
-
-**Décision** : String `"As"` (rang + couleur)
-
-**Rationale** :
-- Sérialisable JSON
-- Lisible en debug
-- Compatible avec assets nommés `As.png`
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>Tests et lint du projet</h3>
+        <p>Ils prouvent que le code s'exécute correctement (<code>make test</code>, <code>make lint</code> dans Playlab42). OpenSpec ne les remplace pas.</p>
+      </section>
+      <section class="guide-card">
+        <h3><code>openspec validate --strict</code></h3>
+        <p>Commande CLI qui contrôle la <strong>structure</strong> du change et des specs (format des deltas, cohérence des MODIFIED avec les specs principales). Elle ne lit pas votre code.</p>
+        <p>Dans Playlab42, le CLI est épinglé en 1.14.0 et s'exécute dans Docker, jamais sur l'hôte :</p>
+<pre><code>make npm CMD="exec -- openspec validate add-dark-mode --strict --no-interactive"
+make openspec-validate   # tous les changes et specs</code></pre>
+        <p class="guide-muted">Hors Playlab42 : <code>openspec validate add-dark-mode --strict</code>.</p>
+      </section>
+      <section class="guide-card">
+        <h3><code>/opsx:verify</code></h3>
+        <p>Commande de l'assistant qui compare le code aux artefacts : complétude, justesse, cohérence. Rapport CRITICAL / WARNING / SUGGESTION, non bloquant.</p>
+        <span class="guide-badge">profil expanded, pas core</span>
+      </section>
     </div>
 
-    <div class="warning-box">
-      <p><strong>⚠️ Ne pas dévier du plan sans raison</strong></p>
-      <p>Si vous découvrez qu'une tâche est obsolète ou incomplète, documentez-le dans <code>design.md</code> ou mettez à jour <code>tasks.md</code> en ajoutant une note.</p>
+    <div class="guide-callout">
+      <p><strong>Attention :</strong> <code>/opsx:verify</code> n'existe que si le workflow a été activé (<code>openspec config profile</code>, puis <code>openspec update</code> dans le projet). Dans Playlab42, seuls les six skills core sont générés : ne supposez pas <code>verify</code> installé. Sans lui, relisez le diff et les scénarios de spec vous-même, ou demandez à l'assistant une revue en langage naturel.</p>
     </div>
 
-    <h2>Utiliser les agents IA efficacement</h2>
+    <details>
+      <summary>Approfondir : activer les commandes expanded</summary>
+      <pre><code>openspec config profile   # choisir les workflows (verify, new, continue, ff...)
+openspec update           # régénérer les fichiers de l'assistant dans le projet</code></pre>
+      <p><strong>Pas dans le dépôt Playlab42 :</strong> le guide du projet (<code>docs/guides/openspec-workflow.md</code>) interdit <code>openspec init --force</code> et <code>openspec update</code> directement dans le dépôt, pour préserver les alias et instructions existants. Le rafraîchissement des intégrations se fait par le mainteneur dans un projet temporaire isolé : suivez le guide plutôt que de recopier la procédure.</p>
+      <p>Le profil par défaut <code>core</code> fournit <code>explore</code>, <code>propose</code>, <code>apply</code>, <code>update</code>, <code>sync</code> et <code>archive</code>. Le profil étendu ajoute <code>new</code>, <code>continue</code>, <code>ff</code>, <code>verify</code>, <code>bulk-archive</code> et <code>onboard</code>.</p>
+    </details>
 
-    <div class="tip-box">
-      <p><strong>💡 Astuce : Contexte maximal</strong></p>
-      <p>Lorsque vous demandez à un agent IA d'implémenter une tâche, donnez-lui :</p>
-      <ul>
-        <li>Le fichier <code>tasks.md</code> complet</li>
-        <li>Les specs concernées (<code>@openspec/specs/game-engine/spec.md</code>)</li>
-        <li>Le code existant à modifier</li>
-      </ul>
-      <p>Exemple de prompt :</p>
-      <pre><code>@claude Implémente la tâche "Tests unitaires du moteur"
-du fichier @openspec/changes/add-poker-game/tasks.md.
-Utilise Jest et respecte @openspec/specs/game-engine/spec.md.</code></pre>
-    </div>
+    <h2>Checklist avant d'archiver</h2>
 
-    <h2>Commandes utiles pendant l'implémentation</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Commande</th>
-          <th>Usage</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>make test</code></td>
-          <td>Lancer les tests Jest</td>
-        </tr>
-        <tr>
-          <td><code>make lint</code></td>
-          <td>Vérifier la qualité du code</td>
-        </tr>
-        <tr>
-          <td><code>make serve</code></td>
-          <td>Tester un tool/game dans le navigateur</td>
-        </tr>
-        <tr>
-          <td><code>make build-catalogue</code></td>
-          <td>Régénérer le catalogue après ajout</td>
-        </tr>
-        <tr>
-          <td><code>openspec show [change-id]</code></td>
-          <td>Afficher l'état d'avancement</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>Checklist avant de marquer "Terminé"</h2>
-
-    <ul class="checklist">
-      <li>Toutes les tâches de tasks.md sont cochées</li>
-      <li>Tous les tests passent (<code>make test</code>)</li>
-      <li>Le linter ne rapporte aucune erreur (<code>make lint</code>)</li>
-      <li>La feature fonctionne en local (<code>make serve</code>)</li>
-      <li>La documentation est à jour (README, JSDoc)</li>
-      <li>Les commits sont propres et descriptifs</li>
+    <ul class="guide-checklist">
+      <li>Toutes les cases de <code>tasks.md</code> sont cochées.</li>
+      <li>Tests et lint du projet passent.</li>
+      <li>La validation stricte du change (<code>make openspec-validate</code> dans Playlab42) ne signale rien.</li>
+      <li>Les deltas de specs décrivent ce qui est réellement implémenté.</li>
+      <li>Le diff a été relu par un humain.</li>
     </ul>
 
-    <div class="tip-box">
-      <p><strong>🎉 Changement implémenté ?</strong></p>
-      <p>Avant de déployer, assurez-vous de :</p>
-      <ul>
-        <li>Pousser votre branche : <code>git push -u origin feature/[change-id]</code></li>
-        <li>Créer une Pull Request</li>
-        <li>Obtenir une review si nécessaire</li>
-        <li>Merger et déployer</li>
-      </ul>
-      <p>Une fois en production, vous pourrez archiver la proposal.</p>
+    <h2>Mini exercice</h2>
+
+    <div class="guide-exercise">
+      <p>Pendant <code>/opsx:apply add-dark-mode</code>, vous décidez de stocker le thème dans un cookie. Quelle est la bonne suite ?</p>
+      <div class="guide-card" data-guide-quiz>
+        <p id="quiz-apply-q">Choisissez une réponse.</p>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="Le plan et le code divergeraient : la spec fusionnée à l'archivage serait fausse.">Continuer sans rien changer dans les artefacts</button>
+        <button type="button" data-guide-answer="correct" data-guide-explanation="Les artefacts sont le plan vivant : on les met à jour, puis apply continue sur le plan corrigé.">Mettre à jour design.md et tasks.md, puis relancer /opsx:apply</button>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="Archiver ne corrige rien ; la spec resterait celle du plan initial.">Archiver tout de suite</button>
+        <p data-guide-quiz-result></p>
+      </div>
     </div>
 
-    <p style="margin-top: var(--space-xl); text-align: center;">
-      <strong>Implémentation terminée ? Apprenons à archiver ! 👉</strong>
-    </p>
+    <p class="guide-source">Sources : OpenSpec v1.14.0 — <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener">docs/commands.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/editing-changes.md" target="_blank" rel="noopener">docs/editing-changes.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md" target="_blank" rel="noopener">docs/cli.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/workflows.md" target="_blank" rel="noopener">docs/workflows.md</a>.</p>
+
+    <p><strong>Code terminé et relu ? Passons à l'archivage 👉</strong></p>
+    <footer class="guide-footer">
+      <p class="guide-muted" data-slide-footer></p>
+    </footer>
   </article>
+  <script type="module" src="../../openspec-guide.js"></script>
 </body>
 </html>

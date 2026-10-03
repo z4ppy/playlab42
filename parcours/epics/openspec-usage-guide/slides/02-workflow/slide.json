@@ -1,5 +1,8 @@
 {
   "id": "02-workflow",
-  "title": "Le workflow en 3 étapes",
-  "type": "content"
+  "title": "Workflow et commandes OpenSpec",
+  "type": "content",
+  "duration": "12 min",
+  "description": "Profil core (explore, propose, apply, update, sync, archive), commandes du workflow étendu et itérations sans waterfall.",
+  "icon": "⚙️"
 }

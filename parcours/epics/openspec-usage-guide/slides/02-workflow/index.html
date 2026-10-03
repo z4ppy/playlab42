@@ -3,292 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Le workflow en 3 étapes — OpenSpec Guide</title>
+  <title>Workflow et commandes OpenSpec - PlayLab42</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../openspec-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .workflow-diagram {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-md);
-      margin: var(--space-2xl) 0;
-      flex-wrap: wrap;
-    }
-    .workflow-step {
-      flex: 1;
-      min-width: 200px;
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border: 2px solid var(--color-accent);
-      text-align: center;
-      position: relative;
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .workflow-step:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
-    }
-    .workflow-step .number {
-      display: inline-block;
-      width: 3rem;
-      height: 3rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 3rem;
-      font-weight: bold;
-      font-size: 1.5rem;
-      margin-bottom: var(--space-md);
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    }
-    .workflow-step h3 {
-      margin: var(--space-sm) 0;
-      color: var(--color-accent);
-      font-size: 1.3rem;
-    }
-    .workflow-step p {
-      margin: var(--space-xs) 0 0 0;
-      font-size: 0.9rem;
-    }
-    .workflow-arrow {
-      font-size: 2rem;
-      color: var(--color-accent);
-      opacity: 0.5;
-    }
-    .command-box {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border-left: 4px solid var(--color-accent);
-      font-family: var(--font-mono);
-      margin: var(--space-md) 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .command-box strong {
-      color: var(--color-accent);
-    }
-    .detail-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .detail-section h3 {
-      margin-top: 0;
-      color: var(--color-accent);
-    }
-    .checklist {
-      list-style: none;
-      padding-left: 0;
-      margin: var(--space-sm) 0;
-    }
-    .checklist li {
-      margin: var(--space-xs) 0;
-      line-height: 1.6;
-    }
-    .checklist li::before {
-      content: "✓ ";
-      color: #28a745;
-      font-weight: bold;
-      margin-right: var(--space-xs);
-    }
-  </style>
 </head>
-<body>
+<body class="openspec-guide">
   <article class="slide">
-    <h1>Le workflow en 3 étapes</h1>
+    <header>
+      <p class="guide-kicker">Le workflow</p>
+      <h1>Des actions, pas des phases</h1>
+      <p class="guide-lead">
+        OpenSpec propose des <strong>actions</strong> que l'on enchaîne selon le besoin.
+        Rien ne vous empêche de corriger la proposal pendant l'implémentation : ce n'est pas une cascade.
+      </p>
+    </header>
 
-    <p>OpenSpec suit un workflow simple et linéaire. Chaque changement passe par ces 3 phases :</p>
-
-    <div class="workflow-diagram">
-      <div class="workflow-step">
-        <div class="number">1</div>
-        <h3>Proposal</h3>
-        <p>Créer et valider le changement</p>
+    <section aria-labelledby="titre-core">
+      <h2 id="titre-core">Chemin par défaut : profil <code>core</code></h2>
+      <ol class="guide-steps">
+        <li><strong><code>/opsx:explore</code></strong> <span class="guide-badge">optionnel</span> — réfléchir avec l'IA, sans écrire de code.</li>
+        <li><strong><code>/opsx:propose</code></strong> — crée le changement et tous ses artefacts de planification.</li>
+        <li><strong><code>/opsx:apply</code></strong> — implémente les tâches de <code>tasks.md</code>.</li>
+        <li><strong><code>/opsx:sync</code></strong> <span class="guide-badge">optionnel</span> — fusionne les deltas dans les specs principales sans archiver.</li>
+        <li><strong><code>/opsx:archive</code></strong> — archive le changement terminé.</li>
+      </ol>
+      <p>
+        En v1.14.0, le profil <code>core</code> compte <strong>six</strong> commandes (<code>propose</code>,
+        <code>explore</code>, <code>apply</code>, <code>update</code>, <code>sync</code>, <code>archive</code>),
+        et non quatre comme le suggèrent des résumés plus anciens.
+      </p>
+      <aside class="guide-callout">
+        <h3><code>/opsx:update</code> ≠ <code>openspec update</code></h3>
+        <p>
+          <code>/opsx:update</code> (chat) révise uniquement les <strong>artefacts de planification</strong>
+          d'un changement ; il ne modifie pas le code (suivez-le d'un <code>/opsx:apply</code>).
+          <code>openspec update</code> (terminal) est une commande du CLI qui <strong>régénère les fichiers
+          d'intégration</strong> (skills, commandes) selon votre profil.
+        </p>
+      </aside>
+      <div class="guide-command">
+<pre><code>/opsx:explore               # idée floue : on clarifie d'abord
+/opsx:propose add-dark-mode
+/opsx:apply
+/opsx:archive</code></pre>
       </div>
+      <p class="guide-muted">
+        Ces lignes se tapent dans le chat de l'assistant. Cursor et GitHub Copilot (IDE) utilisent
+        <code>/opsx-propose</code>, <code>/opsx-apply</code>, etc.
+      </p>
+    </section>
 
-      <div class="workflow-arrow">→</div>
-
-      <div class="workflow-step">
-        <div class="number">2</div>
-        <h3>Apply</h3>
-        <p>Implémenter les tâches</p>
+    <section aria-labelledby="titre-expanded">
+      <h2 id="titre-expanded">Workflow étendu (optionnel)</h2>
+      <p>
+        Les commandes suivantes ne sont <strong>pas</strong> installées par défaut. Pour les activer :
+      </p>
+      <div class="guide-terminal">
+<pre><code>openspec config profile   # sélectionner les workflows
+openspec update           # régénérer les fichiers du projet (projet générique)</code></pre>
       </div>
-
-      <div class="workflow-arrow">→</div>
-
-      <div class="workflow-step">
-        <div class="number">3</div>
-        <h3>Archive</h3>
-        <p>Fusionner et archiver</p>
+      <div class="guide-table-wrapper" tabindex="0">
+        <table>
+          <thead>
+            <tr><th scope="col">Commande</th><th scope="col">Rôle</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>/opsx:new</code></td><td>Crée le dossier du changement (scaffold)</td></tr>
+            <tr><td><code>/opsx:continue</code></td><td>Crée l'artefact suivant selon les dépendances</td></tr>
+            <tr><td><code>/opsx:ff</code></td><td>Fast-forward : crée tous les artefacts d'un coup</td></tr>
+            <tr><td><code>/opsx:verify</code></td><td>Vérifie que le code correspond aux artefacts</td></tr>
+            <tr><td><code>/opsx:bulk-archive</code></td><td>Archive plusieurs changements à la fois</td></tr>
+            <tr><td><code>/opsx:onboard</code></td><td>Tutoriel guidé du workflow complet</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>
+      <p>
+        Chemin étendu typique : <code>new</code> → <code>ff</code> ou <code>continue</code> → <code>apply</code>
+        → <code>verify</code> → <code>archive</code>.
+      </p>
+    </section>
 
-    <hr>
-
-    <h2>Étape 1 : Créer une proposal</h2>
-
-    <div class="detail-section">
-      <h3>🎯 Objectif</h3>
-      <p>Décrire <strong>pourquoi</strong> et <strong>quoi</strong> changer avant d'écrire du code.</p>
-
-      <h3>📝 Actions</h3>
-      <ul class="checklist">
-        <li>Créer un dossier <code>openspec/changes/[change-id]/</code></li>
-        <li>Rédiger <code>proposal.md</code> (Motivation, Description, Impact)</li>
-        <li>Lister les tâches dans <code>tasks.md</code></li>
-        <li>Ajouter les deltas de specs dans <code>specs/</code> (optionnel)</li>
-        <li>Obtenir validation (review ou auto-validation si mineur)</li>
+    <section aria-labelledby="titre-iter">
+      <h2 id="titre-iter">Itérer sans waterfall</h2>
+      <ul class="guide-checklist">
+        <li>Les artefacts se construisent les uns sur les autres, mais on peut revenir à n'importe lequel.</li>
+        <li>Pendant <code>apply</code>, un défaut de conception ? Mettez à jour <code>design.md</code> ou les deltas, puis continuez.</li>
+        <li>Un changement déjà codé dont le plan a évolué : <code>/opsx:update</code>, puis <code>/opsx:apply</code> pour réaligner le code.</li>
+        <li>Plusieurs changements peuvent coexister, chacun dans son dossier.</li>
       </ul>
+    </section>
 
-      <div class="command-box">
-        <strong>Commande agent IA :</strong><br>
-        /openspec:proposal
+    <aside class="guide-callout" aria-labelledby="titre-repo">
+      <h2 id="titre-repo">Dans Playlab42 : skills, pas commandes slash</h2>
+      <p>
+        Le profil <code>core</code> y est déjà installé en livraison <strong>skills-only</strong> :
+        demandez à l'assistant d'utiliser <code>openspec-explore</code>, <code>openspec-propose</code>,
+        <code>openspec-apply-change</code>, <code>openspec-update-change</code>, <code>openspec-sync-specs</code>
+        ou <code>openspec-archive-change</code>. Les commandes <code>/opsx:*</code> ne sont pas disponibles
+        automatiquement ; lisez-les comme les noms des actions. Le workflow étendu n'est pas installé.
+      </p>
+      <p>
+        <code>openspec config profile</code> et <code>openspec update</code> décrits plus haut concernent un projet
+        générique : ne les lancez pas directement dans le worktree (voir le <a href="https://github.com/z4ppy/playlab42/blob/main/docs/guides/openspec-workflow.md" target="_blank" rel="noopener noreferrer">guide OpenSpec de Playlab42</a>).
+      </p>
+    </aside>
+
+    <section class="guide-exercise" aria-labelledby="titre-exo">
+      <h2 id="titre-exo">Vérifiez-vous</h2>
+      <div class="guide-card" data-guide-quiz>
+        <p>Vous avez une idée mais pas de plan. Quelle commande du profil <code>core</code> utilisez-vous en premier ?</p>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="apply suppose que le plan et les tâches existent déjà.">/opsx:apply</button>
+        <button type="button" data-guide-answer="correct" data-guide-explanation="explore n'écrit pas de code et mène ensuite à /opsx:propose.">/opsx:explore</button>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="/opsx:new fait partie du workflow étendu, pas du profil core.">/opsx:new</button>
+        <p data-guide-quiz-result></p>
       </div>
+    </section>
 
-      <blockquote>
-        <p><strong>💡 Astuce</strong> : Les agents IA peuvent créer la proposal pour vous si vous leur expliquez votre besoin clairement.</p>
-      </blockquote>
-    </div>
-
-    <hr>
-
-    <h2>Étape 2 : Implémenter (Apply)</h2>
-
-    <div class="detail-section">
-      <h3>🎯 Objectif</h3>
-      <p>Suivre le plan défini dans <code>tasks.md</code> et cocher chaque tâche au fur et à mesure.</p>
-
-      <h3>📝 Actions</h3>
-      <ul class="checklist">
-        <li>Ouvrir <code>openspec/changes/[change-id]/tasks.md</code></li>
-        <li>Implémenter chaque tâche <strong>séquentiellement</strong></li>
-        <li>Cocher chaque tâche terminée avec <code>[x]</code></li>
-        <li>Documenter les décisions dans <code>design.md</code> si nécessaire</li>
-        <li>Tester régulièrement (<code>make test</code>, <code>make lint</code>)</li>
-        <li>Commiter au fil de l'eau</li>
-      </ul>
-
-      <div class="command-box">
-        <strong>Commande agent IA :</strong><br>
-        /openspec:apply
-      </div>
-
-      <blockquote>
-        <p><strong>⚠️ Important</strong> : Ne pas sauter les tâches. Chaque tâche prépare la suivante.</p>
-      </blockquote>
-    </div>
-
-    <hr>
-
-    <h2>Étape 3 : Archiver après déploiement</h2>
-
-    <div class="detail-section">
-      <h3>🎯 Objectif</h3>
-      <p>Fusionner les deltas dans les specs officielles et archiver la proposal pour garder <code>changes/</code> propre.</p>
-
-      <h3>📝 Actions</h3>
-      <ul class="checklist">
-        <li>Vérifier que le changement est <strong>déployé en production</strong></li>
-        <li>Fusionner les deltas <code>changes/[id]/specs/</code> → <code>specs/</code></li>
-        <li>Déplacer le dossier vers <code>changes/archive/YYYY-MM-DD-[name]/</code></li>
-        <li>Mettre à jour les références dans <code>AGENTS.md</code> si nécessaire</li>
-      </ul>
-
-      <div class="command-box">
-        <strong>Commande agent IA :</strong><br>
-        /openspec:archive
-      </div>
-
-      <blockquote>
-        <p><strong>💡 Pourquoi archiver ?</strong> Cela garde les specs à jour et évite un dossier <code>changes/</code> encombré de proposals terminées.</p>
-      </blockquote>
-    </div>
-
-    <hr>
-
-    <h2>Résumé visuel du cycle de vie</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Phase</th>
-          <th>État du changement</th>
-          <th>Action clé</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Proposal</strong></td>
-          <td>Idée documentée</td>
-          <td>Valider avant de coder</td>
-        </tr>
-        <tr>
-          <td><strong>Apply</strong></td>
-          <td>Implémentation en cours</td>
-          <td>Suivre tasks.md étape par étape</td>
-        </tr>
-        <tr>
-          <td><strong>Déployé</strong></td>
-          <td>En production</td>
-          <td>Utiliser, monitorer</td>
-        </tr>
-        <tr>
-          <td><strong>Archive</strong></td>
-          <td>Spec fusionnée</td>
-          <td>Historique propre</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>Commandes CLI disponibles</h2>
-
-    <p>Si vous préférez la ligne de commande aux slash commands :</p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Commande</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><code>openspec list</code></td>
-          <td>Liste les changes actifs</td>
-        </tr>
-        <tr>
-          <td><code>openspec list --specs</code></td>
-          <td>Liste toutes les capabilities</td>
-        </tr>
-        <tr>
-          <td><code>openspec show [item]</code></td>
-          <td>Affiche les détails d'un item</td>
-        </tr>
-        <tr>
-          <td><code>openspec validate [item]</code></td>
-          <td>Validation stricte d'une proposal</td>
-        </tr>
-        <tr>
-          <td><code>openspec archive &lt;id&gt;</code></td>
-          <td>Archive un changement déployé</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p style="margin-top: var(--space-xl); text-align: center;">
-      <strong>Passons maintenant à la pratique : créer votre première proposal ! 👉</strong>
+    <p class="guide-source">
+      Sources :
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener noreferrer">Commands</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/workflows.md" target="_blank" rel="noopener noreferrer">Workflows</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/opsx.md" target="_blank" rel="noopener noreferrer">OPSX</a>.
     </p>
+    <footer class="guide-footer">
+      <p class="guide-muted" data-slide-footer></p>
+    </footer>
   </article>
+  <script type="module" src="../../openspec-guide.js"></script>
 </body>
 </html>
