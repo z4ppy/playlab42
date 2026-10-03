@@ -102,8 +102,10 @@ Cette identité n'est pas une provenance signée ni une attestation SLSA.
 - La validation OpenSpec vérifie la **structure des exigences**, pas le code.
 - Les tests navigateur couvrent un socle d'interactions dans Chromium, pas tous
   les navigateurs, contenus, inférences ML ou qualités audio.
-- Le build production conserve la collecte Open Graph distante ; `build:local`
-  est sans cette collecte, et ne prouve pas son succès.
+- Le build normal utilise le snapshot OG versionné ; le refresh éditorial est
+  explicite. Deux fabrications et les empreintes sont comparées en CI.
+  Le manifeste/SBOM et la reprise locale sont décrits dans le
+  [runbook](artifact-operations.md), sans signature ni garantie hermétique.
 - L'audit npm au seuil modéré et le lint sécurité JS ciblé sont requis par la CI
   de livraison. Le workflow complémentaire reste séparé : Gitleaks et Trivy
   HIGH/CRITICAL peuvent échouer, Hadolint et les heuristiques lint restent
@@ -129,12 +131,12 @@ déjà livrées. Les priorités sont adaptées à un support de formation.
 |----------|----------------------|----------------------------------------|
 | Haute | `main` protégée : PR et neuf checks requis ; noms constatés sur la PR #135 | Ajouter un second reviewer, exiger une approbation et vérifier les noms après évolution du pipeline |
 | Haute | npm et lint sécurité JS ciblé requis ; Trivy et Gitleaks séparés ; heuristiques consultatives | Trier les diagnostics, étendre les gates justifiés et revoir les exceptions datées ; pas de faux succès |
-| Moyenne | Seuils ciblés sur trois composants, pas sur tout le code | Étendre progressivement aux moteurs et modules partagés, puis contrôler le code modifié avec des tests de comportement |
+| Moyenne | Seuils ciblés et complexité critique, pas sur tout le code | Étendre progressivement aux moteurs et modules partagés, puis contrôler le code modifié avec des tests de comportement |
 | Moyenne | Actions SHA, images digest et binaires scanners vérifiés dans le lot 2 ; bases/paquets OS évolutifs | Maintenir ces références avec Dependabot ; isoler ensuite les sources de variabilité du build |
-| Moyenne | Collecte OG mêlée au build de production | Séparer actualisation éditoriale et fabrication ; tester qu'un snapshot produit le même contenu sans réseau |
+| Moyenne | Snapshot OG séparé du build ; refresh éditorial explicite | Relire ses changements, suivre les métadonnées absentes et conserver les preuves de reproductibilité |
 | Moyenne | Pas de prévisualisation de PR publiée | Donner aux reviewers une URL temporaire, sur une origine adaptée, sans secrets ni privilèges de production |
-| Moyenne | Contrôle après livraison ponctuel, récupération manuelle | Ajouter vérifications périodiques, notification explicite et exercice de récupération d'une version connue |
-| Progressive | Identité simple, pas de SBOM ni provenance signée dans la chaîne | Produire l'inventaire des composants et une attestation vérifiable liée à l'archive ; ne pas annoncer de niveau SLSA sans conformité vérifiée |
+| Moyenne | Smoke ponctuel, monitor quotidien préparé et reprise locale exercée | Activer les notifications après intégration, définir responsable/cadence, décider humainement d'une reprise en production |
+| Progressive | SBOM de fabrication et manifeste hashé non signé | Ajouter une attestation signée de l'archive sur autorisation ; ne pas annoncer de niveau SLSA sans conformité vérifiée |
 | Progressive | Retour d'expérience peu instrumenté | Mesurer durée des checks, délai de première contribution, erreurs récurrentes et livraison ; choisir peu d'indicateurs utiles |
 | Progressive | Scénarios d'évaluation des skills partiels | Comparer des demandes identiques sur environnements isolés, conserver les preuves, compléter les cas non testés sans revendiquer un gain statistique |
 

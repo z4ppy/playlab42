@@ -153,6 +153,20 @@ export function createStats(extra = {}) {
 }
 
 /**
+ * Date de fabrication stable si l'epoch des sources est fourni ; heure locale sinon.
+ * @param {string|undefined} epoch - SOURCE_DATE_EPOCH en secondes Unix
+ * @returns {string} Date ISO
+ */
+export function getBuildTimestamp(epoch = process.env.SOURCE_DATE_EPOCH) {
+  if (epoch === undefined) {return new Date().toISOString();}
+  const seconds = Number(epoch);
+  if (!/^(0|[1-9]\d*)$/.test(epoch) || !Number.isSafeInteger(seconds) || seconds > 8.64e12) {
+    throw new Error('SOURCE_DATE_EPOCH invalide : secondes Unix entières requises.');
+  }
+  return new Date(seconds * 1000).toISOString();
+}
+
+/**
  * Affiche le rapport final d'un build
  * @param {Object} stats - Objet stats du build
  * @param {Object} [options] - Options d'affichage

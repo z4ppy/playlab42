@@ -43,6 +43,9 @@ jobs:
         run: |
           mkdir -p site
           tar -xf "$RUNNER_TEMP/pages-artifact/artifact.tar" -C site
+      - name: Vérifier tous les octets de l'archive reçue
+        if: inputs.prebuilt
+        run: npm run verify:site
       - name: Real browser suite
         run: npm run test:e2e
         env:

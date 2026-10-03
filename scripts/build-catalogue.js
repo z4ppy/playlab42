@@ -15,6 +15,7 @@ import {
   fileExistsAsync,
   readJSONAsync,
   writeJSONAtomicSync,
+  getBuildTimestamp,
   isValidId,
 } from './lib/build-utils.js';
 
@@ -342,7 +343,7 @@ async function main() {
   // Générer le catalogue
   const catalogue = {
     version: '1.0',
-    generatedAt: new Date().toISOString(),
+    generatedAt: getBuildTimestamp(),
     tools,
     games,
   };

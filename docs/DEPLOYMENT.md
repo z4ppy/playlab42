@@ -79,15 +79,19 @@ changement de nom ou structure. Les workflows seuls ne remplacent pas ce réglag
 Dans Docker :
 
 ```bash
-make npm CMD="run build"        # TypeScript, runtime, catalogues, OG, guides, site
-make npm CMD="run build:local"  # même chaîne, sans collecte distante Open Graph
+make npm CMD="run build"        # runtime, catalogues avec snapshot OG, site, SBOM/manifeste
+make npm CMD="run build:local"  # même chaîne, sans enrichissement OG
+make npm CMD="run verify:site"
+make npm CMD="run check:recovery" # exercice local uniquement
 ```
 
 `npm run build` inclut désormais `build:ts` ; le workflow n'a pas à ajouter
-une compilation séparée. Le build de production conserve l'enrichissement
-Open Graph des bookmarks. Il n'est donc **pas hermétique** : le réseau et les
-métadonnées distantes peuvent influencer les sorties. `build:local` ne prouve
-pas que cette collecte réseau de production a fonctionné.
+une compilation séparée. Le build utilise le snapshot éditorial versionné,
+sans collecte distante. Le réseau est réservé à `refresh:bookmarks` et à
+l'installation préalable des dépendances. La CI compare deux inventaires à
+commit/outils/plateforme/epoch identiques et vérifie l'archive extraite.
+Cela ne certifie pas un build hermétique : les CDN/modèles runtime restent
+hors SBOM npm de fabrication. Voir [les garanties et la reprise](guides/artifact-operations.md).
 
 `build:site` prépare **`site/`**, pas une copie aveugle du dépôt :
 
@@ -98,6 +102,7 @@ pas que cette collecte réseau de production a fonctionné.
 | Catalogues et images de bookmarks | Cache de collecte Open Graph |
 | Guides HTML, Markdown de référence et specs | `.github/`, `.claude/`, fichiers cachés et secrets |
 | README, conventions, licence et éventuel CNAME | Dockerfile, Makefile, package/lockfile de développement |
+| Manifeste hashé et SBOM CycloneDX de fabrication | Cache technique OG et snapshot source hors catalogue |
 
 Le lecteur de guides renvoie vers GitHub pour les fichiers réservés au dépôt.
 Les fichiers générés restent ignorés par Git, **y compris `site/`**. `.gitignore`
@@ -171,8 +176,12 @@ tests locaux ; consulter les résultats GitHub du commit concerné.
 
 Un lancement manuel sur `main` redéploie son état courant : **ce n'est pas un
 rollback vers un ancien artefact**. Aucun `push --force` n'est une procédure
-normale de récupération. La restauration d'un artefact connu, le suivi de
-disponibilité et les notifications d'incident restent des évolutions proposées.
+normale de récupération. `check:recovery` exerce une vraie archive tar localement,
+sans toucher la production. Le monitoring quotidien préparé dans
+`site-monitor.yml` vérifiera main et neuf ressources après son intégration à la
+branche par défaut ; configurer `PLAYLAB_SITE_URL` et les notifications GitHub.
+Il ne surveille pas en continu et ne republie pas automatiquement un ancien
+artefact. Le [runbook](guides/artifact-operations.md) décrit cette décision distincte.
 
 ## Versions et maintenance
 

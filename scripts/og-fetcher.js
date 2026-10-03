@@ -27,7 +27,7 @@ const CONFIG = {
   // ce travail par l'original pleine taille à la première expiration du cache
   // de métadonnées (cacheDays), y compris quand data/bookmarks-cache.json est
   // absent — il est gitignoré, donc vide sur une machine fraîche.
-  // Forcer avec : OG_REFRESH_IMAGES=1 npm run build:bookmarks
+  // Lors du refresh éditorial : OG_REFRESH_IMAGES=1 npm run refresh:bookmarks
   refreshImages: process.env.OG_REFRESH_IMAGES === '1',
 };
 
