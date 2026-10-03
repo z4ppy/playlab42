@@ -5,6 +5,7 @@
  */
 import { ScoreCalculator } from './ScoreCalculator.js';
 import { ProgressTracker } from './ProgressTracker.js';
+import { calculateLevelProgress } from './level-progress.js';
 
 const CAS_LIMITES = [
   // xp, niveau, XP dans le niveau, XP requis, pourcentage affiché
@@ -24,7 +25,7 @@ const CAS_LIMITES = [
   [10000, 9, 1598, 2700, 59],
 ];
 
-async function trackerAvecXP(xp) {
+function trackerAvecXP(xp) {
   const tracker = new ProgressTracker();
   tracker.progress = { globalXP: xp, skills: {}, sessions: [], achievements: [], settings: {} };
   return tracker;
@@ -35,9 +36,13 @@ describe('Niveaux d’XP', () => {
     expect(ScoreCalculator.calculateLevel(xp)).toEqual({ level, currentXP, requiredXP, progress });
   });
 
-  test.each(CAS_LIMITES)('ProgressTracker.getLevel() avec %p XP donne le même résultat', async (xp, level, currentXP, requiredXP, progress) => {
-    const tracker = await trackerAvecXP(xp);
+  test.each(CAS_LIMITES)('ProgressTracker.getLevel() avec %p XP donne le même résultat', (xp, level, currentXP, requiredXP, progress) => {
+    const tracker = trackerAvecXP(xp);
     expect(tracker.getLevel()).toEqual({ level, currentXP, requiredXP, progress });
+  });
+
+  test.each(CAS_LIMITES)('le helper pur calculateLevelProgress(%p) est partagé', (xp, level, currentXP, requiredXP, progress) => {
+    expect(calculateLevelProgress(xp)).toEqual({ level, currentXP, requiredXP, progress });
   });
 
   test('le résultat reste un objet JSON à quatre clés ordonnées', () => {
@@ -50,10 +55,10 @@ describe('Niveaux d’XP', () => {
     expect(ScoreCalculator.calculateLevel(5)).not.toBe(ScoreCalculator.calculateLevel(5));
   });
 
-  test('un XP global NaN ou absent est lu comme 0 par le tracker', async () => {
+  test('un XP global NaN ou absent est lu comme 0 par le tracker', () => {
     const vide = { level: 1, currentXP: 0, requiredXP: 100, progress: 0 };
-    expect((await trackerAvecXP(NaN)).getLevel()).toEqual(vide);
-    expect((await trackerAvecXP(undefined)).getLevel()).toEqual(vide);
+    expect((trackerAvecXP(NaN)).getLevel()).toEqual(vide);
+    expect((trackerAvecXP(undefined)).getLevel()).toEqual(vide);
     expect(new ProgressTracker().getLevel()).toEqual(vide);
   });
 
@@ -67,8 +72,8 @@ describe('Niveaux d’XP', () => {
     expect(ScoreCalculator.calculateLevel(150)).toEqual(avant);
   });
 
-  test('l’XP ajouté au tracker fait progresser le niveau affiché jusqu’au seuil exact', async () => {
-    const tracker = await trackerAvecXP(0);
+  test('l’XP ajouté au tracker fait progresser le niveau affiché jusqu’au seuil exact', () => {
+    const tracker = trackerAvecXP(0);
     tracker.addXP(99);
     expect(tracker.getLevel().level).toBe(1);
     tracker.addXP(1);
@@ -76,7 +81,7 @@ describe('Niveaux d’XP', () => {
   });
 
   test('la progression suit les sessions enregistrées et se réinitialise avec la progression', async () => {
-    const tracker = await trackerAvecXP(0);
+    const tracker = trackerAvecXP(0);
     await tracker.recordSession({ exerciseId: 'ex', xp: 150, correctAnswers: 1, totalQuestions: 1, accuracy: 100 });
     expect(tracker.getLevel().level).toBe(2);
     tracker.progress.globalXP = 0;

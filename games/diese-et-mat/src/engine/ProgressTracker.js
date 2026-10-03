@@ -8,6 +8,7 @@
  */
 
 import GameKit from '../../../../lib/gamekit.js';
+import { calculateLevelProgress } from './level-progress.js';
 
 // ============================================================================
 // Constantes
@@ -224,24 +225,7 @@ export class ProgressTracker {
    * @returns {{ level: number, currentXP: number, requiredXP: number, progress: number }}
    */
   getLevel() {
-    const xp = this.getGlobalXP();
-    let level = 1;
-    let usedXP = 0;
-
-    while (true) {
-      const requiredForNext = Math.floor(100 * Math.pow(level, 1.5));
-      if (usedXP + requiredForNext > xp) {
-        const currentXP = xp - usedXP;
-        return {
-          level,
-          currentXP,
-          requiredXP: requiredForNext,
-          progress: Math.round((currentXP / requiredForNext) * 100),
-        };
-      }
-      usedXP += requiredForNext;
-      level++;
-    }
+    return calculateLevelProgress(this.getGlobalXP());
   }
 
   // --------------------------------------------------------------------------

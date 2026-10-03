@@ -17,6 +17,7 @@ import { SynthController } from './controllers/SynthController.js';
 import { PianoController } from './controllers/PianoController.js';
 import { MenuController } from './controllers/MenuController.js';
 import { RhythmController } from './controllers/RhythmController.js';
+import { handleAppKeydown } from './AppKeyboard.js';
 
 // ============================================================================
 // Classe App
@@ -1440,62 +1441,7 @@ export class App {
    * @param {KeyboardEvent} event
    */
   handleKeydown(event) {
-    if (event.defaultPrevented) {return;}
-    // Échap pour fermer les overlays ou revenir au menu
-    if (event.key === 'Escape') {
-      if (this.metronomeController?.isVisible()) {
-        this.metronomeController.hide();
-        return;
-      }
-
-      if (this.tunerController?.isVisible()) {
-        this.tunerController.hide();
-        return;
-      }
-      if (this.synthController?.isVisible()) {
-        this.hideSynth();
-        return;
-      }
-      if (this.pianoController?.isVisible()) {
-        this.hidePiano();
-        return;
-      }
-      if (this.elements.memoOverlay?.classList.contains('visible')) {
-        this.hideMemo();
-        return;
-      }
-      if (this.currentView !== 'menu') {
-        this.showView('menu');
-      }
-      return;
-    }
-
-    if (event.target.closest?.('input, select, textarea, [contenteditable="true"]')) {return;}
-
-    // Piano virtuel - jouer les notes avec le clavier (sustain prolongé)
-    if (this.pianoController?.isVisible()) {
-      const keyLower = event.key.toLowerCase();
-      const keyMap = this.pianoController.keyMap;
-      if (keyMap[keyLower] && !event.repeat) {
-        event.preventDefault();
-        this.pianoController.handleKeyDown(keyLower);
-        return;
-      }
-    }
-
-    // Barre d'espace pour le tap en mode rythme
-    if (event.key === ' ' && this.rhythmController?.state && !event.target.closest?.('button, a[href]')) {
-      event.preventDefault();
-      this.rhythmController.handleKeydown(event);
-    }
-
-    // Touches 1-7 pour les notes
-    if (this.currentView === 'exercise' && this.engine?.isRunning()) {
-      const keyNum = parseInt(event.key);
-      if (keyNum >= 1 && keyNum <= 7 && this.currentExercise?.mode !== 'rhythm') {
-        this.submitAnswer(keyNum - 1);
-      }
-    }
+    handleAppKeydown(this, event);
   }
 
   /**
