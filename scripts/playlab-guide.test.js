@@ -122,6 +122,19 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(current).toContain('pas une certification');
   });
 
+  it('enseigne les entrées déterministes et situe les lots du parcours', () => {
+    const engine = readFileSync(resolve(epicDir, 'slides/05-creer-jeu/index.html'), 'utf8');
+    const quality = readFileSync(resolve(epicDir, 'slides/10-qualite-ci/index.html'), 'utf8');
+    const readme = readFileSync(resolve(epicDir, 'README.md'), 'utf8');
+    expect(engine).toContain('Date.now()');
+    expect(engine).toContain('seed explicite');
+    expect(engine).toContain('états JSON propres');
+    for (const document of [quality, readme]) {
+      expect(document).toContain('PR #147');
+      expect(document).toContain('quality/core-refactors');
+    }
+  });
+
   describe.each(ids)('Slide %s', id => {
     const path = resolve(epicDir, 'slides', id, 'index.html');
 
