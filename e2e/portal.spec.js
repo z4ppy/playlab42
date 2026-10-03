@@ -145,6 +145,52 @@ test('portail: une nouvelle session GameKit recoit le son sauvegarde puis ses ch
   await expect.poll(soundState).toEqual({ game: 'tictactoe', sound: true });
 });
 
+test('portail: seul le GameKit de la session courante peut quitter le jeu', async ({ page }) => {
+  await page.goto('/#/games/tictactoe');
+  const current = page.frameLocator('#game-iframe');
+  const gameName = frame => frame.locator('body').evaluate(async () => {
+    const { default: GameKit } = await import('../../lib/gamekit.js');
+    return GameKit.gameName;
+  });
+  await expect.poll(() => gameName(current)).toBe('tictactoe');
+  await page.evaluate(() => {
+    const iframe = document.createElement('iframe');
+    iframe.id = 'foreign-game-iframe';
+    iframe.hidden = true;
+    iframe.src = '/games/tictactoe/index.html';
+    document.body.appendChild(iframe);
+  });
+  const foreign = page.frameLocator('#foreign-game-iframe');
+  await expect.poll(() => gameName(foreign)).toBe('tictactoe');
+  await page.evaluate(() => {
+    const source = document.getElementById('foreign-game-iframe').contentWindow;
+    window.foreignQuitReceived = new Promise(resolve => {
+      const listener = event => {
+        if (event.source !== source || event.origin !== window.location.origin ||
+          event.data?.type !== 'quit' || event.data.game !== 'tictactoe') {return;}
+        window.removeEventListener('message', listener);
+        resolve();
+      };
+      window.addEventListener('message', listener);
+    });
+  });
+  await foreign.locator('body').evaluate(async () => {
+    const { default: GameKit } = await import('../../lib/gamekit.js');
+    GameKit.quit();
+  });
+  await page.evaluate(() => window.foreignQuitReceived);
+  await expect(page).toHaveURL(/\/#\/games\/tictactoe$/);
+  await expect(page.locator('#game-iframe')).toBeVisible();
+  await expect.poll(() => gameName(current)).toBe('tictactoe');
+
+  await current.locator('body').evaluate(async () => {
+    const { default: GameKit } = await import('../../lib/gamekit.js');
+    GameKit.quit();
+  });
+  await expect(page.locator('#view-catalogue')).toBeVisible();
+  await expect(page.locator('#game-iframe')).toBeHidden();
+});
+
 for (const viewport of [{ width: 320, height: 740 }, { width: 390, height: 844 }, { width: 844, height: 390 }]) {
   test(`portail mobile ${viewport.width}x${viewport.height}: catalogue et viewer sans debordement`, async ({ page }) => {
     await page.setViewportSize(viewport);
