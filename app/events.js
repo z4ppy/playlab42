@@ -107,7 +107,7 @@ export function setupEventListeners() {
   on(window, 'message', (e) => {
     if (!e.data || typeof e.data !== 'object' || Array.isArray(e.data) ||
         typeof e.data.type !== 'string') { return; }
-    if (!isCurrentGameSession() || !e.source ||
+    if (!isCurrentGameSession(e.data.type === 'ready') || !e.source ||
         e.source !== el.gameIframe?.contentWindow ||
         e.origin !== window.location.origin) { return; }
     // Le WindowProxy peut survivre à une navigation ; le slug distingue alors les jeux.

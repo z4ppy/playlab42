@@ -31,10 +31,12 @@ function setLoadingText(text) {
 /**
  * Indique si la session affichée peut encore piloter le portail.
  * Un HEAD suivant la suspend ; unload l'invalide immédiatement.
+ * @param {boolean} [allowPendingNavigation=false] - Autoriser ready non destructif pendant un HEAD.
  * @returns {boolean}
  */
-export function isCurrentGameSession() {
-  return iframeSession !== null && iframeSession === state.currentGame && !pendingNavigation;
+export function isCurrentGameSession(allowPendingNavigation = false) {
+  return iframeSession !== null && iframeSession === state.currentGame &&
+    (allowPendingNavigation || !pendingNavigation);
 }
 
 /**

@@ -139,7 +139,7 @@ describe('Cycle de vie commun au loader et aux messages du portail', () => {
       send({ type: 'ready', game: 'a' }, sourceA);
       await jest.advanceTimersByTimeAsync(100);
       expect(state.currentGame.id).toBe('a');
-      expect(oldMessages).toEqual([]);
+      expect(oldMessages).toEqual([{ type: 'preference', key: 'sound', value: true }]);
       b.resolve({ ok: true });
       await pendingB;
       expectCurrent('b');
@@ -149,7 +149,7 @@ describe('Cycle de vie commun au loader et aux messages du portail', () => {
       send({ type: 'ready', game: 'b' });
       await jest.advanceTimersByTimeAsync(0);
       expect(currentMessages).toEqual([{ type: 'preference', key: 'sound', value: true }]);
-      expect(oldMessages).toEqual([]);
+      expect(oldMessages).toEqual([{ type: 'preference', key: 'sound', value: true }]);
       const error = { message: 'Erreur réelle B' };
       send({ type: 'error', game: 'b', error });
       expect(console.error).toHaveBeenCalledWith('[Portal] Erreur jeu:', error);
