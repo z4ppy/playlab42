@@ -47,3 +47,18 @@ appliquer les nouveaux seuils seulement après les scénarios et leur mesure.
 - **WHEN** un rapport est publié
 - **THEN** il identifie SHA/run, quatre mesures et périmètre instrumenté
 - **AND** il ne transforme pas une absence d'instrumentation en absence de tests navigateur
+
+### Requirement: Canonical majority captures
+Le moteur de Dames françaises SHALL proposer uniquement les rafles complètes
+capturant le plus grand nombre de pièces et appliquer leurs captures légales
+plutôt que des métadonnées arbitraires.
+
+#### Scenario: Unequal capture chains
+- **WHEN** plusieurs pièces ou trajets permettent des rafles de longueurs différentes
+- **THEN** seuls les trajets de longueur maximale sont des actions légales
+- **AND** une rafle plus courte est refusée par le moteur
+
+#### Scenario: Equal capture chains
+- **WHEN** plusieurs rafles capturent le même nombre maximal de pièces
+- **THEN** elles restent toutes légales sans priorité arbitraire dame/pion
+- **AND** un trajet légal explicite conserve son identité pendant un replay JSON

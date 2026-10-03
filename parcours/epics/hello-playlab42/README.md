@@ -64,7 +64,9 @@ via la PR #145 ; la preuve datée distingue CI de PR et publication.
 Le gate sur Build, déjà requis, exige le succès de Security lint et
 Trivy HIGH/CRITICAL via un workflow réutilisable partagé, sans accepter un
 gate ignoré. Le [plan qualité suivant](../../../docs/guides/software-quality.md#suite-proposée--qualité-du-code-par-étapes)
-est proposé sur une branche distincte ; ses étapes ne sont pas implémentées.
+est proposé dans la PR #146. Son [application tests-first](../../../docs/guides/software-quality.md#application-tests-first)
+est autorisée dans `quality/tests-first` : caractériser avant refactoring,
+mesurer puis verrouiller les acquis. Ces nouveaux travaux ne sont pas encore livrés.
 Les neuf checks GitHub requis ne sont pas les dix ressources HTTP
 du smoke, qui incluent désormais le manifeste.
 Aucun run cron réussi, rollback de production ou archivage OpenSpec n'est

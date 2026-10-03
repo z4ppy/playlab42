@@ -42,8 +42,15 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | `scripts/lib/build-utils.js` | 100 % | 100 % | 100 % |
 | `scripts/og-fetcher.js` | 85 % | 100 % | 90 % |
 | `scripts/lib/artifact-inventory.js` | 85 % | 100 % | 100 % |
+| `app/events.js` | 95 % | 100 % | 95 % |
+| `app/game-loader.js` | 90 % | 100 % | 95 % |
+| `app/settings.js` | 80 % | 100 % | 100 % |
+| `games/checkers/engine.js` | 90 % | 100 % | 95 % |
+| `games/triomino/engine.ts` | 95 % | 95 % | 95 % |
+| `tools/relativity-lab/src/Simulation.js` | 90 % | 100 % | 100 % |
+| `scripts/coverage-report.js` | 80 % | 90 % | 80 % |
 
-Ces composants sont critiques pour le déterminisme et la livraison. Les seuils
+Ces composants protègent déterminisme, portail, moteurs, outils et livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
 Il n'y a **pas de seuil global**, ni de blocage universel du code modifié :
 Codecov reste une intégration distincte, avec upload non bloquant.
@@ -369,10 +376,13 @@ la demande utilisateur suivante autorise l'application ci-dessous.
 
 ## Application tests-first
 
-**En cours dans `quality/tests-first`, non intégrés à main et non publiés.**
+**Implémentés dans `quality/tests-first`, non intégrés à main et non publiés.**
 La demande « c'est parti » autorise les travaux, pas leur fusion ou leur
 archivage. La proposition reste traçable dans la PR #146 ; l'implémentation
 fait l'objet d'une PR distincte vers main.
+Les scopes ont été travaillés en worktrees séparés, avec commits tests puis
+correction. Ce premier lot les intègre pour mesurer et verrouiller une base
+commune ; loader et messages partagent désormais le même contrat de navigation.
 
 L'ordre est **tests de comportement avant les refactorings** :
 caractériser les refus, erreurs, courses et invariants, exécuter sur le code
@@ -396,6 +406,83 @@ Le change [strengthen-tests-first-quality](../../openspec/changes/strengthen-tes
 consigne les contrats, dépendances et limites. Les tâches ne sont cochées
 qu'après les vérifications correspondantes ; la livraison et l'archivage
 restent distincts de l'implémentation.
+
+### Contrats caractérisés et corrections bornées
+
+Les tests ont notamment reproduit un `quit` d'une autre iframe détruisant
+le jeu courant : un vrai second GameKit, pas seulement un mock, le confirme
+dans Chromium. Les courses de HEAD, callbacks et fermeture différée sont
+couvertes avec promesses/timers contrôlés. La revue a ajouté les transitions
+croisées : réouverture du même jeu après unload et message d'une session
+remplacée pendant une navigation. Les refus de reset ne mutent pas les données ;
+une relecture en erreur ne remplace plus partiellement l'état mémoire.
+Un `ready` valide conserve la synchronisation des préférences pendant un HEAD
+en attente, contrairement au `quit` destructif. Source, origine et slug restent
+les identifiants du protocole existant : deux documents successifs partageant
+le même WindowProxy et le même slug ne disposent pas d'un nonce de session.
+Ces gardes ne constituent pas une frontière contre du JavaScript malveillant
+déjà exécuté dans la même origine.
+
+Pour les Dames, appliquer une action utilise le trajet légal canonique,
+pas un recalcul géométrique ou des captures arbitraires fournies par l'appelant.
+Un trajet légal explicite disambiguïse les captures ; sans métadonnées fiables,
+le premier trajet légal correspondant aux extrémités reste le choix compatible
+avec l'UI. La prise majoritaire ferme un écart avec les règles françaises
+annoncées : les rafles plus courtes acceptées auparavant sont désormais refusées.
+Toutes les rafles maximales restent disponibles, sans priorité dame/pion.
+Cela ne certifie pas une implémentation exhaustive de toutes les règles françaises.
+
+Le Triomino est testé après une vraie séquence `PLACE/DRAW/PASS`, restauration
+JSON et dans les trois modes. Les défauts de première pose hors centre et de
+classement avant ajustement des scores finaux sont reproduits puis corrigés.
+Les séquences RNG ne changent pas. Simulation est exercée réellement avec
+doubles Three/canvas aux frontières : pause, temps, signaux, ressources et
+désabonnement/dispose, en conservant les E2E de rendu réel.
+
+### Maintenabilité après les tests
+
+La récursion des Dames a été séparée de la géométrie des étapes de capture
+**après** les tests publics, replay et immutabilité. La mesure avec le vrai
+ESLint donne `#findAllCaptureSequences` **21 → 6**, et les nouveaux helpers
+pion/dame **7 / 10**. `applyAction` reste à **11**, sans réduction inventée.
+Une comparaison au moteur post-prise-majoritaire porte sur 625 positions,
+6 055 applications et quatre replays (380 tours), avec ordre, état JSON et
+immutabilité identiques. Ce corpus ne remplace pas une preuve exhaustive.
+
+Le périmètre reste ciblé : pas de mutualisation mécanique des RNG, de
+réécriture globale des moteurs ou de migration de framework. Les futurs
+refactorings devront eux aussi disposer de scénarios pertinents avant extraction.
+
+### Preuves locales et verrouillage
+
+La validation Docker au commit `c72afc5` donne **109 suites / 2 356 tests**.
+La couverture Jest complète est **76,73 / 73,19 / 79,15 / 76,56 %**
+(statements / branches / fonctions / lignes). Ce sont des mesures locales
+datées, pas une CI native anticipée ni un taux de couverture des E2E.
+
+| Module | Branches natives avant (`a5598b2`) | Branches locales après (`c72afc5`) |
+|--------|----------------------------------|----------------------------------|
+| `app/events.js` | 41,42 % | 98,71 % |
+| `app/game-loader.js` | 72,22 % | 93,65 % |
+| `app/settings.js` | 16,66 % | 83,33 % |
+| `games/checkers/engine.js` | 72,97 % | 90 % |
+| `games/triomino/engine.ts` | 67,17 % | 96,32 % |
+| `tools/relativity-lab/src/Simulation.js` | 0 % Jest | 92,59 % |
+
+Les sept nouveaux seuils ciblés figurent dans la table du socle ; les six
+anciens sont conservés exactement. Des fixtures exécutent le vrai CLI Jest :
+assertions vertes et données présentes, puis refus effectif des quatre
+mesures sous les seuils. Le vrai ESLint accepte une complexité de 11 et
+refuse 12 pour le moteur Dames ; les helpers de fabrication restent limités
+à 10. Le budget de fichier Dames n'impose pas un 10 fictif à `applyAction`.
+
+Le job Tests publie un résumé par familles et modules et l'artefact
+`jest-coverage-<sha>-<run>-<attempt>` (30 jours), avec summary/final JSON,
+LCOV, provenance et Markdown. La collecte après un test échoué ne rend
+pas les tests verts ; les rapports manquants ou invalides sont des erreurs.
+Les flags Codecov incluent désormais app/lib/games/tools/scripts, sans `src/`
+racine fantôme ; l'upload reste non bloquant. Ces preuves n'instrumentent
+pas automatiquement le code lancé dans des subprocessus ou les scripts HTML.
 
 ## Maintenance des références et exceptions
 

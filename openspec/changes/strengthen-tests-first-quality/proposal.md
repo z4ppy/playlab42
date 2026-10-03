@@ -11,6 +11,8 @@ Ces chiffres ne mesurent pas les assertions navigateur ou tous les fichiers.
 - Rendre les preuves Jest exploitables par module et corriger les scopes Codecov.
 - Caractériser les messages, chargements concurrents et erreurs de reset du portail.
 - Vérifier captures/replay des Dames, transitions/scoring/reprise du Triomino.
+- Fermer l'écart de prise majoritaire confirmé pendant la caractérisation :
+  les specs/README annoncent les Dames françaises sans variante dérogatoire.
 - Tester l'orchestration temporelle et les ressources de Relativity Simulation.
 - Corriger seulement les défauts reproduits et refactorer après caractérisation.
 - Ajouter des seuils ciblés après mesure, sans réduire ceux déjà actifs.
@@ -23,8 +25,10 @@ Ces chiffres ne mesurent pas les assertions navigateur ou tous les fichiers.
 
 ### Modified Capabilities
 
-Aucune nouvelle règle de jeu, API publique, plateforme ou protection distante.
-Les corrections préservent les contrats moteur et les intentions de cycle de vie.
+Aucune nouvelle variante de jeu, API publique, plateforme ou protection distante.
+La prise majoritaire aligne les actions sur les règles françaises annoncées :
+les anciennes captures courtes acceptées à tort ne deviennent plus légales.
+Les autres corrections préservent les contrats moteur et les intentions de cycle de vie.
 Toute rupture découverte exige une décision explicitée avant son introduction.
 
 ## Impact
