@@ -47,6 +47,17 @@
     </ul>
     <p class="guide-resource"><a href="../../../../../docs/site/guides/software-quality.html" target="_top">Lire la politique qualité et le plan de progression</a> : conception, erreurs, tests et revue.</p>
 
+    <h2>Qualité : vérifier des contrats, pas seulement un score</h2>
+    <p>Les helpers de fabrication et le module OG ont un seuil ESLint de complexité
+      de <strong>10 par fonction</strong> et des seuils de couverture ciblés.
+      Une permission refusée n'est pas un fichier absent ; un cache corrompu ou daté
+      dans le futur n'est pas un cache valide. Les catalogues JSON sont remplacés
+      atomiquement, après validation : une erreur conserve le précédent.</p>
+    <p class="guide-note">Ces garanties ne sont pas une certification globale :
+      pas de seuil universel, ni de transaction couvrant tous les fichiers,
+      ni de garantie de durabilité après coupure électrique. Tester les erreurs
+      et les invariants reste plus utile que découper du code pour verdir un score.</p>
+
     <h2>Navigateur : tester ce qui sera publié</h2>
     <p>
       Le job « Chromium interactions » installe Chromium, extrait l'archive <code>github-pages</code>

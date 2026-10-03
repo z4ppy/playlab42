@@ -26,6 +26,10 @@ Vérifier que le gate `lint` exécute JS/scripts HTML et TS. Ne pas confondre
 Biome, tsc et plugins sécurité ESLint ; un script ignoré n'est pas validé.
 Les attributs événementiels HTML sont refusés par le test de politique :
 brancher les interactions dans du JS linté, pas dans des attributs.
+Pour les builders/helpers OG, vérifier aussi le gate de complexité ciblé (10),
+les seuils de couverture et les contrats d'erreur : absence ≠ corruption ou
+permission refusée, date future ≠ cache frais, fichier précédent conservé.
+Une extraction doit améliorer une responsabilité réelle, pas contourner le score.
 
 ## Handoff
 

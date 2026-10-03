@@ -38,6 +38,8 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | `lib/seeded-random.js` | 100 % | 100 % | 100 % |
 | `scripts/build-site.js` | 80 % | 100 % | 80 % |
 | `scripts/check-deployment.js` | 80 % | 100 % | 80 % |
+| `scripts/lib/build-utils.js` | 100 % | 100 % | 100 % |
+| `scripts/og-fetcher.js` | 85 % | 100 % | 90 % |
 
 Ces composants sont critiques pour le déterminisme et la livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -130,9 +132,35 @@ son auto-formatage. Une régression à horloge contrôlée couvre cette concurre
 - **Maintenance** : dépendances justifiées, versions/lockfile, licences des
   distributions et assets vérifiées ; pas de nouvelle bibliothèque sans besoin.
 
-La complexité cyclomatique et la longueur d'un fichier sont des signaux de
-revue, pas encore des seuils imposés. Préférer une extraction cohérente à un
-découpage artificiel destiné à contourner une métrique.
+### Contrats critiques de fabrication (lot 4)
+
+ESLint impose une **complexité cyclomatique ≤ 10** aux fonctions de
+`scripts/lib/build-utils.js` et `scripts/og-fetcher.js`. L'extraction OG mesurée
+passe de **14 à 8**, l'orchestration de **17 à 6** : parsing des attributs,
+enrichissement d'image et diagnostic de repli ont des responsabilités distinctes.
+Les lecteurs JSON dupliqués ont été remplacés par les helpers communs.
+Un vrai appel CLI vérifie qu'une régression de complexité échoue.
+La longueur et les autres composants restent des signaux de revue,
+pas des seuils globaux ou un indice de duplication certifié.
+
+Les manifests et cache exigent un objet JSON. Une erreur de lecture/format
+est contextualisée et collectée par les builders, ou levée sans collecteur.
+L'absence d'un cache facultatif est normale ; sa corruption ne l'est pas.
+Une permission refusée n'est pas une absence. Le nom du projet, même contenant
+`library`, ne doit pas changer sa racine.
+Les dates futures/invalides et la borne de sept jours invalident le cache.
+Les entités numériques hors Unicode deviennent un caractère de remplacement,
+sans perdre les métadonnées valides de la page.
+
+Cache et catalogues JSON sont remplacés atomiquement par un fichier temporaire
+unique du même répertoire, avec conservation du mode du fichier existant.
+Erreur de sérialisation/écriture/rename : propagation et ancien fichier conservé ;
+les builders ne remplacent pas un catalogue après erreur de validation.
+Les tests utilisent de vrais fichiers, permissions et subprocessus.
+Ce n'est ni une transaction couvrant tous les assets/slides, ni une sérialisation
+de builds concurrents, ni une garantie de durabilité après coupure électrique.
+La couverture mesurée est 100 % sur les helpers ; OG dépasse les seuils ciblés,
+sans prétendre couvrir tout le dépôt ou le réseau réel par des mocks.
 
 ## Tester les bons comportements
 

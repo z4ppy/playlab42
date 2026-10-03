@@ -408,10 +408,23 @@ describe('ExerciseEngine', () => {
     });
 
     test('doit retourner le même résumé si appelé plusieurs fois', () => {
-      const summary1 = engine.endSession();
-      const summary2 = engine.endSession();
-
-      expect(summary2).toEqual(summary1);
+      const now = jest.spyOn(Date, 'now');
+      const callback = jest.fn();
+      engine.on('session-end', callback);
+      try {
+        now.mockReturnValue(engine.sessionStartTime + 1000);
+        const summary1 = engine.endSession();
+        now.mockReturnValue(engine.sessionStartTime + 9000);
+        const summary2 = engine.endSession();
+        expect(summary1.duration).toBe(1000);
+        expect(summary2).toEqual(summary1);
+        expect(callback).toHaveBeenCalledTimes(1);
+        engine.startSession({ id: 'next', mode: 'visual-to-name', config: {} });
+        now.mockReturnValue(engine.sessionStartTime + 2000);
+        expect(engine.endSession().duration).toBe(2000);
+      } finally {
+        now.mockRestore();
+      }
     });
   });
 

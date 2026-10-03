@@ -69,6 +69,9 @@ export class ExerciseEngine extends EventEmitter {
     /** @type {number} Timestamp de début de session */
     this.sessionStartTime = 0;
 
+    /** @type {number|null} Timestamp de fin, conservé pour les appels répétés */
+    this.sessionEndTime = null;
+
     /** @type {number} Timestamp de début de question */
     this.questionStartTime = 0;
   }
@@ -92,6 +95,7 @@ export class ExerciseEngine extends EventEmitter {
     this.currentIndex = 0;
     this.hintsUsed = 0;
     this.sessionStartTime = Date.now();
+    this.sessionEndTime = null;
 
     // Créer le générateur
     this.generator = new QuestionGenerator({
@@ -443,6 +447,7 @@ export class ExerciseEngine extends EventEmitter {
       return this._getSessionSummary();
     }
 
+    this.sessionEndTime = Date.now();
     this.state = SESSION_STATES.FINISHED;
 
     const summary = this._getSessionSummary();
@@ -458,7 +463,7 @@ export class ExerciseEngine extends EventEmitter {
    */
   _getSessionSummary() {
     const stats = this.calculator.getStats();
-    const duration = Date.now() - this.sessionStartTime;
+    const duration = (this.sessionEndTime ?? Date.now()) - this.sessionStartTime;
 
     return {
       exerciseId: this.exercise?.id,

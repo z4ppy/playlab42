@@ -6,7 +6,7 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { getRootDir } from './lib/build-utils.js';
+import { getRootDir, readJSONSync, writeJSONAtomicSync } from './lib/build-utils.js';
 import {
   extractSlideIds,
   countSlides,
@@ -37,18 +37,6 @@ const stats = {
   errors: [],
   warnings: [],
 };
-
-/**
- * Lit et parse un fichier JSON
- */
-function readJSON(path) {
-  try {
-    return JSON.parse(readFileSync(path, 'utf-8'));
-  } catch (err) {
-    stats.errors.push(`Erreur lecture ${path}: ${err.message}`);
-    return null;
-  }
-}
 
 /**
  * Charge et fusionne le glossaire pour un epic
@@ -190,7 +178,7 @@ function validateEpic(epic, epicDir, template) {
 
       // Convertir Markdown en HTML si nécessaire
       if (hasMd && !hasHtml && template) {
-        const slideData = readJSON(slideJson);
+        const slideData = readJSONSync(slideJson, stats);
         const converted = convertMarkdownSlide(slideDir, template, slideData);
         if (!converted) {
           errors.push(`Échec conversion Markdown pour: ${slideId}`);
@@ -229,7 +217,7 @@ function processEpic(epicId, template, globalGlossary) {
   }
 
   stats.found++;
-  const epic = readJSON(epicJson);
+  const epic = readJSONSync(epicJson, stats);
   if (!epic) {return null;}
 
   // Ignorer les brouillons
@@ -265,7 +253,7 @@ function processEpic(epicId, template, globalGlossary) {
   // Fonction pour récupérer les données d'une slide (utilisée par buildStructure)
   const getSlideData = (slideId) => {
     const slideJson = join(epicDir, 'slides', slideId, 'slide.json');
-    return readJSON(slideJson);
+    return readJSONSync(slideJson, stats);
   };
 
   // Construire l'entrée
@@ -306,7 +294,7 @@ function main() {
   console.log('==============\n');
 
   // Charger la config
-  const config = readJSON(CONFIG_FILE) || {};
+  const config = readJSONSync(CONFIG_FILE, stats) || {};
   console.log('Config chargée:', CONFIG_FILE);
 
   // Charger le template pour les slides Markdown
@@ -351,10 +339,6 @@ function main() {
     featured: buildFeatured(epics, config),
   };
 
-  // Écrire le fichier
-  writeFileSync(OUTPUT_FILE, JSON.stringify(catalogue, null, 2));
-  console.log(`\nCatalogue généré: ${OUTPUT_FILE}`);
-
   // Rapport
   console.log('\n--- Rapport ---');
   console.log(`Epics trouvés: ${stats.found}`);
@@ -379,6 +363,8 @@ function main() {
     process.exit(1);
   }
 
+  writeJSONAtomicSync(OUTPUT_FILE, catalogue);
+  console.log(`\nCatalogue généré: ${OUTPUT_FILE}`);
   console.log('\n✅ Build terminé avec succès');
 }
 

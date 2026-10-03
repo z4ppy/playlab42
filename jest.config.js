@@ -85,6 +85,8 @@ export default {
     './lib/seeded-random.js': { branches: 100, functions: 100, lines: 100, statements: 100 },
     './scripts/build-site.js': { branches: 80, functions: 100, lines: 80, statements: 80 },
     './scripts/check-deployment.js': { branches: 80, functions: 100, lines: 80, statements: 80 },
+    './scripts/lib/build-utils.js': { branches: 100, functions: 100, lines: 100, statements: 100 },
+    './scripts/og-fetcher.js': { branches: 85, functions: 100, lines: 90, statements: 90 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
