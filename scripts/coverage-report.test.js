@@ -74,7 +74,7 @@ describe('rapport de preuves Jest', () => {
 
   test('agrège les compteurs, pas les pourcentages, et détaille quatre mesures et priorités', () => {
     const report = buildReport(fixture());
-    expect(report).toContain('| app | 18.18% (2/11) | 66.67% (4/6) | 66.67% (2/3) | 18.18% (2/11) |');
+    expect(report).toContain('| app | 18.18% (2/11) | 66.66% (4/6) | 66.66% (2/3) | 18.18% (2/11) |');
     expect(report).toContain('|---|---|---|---|---|\n| Total instrumenté');
     for (const label of ['lib', 'games', 'tools', 'scripts', ...sources.filter(source => source !== 'lib/example.js' && source !== 'scripts/example.js')]) {
       expect(report).toContain(label);
@@ -82,6 +82,30 @@ describe('rapport de preuves Jest', () => {
     for (const value of [provenance.sha, '123', '2', 'failure', 'subprocessus', 'HTML', 'E2E']) {
       expect(report).toContain(value);
     }
+  });
+
+  test.each([
+    [77, 78, 'app/events.js', '98.71% (77/78)'],
+    [2521, 3452, 'Total instrumenté', '73.13% (2535/3466)'],
+  ])('tronque comme Istanbul sans changer les compteurs de %s/%s', (covered, total, label, expected) => {
+    const input = fixture();
+    const file = path.join(root, 'app/events.js');
+    input.finalCoverage[file].b[0] = Array.from({ length: total }, (_, index) => index < covered ? 1 : 0);
+    input.summary[file].branches = { total, covered, skipped: 0, pct: Math.floor(covered / total * 10000) / 100 };
+    input.summary.total.branches.total += total - 2;
+    input.summary.total.branches.covered += covered;
+    input.summary.total.branches.pct = Math.floor(input.summary.total.branches.covered / input.summary.total.branches.total * 10000) / 100;
+    const before = JSON.stringify(input);
+    const report = buildReport(input);
+    const row = report.split('\n').find(line => line.startsWith(`| ${label} |`));
+    expect(row.split(' | ')[2]).toBe(expected);
+    expect(JSON.stringify(input)).toBe(before);
+  });
+
+  test('distingue le rapport sans gate des seuils versionnés appliqués par Jest', () => {
+    const report = buildReport(fixture());
+    expect(report).toContain('Ce rapport n’applique pas de seuil ; Jest applique les seuils versionnés. Aucune certification globale.');
+    expect(report).not.toContain('Aucun seuil nouveau');
   });
 
   test('un dénominateur nul est non applicable, pas une preuve à 100%', () => {
