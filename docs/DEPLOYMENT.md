@@ -157,6 +157,25 @@ commit de publication et son manifeste/SHA effectivement servis.
 Cette PR corrective ne constate ni merge à main ni nouvelle publication ;
 les changes OpenSpec restent actifs, sans archivage implicite.
 
+**Preuves de la correction #144, head `8b939b3` :** 98 suites / 2 046 tests,
+lint JS/HTML/TS et sécurité, types, audit sans vulnérabilité connue et
+28 validations OpenSpec strictes dans Docker. Deux builds avec `--network none`
+et même SHA/epoch produisent le même manifeste (972 fichiers publics) ;
+un troisième depuis `git archive HEAD`, sans cache OG et avec une copie physique
+des mêmes dépendances, produit exactement ce manifeste. SBOM : 511 composants.
+Reprise tar/corruption/refus/restauration exercée ; 64 Chromium sur le site
+préconstruit, intégrité et manifeste inchangés après interactions.
+Le contrat HTTP réel vérifie les dix ressources et les empreintes attendues.
+
+[CI native 37142662936](https://github.com/z4ppy/playlab42/actions/runs/37142662936)
+et [sécurité 37142662782](https://github.com/z4ppy/playlab42/actions/runs/37142662782)
+réussies : mêmes 98 suites / 2 046 tests, 28 validations, deux builds/comparaison/
+reprise et 64 Chromium sur l'archive extraite. L'archive téléchargée puis
+revérifiée localement contient 972 fichiers et 511 composants SBOM, avec les
+empreintes lockfile/snapshot attendues. Son identité est le merge de PR
+`3c2c23d`, **pas** main ni le head de branche. Ces preuves ne constatent pas
+une publication ; le commit documentaire suivant exige ses propres checks.
+
 Il effectue au plus cinq tentatives, annoncées dans les logs et espacées de
 10 secondes, pour la propagation Pages. Un échec final fait échouer le workflow :
 **le site a cependant déjà été publié**. Il n'y a pas de rollback automatique.

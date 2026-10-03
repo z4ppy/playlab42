@@ -50,3 +50,12 @@ ou avec des empreintes lockfile/snapshot différentes du checkout attendu.
 L'ancestralité seule n'est pas probante après squash. Les validations historiques
 ci-dessus ne constituent ni une livraison main ni les checks de cette correction.
 La tâche 7 reste ouverte ; aucun merge, déploiement ou archivage n'est demandé.
+
+PR corrective #144 vers main, head 8b939b3 : CI 37142662936 et sécurité
+37142662782 réussies, 98 suites / 2 046 tests, 28 validations strictes,
+deux builds/comparaison/reprise, 972 fichiers et 64 Chromium sur l'archive native.
+Archive reçue puis revérifiée : identité du merge de PR 3c2c23d, empreintes
+lockfile/snapshot attendues et 511 composants SBOM. Docker local confirme
+trois builds hors réseau identiques, dont un depuis Git seul sans cache OG,
+reprise tar et contrôle HTTP réel. Tous les seuils restent inchangés.
+La livraison main demeure non constatée ; tâche 7 non cochée.
