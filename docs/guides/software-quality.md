@@ -376,10 +376,15 @@ la demande utilisateur suivante autorise l'application ci-dessous.
 
 ## Application tests-first
 
-**Implémentés dans `quality/tests-first`, non intégrés à main et non publiés.**
-La demande « c'est parti » autorise les travaux, pas leur fusion ou leur
-archivage. La proposition reste traçable dans la PR #146 ; l'implémentation
-fait l'objet d'une PR distincte vers main.
+**Les travaux de `quality/tests-first` sont intégrés à main et publiés.**
+La [PR #147](https://github.com/z4ppy/playlab42/pull/147) a été fusionnée le
+3 octobre 2026 au commit `611a29bebe6409f5fb0e59413ff35f3d03751f92`.
+La [publication 37153902594](https://github.com/z4ppy/playlab42/actions/runs/37153902594)
+et l'[audit 37153902484](https://github.com/z4ppy/playlab42/actions/runs/37153902484)
+ont réussi sur ce commit. L'égalité des arbres entre le head `7be0e05`
+et cette fusion squash a été constatée via l'API GitHub.
+La proposition #146, incluse dans l'implémentation, est fermée comme remplacée.
+La livraison ne constitue pas une décision d'archivage.
 Les scopes ont été travaillés en worktrees séparés, avec commits tests puis
 correction. Ce premier lot les intègre pour mesurer et verrouiller une base
 commune ; loader et messages partagent désormais le même contrat de navigation.
@@ -500,6 +505,47 @@ par GitHub pour cette PR ; elle ne se substitue pas au head de branche.
 Les nouveaux pushes exigent leur propre CI. Hadolint reste ignoré sur PR,
 `npm outdated` consultatif et Codecov non bloquant. Cette preuve n'autorise
 ni fusion, ni déploiement, ni archivage.
+
+### Dernière preuve native avant fusion
+
+Au head `7be0e05`, [CI 37153110329](https://github.com/z4ppy/playlab42/actions/runs/37153110329)
+et [audit 37153110483](https://github.com/z4ppy/playlab42/actions/runs/37153110483)
+ont réussi : **109 suites / 2 359 tests, 65 interactions Chromium**.
+Jest donne S/B/F/L **76,74/73,16/79,17/76,57 %**.
+L'artefact de cinq fichiers a été contrôlé ; sa provenance référence
+la ref de merge `72eafe48a92d61ddf97b41db85394a2d70f3aa64`, run `37153110329`,
+tentative `1`, Tests `success`. Le rapport tronque désormais comme Jest :
+`77/78 = 98,71 %`. Il distingue ses résultats consultatifs des seuils
+versionnés appliqués par Jest. Hadolint a ensuite été exécuté sur main dans
+l'audit de livraison, distinct de son état ignoré sur PR.
+
+## Corrections prioritaires du cœur
+
+**Travaux autorisés dans `quality/core-refactors`, non intégrés à main.**
+Le change [refactor-core-with-contracts](../../openspec/changes/refactor-core-with-contracts/proposal.md)
+part du socle livré `611a29b`. La demande de corrections autorise le code,
+pas une fusion, une publication ou un archivage.
+
+Priorité au reset Mastermind déterministe et aux contrats communs des six
+moteurs, **sans migration des états JSON**. Puis caractérisation et extraction
+du clavier/focus, du chargement commun, du lecteur réel et des validations
+du stockage. Les responsabilités Triomino/Tetris/Dames/Go et le RNG ne sont
+mutualisés qu'après protection des replays ; pas de super-moteur générique.
+
+Le moteur pédagogique Diese & Mat possède déjà des tests mais était absent
+de la collecte `games/**/engine.{js,ts}`. La baseline diagnostique locale à
+`611a29b`, avant extension de la politique, donne **4 suites / 144 tests**
+et S/B/F/L **93,73/84,76/95,58/94,58 %** pour son dossier `src/engine`.
+Ce périmètre distinct n'est pas directement comparable au total des six
+moteurs du rapport historique. La collecte devra aussi suivre les modules
+extraits : déplacer le code hors instrumentation n'est pas un gain de qualité.
+
+Les mises à jour de dépendances sont vérifiées avec les vrais runtimes
+navigateur, pas seulement les mocks. Les heuristiques consultatives sont
+triées sans transformer des warnings en vulnérabilités confirmées.
+Complexité, couverture et CI verte sont des preuves ciblées, **pas une certification**
+du cœur entier. Les mesures après correction et la CI du head final restent
+à consigner une fois effectivement réalisées.
 
 ## Maintenance des références et exceptions
 
