@@ -120,7 +120,8 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
   });
 
   test('Security lint appartient à la CI requise sur PR et avant publication', () => {
-    expect(ci.on.pull_request.branches).toEqual(['main']);
+    expect(ci.on.pull_request).toEqual({});
+    expect(audit.on.pull_request).toEqual({});
     expect(ci.on).toHaveProperty('workflow_call');
     expect(ci.jobs['security-lint'].name).toBe('Security lint');
     expect(deploy.jobs.validate.uses).toBe('./.github/workflows/ci.yml');

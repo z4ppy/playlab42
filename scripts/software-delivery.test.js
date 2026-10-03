@@ -9,7 +9,7 @@ const browser = parse(read('.github/workflows/ui-e2e.yml'));
 describe('Contrat des workflows de livraison', () => {
   test('une CI réutilisée et aucune double CI automatique sur push main', () => {
     expect(ci.on).toHaveProperty('workflow_call');
-    expect(ci.on.pull_request.branches).toEqual(['main']);
+    expect(ci.on.pull_request).toEqual({});
     expect(ci.on.push).toBeUndefined();
     expect(deploy.on.push.branches).toEqual(['main']);
     expect(deploy.jobs.validate.uses).toBe('./.github/workflows/ci.yml');

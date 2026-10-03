@@ -7,8 +7,7 @@ on:
   # Exécuté sur chaque push et pull request
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  pull_request: {}
 
   # Exécuté quotidiennement à 6h UTC pour détecter de nouvelles CVE
   schedule:

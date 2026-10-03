@@ -8,7 +8,7 @@ des fichiers du dépôt.
 ## La chaîne de livraison
 
 ```text
-PR vers main → CI réutilisable → contrôles + archive publique + navigateur
+PR toute base → CI réutilisable → contrôles + archive publique + navigateur
 
 Push main / lancement manuel sur main
   → check-ref

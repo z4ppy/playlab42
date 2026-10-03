@@ -8,14 +8,18 @@ s'exécutent dans Docker ; les runners GitHub sont des environnements CI isolés
 
 | Workflow | Déclenchement | Rôle |
 |----------|---------------|------|
-| `ci.yml` | PR vers `main`, manuel, appel réutilisable | Validation et archive publique |
+| `ci.yml` | PR toute base, manuel, appel réutilisable | Validation et archive publique |
 | `deploy.yml` | Push `main`, manuel | Appelle CI, puis publie et contrôle le site |
 | `ui-e2e.yml` | Appel depuis CI, manuel | Interactions Chromium |
-| `security-audit.yml` | Push/PR vers `main`, quotidien 6 h UTC, manuel | Audits et rapport séparés |
+| `security-audit.yml` | Push `main`, PR toute base, quotidien 6 h UTC, manuel | Audits et rapport séparés |
 
 Une PR ne déploie pas de site. Un push `main` appelle CI **via Deploy**, sans
 second déclenchement indépendant de CI. Le lancement manuel de Deploy hors
 `main` échoue.
+
+Les PR empilées sur une branche de contribution reçoivent les mêmes contrôles
+automatiques ; elles ne déploient pas non plus. Les protections GitHub de `main`
+restent distinctes du déclenchement des workflows.
 
 ## CI
 
@@ -128,6 +132,27 @@ Pour un périmètre réduit, commencer par les sélecteurs pertinents de la
 [matrice de validation](../skills/playlab-release/references/release.md),
 sans les présenter comme une CI complète. `build:local` n'exécute pas la
 collecte Open Graph du build de production.
+
+## Performance : mesurer avant de modifier les gates
+
+La baseline native du lot 2 (run `37132029357`) prend 5 min 40 s dans Build.
+Les métadonnées OG sont terminées à 15:06:46, mais le processus ne rend la main
+qu'à 15:11:28 : environ 282 s sans travail utile. Le fetcher borne désormais
+en-têtes **et corps** et libère les réponses abandonnées, notamment sur HTTP
+en erreur. Les fixtures HTTP réelles terminent naturellement sous trois secondes,
+sans `process.exit()` ni suppression d'analyse.
+
+La fabrication de production locale corrigée a pris 35 s, avec 115 pages
+enrichies, zéro entrée de cache et dix échecs explicitement signalés. Ce n'est
+pas à elle seule une mesure native avant/après.
+Le run natif `37134037265` confirme ensuite un job Build de **1 min 03 s**
+contre **5 min 40 s** (environ 81 % de réduction) ; la commande de fabrication
+passe de 315 s à 39 s. Tous les checks exécutés réussissent, navigateur inclus.
+Les variations de réseau et de charge runner restent possibles.
+Les installations isolées, le cache de téléchargement npm, les jobs parallèles,
+tous les gates et le test de la même archive restent inchangés. Ne pas partager
+`node_modules` entre Alpine et Ubuntu ; les modules natifs peuvent différer.
+La séparation du snapshot OG reste prévue au lot 5 : ce build conserve le réseau.
 
 ## Évolution
 

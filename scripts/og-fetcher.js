@@ -161,29 +161,28 @@ function buildFaviconUrl(url) {
 }
 
 /**
- * Effectue un fetch borné dans le temps, en garantissant la libération du
- * minuteur.
+ * Borne en-têtes et corps, puis libère aussi les réponses abandonnées.
+ * Un corps HTTP non consommé peut retenir le processus pendant plusieurs minutes.
  *
- * Sans le `finally`, un rejet de `fetch` sautait le `clearTimeout` : le
- * minuteur de CONFIG.timeout restait armé. Sur un build de 120 URLs hors
- * ligne, autant de minuteurs survivaient huit secondes à la fin du travail et
- * retenaient le processus.
- *
+ * @template T
  * @param {string} url - URL à appeler
  * @param {Record<string, string>} headers - En-têtes de la requête
- * @returns {Promise<Response>}
+ * @param {(response: Response) => Promise<T>} readResponse - Consommation de la réponse
+ * @returns {Promise<T>}
  */
-async function fetchWithTimeout(url, headers) {
+async function fetchWithTimeout(url, headers, readResponse) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), CONFIG.timeout);
   try {
-    return await fetch(url, {
+    const response = await fetch(url, {
       signal: controller.signal,
       headers,
       redirect: 'follow',
     });
+    return await readResponse(response);
   } finally {
     clearTimeout(timeoutId);
+    controller.abort();
   }
 }
 
@@ -291,28 +290,35 @@ async function downloadImage(imageUrl, pageUrl) {
       ? imageUrl
       : new URL(imageUrl, pageUrl).href;
 
-    const response = await fetchWithTimeout(absoluteUrl, {
+    const image = await fetchWithTimeout(absoluteUrl, {
       'User-Agent': CONFIG.userAgent,
       'Accept': 'image/*',
+    }, async response => {
+      if (!response.ok) {
+        console.warn(`  ⚠️  image OG ${absoluteUrl}: HTTP ${response.status}`);
+        return null;
+      }
+      return {
+        ext: getImageExtension(absoluteUrl, response.headers.get('content-type')),
+        buffer: Buffer.from(await response.arrayBuffer()),
+      };
     });
 
-    if (!response.ok) {
+    if (!image) {
       return null;
     }
 
-    const contentType = response.headers.get('content-type');
-    const ext = getImageExtension(absoluteUrl, contentType);
-    const filename = `${hashUrl(pageUrl)}${ext}`;
+    const filename = `${hashUrl(pageUrl)}${image.ext}`;
     const filepath = join(IMAGES_DIR, filename);
 
     // Sauvegarder l'image
-    const buffer = Buffer.from(await response.arrayBuffer());
-    writeFileSync(filepath, buffer);
+    writeFileSync(filepath, image.buffer);
 
     // Retourner le chemin relatif pour le JSON
     return `data/bookmarks-images/${filename}`;
 
-  } catch {
+  } catch (err) {
+    console.warn(`  ⚠️  image OG ${imageUrl}: ${err.message}`);
     return null;
   }
 }
@@ -332,20 +338,22 @@ export async function fetchOGMetadata(url, cache) {
   }
 
   try {
-    const response = await fetchWithTimeout(url, {
+    const page = await fetchWithTimeout(url, {
       'User-Agent': CONFIG.userAgent,
       'Accept': 'text/html,application/xhtml+xml',
       'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
-    });
+    }, async response => ({
+      status: response.status,
+      html: response.ok ? await response.text() : null,
+    }));
 
-    if (!response.ok) {
+    if (page.html === null) {
       const fallback = buildFallbackMeta(url);
-      console.log(`  ⚠️  ${url}: HTTP ${response.status}${fallback ? ' (image versionnée conservée)' : ''}`);
+      console.log(`  ⚠️  ${url}: HTTP ${page.status}${fallback ? ' (image versionnée conservée)' : ''}`);
       return { meta: fallback, fromCache: false, failed: true };
     }
 
-    const html = await response.text();
-    const meta = extractOGTags(html);
+    const meta = extractOGTags(page.html);
 
     // Télécharger l'image OG en cache local
     if (meta.ogImage) {

@@ -152,7 +152,7 @@ de vulnérabilités.
 |-----|---------------|-------------------|
 | 1 — socle, PR #135 intégrée | Lint strict, audit npm requis, seuils ciblés, rapports fidèles, guide/revue | Checks natifs constatés et code intégré à main ; archivage sur décision distincte |
 | 2 — sécurité et reproductibilité, branche empilée | Moderniser ESLint Security, épingler actions/scanners/images, définir gates et exceptions | Outil réellement exécuté, références vérifiables, limites du parser TS explicites |
-| Avant 3 — optimisation CI | Mesurer les durées et répétitions, ajuster cache/parallélisme/fail-fast et les appels réseau inutiles | Comparaison avant/après ; gates inchangés et même archive testée, sans faux succès |
+| Avant 3 — optimisation CI | Corriger l'attente HTTP après enrichissement OG ; installations/cache/parallélisme conservés après mesure | Fixtures quittant naturellement sous 3 s, comparaison native avant/après ; gates et archive inchangés |
 | 3 — couverture du lint, priorité suivante | Résoudre la compatibilité TS, couvrir le JS embarqué pertinent, corriger l'existant, aligner local et CI | Règles retenues réellement exécutées et bloquantes ; entrées interdites refusées sans forçage ni désactivation générale |
 | 4 — qualité du code | Complexité, duplication, responsabilités, erreurs, tests d'invariants et seuils ciblés | Refactorings justifiés par des défauts observables ; régressions représentatives détectées |
 | 5 — fabrication et exploitation | Snapshot OG séparé, inventaire/SBOM, provenance, monitoring et récupération | Artefact reproductible, provenance vérifiée et restauration exercée |
