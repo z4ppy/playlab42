@@ -39,4 +39,16 @@ describe('Types du contrat moteur', () => {
       expect(typeof engine.init).toBe('function');
     }
   });
+
+  it('refuse les états scalaires, configs sans seed et commandes incomplètes au typage', () => {
+    // @ts-expect-error Un état doit être un objet spécifique au jeu.
+    const scalar: GameEngine<number, never, never, { seed: number }> = tictactoe;
+    expect(scalar).toBe(tictactoe);
+    // @ts-expect-error La seed reste obligatoire, même sans BaseGameConfig.
+    const unseeded: GameEngine<object, never, never, { playerId: string }> = mastermind;
+    expect(unseeded).toBe(mastermind);
+    // @ts-expect-error Un reset valide doit transporter sa seed.
+    const incomplete: Parameters<MastermindEngine['applyAction']>[1] = { type: 'reset' };
+    expect(incomplete.type).toBe('reset');
+  });
 });
