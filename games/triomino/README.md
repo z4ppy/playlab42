@@ -15,7 +15,7 @@ Jeu de tuiles triangulaires — 1 à 4 joueurs — Dès 6 ans
 - Le reste constitue la pioche
 
 ### Déterminer le premier joueur
-Chaque joueur prend la première tuile de son rack. Celui dont la **somme des 3 valeurs est la plus élevée** commence. En cas d'égalité, on recommence.
+Le moteur compare la première tuile de chaque rack. Celui dont la **somme des 3 valeurs est la plus élevée** commence. En cas d'égalité, le RNG de la partie choisit parmi les ex-aequo, sans redistribution.
 
 ### Déroulement
 
@@ -51,9 +51,9 @@ Si le joueur **ne peut pas ou ne veut pas** poser :
 
 **Pont** : La tuile posée crée un "pont" en ayant 2 voisins non adjacents entre eux.
 
-**Hexagone** : 6 tuiles forment un anneau fermé (3 triangles ? et 3 triangles ? alternés autour d'un centre vide).
+**Hexagone** : 6 triangles partagent un même sommet géométrique.
 
-**Double hexagone** : Deux hexagones adjacents partageant un côté (12 tuiles).
+**Double hexagone** : La pose ferme au moins deux anneaux autour des sommets de la tuile. Deux anneaux partageant un côté occupent dix cellules. Les bonus ne se cumulent pas : double hexagone > hexagone > pont.
 
 ### Fin de partie
 
@@ -65,7 +65,7 @@ Si le joueur **ne peut pas ou ne veut pas** poser :
 | Mode | Description |
 |------|-------------|
 | Standard | Règles complètes décrites ci-dessus |
-| Score cible | Jouer plusieurs manches jusqu'à atteindre un score (ex: 400 pts) |
+| Score cible | `targetScore` est conservé dans la configuration ; le moteur actuel ne gère pas les manches multiples |
 | Simplifié | Pose=1pt, Pont=1pt, Hexagone=1pt, Double hexagone=2pts, Fin=5pts |
 | Enfants | Pas de points, le premier à poser toutes ses tuiles gagne |
 
@@ -78,6 +78,15 @@ avec son contrat TypeScript adjacent. La fabrication recale cet import depuis
 `dist/engine.js` vers `../../../lib/seeded-random.js`, sans embarquer une copie.
 Les futurs modules source `engine/*.ts` sont émis dans `dist/engine/*.js` ;
 les bots gardent leur chemin historique `bots/dist/`.
+
+`engine.ts` garde l'API publique et l'orchestration des transitions :
+- `engine/models.ts` définit une seule fois les états, commandes et vues typés ;
+- `engine/placement.ts` regroupe tuiles, voisinage, rotations, placements et anneaux ;
+- `engine/scoring.ts` calcule les bonus exclusifs, pénalités et bilans de fin de partie.
+
+Les types et les fonctions `generateAllTiles`, `isValidPlacement`, `detectBonus`
+restent réexportés depuis `engine.ts`. Les tests de responsabilités passent
+par ce moteur réel dans les trois modes, sans contourner son orchestration.
 
 Le corpus `fixtures/rng-legacy.json`, figé avant extraction sur `205ece9`,
 protège les seeds négatives et supérieures à 32 bits, les racks, la pile,
@@ -121,10 +130,12 @@ Le plateau utilise un repère triangulaire `(col, row, orientation)` :
   (0,0,DOWN)?  (1,0,DOWN)?
 ```
 
-Voisinage d'un triangle **UP** :
-- Gauche : `(col-1, row, UP)`
-- Droite : `(col+1, row, UP)`
-- Bas : `(col, row, DOWN)`
+Le voisinage dépend de l'orientation **visuelle** :
+`seqX = 2 * col + (orientation === 'DOWN' ? 1 : 0)`.
+Le triangle pointe vers le haut si `seqX + row` est pair, y compris en
+coordonnées négatives. Ses voisins gauche/droit sont à `seqX - 1` et
+`seqX + 1` sur la même rangée ; le voisin de base est à `row + 1`
+s'il pointe vers le haut, sinon à `row - 1`, sans changer `seqX`.
 
 ### Interface du moteur
 
