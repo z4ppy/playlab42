@@ -9,7 +9,7 @@ document.body.innerHTML = `
   <section id="view-settings"></section>
   <section id="view-game">
     <h2 id="game-title"></h2>
-    <div id="loading"><p>Chargement...</p></div>
+    <div id="loading"><div class="spinner"></div><p>Chargement...</p></div>
     <iframe id="game-iframe"></iframe>
     <button id="btn-back"></button>
     <button id="btn-fullscreen"></button>
@@ -53,7 +53,7 @@ describe('Isolation des chargements réels du portail', () => {
     state.recentGames = [];
     state.catalogue = { games: [{ id: 'b', name: 'Jeu B' }], tools: [] };
     state.preferences = { sound: true, pseudo: 'Anonyme' };
-    el.loading.innerHTML = '<p>Chargement...</p>';
+    el.loading.innerHTML = '<div class="spinner"></div><p>Chargement...</p>';
     el.loading.classList.add('hidden');
     document.body.className = '';
     window.location.hash = '#/';
@@ -83,10 +83,12 @@ describe('Isolation des chargements réels du portail', () => {
     expect(el.gameTitle.textContent).toBe(type === 'game' ? 'Jeu B' : 'b');
   });
 
-  it.each(['rejet', '404'])('ignore le %s du HEAD A après B sans modifier son hash', async (failure) => {
+  it.each([
+    ['game', 'rejet'], ['game', '404'], ['tool', 'rejet'], ['tool', '404'],
+  ])('ignore le HEAD %s A (%s) après B sans modifier son hash', async (type, failure) => {
     const a = deferred();
     fetch.mockReturnValueOnce(a.promise).mockResolvedValueOnce({ ok: true });
-    const pendingA = openGame('a');
+    const pendingA = (type === 'game' ? openGame : openTool)('a');
     await openGame('b');
     if (failure === 'rejet') {
       a.reject(new Error('Réseau A'));
@@ -137,6 +139,21 @@ describe('Isolation des chargements réels du portail', () => {
     expect(state.recentGames).toEqual([]);
   });
 
+  it('ne ferme pas A pendant le HEAD B qui dépasse les 100 ms', async () => {
+    fetch.mockResolvedValueOnce({ ok: true });
+    await openGame('a');
+    unloadGame();
+    const b = deferred();
+    fetch.mockReturnValueOnce(b.promise);
+    const pending = openGame('b');
+    jest.advanceTimersByTime(100);
+    expect(state.currentGame.id).toBe('a');
+    expect(el.gameIframe.getAttribute('src')).toBe('games/a/index.html');
+    b.resolve({ ok: true });
+    await pending;
+    expectCurrent('b');
+  });
+
   it('une ouverture directe invalide aussi les HEAD en attente', async () => {
     const a = deferred();
     fetch.mockReturnValueOnce(a.promise);
@@ -152,6 +169,7 @@ describe('Isolation des chargements réels du portail', () => {
   it('resélectionner A déjà ouvert annule une demande B en attente', async () => {
     fetch.mockResolvedValueOnce({ ok: true });
     await openGame('a');
+    const loadedA = el.gameIframe.onload;
     const b = deferred();
     fetch.mockReturnValueOnce(b.promise);
     const pending = openGame('b');
@@ -159,6 +177,8 @@ describe('Isolation des chargements réels du portail', () => {
     b.resolve({ ok: true });
     await pending;
     expectCurrent('a');
+    loadedA();
+    expect(el.loading.classList.contains('hidden')).toBe(true);
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
@@ -206,11 +226,25 @@ describe('Isolation des chargements réels du portail', () => {
     expectCurrent('b');
     expect(el.loading.classList.contains('hidden')).toBe(false);
     expect(el.loading.textContent).toBe('Erreur de chargement');
+    expect(el.loading.querySelector('.spinner')).not.toBeNull();
     await openGame('c');
     expect(el.loading.textContent).toContain('Chargement...');
     el.gameIframe.onload();
     jest.advanceTimersByTime(5000);
     expect(el.loading.classList.contains('hidden')).toBe(true);
+  });
+
+  it('rend une erreur iframe courante visible même après la fin du chargement', async () => {
+    fetch.mockResolvedValue({ ok: true });
+    await openGame('b');
+    el.gameIframe.onload();
+    expect(el.loading.classList.contains('hidden')).toBe(true);
+    el.gameIframe.onerror();
+    expect(el.loading.classList.contains('hidden')).toBe(false);
+    expect(el.loading.textContent).toBe('Erreur de chargement');
+    jest.advanceTimersByTime(5000);
+    expect(el.loading.textContent).toBe('Erreur de chargement');
+    expectCurrent('b');
   });
 
   it('ferme normalement, rend le focus et neutralise callbacks et timer anciens', async () => {
@@ -259,6 +293,8 @@ describe('Isolation des chargements réels du portail', () => {
     fetch.mockResolvedValueOnce({ ok: false, status: 404 }).mockResolvedValueOnce({ ok: true });
     await openTool('simple');
     expectCurrent('simple', 'tool', 'tools/simple.html');
+    el.gameIframe.onload();
+    expect(el.loading.classList.contains('hidden')).toBe(true);
     expect(fetch).toHaveBeenNthCalledWith(2, 'tools/simple.html', { method: 'HEAD' });
     state.catalogue.tools = [{ id: 'listed', name: 'Outil listé', path: 'tools/listed.html' }];
     fetch.mockResolvedValueOnce({ ok: true });
@@ -266,6 +302,10 @@ describe('Isolation des chargements réels du portail', () => {
     expectCurrent('listed', 'tool', 'tools/listed.html');
     expect(el.gameIframe.title).toBe('Outil : Outil listé');
     expect(fetch).toHaveBeenCalledTimes(3);
+    jest.advanceTimersByTime(5000);
+    expect(el.loading.textContent).toBe('Chargement lent...');
+    el.gameIframe.onload();
+    expect(el.loading.classList.contains('hidden')).toBe(true);
   });
 
   it('refuse les HEAD 404 courants sans iframe ni récent et affiche le diagnostic', async () => {
@@ -284,6 +324,7 @@ describe('Isolation des chargements réels du portail', () => {
     fetch.mockResolvedValue({ ok: true });
     await openGame('b');
     expect(el.gameIframe.title).toBe('Jeu : Jeu B');
+    expect(el.loading.querySelector('.spinner')).not.toBeNull();
     toggleSound();
     expect(state.preferences.sound).toBe(false);
     expect(JSON.parse(localStorage.getItem('preferences')).sound).toBe(false);
