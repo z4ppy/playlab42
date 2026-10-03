@@ -13,3 +13,8 @@ Complexité extraction 14→8, orchestration 17→6 ; fixture CLI rejetée au-de
 Lint JS/HTML/TS, sécurité, types, audit et 27 validations OpenSpec réussis.
 Vrai build production et 64 scénarios Chromium sur son site préparé réussis.
 La PR et ses résultats natifs restent à constater avant cocher 5/6.
+
+PR #142 : CI 37137577950 a révélé un défaut réel d'idempotence de Diese & Mat
+(durée 0→1 ms au deuxième `endSession`). Reproduit sans dépendre du hasard
+(1 000→9 000 ms), corrigé par conservation du timestamp de fin et réinitialisation
+au démarrage suivant ; événement `session-end` unique vérifié.
