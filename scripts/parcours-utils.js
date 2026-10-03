@@ -94,6 +94,42 @@ export function buildStructure(content, getSlideData) {
 }
 
 /**
+ * Compte les epics par première catégorie de hiérarchie ("autres" par défaut)
+ * @param {Array} epics - Liste des epics
+ * @returns {Object<string, number>} - Compteurs par catégorie
+ */
+function countByCategory(epics) {
+  const counts = {};
+  for (const epic of epics) {
+    const cat = epic.hierarchy[0] || 'autres';
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+  return counts;
+}
+
+/**
+ * Ajoute à "autres" les catégories hors configuration et les noeuds sous le threshold
+ * @param {Array} nodes - Noeuds construits, dans l'ordre de la configuration
+ * @param {Object<string, number>} counts - Compteurs par catégorie
+ * @param {Array} hierarchyConfig - Catégories configurées
+ * @returns {void}
+ */
+function absorbIntoAutres(nodes, counts, hierarchyConfig) {
+  const autres = nodes.find(n => n.id === 'autres');
+  if (!autres) {return;}
+  for (const cat of Object.keys(counts)) {
+    if (!hierarchyConfig.find(h => h.id === cat)) {
+      autres.count += counts[cat];
+    }
+  }
+  for (const node of nodes) {
+    if (!node.visible && node.id !== 'autres') {
+      autres.count += node.count;
+    }
+  }
+}
+
+/**
  * Construit la hiérarchie des catégories avec threshold
  * @param {Array} epics - Liste des epics
  * @param {Object} config - Configuration (taxonomy.hierarchy, taxonomy.threshold)
@@ -102,49 +138,23 @@ export function buildStructure(content, getSlideData) {
 export function buildHierarchy(epics, config) {
   const threshold = config.taxonomy?.threshold || 3;
   const hierarchyConfig = config.taxonomy?.hierarchy || [];
+  const counts = countByCategory(epics);
 
-  // Compter les epics par catégorie
-  const counts = {};
-  for (const epic of epics) {
-    const cat = epic.hierarchy[0] || 'autres';
-    counts[cat] = (counts[cat] || 0) + 1;
-  }
-
-  // Construire les noeuds
-  const nodes = [];
-  for (const h of hierarchyConfig) {
+  const nodes = hierarchyConfig.map(h => {
     const count = counts[h.id] || 0;
-    const visible = count >= threshold || h.id === 'autres';
-
-    // Trouver la première vignette
     const firstEpic = epics.find(e => e.hierarchy[0] === h.id && e.thumbnail);
-
-    nodes.push({
+    return {
       id: h.id,
       label: h.label,
       icon: h.icon,
       count,
       thumbnail: firstEpic?.thumbnail || null,
-      visible,
+      visible: count >= threshold || h.id === 'autres',
       children: [],
-    });
-  }
+    };
+  });
 
-  // Absorber les catégories sous le threshold dans "autres"
-  const autres = nodes.find(n => n.id === 'autres');
-  if (autres) {
-    for (const cat of Object.keys(counts)) {
-      if (!hierarchyConfig.find(h => h.id === cat)) {
-        autres.count += counts[cat];
-      }
-    }
-    for (const node of nodes) {
-      if (!node.visible && node.id !== 'autres') {
-        autres.count += node.count;
-      }
-    }
-  }
-
+  absorbIntoAutres(nodes, counts, hierarchyConfig);
   return nodes.filter(n => n.visible);
 }
 

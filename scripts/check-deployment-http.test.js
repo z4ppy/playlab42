@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, wri
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { checkDeployment } from './check-deployment.js';
+import { checkDeployment, runCli } from './check-deployment.js';
 import { hashFile } from './lib/artifact-inventory.js';
 import { getRootDir } from './lib/build-utils.js';
 
@@ -139,5 +139,29 @@ describe('Contrôle de publication contre un vrai serveur HTTP', () => {
       expect(usage.stderr).toBe('Usage : node scripts/check-deployment.js <url-du-site> [sha-attendu]\n');
     }
     expect((await run('ftp://x/')).stderr).toContain('URL de publication invalide');
+  });
+
+  test('runCli : mêmes sorties et mêmes codes sans sous-processus, SHA vide traité comme local', async () => {
+    await start();
+    const out = [];
+    const err = [];
+    const io = { log: message => out.push(message), error: message => err.push(message) };
+    await expect(runCli(['node', 'script', base, ''], io)).resolves.toBe(0);
+    expect(out).toEqual([`Publication vérifiée : 0.2.0, commit ${commit}, 10 ressources.`]);
+    await expect(runCli(['node', 'script', base, 'main'], io)).resolves.toBe(1);
+    expect(err).toEqual(['Contrôle de publication échoué : Le commit attendu doit être un SHA Git complet.']);
+    await expect(runCli(['node'], io)).resolves.toBe(1);
+    expect(err[1]).toBe('Usage : node scripts/check-deployment.js <url-du-site> [sha-attendu]');
+    expect(out).toHaveLength(1);
+  });
+
+  test('runCli : écrire « local » pour un build sans commit', async () => {
+    await start({
+      'build-info.json': JSON.stringify({ version: '0.2.0', commit: null }),
+      'build-manifest.json': JSON.stringify({ formatVersion: 1, version: '0.2.0', commit: null, inputs: inputs(), files: [{ path: 'a' }] }),
+    });
+    const out = [];
+    await expect(runCli(['node', 'script', base], { log: m => out.push(m), error: () => {} })).resolves.toBe(0);
+    expect(out).toEqual(['Publication vérifiée : 0.2.0, commit local, 10 ressources.']);
   });
 });
