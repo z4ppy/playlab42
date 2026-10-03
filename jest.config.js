@@ -76,6 +76,7 @@ export default {
     'app/**/*.{js,ts}',
     'lib/**/*.{js,ts}',
     'games/**/engine.{js,ts}',
+    'games/**/engine/**/*.{js,ts}',
     'tools/**/src/**/*.{js,ts}',
     'scripts/**/*.js',
     '!**/*.test.{js,ts}',
