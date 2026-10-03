@@ -8,6 +8,8 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [Unreleased]
 
 ### Added
+- Gate de complexité ciblé (10) et seuils de couverture sur helpers de fabrication
+  et OG ; régressions de contrats JSON, permissions, cache et persistance.
 - Lint des sources `.ts` avec Biome 2.5.15 et des scripts HTML avec
   eslint-plugin-html 8.2.1 ; commande globale requise en local et CI,
   fixtures des vrais CLI et politique sans attributs événementiels.
@@ -19,6 +21,11 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   elles ne correspondaient plus à aucune URL du catalogue
 
 ### Changed
+- Builders : lectures JSON partagées et diagnostiquées, racine fiable même dans
+  un projet nommé `library`, écritures atomiques conservant le dernier catalogue
+  en cas d'échec. Un cache corrompu est désormais une erreur explicite.
+- OG : parsing/enrichissement/repli séparés, dates futures refusées, entités
+  numériques hors Unicode remplacées sans faire échouer la page.
 - Triomino : `getPlayerView` refuse explicitement un ID absent, au lieu d'un
   `TypeError` incident ; `GreedyBot.chooseAction` refuse une liste d'actions
   vide, au lieu d'un `undefined` contraire à son type. Les appels valides et

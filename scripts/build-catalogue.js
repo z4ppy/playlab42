@@ -7,13 +7,14 @@
  * @see openspec/specs/catalogue/spec.md
  */
 
-import { readdir, writeFile } from 'fs/promises';
+import { readdir } from 'fs/promises';
 import { join } from 'path';
 import {
   colors,
   getRootDir,
   fileExistsAsync,
   readJSONAsync,
+  writeJSONAtomicSync,
   isValidId,
 } from './lib/build-utils.js';
 
@@ -133,10 +134,9 @@ async function scanSimpleTools() {
 
   for (const jsonFile of jsonFiles) {
     const manifestPath = join(TOOLS_DIR, jsonFile);
-    const manifest = await readJSONAsync(manifestPath);
+    const manifest = await readJSONAsync(manifestPath, { errors });
 
     if (!manifest) {
-      errors.push(`${jsonFile}: Invalid JSON`);
       continue;
     }
 
@@ -198,10 +198,9 @@ async function scanComplexTools() {
       continue;
     }
 
-    const manifest = await readJSONAsync(manifestPath);
+    const manifest = await readJSONAsync(manifestPath, { errors });
 
     if (!manifest) {
-      errors.push(`${dir.name}/tool.json: Invalid JSON`);
       continue;
     }
 
@@ -261,10 +260,9 @@ async function scanGames() {
       continue;
     }
 
-    const manifest = await readJSONAsync(manifestPath);
+    const manifest = await readJSONAsync(manifestPath, { errors });
 
     if (!manifest) {
-      errors.push(`${dir.name}/game.json: Invalid JSON`);
       continue;
     }
 
@@ -350,7 +348,7 @@ async function main() {
   };
 
   // Écrire le fichier
-  await writeFile(OUTPUT_FILE, JSON.stringify(catalogue, null, 2), 'utf-8');
+  writeJSONAtomicSync(OUTPUT_FILE, catalogue);
 
   // Résumé
   console.log(`\n${colors.cyan}Summary:${colors.reset}`);

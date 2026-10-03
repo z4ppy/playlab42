@@ -84,6 +84,13 @@ export default [
     },
   },
 
+  {
+    files: ['scripts/og-fetcher.js', 'scripts/lib/build-utils.js'],
+    rules: {
+      complexity: ['error', 10],
+    },
+  },
+
   // Configuration spécifique pour les tests
   {
     files: ['**/*.test.js', '**/*.spec.js', '**/tests/**/*.js'],
