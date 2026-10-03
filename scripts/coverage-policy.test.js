@@ -25,6 +25,70 @@ const inherited = {
 };
 
 describe('Ratchet de couverture mesuré par module', () => {
+  test('le vrai CLI collecte les modules extraits et le moteur pédagogique', () => {
+    const directory = join(root, 'coverage', `collection-${randomUUID()}`);
+    const sources = [
+      'games/mastermind/engine.js',
+      'games/triomino/engine/geometry.ts',
+      'games/tetris/engine/scoring.js',
+      'games/diese-et-mat/src/engine/ExerciseEngine.js',
+    ];
+    mkdirSync(directory, { recursive: true });
+    try {
+      writeFileSync(join(directory, 'package.json'), '{"type":"module"}');
+      for (const source of sources) {
+        const filename = join(directory, source);
+        mkdirSync(dirname(filename), { recursive: true });
+        writeFileSync(filename, [
+          'export function observed(value) {',
+          '  if (value) { return 1; }',
+          '  return 0;',
+          '}',
+          '',
+        ].join('\n'));
+      }
+      writeFileSync(join(directory, 'probe.test.js'), [
+        "import { observed } from './games/mastermind/engine.js';",
+        'test("le moteur historique reste instrumenté", () => {',
+        '  expect(observed(true)).toBe(1);',
+        '});',
+        '',
+      ].join('\n'));
+      writeFileSync(join(directory, 'jest.config.json'), JSON.stringify({
+        rootDir: directory,
+        testEnvironment: config.testEnvironment,
+        testMatch: ['<rootDir>/probe.test.js'],
+        transform: { '^.+\\.ts$': join(root, 'jest.transform.cjs') },
+        extensionsToTreatAsEsm: config.extensionsToTreatAsEsm,
+        collectCoverageFrom: config.collectCoverageFrom,
+        coverageReporters: ['json-summary'],
+        coverageDirectory: join(directory, 'results'),
+      }));
+      const result = spawnSync(process.execPath, [
+        '--experimental-vm-modules', join(root, 'node_modules/jest/bin/jest.js'),
+        '--config', join(directory, 'jest.config.json'), '--coverage', '--runInBand', '--no-cache',
+        '--cacheDirectory', join(directory, 'jest-cache'),
+      ], { cwd: directory, encoding: 'utf8', timeout: 20000 });
+      expect(result.error).toBeUndefined();
+      expect(result.status).toBe(0);
+      expect(result.stderr).toContain('Tests:       1 passed');
+      const metrics = JSON.parse(readFileSync(join(directory, 'results/coverage-summary.json'), 'utf8'));
+      for (const source of sources) {
+        const data = metrics[join(directory, source)];
+        expect({ source, instrumented: Boolean(data) }).toEqual({ source, instrumented: true });
+        for (const measure of ['statements', 'branches', 'functions', 'lines']) {
+          expect(data[measure].total).toBeGreaterThan(0);
+        }
+        if (source !== sources[0]) {
+          expect(data.statements.covered).toBe(0);
+          expect(data.functions.covered).toBe(0);
+        }
+      }
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  }, 30000);
+
   test('conserver exactement les seuils hérités sans ajouter de seuil global', () => {
     for (const [source, threshold] of Object.entries(inherited)) {
       expect(config.coverageThreshold[source]).toEqual(threshold);
