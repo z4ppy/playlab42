@@ -1,0 +1,7717 @@
+{
+  "vectors": [
+    {
+      "seed": 0,
+      "initialState": 0,
+      "sequence": [
+        0.26642920868471265,
+        0.0003297457005828619,
+        0.2232720274478197,
+        0.1462021479383111,
+        0.46732782293111086,
+        0.5450490827206522,
+        0.6152513844426721,
+        0.6489853798411787
+      ],
+      "sequenceState": 14652526504,
+      "int": 1,
+      "singletonInt": 7,
+      "pick": "a",
+      "singletonPick": "seul",
+      "shuffled": [
+        0,
+        3,
+        1,
+        4,
+        2,
+        5
+      ],
+      "finalState": 31136618821
+    },
+    {
+      "seed": 42,
+      "initialState": 42,
+      "sequence": [
+        0.6011037519201636,
+        0.44829055899754167,
+        0.8524657934904099,
+        0.6697340414393693,
+        0.17481389874592423,
+        0.5265925421845168,
+        0.2732279943302274,
+        0.6247446539346129
+      ],
+      "sequenceState": 14652526546,
+      "int": 4,
+      "singletonInt": 7,
+      "pick": "a",
+      "singletonPick": "seul",
+      "shuffled": [
+        3,
+        2,
+        5,
+        0,
+        1,
+        4
+      ],
+      "finalState": 31136618863
+    },
+    {
+      "seed": -1,
+      "initialState": 4294967295,
+      "sequence": [
+        0.8964226141106337,
+        0.189478256739676,
+        0.7156526781618595,
+        0.9440599093213677,
+        0.8452364315744489,
+        0.5391399988438934,
+        0.6804977387655526,
+        0.4755720964167267
+      ],
+      "sequenceState": 18947493799,
+      "int": -2,
+      "singletonInt": 7,
+      "pick": "c",
+      "singletonPick": "seul",
+      "shuffled": [
+        0,
+        4,
+        5,
+        1,
+        3,
+        2
+      ],
+      "finalState": 35431586116
+    },
+    {
+      "seed": -4294967296,
+      "initialState": 0,
+      "sequence": [
+        0.26642920868471265,
+        0.0003297457005828619,
+        0.2232720274478197,
+        0.1462021479383111,
+        0.46732782293111086,
+        0.5450490827206522,
+        0.6152513844426721,
+        0.6489853798411787
+      ],
+      "sequenceState": 14652526504,
+      "int": 1,
+      "singletonInt": 7,
+      "pick": "a",
+      "singletonPick": "seul",
+      "shuffled": [
+        0,
+        3,
+        1,
+        4,
+        2,
+        5
+      ],
+      "finalState": 31136618821
+    },
+    {
+      "seed": 4294967295,
+      "initialState": 4294967295,
+      "sequence": [
+        0.8964226141106337,
+        0.189478256739676,
+        0.7156526781618595,
+        0.9440599093213677,
+        0.8452364315744489,
+        0.5391399988438934,
+        0.6804977387655526,
+        0.4755720964167267
+      ],
+      "sequenceState": 18947493799,
+      "int": -2,
+      "singletonInt": 7,
+      "pick": "c",
+      "singletonPick": "seul",
+      "shuffled": [
+        0,
+        4,
+        5,
+        1,
+        3,
+        2
+      ],
+      "finalState": 35431586116
+    },
+    {
+      "seed": 4294967338,
+      "initialState": 42,
+      "sequence": [
+        0.6011037519201636,
+        0.44829055899754167,
+        0.8524657934904099,
+        0.6697340414393693,
+        0.17481389874592423,
+        0.5265925421845168,
+        0.2732279943302274,
+        0.6247446539346129
+      ],
+      "sequenceState": 14652526546,
+      "int": 4,
+      "singletonInt": 7,
+      "pick": "a",
+      "singletonPick": "seul",
+      "shuffled": [
+        3,
+        2,
+        5,
+        0,
+        1,
+        4
+      ],
+      "finalState": 31136618863
+    },
+    {
+      "seed": 9007199254740991,
+      "initialState": 4294967295,
+      "sequence": [
+        0.8964226141106337,
+        0.189478256739676,
+        0.7156526781618595,
+        0.9440599093213677,
+        0.8452364315744489,
+        0.5391399988438934,
+        0.6804977387655526,
+        0.4755720964167267
+      ],
+      "sequenceState": 18947493799,
+      "int": -2,
+      "singletonInt": 7,
+      "pick": "c",
+      "singletonPick": "seul",
+      "shuffled": [
+        0,
+        4,
+        5,
+        1,
+        3,
+        2
+      ],
+      "finalState": 35431586116
+    },
+    {
+      "seed": -2147483648,
+      "initialState": 2147483648,
+      "sequence": [
+        0.8205775609239936,
+        0.4481089550536126,
+        0.7836112855002284,
+        0.5120457962621003,
+        0.8388098266441375,
+        0.4205148529727012,
+        0.8944806265644729,
+        0.9326926763169467
+      ],
+      "sequenceState": 16800010152,
+      "int": 3,
+      "singletonInt": 7,
+      "pick": "c",
+      "singletonPick": "seul",
+      "shuffled": [
+        5,
+        3,
+        1,
+        0,
+        4,
+        2
+      ],
+      "finalState": 33284102469
+    }
+  ],
+  "corpus": [
+    {
+      "config": {
+        "seed": 0,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            35,
+            15,
+            45,
+            54,
+            37,
+            1,
+            22,
+            42,
+            18
+          ],
+          [
+            29,
+            33,
+            53,
+            40,
+            55,
+            48,
+            38,
+            20,
+            3
+          ]
+        ],
+        "drawPile": [
+          23,
+          6,
+          5,
+          52,
+          26,
+          36,
+          41,
+          19,
+          43,
+          9,
+          13,
+          16,
+          34,
+          25,
+          2,
+          10,
+          28,
+          8,
+          44,
+          47,
+          51,
+          32,
+          46,
+          49,
+          17,
+          39,
+          4,
+          11,
+          50,
+          21,
+          31,
+          30,
+          27,
+          24,
+          7,
+          12,
+          0,
+          14
+        ],
+        "currentPlayerIndex": 0,
+        "rngState": 0,
+        "hash": "680e5eeea487dbd2d01e3c91be06e6af262e1d148eb0b5e72c9e00feb2b3119d"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "e4b6d0b624d59908a41150964524dd4b278e1ac8cc32f5518d90e00cde9bdd98"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "56164436026eff1badabd4ebf78bd7496c77bd54d4660f86f31b513043ea4e5b"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "e58b49ba478cb953d8967dcc69ddc298c090c644b54be24f9de75ef84d141bd7"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "3b9aff66e00ca9a90eb4874d3299bef9d75be1cc0387aaedc6560eef505bd15d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "423021d199482dba1c2f024a5e06ca9aa472eba89887a6a63e8f29241bc0aa80"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "663a2d5198d3b61a89152ec67e222646c3a74abfa8bf933e74f3e67c38ec6682"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "b4a38750f5c1a8e849f4a5b5f0c432fb53a48d3ec784098b254bb30a0905a558"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              2,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "68216ee2541c24724fe2e7eba3d6307dbf47cb914f0819d43b803b332ee9fbef"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              5,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "873f1c6a8c9a3ab975f951000445ed9bb73ddc59f993a8e670660d574b4585b4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 54,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              5,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "3b5c1229129ced8fab80605f84f96b9a70e01b4baba6ae353c1c306ab0d7787b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 53,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              4,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "b4e498b2a465637e90e828e8669cebcdb6a316c21bd14f79221a8c58ef71cded"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              1,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "dd7c591b48cbbb1a11450e5038eca872dec0236588b0b897ab26c77bffa3c33f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 33,
+            "position": {
+              "col": 1,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              4,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "171c4739a6f418fd2d85fcf6065927cad711cc07a69ed5a783676fd040290295"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              3,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "66197c21212514f751bcc54aff2febf8294bb9b8962859d38321a05bc8684bc2"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 40,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              3,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "498fa386f012c1c2db1b46cd14e03986d5cac242343e6909e3e67af02535bb51"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "87c16463a47e70d5a4d651e3da1d558e70de4315be33b5bfb77529d4a8e9fc37"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 0,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            35,
+            15,
+            45,
+            54,
+            37,
+            1,
+            22
+          ],
+          [
+            42,
+            18,
+            29,
+            33,
+            53,
+            40,
+            55
+          ],
+          [
+            48,
+            38,
+            20,
+            3,
+            23,
+            6,
+            5
+          ]
+        ],
+        "drawPile": [
+          52,
+          26,
+          36,
+          41,
+          19,
+          43,
+          9,
+          13,
+          16,
+          34,
+          25,
+          2,
+          10,
+          28,
+          8,
+          44,
+          47,
+          51,
+          32,
+          46,
+          49,
+          17,
+          39,
+          4,
+          11,
+          50,
+          21,
+          31,
+          30,
+          27,
+          24,
+          7,
+          12,
+          0,
+          14
+        ],
+        "currentPlayerIndex": 0,
+        "rngState": 0,
+        "hash": "d05ebb62c090ad8fd5477c5042b00d77a455c697372e4a2862fb578ce4331d80"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "3312a0e3469cba1f80329cb736f645e3ddaa675abca70dbdbfa136951d56a9a7"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "ef649e17a11c15fefe279682b55ab61adfe3383600ba7881bcb8b4dfb9d48266"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "24fa396e0c7b9dcdd94e9a5de59dd44a5701beb7c06fbdba4a36e5abf947961b"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "88a345a979785a2d02ecf7d6725c509e9cf580b19d571fc3cea20637c36127db"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              3,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "113dd291c7c98845d4e6fb53f323c2cd8ff0a17ce4e6b530d52ac9f1c814bfe3"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 48,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              3,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "451ba90b346c43b1eac4b3f47c1eb386708cbe461feee72a4219e335d8c57c25"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "3c16995a81ac2fe1702b3a41dfd199879c75cc4e9cf1324e0aeb08d12eeceec2"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 40,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              3,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "e7ba2cd114939e6bb7f870e211acfca0694b46f19c27a119fdac96be95dec3d1"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 3,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              3
+            ]
+          },
+          "playerId": "p3",
+          "hash": "a0b09179aa94b81e2201f42c1f1a2f4eb6a8b09a7ba0991d1fab1f5e22522ae7"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "93907d08bc9c4b253c3c8b02bd8398264f8f9e5ed69c06250d5337fab6e52c4e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              2,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "9f9e4120f2b40ae5aeb2fd4712e975deb12671c5c7aeec055854d6b998dd8a41"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              0
+            ]
+          },
+          "playerId": "p3",
+          "hash": "b49141637777e1efad1a5aac4f949e8599046e8c129bf9823ee5bbdeaa4e97b8"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "a9a508519a29ddeeb697585efb28b99482ba8d7c3e95972c0c1837292ec2011a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "74c17fb59a53611f03b5cf866c97d8dba1ecc1902b51622b6dd320b01be7f83b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 5,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              5,
+              0
+            ]
+          },
+          "playerId": "p3",
+          "hash": "e1c0550190ff3b5309a3ef8b49f1ccd41e048f85da3ee57d42b05a469518bc9d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 54,
+            "position": {
+              "col": 2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "5798da6370a84f7e3985e83f3ddd9d3a4b3c544897cb473154da96463100b4f2"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 0,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            35,
+            15,
+            45,
+            54,
+            37,
+            1,
+            22
+          ],
+          [
+            42,
+            18,
+            29,
+            33,
+            53,
+            40,
+            55
+          ],
+          [
+            48,
+            38,
+            20,
+            3,
+            23,
+            6,
+            5
+          ],
+          [
+            52,
+            26,
+            36,
+            41,
+            19,
+            43,
+            9
+          ]
+        ],
+        "drawPile": [
+          13,
+          16,
+          34,
+          25,
+          2,
+          10,
+          28,
+          8,
+          44,
+          47,
+          51,
+          32,
+          46,
+          49,
+          17,
+          39,
+          4,
+          11,
+          50,
+          21,
+          31,
+          30,
+          27,
+          24,
+          7,
+          12,
+          0,
+          14
+        ],
+        "currentPlayerIndex": 3,
+        "rngState": 0,
+        "hash": "703a914ad48ef621d7eb59e85abda209566129eeb06e95623b22c5ed48866c14"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p4",
+          "hash": "87d2401b392d15cb2c01258996586195c0cbb185823f22bba6ca62cc60f91bd6"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p4",
+          "hash": "c93ef36626274e8dc357956e5053f8fa4652006d5ccbd475eec33be852bf8029"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p4",
+          "hash": "8183d56f3b681f0016dd9afe05e03d08ed37ad816be4534c216dafea7c390a4e"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p4",
+          "hash": "74d18351b6c8c69e579eafcb880add2c949202dc0fdbe3d6c85b7c4f457b7abd"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              5,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "2f5b318fca45b6a57b6e2b7204b19aefadf8c03078d38ba275ebc80db18af11e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "af6297f5abdc3ffa78f01bbd9cde9150401fddeedfdfca1a87f9d86c1b1250ef"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              5,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "7d355e17c521267e0f80caca16c57a34b22dd79fe2bb01f52a702244627d2642"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 26,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              1,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "87520182816327ecb26789d716f2b0fea8446e70ee48bf7dd74be0f55f5cfc22"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "35aa3ff6a678fb1a51cf508c61f59cf7b016719b42fce00ead0a702ac6f9cb8b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              3
+            ]
+          },
+          "playerId": "p2",
+          "hash": "ac1a09e797df1332a032bae49e3a9eee1eeef57397ce4bd40619ca899e2ac854"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 48,
+            "position": {
+              "col": 2,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              5,
+              3
+            ]
+          },
+          "playerId": "p3",
+          "hash": "7a08cb93822cf9407c42fb335ee34ec4656407034deb4e9784eba55af6f90f5c"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 36,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              2,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "965240413b2d9def8f76c68be0b4343a9d594a402bc2d4ff8a18b386b9174141"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": 2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              3,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "9d20d3c2b42364d527b21cda83946b54eee7ac7fc784a955648bbba91ada6552"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "c277dfc0a753019b983dc2955b4898a962240623b06d958fcc4dbcc9c8f8151f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 38,
+            "position": {
+              "col": 1,
+              "row": -2,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              2,
+              2
+            ]
+          },
+          "playerId": "p3",
+          "hash": "1348cb16b73ec623b897a42e46b3d4bd87a142a0fd8b7889c4525a582d8cf7e4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 41,
+            "position": {
+              "col": 0,
+              "row": -2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              3,
+              4
+            ]
+          },
+          "playerId": "p4",
+          "hash": "0993a76bbf0b5aa512d9d28b56716f3177b5c9bd1f1f45c10e041964de7735e3"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 42,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            16,
+            38,
+            25,
+            6,
+            12,
+            28,
+            54,
+            42,
+            52
+          ],
+          [
+            29,
+            44,
+            31,
+            15,
+            2,
+            55,
+            3,
+            36,
+            10
+          ]
+        ],
+        "drawPile": [
+          19,
+          50,
+          51,
+          7,
+          18,
+          45,
+          21,
+          4,
+          37,
+          14,
+          53,
+          5,
+          43,
+          47,
+          34,
+          40,
+          1,
+          48,
+          17,
+          0,
+          23,
+          27,
+          20,
+          8,
+          49,
+          32,
+          39,
+          11,
+          22,
+          41,
+          30,
+          13,
+          26,
+          9,
+          35,
+          46,
+          24,
+          33
+        ],
+        "currentPlayerIndex": 1,
+        "rngState": 42,
+        "hash": "7552416115e96a459e6f21fd444f2dd7266f03c38e53850a7aee7f9db4d21d26"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "7816c5780cacf0feb27d10e1470c005ad309674afbf03fd7b855e2215f0ed1ed"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "0f18fed5ff35d56b7b693afcb087ce238e1ca2fac3bb10c85f30d857653a0bd7"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "77e01413fbca466a57f55c1becb0bedcd509f4a53b8dd55b1ef00dc1c8ed4565"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p2",
+          "hash": "1ff06bbc8161843a78ea19a9c6d89da2066afb0da782647a2c449a43c5d700c5"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 16,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              3,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "4ccba1523f7b3c1a1d55ad67a0c6fb24db76f908ef30fe0d6f85bc038d129b82"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 31,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              3,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "ccab0e2bfb31581904913c33579a53f8bb15d5efce653dd3b8224a09ab8b38e1"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 28,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "5ce1a6208361503fe023bc864d3b1d796733f2c0fb1c0c037d95dc7a03706dbe"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "1c8db8e7faeb66ea3fea98458c107d17d721f50094e057b26122284ea11b739e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 38,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              4,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "5309287aa6efef8a56716161e24680fddeb2bc2c8354ce47a50714078cbd5cb4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              3,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "89734559715d766262e6a85bc646549b477153a6f76a5041d0cb9f44212a72ae"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "fcc93cf1e3d324e3ece7bd482a9730cd670d4fba80219aaf80dc6fffacb978f6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 3,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              3,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "c7c247bffdca3395b5f84aaa2c754a690b721b95289a4567a3139353059f9a68"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 6,
+            "position": {
+              "col": -1,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              0,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "5b1f40cd42362350a4c06378499b4a873c77dc9855a92c304be2c8a5160d8a2f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 2,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "b226ef4e9dc17b598f265b750db275b48f2cb0ddfd8b8024a3ce4b384da0d28e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 12,
+            "position": {
+              "col": 0,
+              "row": -2,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              0,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "28c1f59122deb82df3f30d1f77188e90c56ebcd782ee73e79eeac70d1ac1d122"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 36,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              2,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "559e435490555424074b50e61846f3abb5e635a7d3acf7836199b7c179f2076a"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 42,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            16,
+            38,
+            25,
+            6,
+            12,
+            28,
+            54
+          ],
+          [
+            42,
+            52,
+            29,
+            44,
+            31,
+            15,
+            2
+          ],
+          [
+            55,
+            3,
+            36,
+            10,
+            19,
+            50,
+            51
+          ]
+        ],
+        "drawPile": [
+          7,
+          18,
+          45,
+          21,
+          4,
+          37,
+          14,
+          53,
+          5,
+          43,
+          47,
+          34,
+          40,
+          1,
+          48,
+          17,
+          0,
+          23,
+          27,
+          20,
+          8,
+          49,
+          32,
+          39,
+          11,
+          22,
+          41,
+          30,
+          13,
+          26,
+          9,
+          35,
+          46,
+          24,
+          33
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 42,
+        "hash": "39dfa627f95fefe20eebae879c084686302962c3b59534ce48f285add1b8a374"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "2dd42136b4a696e27843b11c36ebaf06795758027a1c793b3d5648128402fe3c"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "aff5f2b38499af6e9e6ea5f41d6a1bdb26929e3cc20b9d1b59707c8068bcf85e"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "36a6a56c8dfa3056afc5c7bd92be4e7be038667731b1e7863920aa8803b52836"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "02f0c50641e684d6a3b4400af334db60c37d0809ef380fdfd425ff3da8d552d4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 16,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              3,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "3012976dd1fa2277c788a6d4a9d1888e161baa80aa2d7fb9d9aca25c60f31aad"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 31,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              3,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "fe988df43c66d890b499bdf3763d08124086f797d42d006fe6ab8031330ad32a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 3,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              0
+            ]
+          },
+          "playerId": "p3",
+          "hash": "f1804b7bfa735cc5f1a26230b40a6d2e816a797a8b3ff09040ccba5effe74125"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 12,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              2,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "50f1e24f2ee7fd1b5c93817944969747705d071566767ce9cec6e29de64cf37c"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              2,
+              3
+            ]
+          },
+          "playerId": "p2",
+          "hash": "b33923db9af572070170e99d2e8d8f4ea845840fee146a4ab16313fa6386019f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 33,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "697e3eab35811f437b2909e71854a394665fa0174900b94c818084f490393e68"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "63abaebb5605c8dd95227fb49655784c13a4ee2c07d7c265c4cbcd2b2dbbceb5"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "0751dd19de10df2d1efc54c7ba2915be3de853783bc629524a85b4db0090c479"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 9,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              0,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "37d92b9f35c2e2b145c3292691d66bcf709ad50a22e3ab6ffb259d83a11e4639"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 52,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              4,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "12f547f2a7a23de78943e9761b19aa18f096ecdede0b6c5ac20315e647a8f85f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 10,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              0,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "a3ecfb117df17dea79cdbd51aa773db768b728f2eeca4d74fdd68f978a486143"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              5,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "42dc3a48ed16540ba2749e9a4a72f0288f07afa0f8d3f7fa356a62813b322c8c"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 42,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            16,
+            38,
+            25,
+            6,
+            12,
+            28,
+            54
+          ],
+          [
+            42,
+            52,
+            29,
+            44,
+            31,
+            15,
+            2
+          ],
+          [
+            55,
+            3,
+            36,
+            10,
+            19,
+            50,
+            51
+          ],
+          [
+            7,
+            18,
+            45,
+            21,
+            4,
+            37,
+            14
+          ]
+        ],
+        "drawPile": [
+          53,
+          5,
+          43,
+          47,
+          34,
+          40,
+          1,
+          48,
+          17,
+          0,
+          23,
+          27,
+          20,
+          8,
+          49,
+          32,
+          39,
+          11,
+          22,
+          41,
+          30,
+          13,
+          26,
+          9,
+          35,
+          46,
+          24,
+          33
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 42,
+        "hash": "385aa1d4846291c65f9364c4ca9b18fa430242509fc9130a04c69473be2e5173"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "a8ad59ae98ec233dd23c5a09741bf3398a8f3088e5c85ac170bc9c519286010d"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "1d5a0f9c29296729b572c99c0a05285245f8a1eadde7639dc5a8d2f510d2f2d7"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "aa5450ebc09642d9cb0e4ee751e9a6227da453c4765f7ff56a80821c1f12cab6"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "695e07f2182fe27efcf8ea5c8dc436368a971322c4ea28869e5cb3216c880c62"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 7,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              1,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "28de9bf816cb57fe42b4a5dbc7278d08a5cfa242472d0ce773a448f2ae899e2b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 6,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "8b507f278a9546c468639f9866007c15ebf0476db2ad14208296fadf3dbec688"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "88ffbe869e698241a5e5f9be4f0de8b66b9f19d52916110cd7e1957bf10d0ec8"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              4,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "55f9a6d5eba322f5f0deadc7aa0226f0a2822f8d5c88b7702c5f2e05ce739c61"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              5,
+              5
+            ]
+          },
+          "playerId": "p4",
+          "hash": "8743312c94aa344f6e229b3fb39518b1dd80739c708a3690f05ee76f917162b9"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "847f0cebeeec2a01a6ce3389d8cd4d581c40abb24ea61951fe157dbe7def6143"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              2,
+              3
+            ]
+          },
+          "playerId": "p2",
+          "hash": "68c886205a69f8a4e526fca6251f33c3af96c035507b0fb24a709cbce5a5ac0a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "dc7970d258bc576f0c25cef260e720c51a88cd292cafb98919f235e0afe70d0c"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              2,
+              3
+            ]
+          },
+          "playerId": "p4",
+          "hash": "ca1562eb00bb205dfbd4752d82cef28f77e1933f1e86fcca1b3d865669080c23"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 54,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              4,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "1e65a86b29902ac6047f159c8b8243e10bc37323618555676b4fa91b8cdf8722"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 44,
+            "position": {
+              "col": 0,
+              "row": 3,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              4,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "4427254d5d2b21318b39b81d14ee653dc41db600d90d54c729d52d82a86213c4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 51,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              5,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "a9b84f71623025217c7be5739cb96ed3df7a6bd874fdf0e0e8a1b33368a9aa86"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -1,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41,
+            1,
+            22
+          ],
+          [
+            24,
+            20,
+            48,
+            45,
+            35,
+            18,
+            39,
+            21,
+            30
+          ]
+        ],
+        "drawPile": [
+          25,
+          54,
+          52,
+          4,
+          9,
+          12,
+          47,
+          11,
+          0,
+          44,
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 0,
+        "rngState": -1,
+        "hash": "33e6639ee15d62307cc3dd5d29883c6b8e8ab1277d4b6d4ca4fd3f74233136ba"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "02dfdbcb343f287d7a45c594ad92efbcc0535fe60246b9844f4a0fb4a3d12641"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "6d407bd343de712224685b365ca5473f9be1ad2678c39e1b435745ebd43b8661"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "ff110c41906a93de10a4b8fb44f48520639076c59efda37f252adcd2fb3786b0"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "04a31353342e4f0bb0978e8b62c5dbdc48239368d47b2d6b041f718ac604b39b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f29ebd48374c84f49d7a80f628fb3dc37af6e2f7ebe7bc79ec9790e4394b6ca9"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              2,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "5ba42c4109f4485e1ed6580052ec1a307981b25c675b078aa526cf88a64912c2"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "37e873cc26bffa185e65adc820f21a30e6841fd88abd10cf4e302621e30ba47a"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "f07c2e7d2295d3e1febf9f51cde94bf28e89ac4411d5e6658ce721ae0263924b"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "ea821a24fee0b927a2cde19272ef6e748cbd1457b421fb775c8ea43f9976046f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 27,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              3,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "d3976bd8fe5448eb99497b06e5984f121f1852a0b6765e83f74f44824b588485"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": -2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              2,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "319c973b7bf2249336bb8e7df1239d4bc11427084b454a122d5dbd1c704f5721"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 39,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "c67f7d2cb751fa76b9f0ddab0f77ba6919108e4c65cd22ddb2fbcbffc367858f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "55a11f2a6aca4eb9dbeaec7938d1e6b3c446e323a89e0f9d9d5f1889344063e4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "fcf7978b0d2bf8d243e67bd35491fe4763bd15a6cac77f844cb6dc5764767e7b"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "77a20beadcf9e54d80db186887d28836fdcfec2f4c0f15c45efdc153886ab566"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 34,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "a863ffebf9d007311fd67ae4bb7dacdc331945060b1ae5a9c41a7b24a21b5a79"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -1,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41
+          ],
+          [
+            1,
+            22,
+            24,
+            20,
+            48,
+            45,
+            35
+          ],
+          [
+            18,
+            39,
+            21,
+            30,
+            25,
+            54,
+            52
+          ]
+        ],
+        "drawPile": [
+          4,
+          9,
+          12,
+          47,
+          11,
+          0,
+          44,
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": -1,
+        "hash": "67299e81b405d43c6491a06298b2e3357fa239a3d77176c9bfb7575ca826d0d6"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "382f8a195271130fd8bbdd63b684f119749ce2bc3eb00d078da9f4d6be80215b"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "a669616dff30aea5539620e6465293a3fa70f07dd6176dc85d16a2c9eb1ce9b7"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "8887b8d60d6cdd16d03979d072a2dc3db19afc870308c164cf36d3cda5af2a24"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "f19332d71a7f3cdef89185054dbc27ee61a501c7368df9f5be43833f68290b8d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "b8b58b845cab848dd128715e59a6ad23da7a16cb68940e54dd1e471560a1d184"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "4748d31cd879b368ccd3c277f543bbf1a981a443c92c675abcef65af1c08b8d7"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 39,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              2,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "e90e0a79a44aa7064b82dbe9de81df738053b5f5bbd255cfd5a6f7471cc782a4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              3,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "4209d60dc977ea56854b0bedc15a541b0985e2dcec7a3d432323f9a71b637f61"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "a867f03994dc040d29fe40ee984f499a6fc6a482412b59f9e11299bc13472171"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "196aa316afb718a4f81b17ddab3efb72a8753bf3cd201fb08596ea88e0352b93"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 41,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              4,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "6e086166e77315f2e272e872ba8177c2dd482a68808a314700b5b5d7a7108fb5"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "6e4848a6783ce4c4692cccc1f6dff78d45ad00042ac4847c6cbf4bef67d2bfab"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 21,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "c06171f46b802399681235d678452ddc20ec6735484471c3c0c66b05ab0133da"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 49,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              4,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "1b7b34043d6fae9199641f24a991b85af3a022fcbc1c124a2d4d800449025bbc"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "a43a62eedabde98586f3fe30a79436f93d3aaf0d11809d508b979b2f1a9cfd78"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 18,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              0,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "467a9f60ab236674658b5ceb8d6dcd749ac2c36f4c1da2424a4eb106971e2cec"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -1,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41
+          ],
+          [
+            1,
+            22,
+            24,
+            20,
+            48,
+            45,
+            35
+          ],
+          [
+            18,
+            39,
+            21,
+            30,
+            25,
+            54,
+            52
+          ],
+          [
+            4,
+            9,
+            12,
+            47,
+            11,
+            0,
+            44
+          ]
+        ],
+        "drawPile": [
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": -1,
+        "hash": "3ecc69bf64505808d7e773945a61180ec128edafac9d9cb6b76e285e0cbf04ad"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "4f767b1a4852424c421515d93fc92786527a724184d70733fae569e14a2fcdb4"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "f8e224d17e827743cc5aab33c805e61703da5c4f833b278933764b30b723c4ef"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "045e11131c1a016eb94df7d7e46fb28ff8e3b664b1fa48cc2fb5518e568f757c"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "850157999207ed035e9a01eec97891bcf30fb936387d40e775745ef91a8b5729"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 4,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              4
+            ]
+          },
+          "playerId": "p4",
+          "hash": "001461aadebe14301dcc3d5a7eef62b3c5b7139bb0affcc945e4db09321440a6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 13,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              0,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "0de0e792ab21dbdc53214b939e00bf4752eb8d6f8eb77d23e95a83d0b6caea18"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 1,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              1,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f8cf527ae4a0312ea6b85f93a7132716ef06c3590445ce0c782c83dc86aab244"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 18,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              0,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "be11780178f4be7e23a1fc28e8af086cd51f80eb13c281acf666e898ebb2287b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 9,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              4,
+              0
+            ]
+          },
+          "playerId": "p4",
+          "hash": "1c6ced25bd2ec991a5b69dc147df0682cbd7420ef9b076f0403f8b280a00b1d1"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 49,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              4,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "1b75efff7f9357e8b75e58563fdd20d601ae2645be0c6a47d171b0ba34081a3f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "c7e4c0ccf038eb7dec87aa68220554663a59ceafb9ac4579c5dfdd8ccdc686ce"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 21,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "a5c5a7d97d1e7600c2697e7c07f7f2155441b0fb8f4a6015ddf21fb473e52ed6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 12,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "fa4224ac69c13ea6e0fce9d8050b1cbfff73bf1704cd85bfc1ab18564e981c61"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 16,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              3,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "77241b6b05c5b701cf0a6c0a54cc0b39b40e5097b2375a62816bf26ad31d2272"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "06ddd3fc9bf50cf89fee2ba32062549464941e7e338a0bb00c10d73f0ed1e6dc"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "532b5b5229b2426d4e1a642e02c681825327588227d01599334f648f2215b65e"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -4294967296,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            35,
+            15,
+            45,
+            54,
+            37,
+            1,
+            22,
+            42,
+            18
+          ],
+          [
+            29,
+            33,
+            53,
+            40,
+            55,
+            48,
+            38,
+            20,
+            3
+          ]
+        ],
+        "drawPile": [
+          23,
+          6,
+          5,
+          52,
+          26,
+          36,
+          41,
+          19,
+          43,
+          9,
+          13,
+          16,
+          34,
+          25,
+          2,
+          10,
+          28,
+          8,
+          44,
+          47,
+          51,
+          32,
+          46,
+          49,
+          17,
+          39,
+          4,
+          11,
+          50,
+          21,
+          31,
+          30,
+          27,
+          24,
+          7,
+          12,
+          0,
+          14
+        ],
+        "currentPlayerIndex": 0,
+        "rngState": -4294967296,
+        "hash": "69e6e9026c71274c676e01f175bd2981bfeb596270c6a8437e616bd639696b60"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "85617a289009f574af40cf2c87ad26e1d18f74b516e1b930696db33b15d9050e"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "cc8b20302915658f6dbe69df83647c4149dd9a8447a0327df19076d5d93beb66"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "c59d84b5d5e9df2f5d17b40b33f7d156d032bc159e0e3ac7591f9f1e70879c49"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "fea58b723bdc1e32d02faf39d3d7edfc8615ab07ec8003e3bae1a0d757858fac"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "650c1c3f3d506c184fb70b17c8e9ade0f7ffa94bac0f0cb330770386e63134a7"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "4860ca62e22c8e1de5ae4ffe65c53f4441be920338d50f16198bf55221798548"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "23b586d6113a859befadc9b06c1b6efe540d93cbb6416cd574d6d467938bb957"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              2,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "9928269d3b0f0c447882e8639c0bd8cbc9cfa85698e272a07f4c7022211e2fc5"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              5,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "7065e7ce5f98707105a56c8e3acd6c9600880f956bfc163488c130cdfec596d5"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 54,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              5,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "315d77994083b3b4213be8cd18c2172e3e96809d23823ea9f0e542ce49ebcf93"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 53,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              4,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "05f938604db7c33b103c2ccddd86aa5cc811b39da00c138aab37399087aaa907"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              1,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "ba1b5ff97f28b2e3a28629937e7736670c969badfe8b309a9832f98bb5e39218"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 33,
+            "position": {
+              "col": 1,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              4,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f14873f07c99f17f2cdb6b166d6ddcfb44da67af42a59811936825c3b686cfad"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              3,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "221efbf206f32868831c142d47624cae8670e1bf8311af1584f438a3af48acf9"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 40,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              3,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "81afbc99f12b8e51db5ac7bf0ad989958ce1104d72728931eefd6e48900706bb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "f397de75e5719bfa5b6a50b2d6f404a44af78140c4162cd2a101851e14dd5884"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -4294967296,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            35,
+            15,
+            45,
+            54,
+            37,
+            1,
+            22
+          ],
+          [
+            42,
+            18,
+            29,
+            33,
+            53,
+            40,
+            55
+          ],
+          [
+            48,
+            38,
+            20,
+            3,
+            23,
+            6,
+            5
+          ]
+        ],
+        "drawPile": [
+          52,
+          26,
+          36,
+          41,
+          19,
+          43,
+          9,
+          13,
+          16,
+          34,
+          25,
+          2,
+          10,
+          28,
+          8,
+          44,
+          47,
+          51,
+          32,
+          46,
+          49,
+          17,
+          39,
+          4,
+          11,
+          50,
+          21,
+          31,
+          30,
+          27,
+          24,
+          7,
+          12,
+          0,
+          14
+        ],
+        "currentPlayerIndex": 0,
+        "rngState": -4294967296,
+        "hash": "40e3892c2d724840227d5fdb8a873b7731b7f2bd16225bc8e201c7b37e6ed705"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "3641161f3e2bd4b6ae4596ff211faf4b122227d92866baad1f731ad10261efeb"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "458b1bdfec1664beef4063368ac25a064108c5508d70490638d5690db9a9f3a4"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "918a060832d8e7f838d17a9339d3fc78983ce620d3efa80d4a65ba9334b5d9a2"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "fedd7de3a1a5932443c71f0aea8fc10b656da3a4716bb1f6d5e925fd01383ef6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              3,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "9896c25f4415f094404084a30d090c467804f231cd5f0c56fa5a9601fbf37623"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 48,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              3,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "e71531c5f22e171054447ad40f7b430b5dbc137751d5ca070b41141e92234fa7"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "c65cfce4a0da1abb91abc54b6c1e47bf670fd8ef3bc286f1e7a543082b7563b6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 40,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              3,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "c28a3192f7245ff6d2bf70e9f0233fbde4756c83a7ee203beae961261dbdf122"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 3,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              3
+            ]
+          },
+          "playerId": "p3",
+          "hash": "09f246723e662768f46e875498e5eabda77c642ff51b308a91750d8177a492cd"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "a6ea5f7fbcd515fdd1b92d01e54f8fc88a7d71db58292b0428fd2a5684e82477"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              2,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "0a3659d04bc68ee97f20b48dee74a0b5d2aeda52277143f68e3de8327efc9021"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              0
+            ]
+          },
+          "playerId": "p3",
+          "hash": "8f786f6e94b4d0aa483cacbab006c7edf128fb86e1c8c5e08acace66d103cdc6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "6d27b2ebe50f67af75845808b3edfc0f6d4c5a07b36dcd01343a8ca5fae89439"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "4d7be0702d3af16a03433dd5c91ee1942bb1ab53a9062c83dbb99ae2f6aee3ab"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 5,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              5,
+              0
+            ]
+          },
+          "playerId": "p3",
+          "hash": "a1beb33bf62f626ca90153b02dd487f13cf4b59c24d956caf6c1fafb39e4ba65"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 54,
+            "position": {
+              "col": 2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "3e3385f55feed0d38c5496c12c009aad65fa35528ae33eb26fd31704f742368d"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -4294967296,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            35,
+            15,
+            45,
+            54,
+            37,
+            1,
+            22
+          ],
+          [
+            42,
+            18,
+            29,
+            33,
+            53,
+            40,
+            55
+          ],
+          [
+            48,
+            38,
+            20,
+            3,
+            23,
+            6,
+            5
+          ],
+          [
+            52,
+            26,
+            36,
+            41,
+            19,
+            43,
+            9
+          ]
+        ],
+        "drawPile": [
+          13,
+          16,
+          34,
+          25,
+          2,
+          10,
+          28,
+          8,
+          44,
+          47,
+          51,
+          32,
+          46,
+          49,
+          17,
+          39,
+          4,
+          11,
+          50,
+          21,
+          31,
+          30,
+          27,
+          24,
+          7,
+          12,
+          0,
+          14
+        ],
+        "currentPlayerIndex": 3,
+        "rngState": -4294967296,
+        "hash": "07149b28cba4b6948cd019e6eb039da8c9c58eef04da83e7af67f0da6fa72f52"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p4",
+          "hash": "d42d190933b2b0ff8990bf12ebdd183f61476191d6ddc54e0fb89d2b51abfdcd"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p4",
+          "hash": "1d685be473a0a376af3c85095a7862a8bb8fa988f93e564399e6f8b14b1b32ec"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p4",
+          "hash": "fc22403a6c6df4250649179983b4498d2d94c96f3024b428baafaeccf44e6a6f"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p4",
+          "hash": "bf143673bfbdaa778dc4ef3f5858fe6ea20b8bcc3b5a4f3ba22b0984ae21a344"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              5,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "2ccb2e9fc1e30a595e2440e665ee480970413601cd40f458a31620ca50255735"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f720521da742dc0b1eed300961cf283d3e8f89fe2cff848f03e4c98e1c7a6db4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              5,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "33031ddd39a76591ec89b32139c65e575dcef0a4121e21845151afbee0f2942c"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 26,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              1,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "4618ff6315057ad7793b0c731c6b65622dea792ef609004da571ffdcf9affc1d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "f359012a2c658956d8e56474e3dc87b6b3e35952eac3cded8c95a371bcd00ffb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              3
+            ]
+          },
+          "playerId": "p2",
+          "hash": "8128736eb03672797d41dcbd122526f15ac33069a2c661ce3f8238605f292584"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 48,
+            "position": {
+              "col": 2,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              5,
+              3
+            ]
+          },
+          "playerId": "p3",
+          "hash": "dc75c10d19482a1a171145de137aae594bfd00ea4efa47bccacf4e694e5d9317"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 36,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              2,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "b8a91b7171b970ce4b69f582a21ebf034077331e6cb0afe83b67e64a4dac0e17"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": 2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              3,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "7d6f5a96efe23af9fea0dc91927c06c2a3cd9e693b2a8ec2072defc565a07811"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "8cb2188aa25e7d76cafc10237edbefb8b5024aed12f09db53af5defd929a2b90"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 38,
+            "position": {
+              "col": 1,
+              "row": -2,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              2,
+              2
+            ]
+          },
+          "playerId": "p3",
+          "hash": "e5508c7ba68ce8d2fc50a5eb39d8ee11fa667ce709fa0f3664e3cabdb3ad18a6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 41,
+            "position": {
+              "col": 0,
+              "row": -2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              3,
+              4
+            ]
+          },
+          "playerId": "p4",
+          "hash": "2be7c80f52a870ec086d37bba7e30f6169de0aae6f25af8a26199b7105661067"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 4294967295,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41,
+            1,
+            22
+          ],
+          [
+            24,
+            20,
+            48,
+            45,
+            35,
+            18,
+            39,
+            21,
+            30
+          ]
+        ],
+        "drawPile": [
+          25,
+          54,
+          52,
+          4,
+          9,
+          12,
+          47,
+          11,
+          0,
+          44,
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 0,
+        "rngState": 4294967295,
+        "hash": "26f0b2ab78c4935843e5719ef40177061f066c8440eb6ce4456b4fdb2473034e"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "91bcefb2f12878267775333ffa268d79741b5e35c2af020a87c72e8d368dcdea"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "152a60720c85d2527498555bac480ae8c7b5dbc050973a693c1769c81f02cdfb"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "8e56e6940c4ad7b2b79d9c6d995630a3b704c6150f58ad030a96acb9f3333277"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "f74ca5a964b4d5b4179ccb9faf54c45aaf87aed20836cdd8682b0481bd647f0c"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "d8c6aaa214505dfa465946b4a6ae4ad5e9a18d4187f887d3808da2d6403175c2"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              2,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "47b08e9a7a27d162ac10992251e88be6ff437aeb07edfdc7997518bf485b888a"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "6db9f323064de6d2c2cdcb12492a0db2c1396385eef976c059a47b216da43abf"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "69ab3f5b99eb7cf9fd028ad8f67f4410e7bc2f1bec50bdba22ed22a0890a036a"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "3bf0fe447649444590d33287630027e7739b83121bb055ee889b74815bc095e6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 27,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              3,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "378423f8c8bec5516b7f71eabdaa889f1600958942aaf522b3d55e1517bd87b0"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": -2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              2,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "38709250d80ec4ff885f2cabbc6e4664133b55540190469f8e6b53df37b2be5c"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 39,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "1952b6d80a13f01c704e99955bd3d9c43751c8939f858c9e6d58ce051487febb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "e8c88fa45975d95e573e0dcba8cdb04da02cf2b48bdaeafd080e2330a5a26889"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f633679561cd62adf52aae61467c7a351ac398fcf3896895cd393e6fd53d433d"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "83882190d2f80c3d41e0a8900ef84c15b35410f2d64343cc47ecd77dae445ad1"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 34,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "2c2b839727a31a1ae093e4f7f2549080b9a612f7a64878ccf6290e56b4aae553"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 4294967295,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41
+          ],
+          [
+            1,
+            22,
+            24,
+            20,
+            48,
+            45,
+            35
+          ],
+          [
+            18,
+            39,
+            21,
+            30,
+            25,
+            54,
+            52
+          ]
+        ],
+        "drawPile": [
+          4,
+          9,
+          12,
+          47,
+          11,
+          0,
+          44,
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 4294967295,
+        "hash": "103544b5f372b1519581d9379b24677ad27207ce8e703217ed5c2078b1737436"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "95c04ef9986f2486897f19c4eb51dd598810e68769e7fdb5024dc947b9810d2f"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "4302018017a8829a17efd3877e57b30cf74f4d2f503ad375233551749d58eb51"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "931b9f0c28828b70d0cd8033c591ab54bda8f7fc97f2321117937937fb4c6409"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "942cfd384223b9c17b0af7b1a9959870181d571a9cce82a59a6bd1ef2f95f237"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "5f9ec3242bc883a1f67004c9511bd428e4ed4829d04adc5b61e737d0242e697a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f01145d78762c3dbc7e09eb131c27e469dd518cdb89043d8e7fd6995b7a88958"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 39,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              2,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "56625700c50322f9a17ee00f661a6cb9cbbd74b9a3143920cfd56589f6713830"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              3,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "63fbd0b8d220b01ce62a517c48a008b8c3fdb02615643fddf1ebcc47d33fce3a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "a47b98fd9cc05e5a150ea8e8bbcc7f3971389f0f5ae23b2082838a2e18e4cc98"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "17f633065d048d78d4306ba9773ae417a1833398c6df1bbd16e99381a8acffb6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 41,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              4,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "197a3b7aebec17b0444170c3a9d8f6dd31bfdcb5b709e6b44f829c7809217fc8"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f64bf3a91e161862c1c48810fca98604e8222fb9c8903a881ab5b3446682ba95"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 21,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "7c16e6c72c42293a3ba227d77cc1937cb2f9c8da370d17d05e9ad8dc1ebc5e57"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 49,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              4,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "756d68327453936e95ad3c89965d40069d15163690af9e7ea771f633406d0ae6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "aed120ba3c1ab6f38a71e905d1cbd6cb8d20730bd536f6c758f037bb5ac33250"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 18,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              0,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "6be381994920c29c0014d43666ae4192fc7417663eef2a60cb51a2f4cfa3f107"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 4294967295,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41
+          ],
+          [
+            1,
+            22,
+            24,
+            20,
+            48,
+            45,
+            35
+          ],
+          [
+            18,
+            39,
+            21,
+            30,
+            25,
+            54,
+            52
+          ],
+          [
+            4,
+            9,
+            12,
+            47,
+            11,
+            0,
+            44
+          ]
+        ],
+        "drawPile": [
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 4294967295,
+        "hash": "7b6c26020e2350f0bdef1a8cee36bf4032bcf006b5c28bfb5b8eff090b5d1405"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "4e01a2daf6f253ed5171db01401be04cf185d82dc6e39c33053f405b4371ef20"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "4a792e91ae175a7ef63ea689a2f42a5ddf95c75e6d2748087bf91a9c9ebda569"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "525d1738fcb8470a879da2daf09cbebd7ec43da927b6626539041871b7b39a64"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "d82500c36626559d6d94700d87c32802f16f26370597cea10cbc71ec6d9e5ca4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 4,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              4
+            ]
+          },
+          "playerId": "p4",
+          "hash": "e1489b8c12e5f810fc9c45bcbd029580f257c708d0cc0cb9ccf6287115b3c387"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 13,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              0,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "578c0e8acba387f3f31dc584b97252c018ae488962db30572921b1f755b628ff"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 1,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              1,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "af6458a88a150d2e06f34af8c1ed9239612e5ca384be5be42f88111a6a073241"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 18,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              0,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "d14563d625564e3dc48dee5cfc277203a0ead6ef3587aa33c53d718c6cbec71d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 9,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              4,
+              0
+            ]
+          },
+          "playerId": "p4",
+          "hash": "61ec322c85372e9b92e6fcddcfef776dc0edea6a49a63e426b6d7db9ae667aa8"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 49,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              4,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "0988dfc7dc1ac10052372341f024968a470cc0b08e8c4ac1c587ce14672b3889"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "76699940b6471b6b73c42965aaeae674dbda26da0aeea7ffc251cb09e38d9675"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 21,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "d5240e14537d0e7dfdb9df743c368921d9647856dc53e515ec5f4d58122b1469"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 12,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "88987cc9517541ec5a00dbac9c5888f8d1b39a8f5123b13a06372c478cd442ca"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 16,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              3,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "6582c5f482e8b2a1e6c9f3fec066c9f100da458850dcee813d20fba16b47a886"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "c0eab0174be8c7e35c0830238eab451539a1f40e6284e72cedc1fab2ce67aadc"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "8e2f3645da35033e787fa4cfa4cd36f24ca2ae650e5124ed0e4c845b1666efd1"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 4294967338,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            16,
+            38,
+            25,
+            6,
+            12,
+            28,
+            54,
+            42,
+            52
+          ],
+          [
+            29,
+            44,
+            31,
+            15,
+            2,
+            55,
+            3,
+            36,
+            10
+          ]
+        ],
+        "drawPile": [
+          19,
+          50,
+          51,
+          7,
+          18,
+          45,
+          21,
+          4,
+          37,
+          14,
+          53,
+          5,
+          43,
+          47,
+          34,
+          40,
+          1,
+          48,
+          17,
+          0,
+          23,
+          27,
+          20,
+          8,
+          49,
+          32,
+          39,
+          11,
+          22,
+          41,
+          30,
+          13,
+          26,
+          9,
+          35,
+          46,
+          24,
+          33
+        ],
+        "currentPlayerIndex": 1,
+        "rngState": 4294967338,
+        "hash": "291295009324445c37d6b4cafee939eaa1d0c4783a5c43640b9831085011e9f3"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "6f03ebbff14362d3cfb96cb220685451671bd228add6476a34778e44d14a7f3b"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "ff5a2da0f3a3fac9997a837724dda8597604c88882678b6e02d6d273c5bb0444"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "9ca1e61798509aa70febc3539fcab04f2c50d87fea56aa5a4c11207aa39207d6"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p2",
+          "hash": "3a27f9dbcfb1cb77f0af165095cca0cfbe082c7e4a6fcb68004566467981086e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 16,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              3,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "414776d4eb0ceb4dd6b348f0a4713f7e5bfd420f073e12860fbe5dcf4d4e52ca"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 31,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              3,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "8f7700abf5ba80d0257e0493703aca1df222d305cfc8397743854b396cd38345"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 28,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "3b5cf26610c98ce0863a6fcecf0954c9d3e6e73ddc3afaac60d8a856fdfb664a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "d7149c6854ab3f904f92577246601a7a29451de6eb3f6edfbb4eb42c6547682b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 38,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              4,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "d6e1b1afd7bca01008206a08478eedf7ce0e754c68d33e2a47430f151c53c819"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 15,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              3,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "90b9dccb5066e32e64895f6642075d42a503a6497c6cdced0f7e7e0ae26c4f01"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "77fbdc167e960895c0dc44b5cf8bb039874a3e731913cdc76d46545831a90076"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 3,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              3,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "69d565b183ed0c7228eb28eb09b0115f83250cb75c8a006b9fe0b856df11a717"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 6,
+            "position": {
+              "col": -1,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              0,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "34e802d5a16cb3a2d0ab13d70354937954a6afce074a8996e3cf75c2a43f03bd"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 2,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "7b51cf8ada206bf2d31440fd50591c49f2fa2f6cd7af4107c1aa8c5aa3cf3330"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 12,
+            "position": {
+              "col": 0,
+              "row": -2,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              0,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "d262e794bcbf849f8a45c71d40b233e88b43fd258f431d8ff7e632e34e3bdacb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 36,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              2,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "64886593e31a4749f89708edc1eff5641fe4ea19695ffde9e07b926cba74b980"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 4294967338,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            16,
+            38,
+            25,
+            6,
+            12,
+            28,
+            54
+          ],
+          [
+            42,
+            52,
+            29,
+            44,
+            31,
+            15,
+            2
+          ],
+          [
+            55,
+            3,
+            36,
+            10,
+            19,
+            50,
+            51
+          ]
+        ],
+        "drawPile": [
+          7,
+          18,
+          45,
+          21,
+          4,
+          37,
+          14,
+          53,
+          5,
+          43,
+          47,
+          34,
+          40,
+          1,
+          48,
+          17,
+          0,
+          23,
+          27,
+          20,
+          8,
+          49,
+          32,
+          39,
+          11,
+          22,
+          41,
+          30,
+          13,
+          26,
+          9,
+          35,
+          46,
+          24,
+          33
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 4294967338,
+        "hash": "5332204c82ba779164da96bdc62562984cff01acd6ba268a0876b97e3f1b8019"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "6d7a1b76c19e1f5e7915aa6d97be3a86d479b3e227f440a5f496911e918761c7"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "4db2c1f26e249b0dd6d8465274c887b7c5a007c98f4993bb31217aa1a0977409"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "a683f5e8365964fdfe21d821cec946690282e14ee40a0d90dee760c331b65e75"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "e258d648d860b8033d524841a45433e611c31f308e04b595ce4354afe32ce6d2"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 16,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              3,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "5672582c1904718525f08eed05345494e0a797143b6fa9ec0415cab5f55c68fe"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 31,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              3,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "68b67aa792ed094e2718591fddf4fa8f6c69fa0490a687f840f2b7abe896df4d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 3,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              0
+            ]
+          },
+          "playerId": "p3",
+          "hash": "215d38a08d2c1b6e08a14d0323cd897ec6b0a086817f926d5edd090cf0a73442"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 12,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              2,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "ad2ff56d65d0046b8a7887a469edde1a1dcc00506ae5c6b10f0afe2f4e20e6ff"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              2,
+              3
+            ]
+          },
+          "playerId": "p2",
+          "hash": "4c910f3cb9e839bdec6b02b15cbe025ecc6592d6bfd6e6a45b5d9f2214195aa1"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 33,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "07c0d2e705cd0ad05ca09b681bc86c1aed024705becb898b7f933cacd37063f6"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "8aad7e90138520676c2a9d29d2131790036650abf8e13f548bb07a7f0fc79c4c"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "91ef45c5bfd3d65e92661cd1f51c345e40c57a2960ad4fe07fa6b057c4699599"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 9,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              0,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "d17598d789c737b0a278057111bcafbf9a0473b72942454d277a957d3591bbc9"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 52,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              4,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "2bd6913ce144b2209906169f7ebc8ab8b7be8bf905cd4814794fd012c47533e4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 10,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              0,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "c02a1f6cd208798bd1c707c2d53bf03e1206a193a12e36ed50b3c5ca5d6f9d44"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              5,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "d94f401f4aa3546256e9fa85e5fa2fe6b7fcc0fc6fc6c7a60ba04c9115da231e"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 4294967338,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            16,
+            38,
+            25,
+            6,
+            12,
+            28,
+            54
+          ],
+          [
+            42,
+            52,
+            29,
+            44,
+            31,
+            15,
+            2
+          ],
+          [
+            55,
+            3,
+            36,
+            10,
+            19,
+            50,
+            51
+          ],
+          [
+            7,
+            18,
+            45,
+            21,
+            4,
+            37,
+            14
+          ]
+        ],
+        "drawPile": [
+          53,
+          5,
+          43,
+          47,
+          34,
+          40,
+          1,
+          48,
+          17,
+          0,
+          23,
+          27,
+          20,
+          8,
+          49,
+          32,
+          39,
+          11,
+          22,
+          41,
+          30,
+          13,
+          26,
+          9,
+          35,
+          46,
+          24,
+          33
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 4294967338,
+        "hash": "4dd0cfb6585a3129044a4e4fbd829a685b5f870f76e2819f6b6e2350242c7ed3"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "b1a0d71ad38aa563624f9a82c6b311d0de610f585d73a471ff11d56cf1e220de"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "c0508350bfe7812c4e2768b06695bc68214951b806409f93a8ab82e56df4c83a"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "51ec9c245cf1a96a25c320458103217a38a4a81e52f89723f1b26da3acc500ec"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "9fd3ec2c87002ee7c469a196df47ecb050970a078b443adf9a0868510b02bc88"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 7,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              1,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "2b9aecd8c5ca3df607185a226b0ad8c922dd3f91c67a34a8cff8b6c1a010bb04"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 6,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "f30194a85ddf0c399f5ce5ff33b63700dc0755d1a1cef73dd95ab4a407729d03"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "6949904284329738f449e4fcaaad0193ea50dda5543a8c74c8ddc852dcb5b88a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              4,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "eff59b979afd5f0c5358637bc62963eab7b34dac5c4372f0cbe8100f2dd4686b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              5,
+              5
+            ]
+          },
+          "playerId": "p4",
+          "hash": "09e5f92dbe2679f753d6ce46c05a8ac7a08ec5a4cb9f837f0a49cf8cb27917bb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "8e01555201d03c4e795439969461a59335f06e90b5eb183dd8a43ddd1a4a6418"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 42,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              2,
+              3
+            ]
+          },
+          "playerId": "p2",
+          "hash": "8df6b680d24deee3a57345459c531d160b927bde6f7deb69a4dabd84a4185e6f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 55,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              5,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "86980c24441bfa7478d9a151fb50c660f1a8180af13eb7552807f506c121d000"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": 1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              2,
+              3
+            ]
+          },
+          "playerId": "p4",
+          "hash": "0cf1ecb4a2923a286a896fad5a46baf4eacbf32c1a0657ed7a41eeea1f30efeb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 54,
+            "position": {
+              "col": 0,
+              "row": 2,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              4,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "039d1ecc0ce174b2e50e37add3d583c2d4aa3b5c65a8202623c84bfebc76352e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 44,
+            "position": {
+              "col": 0,
+              "row": 3,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              4,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "769af31da853fa7a0dc430447a93d62ee2dcd48b41d2d0e4d41800652125ae5c"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 51,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              5,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "554d869d9f78d51a9d217c6106e3715a5fa8413bb4d5659863cea11ac4f32853"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 9007199254740991,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41,
+            1,
+            22
+          ],
+          [
+            24,
+            20,
+            48,
+            45,
+            35,
+            18,
+            39,
+            21,
+            30
+          ]
+        ],
+        "drawPile": [
+          25,
+          54,
+          52,
+          4,
+          9,
+          12,
+          47,
+          11,
+          0,
+          44,
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 0,
+        "rngState": 9007199254740991,
+        "hash": "7d1b308477180628c8df7ebb844b0ad71377eb89e7f9036dbf4bfee15d828d0c"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "e8a2e55159412cd3e63b58bbc7884d4133f678696750608dc8e22b7b1cc20a77"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "2b2a32152956cfe347ee63edf282d4e7166c7fd137366c148a5f3d87a18cb125"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "92273c3828b3ca09e773e2c15e725b40ba1660de5fcdb29bce1fd7e0f85f38cd"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "6b45f12c68e8fc3687544db6adbad42d38c692759ebc922d552743141de68461"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              4
+            ]
+          },
+          "playerId": "p2",
+          "hash": "0c631e3bf768d01f26b29e1f1293b1547418f5a1f45b29a13879bf7b9240f556"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              2,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "6fb308500b27faaf0aa582d62cb1ae76c9b9cbcf28b924f8534296327d4e7ee7"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "035d2c740b48e3d32d8b40d0b67296ce37ed7804f6d0c396f4b711a53ff75f72"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "5b5644e669afa447b5f61c856c100e06989d684c48f9d75b6f6ab6929d298955"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "48dfb3d7f294f69e22720e42aa34da24a92b5d85be7cc079df6244b0016fabe2"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 27,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              3,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "6e332d760fa67d944ae5aa6e310a82e13a031de1bb7953eb018cea680d728260"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": -2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              2,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "092f9717e1270458e6dd32fc0d8bbc2e6e0b8ef8604f8df9bd007f4ac0a5e8c0"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 39,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "9d119ff1c7490c51f14b4c670c998a1d342df9fdaa6aae44ee58a276fad67034"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              1
+            ]
+          },
+          "playerId": "p1",
+          "hash": "54e48886f4855197e8b7cc9d39d5a7ec9dfcd5af61b490e291b5e459a3bbfe2a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              5,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "39a7a80c3ca9edc86d3b43ec27e5811a4bc3d288bbcee6ae4f1964b83ac7199b"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "842962b582ee65f11bc9a55a0c50348a6ed826d319a329725b2c867207fb280f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 34,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "94c3cd84d2c3468f211b3f83b2f8eb98fe6b201a6b248a31e8d7b738e7ca173c"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 9007199254740991,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41
+          ],
+          [
+            1,
+            22,
+            24,
+            20,
+            48,
+            45,
+            35
+          ],
+          [
+            18,
+            39,
+            21,
+            30,
+            25,
+            54,
+            52
+          ]
+        ],
+        "drawPile": [
+          4,
+          9,
+          12,
+          47,
+          11,
+          0,
+          44,
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 9007199254740991,
+        "hash": "5120fcc8ce4a675bd9765b0827ef0a1b52ac82e7b922d8e9b848110fb689813e"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "784a1e696f41e968dfc5f469344166f1060ea761bb8d9dcac815a5866243e625"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "c216ba1ccabd4553b28ea139969cfbe1a5e8148435cd5de349aef04a4fdd7165"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "7e878a1fb9e2afb9659f027e1f7310ddf49e9e8d9fd4c2dc8c144c663d1570fa"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "9e7c6f446726661cea8147d6ebdf161d5dc33ac8d6ec506bcfe948153f80e22e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 29,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              5
+            ]
+          },
+          "playerId": "p1",
+          "hash": "e2242300ae89662ecbe87e08ffcedcb7169cbcf31ed1cfede0df5523217d1d10"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "5fc03ccca84ced8a9084b00197ecca93845569dbaf69f9fa1584133dfc76d132"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 39,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              2,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "6fa4ecb5067b4ee60b8b859fbbca8e6c6c7cc8311cf7421f0f2fc7f5bcc04f0e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 37,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              2,
+              3,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "e197be12b761cbdac761233a9c32263f051d6be6bb5519870c312a6fa2971d6a"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "7bbee563673d57f1abb1238900a4a6cf3da54baeb63a67d21a46b4e8727d78cb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "84609d9c3310acd8881cdd5db0d46a3dab59c83a1e83cb53bba009340423f8c0"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 41,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              4,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "aa808210378734aa86fd04ed812e3f5199cf9bcb7599a523d49e42e403cba95d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              2,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "bd66b13f7f45696033958a85ee936ed6d610991399a066ba199976fbb974eafb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 21,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "69ed1f7e8b03f5e293db790f3717e4d7937e0ee55a9f6947b8c2c4283ea89972"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 49,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              4,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "387b6c115178441dde2b87ce66832ef20b065bb229f19c000ba2b752fadcc7f8"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 20,
+            "position": {
+              "col": 1,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              5,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f6c99f6603bd459b77cf0138fd969db615055cee8fec33c6f0339725f7917bd6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 18,
+            "position": {
+              "col": -2,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              0,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "8c0fc6181fa29f5398889d4063a6cee64ed0def61114f78f776e18976e3aafbb"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": 9007199254740991,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            29,
+            13,
+            49,
+            17,
+            16,
+            37,
+            41
+          ],
+          [
+            1,
+            22,
+            24,
+            20,
+            48,
+            45,
+            35
+          ],
+          [
+            18,
+            39,
+            21,
+            30,
+            25,
+            54,
+            52
+          ],
+          [
+            4,
+            9,
+            12,
+            47,
+            11,
+            0,
+            44
+          ]
+        ],
+        "drawPile": [
+          7,
+          51,
+          2,
+          53,
+          28,
+          26,
+          32,
+          33,
+          14,
+          5,
+          3,
+          36,
+          42,
+          19,
+          31,
+          15,
+          8,
+          40,
+          46,
+          6,
+          23,
+          34,
+          27,
+          43,
+          55,
+          38,
+          10,
+          50
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": 9007199254740991,
+        "hash": "271491fbc6097a7adc16c42d2e632cf9d3420201f7441a2033c6ba16b135477a"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "372c8c033021200b025799768aaa73e23e943f0342d45173bcf8d78475fe7816"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "ae1d2445739a2c89346873c7cb78f03bc0eac7871d4746c710bb660e72840d61"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "3992ceaf6c3b7dc689d78572c688ac0581f5472a887f9e1105002af4cf77b553"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "e6f776a7f229106e2655b2880951ceb734c6c9778078972e73fa182fb7f187f6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 4,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              4
+            ]
+          },
+          "playerId": "p4",
+          "hash": "477a4e1035742fd777caca09294e2da3694038d722f5f21687328de2d7dfe15d"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 13,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              0,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "3b97933f89eb22711cd8856e4ae313ba07fc1bec3fd89f429cab36075e288e4e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 1,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              1,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "42d8610bf4d9550fd499da71c4f3982014932d98d3bbafb46e1a20628a8a12b6"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 18,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              4,
+              0,
+              4
+            ]
+          },
+          "playerId": "p3",
+          "hash": "5ac4d8916af1adbfa84dca9bd2abe6dbe2133c6a4d6cd8faddc13594744d0452"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 9,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              4,
+              0
+            ]
+          },
+          "playerId": "p4",
+          "hash": "f06c3d196cad84c6973d9cd6909b5b6184c10434708997e5cac9ca1f371bcc12"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 49,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              4,
+              3
+            ]
+          },
+          "playerId": "p1",
+          "hash": "7a962f333016f5715435d2a6c3d9e43ed7d3dc22cc902a605807f340e506f06f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 24,
+            "position": {
+              "col": -2,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "f9e2e85e0b254869cb85dffdc4fb17bea1b870a594ef4934f3622d4c3e76c4f4"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 21,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              1,
+              1
+            ]
+          },
+          "playerId": "p3",
+          "hash": "f639b1c18917a9b56a3487656e2874fc3385b24edb3975d4cbd476dcc569fa3b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 12,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              3,
+              0,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "416f0b93ef54f5aee5c58d4e231a7df64cc4207f6fa45bffc57404c1acc9eb96"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 16,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              3,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "fb7ac7f09efc2e7be011ac72dad1a1391634334526d7c26d864b1f763280f053"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 22,
+            "position": {
+              "col": -2,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              2,
+              1
+            ]
+          },
+          "playerId": "p2",
+          "hash": "19dc4b24733e1c9ec095cd7c7b4a0aa6204dc5fb8f9bb25b22ffa513096d73cb"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 25,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              1,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "06ba7430af1c8d0935c3951940bc89762726d4f918fed0ad9e70a5ee8a039bf7"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -2147483648,
+        "mode": "standard",
+        "playerIds": [
+          "p1",
+          "p2"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            0,
+            7,
+            13,
+            16,
+            23,
+            11,
+            12,
+            10,
+            53
+          ],
+          [
+            6,
+            17,
+            26,
+            49,
+            37,
+            48,
+            15,
+            35,
+            30
+          ]
+        ],
+        "drawPile": [
+          29,
+          36,
+          2,
+          33,
+          3,
+          52,
+          28,
+          39,
+          20,
+          50,
+          51,
+          40,
+          1,
+          54,
+          31,
+          4,
+          46,
+          9,
+          8,
+          47,
+          38,
+          18,
+          25,
+          5,
+          41,
+          14,
+          22,
+          34,
+          19,
+          32,
+          55,
+          44,
+          21,
+          43,
+          27,
+          42,
+          24,
+          45
+        ],
+        "currentPlayerIndex": 1,
+        "rngState": -2147483648,
+        "hash": "db66396167b83ffb6dc3b032ae2a39ca9b881b96683774bd5e60cc94141d1a1f"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "e07bdd2b5bb31043013931ca9960092bfc6bd707acab3f112ce344c6416e6155"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "c8388f5c9990d9c5863e0dc38b50166043dcdf339d12c3558c475187cd6bd98b"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "29e4e9c865deebe647dd920bb67d6d99b608254b77e52e7f55031c3d766dbe46"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p2",
+          "hash": "c8d3d1f80fe699e8c801227ee8ce67ff7fdeeabdc5d92c6f053776b09edb80ee"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 0,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "14ed5fde468a241c02cb78da8f0c0befba31fa975754ab6bebeaae858737deea"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "b0fecd7795f506d2a1fced964498c01ae16b0519b826fe418cf28f1270f4341e"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "20080190c6f3d0540d7e52ca0a5a7f6d238298f173c548884f6c38b8204badae"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "b74afc463f2db86c80c0f54d8481ffa325661e2eb7542d4e3afeaba7f9d09f4c"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p2",
+          "hash": "1900989e80beaf3c0d9c486661f6c404b382e5a78910ff989136f54c3930b4e5"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "917a6bad3bed3bc360cc858d8fdedb15732748ad2a78c057afb95b89f784f6fd"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "1c37c7539cea6ffb88ad8605491a2687ef0c77139aa427d03229815068534fa6"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "6f2c59a30c13141aae607db37bb3997a014f848cabcf4c060cb0d168e46ece25"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p1",
+          "hash": "845367103b159d91fd2bc13325af9fa04ee1fefdc8bb4a68535fe1fa6e79874e"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "27ff6eb06699a1e59b827b4d94ac37ef2833be641ae38ab5a45bba9dde3ec765"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "ce51cc936e44758164524b929b2046ed28be5b9a3285b24ffaad437127d24585"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "70c322e0d210b36c9d4db18d21e45c7ea4286f3a71c38d86590ac3ce312b0127"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -2147483648,
+        "mode": "simplified",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            0,
+            7,
+            13,
+            16,
+            23,
+            11,
+            12
+          ],
+          [
+            10,
+            53,
+            6,
+            17,
+            26,
+            49,
+            37
+          ],
+          [
+            48,
+            15,
+            35,
+            30,
+            29,
+            36,
+            2
+          ]
+        ],
+        "drawPile": [
+          33,
+          3,
+          52,
+          28,
+          39,
+          20,
+          50,
+          51,
+          40,
+          1,
+          54,
+          31,
+          4,
+          46,
+          9,
+          8,
+          47,
+          38,
+          18,
+          25,
+          5,
+          41,
+          14,
+          22,
+          34,
+          19,
+          32,
+          55,
+          44,
+          21,
+          43,
+          27,
+          42,
+          24,
+          45
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": -2147483648,
+        "hash": "ddf7dd7abbfc8a5d141ca8208e3449258056d1039e7f60a8ed8b511024cb5a4b"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "d93007cecdc81766e48f1d9acbde7350690fe6817c21369194f17621ca1540f3"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "c36bffd2b35322869ac9dccec23e96297df2375e6f706f9b53db413958a469c8"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "d7256b2f08efd8e2b63c4770cc171ec5dd6777923abfb9ce0f05aa992a1d1738"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "eca4911876a6bf7b4c44d5434069bf7bd1bd2fdd31827a0cb80e4f949e7c0104"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 0,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              0,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "c1333247c2338ec590a0e8f67f241e1dbc86458e92e11e78566d24e2083fea81"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "8368b382600a6474e83f226142e0604e9cfb952a71ca8b8a3cbd61292a5b1a1c"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "14ed33f7d84b202329c520629eb02b4114b7f1ea759c54a69e769950a5587ac0"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "b75e6a08f21c38e124ef6a4b105116cfa309123099461a419a5ea32088a3c17b"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p2",
+          "hash": "dfe518f1da120606f8447e57e9b186729d436f5fc7353d89c6af3bfd6b698e36"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 2,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              2,
+              0
+            ]
+          },
+          "playerId": "p3",
+          "hash": "0c05c53a64fa65f13a283a62aff7d9024fff123ff19dcd6807e0aae671cc0c5e"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 7,
+            "position": {
+              "col": -1,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              1,
+              2,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "29485cc7988cb81f55278522e33d5a013def330d4948e79738e20aa16f81f40b"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 10,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              0,
+              1,
+              5
+            ]
+          },
+          "playerId": "p2",
+          "hash": "ec8091c603c73eda2513a5deaa7280e1a5a4274139698b2a3923df24ab357862"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": 0,
+              "row": -2,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "f29f9e56b72e7967d2d0633982e07f35481f52b1063be728b9a5c96d5a5f8b09"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 13,
+            "position": {
+              "col": -1,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              4,
+              0
+            ]
+          },
+          "playerId": "p1",
+          "hash": "85f4a3e8a8c1aaff4350cebe9245ef4169cfae280dbc277662d3c8021236f93f"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 17,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              0,
+              3
+            ]
+          },
+          "playerId": "p2",
+          "hash": "51b237d97eff724a6f58dc74db73b0a9fa3e59f382d911b5469eb1eeac79ecdf"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 48,
+            "position": {
+              "col": 1,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              3,
+              5,
+              3
+            ]
+          },
+          "playerId": "p3",
+          "hash": "3af5737f52822c59f7e9f5beba6d09af3156ce0b083b8da20f6e82ff8932b288"
+        }
+      ]
+    },
+    {
+      "config": {
+        "seed": -2147483648,
+        "mode": "kids",
+        "playerIds": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "initial": {
+        "racks": [
+          [
+            0,
+            7,
+            13,
+            16,
+            23,
+            11,
+            12
+          ],
+          [
+            10,
+            53,
+            6,
+            17,
+            26,
+            49,
+            37
+          ],
+          [
+            48,
+            15,
+            35,
+            30,
+            29,
+            36,
+            2
+          ],
+          [
+            33,
+            3,
+            52,
+            28,
+            39,
+            20,
+            50
+          ]
+        ],
+        "drawPile": [
+          51,
+          40,
+          1,
+          54,
+          31,
+          4,
+          46,
+          9,
+          8,
+          47,
+          38,
+          18,
+          25,
+          5,
+          41,
+          14,
+          22,
+          34,
+          19,
+          32,
+          55,
+          44,
+          21,
+          43,
+          27,
+          42,
+          24,
+          45
+        ],
+        "currentPlayerIndex": 2,
+        "rngState": -2147483648,
+        "hash": "7d01902896feb40990ef6543835a91da4da60cb875198b38ab585eb70e0e71a9"
+      },
+      "steps": [
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "d8d956f9c59338dcd3a76471d0d84b85cb5c3986546074e22118d93df2164b0c"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "f41f805b8fee47936dff879b6287fbb88d6d35cf7293031713657b7393790244"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p3",
+          "hash": "f4eb16d0762fa6e49a09ca657b3437a642e285c5119e2488fb69b779858a9ac9"
+        },
+        {
+          "action": {
+            "type": "PASS"
+          },
+          "playerId": "p3",
+          "hash": "2c867e2f70fdbcd2233fd84823d8ea949b4252784fefd3bb4fb7e18e4cf501fa"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 33,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              4,
+              4
+            ]
+          },
+          "playerId": "p4",
+          "hash": "8d4b79a09e9fafed733b96f070b439dc103ed1315523e4cb63362c431004f6c6"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "a08fce8f6ae5962be06b59ffea2cc88f784b2711e99898a89ac4026c5226590d"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p1",
+          "hash": "9c5223c4ee889079a7e084a04c0ac331b9a78ad8ec1dac706db6f4b9bd566e63"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 43,
+            "position": {
+              "col": 0,
+              "row": 1,
+              "orientation": "UP"
+            },
+            "placed": [
+              2,
+              4,
+              4
+            ]
+          },
+          "playerId": "p1",
+          "hash": "25ccd60e805568552657b636d46652f477df889c72c348cae6526127ddfb602c"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "9ffb201c95e2b80037d11239ba6cb8947aabd0960f9f5e8fef81a41a4b605384"
+        },
+        {
+          "action": {
+            "type": "DRAW"
+          },
+          "playerId": "p2",
+          "hash": "55ab926f79a7c737d5ec1f9df1fd6243718bccefef69dad0a85c48ddbb30a5e8"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 44,
+            "position": {
+              "col": -1,
+              "row": 1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              5,
+              2
+            ]
+          },
+          "playerId": "p2",
+          "hash": "00423021f2ffa4df0925fd21e3a29aec55960a87170e1b98d66fb9737cc390ab"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 45,
+            "position": {
+              "col": -1,
+              "row": 2,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              5,
+              5,
+              2
+            ]
+          },
+          "playerId": "p3",
+          "hash": "e01e45f7145acd15be59dad40005bab70b8da24b0074918e607d869b485ad853"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 28,
+            "position": {
+              "col": 0,
+              "row": 0,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              4,
+              1,
+              2
+            ]
+          },
+          "playerId": "p4",
+          "hash": "666fad9c78de29da8b31eab15124d7fe1661314ac2ddfcd2c75afa1f70dedf30"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 7,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "DOWN"
+            },
+            "placed": [
+              0,
+              1,
+              2
+            ]
+          },
+          "playerId": "p1",
+          "hash": "4a33c6a0f98da6b1a099a63d5119d94d2aad86ebcc482dce27dc263b0f49dcb2"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 10,
+            "position": {
+              "col": 0,
+              "row": -1,
+              "orientation": "UP"
+            },
+            "placed": [
+              1,
+              5,
+              0
+            ]
+          },
+          "playerId": "p2",
+          "hash": "64b37a097db88df3cbfa780b64a9695699ab7b0ead530bacfb5d3a172fb5b2f8"
+        },
+        {
+          "action": {
+            "type": "PLACE",
+            "triominoId": 35,
+            "position": {
+              "col": -1,
+              "row": 2,
+              "orientation": "UP"
+            },
+            "placed": [
+              5,
+              1,
+              5
+            ]
+          },
+          "playerId": "p3",
+          "hash": "45c075c2aa4ce6e5bfa8b594b8e9ac2dcdee7df34b0d5f21855c67ea7bc737fd"
+        }
+      ]
+    }
+  ]
+}
