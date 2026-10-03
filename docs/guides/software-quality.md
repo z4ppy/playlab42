@@ -9,8 +9,9 @@ Ce guide est la référence commune aux contributeurs et aux skills ; la
 
 | Contrôle | Politique dans le dépôt | Limite |
 |----------|-------------------------|--------|
-| ESLint JavaScript | Erreurs et warnings bloquants ; pas d'eval, `Function` dynamique ni URL JavaScript | Pas une preuve de correction ou une analyse exhaustive de sécurité |
-| ESLint Security | Plugins 4.2.0 / 4.1.5 verrouillés, configuration flat, gate JS ciblé | Propriétés DOM et heuristiques explicitement consultatives ; pas de scan HTML inline ni TS |
+| ESLint JS et scripts HTML | Erreurs et warnings bloquants ; eslint-plugin-html 8.2.1, pas d'eval, `Function` dynamique ni URL JavaScript | Pas de lint du markup ; attributs événementiels refusés par un test de politique |
+| Biome TypeScript | Version 2.5.15, preset recommandé, syntaxe et règles `.ts`, warnings bloquants | Pas d'analyse utilisant le compilateur TS ni de couverture des plugins de sécurité ESLint |
+| ESLint Security | Plugins 4.2.0 / 4.1.5 verrouillés, configuration flat, gate JS et scripts HTML ciblé | Propriétés DOM et heuristiques consultatives ; pas de règles ESLint sécurité sur TS |
 | TypeScript | Contrôle strict des sources TS ; JS reste autorisé | La transpilation ne vérifie pas les types |
 | Jest | Tests avec seuils ciblés ci-dessous | Couverture de lignes, pas qualité des assertions |
 | Playwright | Interactions, clavier, thèmes et ressources du site préparé | Socle Chromium, pas tous les navigateurs |
@@ -18,7 +19,7 @@ Ce guide est la référence commune aux contributeurs et aux skills ; la
 | Trivy | Outil 0.75.0 vérifié ; vulnérabilités/secrets HIGH et CRITICAL bloquants dans le workflow complémentaire | Base évolutive ; pas un gate complet de configuration Docker |
 | OpenSpec | Structure stricte des exigences et changes | Ne vérifie pas le comportement du code |
 
-La CI réutilisée avant publication exige lint qualité/sécurité JS, tests, types,
+La CI réutilisée avant publication exige lint qualité JS/HTML/TS et sécurité JS/HTML, tests, types,
 audit npm, OpenSpec, navigateur et build. Trivy appartient au workflow
 complémentaire, qui reste séparé et conserve certains diagnostics consultatifs. Le
 rapport de sécurité affiche les états réels des jobs : une analyse annulée,
@@ -65,6 +66,32 @@ et `no-unsanitized/method`. Elles échouent réellement et fournissent un rappor
 JSON avec `lint:security -- --format json --output-file …`.
 Les chemins inexistants `src/`, l'installation à la volée de plugins et les
 échecs transformés en succès ont été retirés des commandes locales et CI.
+
+### Couverture du lint des sources
+
+`make lint` appelle `lint:js` puis `lint:ts`, avec propagation des échecs.
+ESLint parcourt le dépôt, y compris les configs et JS de la documentation ;
+ses HTML exposent uniquement les scripts exécutables. JSON, importmaps et
+exemples échappés ne sont pas du JS. Le scope est `module` par défaut ;
+des scripts classiques partageant des variables exigent un `sourceType: script`
+explicite dans leur configuration, vérifié par une fixture réelle.
+L'indentation de quatre espaces des anciens supports est conservée, pas ignorée.
+
+Biome inclut les sources, tests et déclarations `.ts` (14 fichiers suivis lors
+du lot 3), avec son parser indépendant de TS 7. Formatter et assist sont
+désactivés : ce lot n'impose pas une migration de formatage.
+Les tests de vrais CLI vérifient syntaxe invalide, règle sémantique,
+warnings fatals, diagnostics JSON et exclusions ; une entrée ignorée ne
+constitue pas un succès de lint. Les diagnostics informatifs ne bloquent pas.
+La limite par défaut de taille de fichier et le reporter JSON expérimental
+restent des limites de l'outil ; `.tsx` n'est pas inclus dans ce dépôt sans JSX.
+
+Dépendances/vendor et sorties `dist`, `coverage`, `data`, `site`, `docs/site`,
+`test-results` et `playwright-report` sont exclus. Les attributs événementiels HTML ne sont pas analysés par le
+plugin : ceux existants ont été migrés vers des listeners lintés et un test
+de politique en refuse la réintroduction, y compris dans les templates.
+`lint:fix` peut aider, mais son diff et le lint sans `--fix` restent à vérifier :
+le fixer HTML peut déplacer l'indentation de remplacements multiligne.
 
 `make security-eslint-advisory` exécute séparément les heuristiques DOM-property,
 regex, accès calculés, chemins de fichiers, processus et timing. Les warnings
@@ -167,11 +194,10 @@ une approbation. Les noms requis devront suivre la transition du pipeline :
 voir [le réglage détaillé](../DEPLOYMENT.md#protection-de-main--activée-sur-github).
 Les previews et métriques utiles viennent après ces garanties, sans plateforme
 lourde ni collecte personnelle ajoutée implicitement.
-Le lint des sources TypeScript reste **non disponible dans cette stack** :
-`typescript-eslint` 8.71.0 supporte ESLint 10, mais son peer TypeScript
-`>=4.8.4 <6.1.0` exclut TS 7. Le contrôle strict `tsc` reste requis, sans être
-présenté comme du lint. Ne pas downgrader le compilateur ni utiliser
-`--force` / `--legacy-peer-deps` pour contourner ce contrat.
+Le lint TS est désormais fourni par Biome. L'intégration **typescript-eslint**
+8.71.0 reste non supportée : son peer `>=4.8.4 <6.1.0` exclut TS 7.
+Le contrôle strict `tsc` reste requis et distinct. Ne pas downgrader le
+compilateur ni utiliser `--force` / `--legacy-peer-deps` pour contourner ce contrat.
 
 ## Maintenance des références et exceptions
 
@@ -207,13 +233,16 @@ lors de leur revue, sans afficher les secrets dans les logs ou rapports.
 Les diagnostics consultatifs sont documentés comme tels : ce ne sont pas des
 dérogations silencieuses ni un résultat « zéro problème ».
 
-### Contrôle différé pour incompatibilité
+### Compatibilité du lint TypeScript
 
 | Contrôle | Décision du 3 octobre 2026 | Suivi |
 |----------|---------------------------|-------|
-| Lint TypeScript | Parser 8.71.0 incompatible TS 7 ; pas d'installation forcée ni de downgrade | Priorité du lot 3 : étudier une chaîne compatible, pas seulement attendre une release ; maintenir tsc strict et les tests |
+| Parser typescript-eslint | 8.71.0 incompatible TS 7 ; pas d'installation forcée ni de downgrade | Biome 2.5.15 couvre le lint syntaxique/sémantique `.ts` ; tsc strict reste le contrôle de types |
 
-Ce report est une limite technique déclarée, pas une exception à un gate installé.
+Ce choix ne prétend pas reproduire une analyse typée ESLint ou toutes ses
+heuristiques de sécurité. Références : [Biome](https://biomejs.dev/linter/),
+[configuration](https://biomejs.dev/reference/configuration/) et
+[eslint-plugin-html](https://github.com/BenoitZugmeyer/eslint-plugin-html/tree/v8.2.1).
 
 ## Référentiels et niveau réel
 

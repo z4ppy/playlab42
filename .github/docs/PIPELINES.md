@@ -25,8 +25,8 @@ restent distinctes du déclenchement des workflows.
 
 | Job | Commande / dépendance | Échec |
 |-----|----------------------|-------|
-| Lint | `npm run lint` | Erreurs et avertissements ESLint |
-| Security lint | `npm run lint:security`, rapport JSON | Erreurs des règles JS ciblées, sans installation de plugins à la volée |
+| Lint | `npm run lint` : ESLint JS/scripts HTML puis Biome `.ts` | Erreurs et avertissements bloquants ; tsc reste distinct |
+| Security lint | `npm run lint:security`, rapport JSON | Règles JS/scripts HTML ciblées, pas TS ; sans installation à la volée |
 | Tests | `npm run test:coverage`, puis Codecov | Tests ou seuils ciblés échoués ; upload Codecov non bloquant |
 | Dependency audit | `npm run audit:dependencies` | CVE modérée ou plus ; panne d'audit également bloquante |
 | TypeScript | `npm run typecheck` | Erreurs de types ; la transpilation appartient à Build |

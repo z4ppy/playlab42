@@ -76,4 +76,15 @@ describe('Contrat des workflows de livraison', () => {
     expect(scripts['build:local']).toContain('--skip-og');
     expect(scripts.build).not.toContain('--skip-og');
   });
+
+  test('le lint requis couvre JS, scripts HTML et TS avec les mêmes commandes locales', () => {
+    const { scripts, devDependencies } = JSON.parse(read('package.json'));
+    expect(scripts.lint).toBe('npm run lint:js && npm run lint:ts');
+    expect(scripts['lint:js']).toBe('eslint . --max-warnings=0');
+    expect(scripts['lint:ts']).toBe('biome lint --error-on-warnings .');
+    expect(scripts['lint:security']).toContain(' . --max-warnings=0');
+    expect(devDependencies['eslint-plugin-html']).toBe('8.2.1');
+    expect(devDependencies['@biomejs/biome']).toBe('2.5.15');
+    expect(ci.jobs.lint.steps.some(step => step.run === 'npm run lint')).toBe(true);
+  });
 });

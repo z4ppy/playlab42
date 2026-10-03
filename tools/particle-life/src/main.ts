@@ -86,16 +86,6 @@ function startLoop(): void {
   }
 }
 
-/**
- * Arrête la boucle d'animation
- */
-function stopLoop(): void {
-  if (animationId !== null) {
-    cancelAnimationFrame(animationId);
-    animationId = null;
-  }
-}
-
 // === Contrôles ===
 
 /**

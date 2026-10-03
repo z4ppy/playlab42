@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../../_shared/algorithm-complexity.css">
     <script type="module">
         import { initSlide, initGlossary } from '../../../../../parcours/_shared/slide-utils.js';
-        
+
         initSlide();
 
         // Initialize Glossary
@@ -19,9 +19,9 @@
                 try {
                     // Use shared initGlossary which handles loading and unwrapping
                     const glossary = await initGlossary();
-                    
+
                     if (!glossary) {
-                        throw new Error("Glossary initialization failed");
+                        throw new Error('Glossary initialization failed');
                     }
 
                     const html = glossary.generateGlossaryPage();
@@ -30,8 +30,8 @@
                     // Apply custom styles matching Algorithm Complexity theme
                     applyCustomStyles();
                 } catch (e) {
-                    console.error("Failed to load glossary:", e);
-                    glossaryContainer.innerHTML = `<div class="p-4 ac-accent-red border border-red-500 rounded">Erreur de chargement du glossaire.</div>`;
+                    console.error('Failed to load glossary:', e);
+                    glossaryContainer.innerHTML = '<div class="p-4 ac-accent-red border border-red-500 rounded">Erreur de chargement du glossaire.</div>';
                 }
             }
         });

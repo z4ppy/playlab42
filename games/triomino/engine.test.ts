@@ -3,16 +3,17 @@
  * @see openspec/changes/add-triomino-game/specs/triomino-rules/spec.md
  */
 
+import { jest } from '@jest/globals';
 import {
   generateAllTiles,
   isValidPlacement,
   detectBonus,
   TriominoEngine,
-  type Triomino,
   type Position,
   type Board,
   type TriominoConfig,
   type PlaceAction,
+  type TriominoAction,
 } from './engine.js';
 
 // ---------------------------------------------------------------------------
@@ -23,6 +24,28 @@ const defaultConfig = (players = 2, seed = 42): TriominoConfig => ({
   mode: 'standard',
   playerIds: Array.from({ length: players }, (_, i) => `p${i + 1}`),
   seed,
+});
+
+describe('GreedyBot', () => {
+  test('préserve les choix légaux et refuse une liste sans action valide', async () => {
+    // Le bot référence le moteur généré ; lui fournir sa vraie implémentation TS.
+    jest.unstable_mockModule('../dist/engine.js', () => ({ detectBonus }), { virtual: true });
+    const { GreedyBot } = await import('./bots/greedy.js');
+    const engine = new TriominoEngine();
+    const state = engine.init(defaultConfig(2, 42));
+    const playerId = engine.getCurrentPlayer(state);
+    const view = engine.getPlayerView(state, playerId);
+    const bot = new GreedyBot();
+    const rng = { pick: <T>(values: T[]): T => values[0] };
+    const draw: TriominoAction = { type: 'DRAW' };
+    const pass: TriominoAction = { type: 'PASS' };
+    expect(bot.chooseAction(view, [pass, draw], rng)).toBe(draw);
+    expect(bot.chooseAction(view, [pass], rng)).toBe(pass);
+    expect(() => bot.chooseAction(view, [], rng)).toThrow('Aucune action valide');
+    const chosen = bot.chooseAction(view, engine.getLegalActions(state, playerId), rng);
+    expect(chosen.type).toBe('PLACE');
+    expect(engine.isValidAction(state, chosen, playerId)).toBe(true);
+  });
 });
 
 /** Construit un plateau avec une seule tuile posée au centre */
@@ -363,6 +386,11 @@ describe('Sérialisation JSON', () => {
 describe('getPlayerView', () => {
   const engine = new TriominoEngine();
 
+  test('refuse explicitement un joueur inconnu', () => {
+    const state = engine.init(defaultConfig(2, 42));
+    expect(() => engine.getPlayerView(state, 'absent')).toThrow('Joueur inconnu : absent');
+  });
+
   test('le joueur voit son propre rack', () => {
     const state = engine.init(defaultConfig(2, 42));
     const pid = state.players[0].id;
@@ -374,17 +402,16 @@ describe('getPlayerView', () => {
     const state = engine.init(defaultConfig(2, 42));
     const pid = state.players[0].id;
     const view = engine.getPlayerView(state, pid);
-    expect(view.opponentRackSizes['p2']).toBe(9);
+    expect(view.opponentRackSizes.p2).toBe(9);
     // La vue ne doit pas exposer les valeurs des tuiles adverses
-    const viewAsAny = view as Record<string, unknown>;
-    expect(viewAsAny['opponentRacks']).toBeUndefined();
+    expect(view).not.toHaveProperty('opponentRacks');
   });
 
   test("les scores de tous les joueurs sont visibles", () => {
     const state = engine.init(defaultConfig(2, 42));
     const view = engine.getPlayerView(state, 'p1');
-    expect(view.scores['p1']).toBeDefined();
-    expect(view.scores['p2']).toBeDefined();
+    expect(view.scores.p1).toBeDefined();
+    expect(view.scores.p2).toBeDefined();
   });
 });
 

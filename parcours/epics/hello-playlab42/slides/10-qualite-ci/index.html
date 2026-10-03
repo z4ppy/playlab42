@@ -17,7 +17,7 @@
     <p class="guide-kicker">Partie 3 · L'usine logicielle</p>
     <h1>Qualité et CI</h1>
     <p class="guide-lead">
-      À chaque pull request vers <code>main</code>, GitHub Actions rejoue les contrôles.
+      À chaque pull request, y compris sur une branche de lot empilé, GitHub Actions rejoue les contrôles.
       La publication réutilise cette même CI ; l'audit de sécurité reste un workflow séparé.
     </p>
 
@@ -36,8 +36,8 @@
     <h2>CI : huit contrôles complémentaires</h2>
     <p>Les jobs utilisent Node 26 et <code>npm ci</code>. Browser attend l'archive du job Build :</p>
     <ul class="guide-checklist">
-      <li><strong>Lint</strong> : <code>npm run lint</code>, erreurs et avertissements bloquants.</li>
-      <li><strong>Security lint</strong> : plugins verrouillés et règles JS ciblées ; les heuristiques consultatives restent séparées.</li>
+      <li><strong>Lint</strong> : <code>npm run lint</code>, ESLint JS/scripts HTML puis Biome TS, erreurs et avertissements bloquants.</li>
+      <li><strong>Security lint</strong> : plugins verrouillés et règles JS/scripts HTML ciblées ; les heuristiques consultatives restent séparées.</li>
       <li><strong>Tests</strong> : <code>npm run test:coverage</code>, seuils ciblés sur le déterminisme et la livraison ; upload Codecov non bloquant.</li>
       <li><strong>Dépendances</strong> : <code>npm run audit:dependencies</code>, seuil modéré ; une panne d'audit bloque aussi.</li>
       <li><strong>TypeScript</strong> : <code>npm run typecheck</code> ; la transpilation est réalisée dans Build.</li>
@@ -77,8 +77,10 @@
       </table>
     </div>
     <p class="guide-note">Actions épinglées par SHA, images par digest et scanners vérifiés avant exécution.
-      Les bases CVE et paquets OS évoluent encore. Le lint TypeScript attend un parser compatible
-      avec TS 7 ; le contrôle de types reste actif, mais n'est pas du lint.</p>
+      Les bases CVE et paquets OS évoluent encore. Biome fournit le lint des sources <code>.ts</code>
+      sans forcer un parser incompatible avec TS 7. Le contrôle de types reste distinct ;
+      les plugins de sécurité ESLint ne s'appliquent pas à TS. Le lint HTML vise les scripts,
+      pas le markup : un test interdit les attributs événementiels au profit de listeners lintés.</p>
 
     <h2>Ce que ces workflows ne garantissent pas</h2>
     <p class="guide-note">
@@ -113,7 +115,9 @@ make openspec-validate</code></pre>
 
     <details class="guide-exercise">
       <summary>Mini-question : ESLint Security signale un problème, la PR est-elle bloquée ?</summary>
-      <p>Pas par ce job : il affiche un avertissement et continue. Une règle de branche éventuelle reste à vérifier dans les réglages GitHub.</p>
+      <p>Une règle du gate bloquant échoue réellement et empêche la publication.
+        Les heuristiques de la commande advisory restent consultatives et ne prouvent
+        pas une vulnérabilité. La protection de branche est un mécanisme distinct.</p>
     </details>
 
     <p class="guide-resource">

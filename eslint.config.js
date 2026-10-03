@@ -5,8 +5,11 @@
 
 import js from '@eslint/js';
 import globals from 'globals';
+import html from 'eslint-plugin-html';
+import { sourceIgnores } from './scripts/lint-source-policy.js';
 
 export default [
+  { ignores: sourceIgnores },
   // Configuration de base recommandée
   js.configs.recommended,
 
@@ -55,6 +58,32 @@ export default [
     },
   },
 
+  {
+    files: ['**/*.html'],
+    plugins: { html },
+  },
+
+  {
+    // Ces supports utilisent quatre espaces dans leurs scripts embarqués.
+    files: [
+      'games/go-9x9/**/*.html',
+      'parcours/_shared/templates/**/*.html',
+      'parcours/epics/algorithm-complexity/**/*.html',
+      'parcours/epics/as-code-paradigm/**/*.html',
+      'parcours/epics/deep-learning-intro/**/*.html',
+    ],
+    rules: {
+      indent: ['error', 4, { SwitchCase: 1 }],
+    },
+  },
+
+  {
+    files: ['tools/neural-style.html'],
+    languageOptions: {
+      globals: { mi: 'readonly' },
+    },
+  },
+
   // Configuration spécifique pour les tests
   {
     files: ['**/*.test.js', '**/*.spec.js', '**/tests/**/*.js'],
@@ -68,15 +97,4 @@ export default [
     },
   },
 
-  // Fichiers ignorés
-  {
-    ignores: [
-      'node_modules/**',
-      'dist/**',
-      'coverage/**',
-      'data/**',
-      'assets/vendor/**',
-      'games/**/index.html',
-    ],
-  },
 ];

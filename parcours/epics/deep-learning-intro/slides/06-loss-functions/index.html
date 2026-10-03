@@ -117,7 +117,7 @@
                             formula: '\\( L = \\frac{1}{2}(y - \\hat{y})^2 \\)',
                             description: 'Pénalise fortement les grandes erreurs (quadratiquement). Idéale pour la régression, mais sensible aux outliers.',
                             yMax: 2.5,
-                            xRange: [-1.5, 1.5]
+                            xRange: [-1.5, 1.5],
                         },
                         mae: {
                             fn: (y, yHat) => Math.abs(y - yHat),
@@ -126,7 +126,7 @@
                             formula: '\\( L = |y - \\hat{y}| \\)',
                             description: 'Traite toutes les erreurs de façon équitable (linéairement). Plus robuste aux outliers que MSE.',
                             yMax: 2.5,
-                            xRange: [-1.5, 1.5]
+                            xRange: [-1.5, 1.5],
                         },
                         huber: {
                             fn: (y, yHat) => {
@@ -140,9 +140,9 @@
                             color: '#22c55e',
                             title: 'Huber — Perte Hybride',
                             formula: '\\( L = \\begin{cases} \\frac{1}{2}(y-\\hat{y})^2 & |y-\\hat{y}| \\leq \\delta \\\\ \\delta(|y-\\hat{y}| - \\frac{\\delta}{2}) & \\text{sinon} \\end{cases} \\)',
-                            description: 'Quadratique près de 0 (gradients lisses), linéaire loin (robustesse). Le meilleur des deux mondes avec δ=' + huberDelta + '.',
+                            description: `Quadratique près de 0 (gradients lisses), linéaire loin (robustesse). Le meilleur des deux mondes avec δ=${  huberDelta  }.`,
                             yMax: 2.5,
-                            xRange: [-1.5, 1.5]
+                            xRange: [-1.5, 1.5],
                         },
                         crossentropy: {
                             fn: (y, yHat) => {
@@ -158,8 +158,8 @@
                             formula: '\\( L = -\\log(\\hat{y}) \\)',
                             description: 'Pour les probabilités (0 à 1). Punit exponentiellement les prédictions confiantes mais fausses. Ici : -log(ŷ) pour y=1.',
                             yMax: 5,
-                            xRange: [-1, 1]
-                        }
+                            xRange: [-1, 1],
+        },
                     };
 
                     const toCanvasX = (x, xMin, xMax) => margin.left + (x - xMin) / (xMax - xMin) * plotW;
@@ -177,7 +177,7 @@
 
                         // Re-render MathJax
                         if (window.MathJax?.typesetPromise) {
-                            MathJax.typesetPromise([formula]).catch((error) => {
+                            window.MathJax.typesetPromise([formula]).catch((error) => {
                                 console.error('Rendu mathématique indisponible:', error);
                             });
                         }
@@ -188,13 +188,13 @@
                             mse: document.getElementById('btnMSE'),
                             mae: document.getElementById('btnMAE'),
                             huber: document.getElementById('btnHuber'),
-                            crossentropy: document.getElementById('btnCrossEntropy')
+                            crossentropy: document.getElementById('btnCrossEntropy'),
                         };
                         const colors = {
                             mse: 'orange',
                             mae: 'cyan',
                             huber: 'green',
-                            crossentropy: 'purple'
+                            crossentropy: 'purple',
                         };
 
                         Object.keys(buttons).forEach(key => {
@@ -287,7 +287,7 @@
                             const py = toCanvasY(Math.min(lossVal, yMax), yMax);
                             if (py >= margin.top && py <= H - margin.bottom) {
                                 if (!started) { ctx.moveTo(px, py); started = true; }
-                                else ctx.lineTo(px, py);
+                                else {ctx.lineTo(px, py);}
                             }
                         }
                         ctx.stroke();
@@ -301,7 +301,7 @@
                             ctx.fillStyle = textColor;
                             ctx.font = 'bold 10px sans-serif';
                             ctx.textAlign = 'center';
-                            ctx.fillText('y=' + targetY.toFixed(1), toCanvasX(targetY, xMin, xMax), H - margin.bottom + 32);
+                            ctx.fillText(`y=${  targetY.toFixed(1)}`, toCanvasX(targetY, xMin, xMax), H - margin.bottom + 32);
                         }
 
                         // Point sur la courbe si souris

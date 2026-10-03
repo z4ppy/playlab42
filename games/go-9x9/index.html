@@ -115,7 +115,7 @@
             /* Ensure line is still drawn */
         }
 
-        /* Hoshi dot using radial gradient on the cell itself, but we need to be careful not to hide lines if we use background-color. 
+        /* Hoshi dot using radial gradient on the cell itself, but we need to be careful not to hide lines if we use background-color.
            We use background-image. */
         .cell.hoshi {
             background-image: radial-gradient(circle at center, #000 3px, transparent 3.5px);
@@ -382,13 +382,13 @@
         }
 
         function maybeBotTurn() {
-            if (!bot || state.gameOver) return;
-            if (state.currentPlayerId !== opponentId) return;
+            if (!bot || state.gameOver) {return;}
+            if (state.currentPlayerId !== opponentId) {return;}
             setTimeout(playBot, 150);
         }
 
         function playBot() {
-            if (!bot || state.gameOver || state.currentPlayerId !== opponentId) return;
+            if (!bot || state.gameOver || state.currentPlayerId !== opponentId) {return;}
             const valid = engine.getValidActions(state, opponentId);
             const action = bot.chooseAction(state, valid, rng);
             state = engine.applyAction(state, action, opponentId);
@@ -404,7 +404,7 @@
         }
 
         function render() {
-            if (!state) return;
+            if (!state) {return;}
             const currentHuman = humanControls.getPlayerId();
             btnPass.disabled = currentHuman === null;
             btnResign.disabled = currentHuman === null;

@@ -334,7 +334,7 @@
      */
     function minifyJSON() {
       formatJSON();
-      if (!hasValidJSON) return;
+      if (!hasValidJSON) {return;}
 
       const minified = JSON.stringify(lastValidJSON);
       outputEl.innerHTML = highlightJSON(minified);
@@ -349,7 +349,7 @@
      */
     async function copyOutput() {
       const text = outputEl.textContent;
-      if (!text) return;
+      if (!text) {return;}
 
       try {
         await navigator.clipboard.writeText(text);
@@ -369,8 +369,8 @@
      * Formate une taille en bytes
      */
     function formatBytes(bytes) {
-      if (bytes < 1024) return `${bytes} B`;
-      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      if (bytes < 1024) {return `${bytes} B`;}
+      if (bytes < 1024 * 1024) {return `${(bytes / 1024).toFixed(1)} KB`;}
       return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
     }
 

@@ -47,6 +47,10 @@ Les slides décrivent cette branche ; la livraison du lot 2 reste distincte.
 Le lot 3 priorise la couverture du lint (TS et scripts HTML pertinents), sans
 forcer les dépendances ; le lot 4 traite la qualité du code. Les heuristiques
 consultatives restent une dette de triage explicite.
+Dans le worktree du lot 3, `complete-source-lint-coverage` ajoute Biome 2.5.15
+pour les `.ts` et eslint-plugin-html 8.2.1 pour les scripts, corrige les sources
+et migre les attributs événementiels. Les règles de sécurité ESLint restent
+limitées à JS/HTML et le contrôle strict tsc demeure séparé.
 
 ## Présentation et validation
 
