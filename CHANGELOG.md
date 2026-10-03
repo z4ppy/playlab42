@@ -21,6 +21,9 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   elles ne correspondaient plus à aucune URL du catalogue
 
 ### Changed
+- Diese & Mat : la fin de session conserve son timestamp ; terminer deux fois
+  ne modifie plus la durée du bilan. Régression à horloge contrôlée, y compris
+  réinitialisation pour une nouvelle session et événement émis une seule fois.
 - Builders : lectures JSON partagées et diagnostiquées, racine fiable même dans
   un projet nommé `library`, écritures atomiques conservant le dernier catalogue
   en cas d'échec. Un cache corrompu est désormais une erreur explicite.
