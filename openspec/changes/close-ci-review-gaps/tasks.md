@@ -46,4 +46,7 @@ sur le head `a5598b2` le 3 octobre 2026. La
 [preuve datée](../../../docs/guides/software-factory.md#livraison-constatée-et-correctifs-locaux)
 distingue cette validation de l'intégration/publication ; les checks de chaque
 tête ultérieure restent à consulter. Les réglages distants sont inchangés.
-La livraison et l'archivage attendent une décision distincte, hors de cette demande.
+L'utilisateur a ensuite fusionné la PR #145 à main (`8a643e8`) ; les runs de
+publication `37148586787` et de sécurité `37148586535` ont réussi sur ce commit.
+La livraison est constatée, pas effectuée par l'assistant. L'archivage attend
+toujours une décision distincte.

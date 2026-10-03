@@ -168,12 +168,12 @@ de builds concurrents, ni une garantie de durabilité après coupure électrique
 La couverture mesurée est 100 % sur les helpers ; OG dépasse les seuils ciblés,
 sans prétendre couvrir tout le dépôt ou le réseau réel par des mocks.
 
-La PR de revue propose des corrections des builders, de préservation des images
+La PR de revue a livré les corrections des builders, de préservation des images
 OG et du mode d'écriture atomique depuis `fix/review-software-factory`. Elle ajoute aussi
 Build, déjà requis, comme gate exigeant le succès de Security lint et de Trivy
 HIGH/CRITICAL dans un workflow réutilisable partagé ; un gate ignoré ne doit
-pas être accepté. Ces correctifs restent **non intégrés à `main` et non déployés** ;
-ils ne changent pas les neuf checks GitHub actuellement requis. La
+pas être accepté. Ces correctifs sont **intégrés à `main` et publiés** via la
+PR #145 ; ils ne changent pas les neuf checks GitHub actuellement requis. La
 [validation native datée de la PR](software-factory.md#livraison-constatée-et-correctifs-locaux)
 est distincte de sa livraison et ne remplace pas les checks de sa tête courante.
 
@@ -246,6 +246,123 @@ Le lint TS est désormais fourni par Biome. L'intégration **typescript-eslint**
 8.71.0 reste non supportée : son peer `>=4.8.4 <6.1.0` exclut TS 7.
 Le contrôle strict `tsc` reste requis et distinct. Ne pas downgrader le
 compilateur ni utiliser `--force` / `--legacy-peer-deps` pour contourner ce contrat.
+
+## Suite proposée : qualité du code par étapes
+
+**Statut : proposition, aucune étape ci-dessous n'est implémentée.** La branche
+`plan/code-quality-stages` a été créée depuis `fix/review-software-factory`,
+puis réalignée sur main `8a643e8` après la fusion squash de la PR #145.
+L'égalité des sources de cette fusion avec le head revu a été vérifiée avant
+réalignement ; les correctifs ne sont pas réintroduits dans une pile de branches.
+
+### Point de départ mesuré
+
+La [CI native 37148235271](https://github.com/z4ppy/playlab42/actions/runs/37148235271),
+head `a5598b2`, a réussi : **100 suites / 2 124 tests**, lint JS/HTML/TS,
+types, seuils Jest, scan Trivy, build vérifié et 64 interactions Chromium.
+L'[audit complémentaire](https://github.com/z4ppy/playlab42/actions/runs/37148235235)
+a réussi ; Hadolint est volontairement ignoré sur PR, pas exécuté ni certifié.
+Les logs du job Tests donnent :
+
+| Mesure Jest native | Statements | Branches | Fonctions | Lignes |
+|--------------------|------------|----------|-----------|--------|
+| Ensemble instrumenté | 65,93 % | 65,24 % | 68,94 % | 65,76 % |
+| `app/events.js` | 57,44 % | 41,42 % | 33,33 % | 63,41 % |
+| `app/game-loader.js` | 64,70 % | 72,22 % | 38,46 % | 65,06 % |
+| `app/settings.js` | 59,32 % | 16,66 % | 85,71 % | 59,32 % |
+| `games/checkers/engine.js` | 82,95 % | 72,97 % | 84,61 % | 85,93 % |
+| `games/triomino/engine.ts` | 74,76 % | 67,17 % | 72,72 % | 78,14 % |
+| `tools/relativity-lab/src/Simulation.js` | 0 % | 0 % | 0 % | 0 % |
+| `games/tetris/engine.js` | 100 % | 99,34 % | 100 % | 100 % |
+| `scripts/lib/build-utils.js` | 100 % | 100 % | 100 % | 100 % |
+
+Ces chiffres portent sur `collectCoverageFrom`, **pas sur tous les fichiers
+du dépôt ni sur les assertions E2E**. La collecte Jest ne mesure pas les
+interactions Chromium ou automatiquement les builders lancés en subprocessus.
+Relativity possède déjà des tests physiques et de vrais tests navigateur :
+son orchestration temporelle n'est pas couverte par Jest, ce qui ne signifie
+pas « aucun test ». Tetris et les helpers déjà bien protégés ne sont pas les
+premiers candidats à une réécriture.
+
+L'upload Codecov a réussi, mais reste non bloquant. Ses flags mentionnent
+`lib/`, `src/`, `games/`, alors que ce dépôt n'a pas de répertoire racine
+`src/` et que Jest instrumente aussi `app/`, `tools/` et `scripts/`.
+Il faut vérifier cette segmentation avant d'utiliser ses statuts comme gate ;
+un upload réussi n'est pas une preuve de cohérence de toutes les vues.
+La CI ne fournit pas actuellement de mesure exhaustive de duplication,
+de complexité typée TS ou de qualité des assertions.
+
+### Étapes et sorties vérifiables
+
+| Étape | Périmètre et travail proposé | Critère de sortie |
+|-------|-----------------------------|-------------------|
+| Q0 — rendre les preuves exploitables | Publier JSON de couverture, LCOV et résumé par module avec SHA/run ; aligner les flags Codecov sur les sources réelles ; distinguer CLI, Jest et E2E | Rapports accessibles et périmètres expliqués, résultats comparables à cette baseline, aucun seuil réduit |
+| Q1 — contrats du portail | Trois petites PR : messages iframe, cycle chargement/déchargement, réinitialisation du stockage | Scénarios de concurrence, refus et échec observés sur état/iframe/stockage ; correction des défauts reproduits puis mesure des branches gagnées |
+| Q2 — moteurs déterministes | Deux PR indépendantes : captures/replay des Dames, transitions/scoring du Triomino | Replay après JSON identique, absence de mutation vérifiée, actions invalides et scores limites explicitement testés |
+| Q3 — orchestration des outils | Commencer par Relativity Simulation : horloge, pause, émissions/réceptions et libération des ressources | Tests d'orchestration réels, avec doubles aux frontières seulement ; réception unique et reprise/reset vérifiés ; conserver le navigateur Three.js réel |
+| Q4 — maintenabilité ciblée | Extraire les responsabilités mêlées révélées par Q1–Q3 ; mesurer complexité JS et duplication avant décision | API et comportement conservés, baisse mesurée sur les fonctions choisies, aucune abstraction ou migration générale sans bénéfice démontré |
+| Q5 — verrouiller les acquis | Étendre les seuils par module après mesure et revoir les scénarios du code modifié | Une régression ciblée échoue réellement en CI ; seuils, exceptions et assertions justifiés, pas de 100 % global artificiel |
+
+**Q0 n'est pas un préalable à tous les tests métier** : les rapports actuels
+permettent déjà de commencer Q1 ou Q2. Q1 et les deux moteurs de Q2 peuvent être
+traités en parallèle sur fichiers distincts. Q3 est également indépendant.
+Q4 dépend des tests de caractérisation du module concerné ; Q5 s'applique
+après mesure de chaque module, sans attendre une refonte de tout le dépôt.
+
+### Scénarios prioritaires et découpage des PR
+
+Pour Q1, commencer par les contrats observables plutôt que le pourcentage :
+
+- **Messages** (`app/events.js`) : `ready`/`quit` de l'iframe attendue, d'une
+  autre source/origine et d'une ancienne session. Définir les effets acceptés
+  pour chaque type ; ne pas déclarer une vulnérabilité sans reproduction.
+- **Cycle de vie** (`app/game-loader.js`) : ouvertures A/B avec réponses HEAD
+  inversées ; déchargement A suivi d'ouverture B avant le callback de 100 ms.
+  Vérifier ensemble iframe, hash, état, récents et timers, pas seulement un appel mocké.
+- **Reset** (`app/settings.js`) : jeu actif ou confirmation refusée sans mutation ;
+  échec de suppression puis échec de relecture après suppression. Vérifier état
+  mémoire, stockage et notification, sans succès trompeur. Conserver les tests
+  de migration/refus des formats futurs de `lib/local-data.js`.
+
+Pour Q2, lire les specs moteur et les règles existantes avant toute correction :
+
+- **Dames** : rafle changeant de diagonale, captures exactes et replay JSON ;
+  métadonnées `captured` absentes ou incohérentes pour un même départ/arrivée.
+  Caractériser puis clarifier le contrat, sans changer arbitrairement les règles.
+- **Triomino** : séquence légale `PLACE/DRAW/PASS` avec reprise JSON intermédiaire,
+  mêmes actions légales et même état final ; double hexagone et priorité des bonus
+  dans les modes standard/simplified/kids. L'initialisation déterministe seule ne suffit pas.
+
+Pour Q3, tester pause/reprise avec `timeScale`, réception unique d'un signal,
+retrait de scène/retour au pool et reset. Les mocks portent sur scène/horloge,
+pas sur le calcul ou l'algorithme dont on veut vérifier le résultat.
+Séparer légèrement logique/rendu seulement si le couplage empêche ces observations.
+
+Pour Q4, éviter un « grand ménage » du JavaScript embarqué ou un outil lourd
+par défaut. Une duplication de RNG ne se remplace pas mécaniquement :
+conserver seeds et replays de référence avant toute mutualisation.
+La limite de complexité actuelle ≤ 10 reste ciblée sur les helpers de build
+et OG ; son extension se décide après mesure et découpage, pas avec des ignores.
+
+### Règles communes et prochaine action proposée
+
+Chaque PR part de la base livrée, cible main et traite **un contrat borné** :
+caractérisation/reproduction, correction si nécessaire, tests de non-régression,
+documentation liée et CI du head final. Distinguer régression confirmée,
+risque à caractériser et amélioration de conception. Consulter le diff effectif
+après squash ; ne pas confondre une fusion dans une branche intermédiaire avec main.
+
+Conserver les gates actuels, les versions et la stack Docker ; pas de baisse
+de seuil, de dépendance forcée ni de framework de tests ajouté implicitement.
+Définir les seuils de Q5 après les nouveaux scénarios et publier leur mesure.
+Les erreurs, refus et absence de mutation importent autant que les chemins nominaux.
+Un changement de capability/contrat requiert son change OpenSpec avant code ;
+la livraison et l'archivage restent des décisions distinctes.
+
+**Prochaine étape proposée : Q0 pour la lisibilité des preuves, puis Q1a
+sur les messages et Q1b sur le cycle de vie**, avec des PR séparées.
+Les captures Dames peuvent être travaillées indépendamment si une deuxième
+contribution est disponible. Aucun de ces travaux n'est lancé par ce plan.
 
 ## Maintenance des références et exceptions
 

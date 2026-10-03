@@ -18,4 +18,7 @@
 La préparation initiale n'incluait aucun commit, push, merge, publication ou
 archivage. L'utilisateur a ensuite demandé l'ouverture de la PR #145 vers main :
 commit/push et PR sont réalisés, avec une première validation native datée
-sur `a5598b2`. Aucun merge, publication ou archivage n'est demandé ni réalisé.
+sur `a5598b2`. L'utilisateur a ensuite fusionné cette PR à main (`8a643e8`) ;
+la publication `37148586787` est constatée réussie sur ce commit. Aucun merge,
+déploiement ou archivage n'a été effectué par l'assistant ; l'archivage reste
+soumis à une décision distincte.

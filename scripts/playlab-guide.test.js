@@ -83,8 +83,10 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     for (const document of [factory, quality, operations, readme]) {
       expect(document).toMatch(/intégrés? à `?main`? et publiés?/);
       expect(document).toContain('fix/review-software-factory');
-      expect(document).toMatch(/non intégrés à `?main`? et non\s+déployés/);
     }
+    expect(factory).toContain('Validation native constatée');
+    expect(factory).toContain('Cette preuve datée concerne ce head');
+    expect(factory).toContain("Le plan n'implémente pas");
     expect(operations).toMatch(/pas qu'un run planifié a été exécuté/);
     expect(operations).toContain('Cela prouve une reprise de fichiers locaux, pas une reprise Pages en production.');
     expect(operations).toContain('Le manifeste est **non signé**');
