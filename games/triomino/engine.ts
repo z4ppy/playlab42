@@ -381,6 +381,7 @@ function edgeMatches(
 
 /**
  * Vérifie si un placement est légal sur le plateau.
+ * - Première pose au centre (0, 0, UP)
  * - Au moins un voisin existant
  * - Tous les voisins existants ont des chiffres correspondants
  * - La position est libre
@@ -396,8 +397,10 @@ export function isValidPlacement(
   // La position doit être libre
   if (board[key]) return false;
 
-  // Premier placement : toujours valide (au centre)
-  if (isFirst) return true;
+  // Même centre et orientation que les premières actions proposées par le moteur.
+  if (isFirst) {
+    return position.col === 0 && position.row === 0 && position.orientation === 'UP';
+  }
 
   const neighbors = getNeighbors(position);
   let hasNeighbor = false;
@@ -657,6 +660,11 @@ function calcLastTileBonus(config: TriominoConfig): number {
  */
 function sumTiles(tiles: Triomino[]): number {
   return tiles.reduce((acc, t) => acc + t.values[0] + t.values[1] + t.values[2], 0);
+}
+
+function highestScorers(players: PlayerState[]): string[] {
+  const maxScore = Math.max(...players.map((player) => player.score));
+  return players.filter((player) => player.score === maxScore).map((player) => player.id);
 }
 
 // ---------------------------------------------------------------------------
@@ -960,7 +968,7 @@ export class TriominoEngine {
     return tentativeState;
   }
 
-  /** Gère la fin de partie quand un joueur pose sa dernière tuile */
+  /** Dernière tuile : attribue les bonus puis départage les scores (sauf kids). */
   #handleLastTile(
     state: TriominoState,
     newBoard: Board,
@@ -991,7 +999,7 @@ export class TriominoEngine {
       board: newBoard,
       players: finalPlayers,
       phase: 'finished',
-      winners: [winnerId],
+      winners: state.config.mode === 'kids' ? [winnerId] : highestScorers(finalPlayers),
       drawsThisTurn: 0,
       lastDrawnTile: null,
     };
@@ -1009,10 +1017,7 @@ export class TriominoEngine {
           }));
 
     // Le gagnant est celui avec le score le plus élevé
-    const maxScore = Math.max(...finalPlayers.map((p) => p.score));
-    const winners = finalPlayers
-      .filter((p) => p.score === maxScore)
-      .map((p) => p.id);
+    const winners = highestScorers(finalPlayers);
 
     // En mode kids, le gagnant est celui avec le moins de tuiles
     let finalWinners = winners;
