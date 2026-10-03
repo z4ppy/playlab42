@@ -52,6 +52,40 @@ describe('Contrats de progression et notifications', () => {
     })).toEqual([]);
   });
 
+  test('isole les valeurs par défaut entre deux progressions nouvellement chargées', async () => {
+    GameKit.loadProgress.mockResolvedValue(null);
+    const first = new ProgressTracker();
+    const second = new ProgressTracker();
+    await first.load();
+    await second.load();
+    first.recordSession({
+      exerciseId: 'première', skill: 'treble-clef', xp: 50,
+      totalQuestions: 10, correctAnswers: 10,
+    });
+    first.setSetting('notation', 'english');
+    expect(first.checkAchievements({ bestStreak: 10 }).map(({ id }) => id)).toEqual(['streak10']);
+    expect(second.getRecentSessions()).toEqual([]);
+    expect(second.getAllSkills()['treble-clef'].xp).toBe(0);
+    expect(second.getSettings().notation).toBe('french');
+    expect(second.getUnlockedAchievements()).toEqual([]);
+    expect(second.checkAchievements({ bestStreak: 10 }).map(({ id }) => id)).toEqual(['streak10']);
+  });
+
+  test('reset efface aussi les collections et paramètres créés par défaut', async () => {
+    GameKit.loadProgress.mockResolvedValue(null);
+    await tracker.load();
+    tracker.recordSession({ exerciseId: 'avant-reset', skill: 'rhythm', xp: 50 });
+    tracker.checkAchievements({ bestStreak: 25 });
+    tracker.setSetting('notation', 'english');
+    await tracker.reset();
+    expect(tracker.progress).toEqual({
+      version: 1, globalXP: 0, skills: {}, sessions: [], achievements: [],
+      settings: { notation: 'french', defaultDifficulty: 1 },
+    });
+    expect(tracker.checkAchievements({ bestStreak: 25 }).map(({ id }) => id))
+      .toEqual(['streak10', 'streak25']);
+  });
+
   test('sauvegarde les mutations puis notifie avec le même objet', async () => {
     const update = jest.fn();
     tracker.onUpdate(update);
