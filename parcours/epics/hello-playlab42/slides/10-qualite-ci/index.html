@@ -123,6 +123,11 @@
     <p class="guide-note">La couverture guide les priorités ; une couverture élevée ne prouve pas la qualité des assertions.
       Les seuils s'ajoutent par module après mesure, sans abaisser les protections existantes.
       Les tests Jest et les interactions d'une vraie archive dans Chromium apportent des preuves différentes.</p>
+    <p class="guide-note">Le socle tests-first est livré via la PR #147 :
+      portail, moteurs et Simulation disposent de scénarios et de seuils ciblés.
+      La suite <code>quality/core-refactors</code> reste un lot en cours :
+      contrats communs, seed explicite, mutualisation du RNG et séparation des responsabilités.
+      Extraire du code doit conserver son instrumentation ; ce n'est pas un moyen de gonfler la couverture.</p>
 
     <h2>Lancer les mêmes contrôles en local (Docker)</h2>
     <pre class="code-block"><code>make info          # instance, port, URL du worktree

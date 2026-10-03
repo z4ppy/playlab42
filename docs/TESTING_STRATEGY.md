@@ -118,7 +118,7 @@ Les tests vivent dans `e2e/`, séparés de la découverte Jest.
 | Mobile | Portail et viewer à 320/390 px et paysage 844×390 ; Relativity après redimensionnement, cible moteur visible/non recouverte et activation réelle |
 | Galerie UI | Formulaire et carte réels, texte échappé, dialogue natif au clavier avec retour du focus, thèmes et tokens à 320 px |
 
-**Déterminisme** : contextes navigateur neufs, date fixe pour les seeds `Date.now()`,
+**Déterminisme** : contextes navigateur neufs, date fixe pour les seeds `Date.now()` fournies par les clients,
 seed explicite de Triomino et générateur aléatoire fixe pour Particle Life. Les catalogues
 sont construits à partir des manifests actuels : aucun nombre global de cartes n'est figé.
 Les bookmarks proviennent de `bookmarks/` et des images versionnées, avec `--skip-og`.
@@ -132,9 +132,13 @@ locales nécessaires font échouer le test.
 Le test `window.blur` envoie cet événement au vrai handler après une pression clavier ;
 il ne prétend pas tester le gestionnaire de fenêtres de l'OS headless.
 
-**Réseau et dépendances réelles** : `e2e/fixtures.js` intercepte les URL CDN publiques
-et sert les distributions npm épinglées `three@0.160.0`, `lil-gui@0.19.2`
-pour les outils 3D qui utilisent encore ces importmaps. Tone 15.1.22,
+**Réseau et dépendances réelles** : Three **0.186.1** et lil-gui **0.21.0**
+sont construits dans `assets/vendor/` par `build:runtime`, avec le core,
+les addons et dépendances internes utilisés par Relativity. Son rendu réel
+exige WebGL2 ; Particle Life conserve son Canvas2D. `e2e/three-runtime.spec.js`
+vérifie les versions, les imports locaux, les contrôles et les erreurs de rendu.
+`e2e/fixtures.js` intercepte encore les URL CDN publiques déclarées pour les
+supports qui en ont besoin. Tone 15.1.22,
 VexFlow 5.0.0 et MathJax 4.1.3 sont construits dans `assets/vendor/` par
 `build:runtime`, également lancé par `build:local`. Le navigateur charge
 les bundles et les fontes locales de production, sans substitution CDN.

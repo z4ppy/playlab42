@@ -2,6 +2,8 @@
  * Checkers Engine - Moteur de jeu de Dames isomorphe
  * Fonctionne côté client ET serveur
  * Règles françaises (10x10)
+ * La résolution canonique des trajets précède la transition du plateau ;
+ * les conditions de victoire et de nullité sont évaluées ensuite, dans cet ordre.
  *
  * @see openspec/specs/game-engine/spec.md
  */
@@ -108,29 +110,8 @@ export class CheckersEngine {
       throw new Error('Invalid action');
     }
 
-    // Copier l'état
-    const newBoard = state.board.map((row) => [...row]);
-    const piece = newBoard[action.from.row][action.from.col];
-
-    // Seul un trajet produit par le moteur peut autoriser des captures.
     const captures = legalAction.captured || [];
-
-    // Déplacer la pièce
-    newBoard[action.to.row][action.to.col] = piece;
-    newBoard[action.from.row][action.from.col] = null;
-
-    // Supprimer les pièces capturées
-    for (const capture of captures) {
-      newBoard[capture.row][capture.col] = null;
-    }
-
-    // Promouvoir en dame si dernière rangée
-    if (piece.type === 'pawn') {
-      const lastRow = piece.player === 0 ? 9 : 0;
-      if (action.to.row === lastRow) {
-        newBoard[action.to.row][action.to.col] = { ...piece, type: 'king' };
-      }
-    }
+    const newBoard = this.#movePiece(state.board, action, captures);
 
     const move = {
       from: action.from,
@@ -145,16 +126,33 @@ export class CheckersEngine {
       currentPlayer: state.currentPlayer === 0 ? 1 : 0,
     };
 
-    // Vérifier fin de partie
-    this.#checkGameEnd(newState);
-
-    // Vérifier règle des 40 coups sans capture
-    if (!this.#checkDrawByNoCaptureRule(newState)) {
-      // Vérifier répétition de position
-      this.#checkDrawByRepetition(newState);
-    }
-
+    this.#updateOutcome(newState);
     return newState;
+  }
+
+  /**
+   * Applique uniquement le déplacement canonique et la promotion finale.
+   * @param {(Piece | null)[][]} board
+   * @param {CheckersAction} action
+   * @param {Position[]} captures - Trajet autorisé par le moteur.
+   * @returns {(Piece | null)[][]}
+   */
+  #movePiece(board, action, captures) {
+    const next = board.map(row => [...row]);
+    const piece = next[action.from.row][action.from.col];
+    next[action.to.row][action.to.col] = piece;
+    next[action.from.row][action.from.col] = null;
+    for (const capture of captures) { next[capture.row][capture.col] = null; }
+    if (piece.type === 'pawn' && action.to.row === (piece.player === 0 ? 9 : 0)) {
+      next[action.to.row][action.to.col] = { ...piece, type: 'king' };
+    }
+    return next;
+  }
+
+  /** @param {CheckersState} state - Copie privée ; la victoire prime sur la nullité. */
+  #updateOutcome(state) {
+    this.#checkGameEnd(state);
+    if (!this.#checkDrawByNoCaptureRule(state)) { this.#checkDrawByRepetition(state); }
   }
 
   /**
@@ -178,6 +176,9 @@ export class CheckersEngine {
    * @returns {CheckersAction | undefined}
    */
   #getLegalAction(state, action, playerId) {
+    if (!action || action.type !== 'move' || !action.from || !action.to) {
+      return undefined;
+    }
     const matchingActions = this.getValidActions(state, playerId).filter(
       (a) =>
         a.from.row === action.from.row &&
@@ -255,6 +256,17 @@ export class CheckersEngine {
     // Pas de fog of war aux Dames
     return state;
   }
+
+  /** @param {CheckersState} state @returns {boolean} */
+  isGameOver(state) { return state.status !== 'playing'; }
+
+  /** @param {CheckersState} state @returns {string[] | null} */
+  getWinners(state) {
+    return state.status === 'won' && state.winner !== null ? [state.playerIds[state.winner]] : null;
+  }
+
+  /** @param {CheckersState} state @returns {string | null} */
+  getCurrentPlayer(state) { return this.isGameOver(state) ? null : state.playerIds[state.currentPlayer]; }
 
   /**
    * Vérifie et met à jour l'état de fin de partie

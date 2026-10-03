@@ -12,7 +12,7 @@ Ce guide est la référence commune aux contributeurs et aux skills ; la
 | ESLint JS et scripts HTML | Erreurs et warnings bloquants ; eslint-plugin-html 8.2.1, pas d'eval, `Function` dynamique ni URL JavaScript | Pas de lint du markup ; attributs événementiels refusés par un test de politique |
 | Biome TypeScript | Version 2.5.15, preset recommandé, syntaxe et règles `.ts`, warnings bloquants | Pas d'analyse utilisant le compilateur TS ni de couverture des plugins de sécurité ESLint |
 | ESLint Security | Plugins 4.2.0 / 4.1.5 verrouillés, configuration flat, gate JS et scripts HTML ciblé | Propriétés DOM et heuristiques consultatives ; pas de règles ESLint sécurité sur TS |
-| TypeScript | Contrôle strict des sources TS ; JS reste autorisé | La transpilation ne vérifie pas les types |
+| TypeScript | Sources TS strictes et signatures réelles des six moteurs | Les corps JS ne sont pas tous analysés ; la transpilation ne vérifie pas les types |
 | Jest | Tests avec seuils ciblés ci-dessous | Couverture de lignes, pas qualité des assertions |
 | Playwright | Interactions, clavier, thèmes et ressources du site préparé | Socle Chromium, pas tous les navigateurs |
 | npm audit | Seuil modéré bloquant, dépendances de fabrication incluses | CVE connues au moment de l'exécution ; panne du registre = échec |
@@ -49,6 +49,13 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | `games/triomino/engine.ts` | 95 % | 95 % | 95 % |
 | `tools/relativity-lab/src/Simulation.js` | 90 % | 100 % | 100 % |
 | `scripts/coverage-report.js` | 80 % | 90 % | 80 % |
+| Clavier/messages du portail ; events/clavier/chargement/messages du lecteur | 100 % | 100 % | 100 % |
+| `lib/parcours-viewer.js` | 95 % | 100 % | 100 % |
+| `lib/local-data.js` ; modules `lib/local-data/*.js` | 85 % ; 95 % | 100 % | 100 % |
+| Moteur Diese & Mat, chaque module | 90 % | 100 % | 98 % lignes / 95 % statements |
+| `games/go-9x9/engine.js` | 98 % | 100 % | 99 % |
+| Tetris : racine ; modules extraits | 98 % ; 100 % | 100 % | 100 % |
+| Triomino : placement et scoring extraits | 100 % | 100 % | 100 % |
 
 Ces composants protègent déterminisme, portail, moteurs, outils et livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -254,6 +261,16 @@ Le lint TS est désormais fourni par Biome. L'intégration **typescript-eslint**
 Le contrôle strict `tsc` reste requis et distinct. Ne pas downgrader le
 compilateur ni utiliser `--force` / `--legacy-peer-deps` pour contourner ce contrat.
 
+Dans le lot cœur, `typecheck` appelle aussi `typecheck:engine-contracts`.
+Le projet `tsconfig.engine-contracts.json` compile la fixture des six signatures
+réelles avec `allowJs`, sans analyse exhaustive des corps JS (`checkJs: false`).
+Ses exclusions distinctes empêchent le tsconfig principal de masquer cette
+fixture `.test.ts` et les preuves de types RNG/Triomino, dont les assertions
+`@ts-expect-error` sont désormais vérifiées par le compilateur, pas seulement
+transpilées par Jest. Un vrai appel du compilateur accepte un contrat complet
+et refuse une méthode manquante ; ce n'est pas une garantie de pureté ou de
+sérialisation à l'exécution, qui restent testées séparément.
+
 ## Suite proposée : qualité du code par étapes
 
 **Statut initial : proposition dans la PR #146.** La mise en œuvre est ensuite
@@ -376,10 +393,15 @@ la demande utilisateur suivante autorise l'application ci-dessous.
 
 ## Application tests-first
 
-**Implémentés dans `quality/tests-first`, non intégrés à main et non publiés.**
-La demande « c'est parti » autorise les travaux, pas leur fusion ou leur
-archivage. La proposition reste traçable dans la PR #146 ; l'implémentation
-fait l'objet d'une PR distincte vers main.
+**Les travaux de `quality/tests-first` sont intégrés à main et publiés.**
+La [PR #147](https://github.com/z4ppy/playlab42/pull/147) a été fusionnée le
+3 octobre 2026 au commit `611a29bebe6409f5fb0e59413ff35f3d03751f92`.
+La [publication 37153902594](https://github.com/z4ppy/playlab42/actions/runs/37153902594)
+et l'[audit 37153902484](https://github.com/z4ppy/playlab42/actions/runs/37153902484)
+ont réussi sur ce commit. L'égalité des arbres entre le head `7be0e05`
+et cette fusion squash a été constatée via l'API GitHub.
+La proposition #146, incluse dans l'implémentation, est fermée comme remplacée.
+La livraison ne constitue pas une décision d'archivage.
 Les scopes ont été travaillés en worktrees séparés, avec commits tests puis
 correction. Ce premier lot les intègre pour mesurer et verrouiller une base
 commune ; loader et messages partagent désormais le même contrat de navigation.
@@ -500,6 +522,95 @@ par GitHub pour cette PR ; elle ne se substitue pas au head de branche.
 Les nouveaux pushes exigent leur propre CI. Hadolint reste ignoré sur PR,
 `npm outdated` consultatif et Codecov non bloquant. Cette preuve n'autorise
 ni fusion, ni déploiement, ni archivage.
+
+### Dernière preuve native avant fusion
+
+Au head `7be0e05`, [CI 37153110329](https://github.com/z4ppy/playlab42/actions/runs/37153110329)
+et [audit 37153110483](https://github.com/z4ppy/playlab42/actions/runs/37153110483)
+ont réussi : **109 suites / 2 359 tests, 65 interactions Chromium**.
+Jest donne S/B/F/L **76,74/73,16/79,17/76,57 %**.
+L'artefact de cinq fichiers a été contrôlé ; sa provenance référence
+la ref de merge `72eafe48a92d61ddf97b41db85394a2d70f3aa64`, run `37153110329`,
+tentative `1`, Tests `success`. Le rapport tronque désormais comme Jest :
+`77/78 = 98,71 %`. Il distingue ses résultats consultatifs des seuils
+versionnés appliqués par Jest. Hadolint a ensuite été exécuté sur main dans
+l'audit de livraison, distinct de son état ignoré sur PR.
+
+## Corrections prioritaires du cœur
+
+**Travaux autorisés dans `quality/core-refactors`, non intégrés à main.**
+Le change [refactor-core-with-contracts](../../openspec/changes/refactor-core-with-contracts/proposal.md)
+part du socle livré `611a29b`. La demande de corrections autorise le code,
+pas une fusion, une publication ou un archivage.
+
+Les corrections et extractions sont réalisées dans cette branche : seed de
+reset fournie par l'UI Mastermind, contrats canoniques des six moteurs,
+orchestration du portail et du lecteur, persistance/validation JSON,
+collections de progression indépendantes et reset réellement vierge.
+Le RNG Triomino utilise le module partagé sans modifier les séquences.
+Les imports émis résolvent les modules imbriqués depuis `dist`.
+Three 0.186.1 et lil-gui 0.21.0 sont distribués localement et exercés avec
+WebGL2 réel ; les cinq mises à jour conservent le lockfile.
+
+| Surface | Maximum cyclomatique avant → après |
+|---------|------------------------------------|
+| Clavier portail | 27 → 6 |
+| Chargement jeu / outil | 11 / 15 → 1 / 1 ; orchestration commune 7 |
+| Lecteur : chargement / clavier / menu | 24 / 27 / 23 → 6 / 1 / 1 |
+| Validation JSON / valeur / écriture / backup | 19 / 16 / 13 / 23 → 7 / 3 / 5 / 4 |
+| Tetris / Dames applyAction / Go | 20 / 11 / 16 → 10 / 10 / 10 |
+| Triomino | 19 → 9 ; maximum cognitif 15 → 7 |
+
+Le budget ESLint ≤ 10 protège désormais les sources JS refactorées ciblées,
+y compris les modules extraits, sans l'appliquer aux tests ou à tout le dépôt.
+Les preuves CLI acceptent la borne et refusent son dépassement. Les treize
+seuils hérités restent inchangés ; onze nouveaux sélecteurs protègent aussi
+les extractions, avec refus réel des quatre métriques. Les patterns Jest
+appliquent ces seuils à chaque fichier correspondant, pas seulement au wrapper.
+
+Mesure locale après extraction Triomino (`c35611e`) : **122 suites,
+2 601 tests**, couverture S/B/F/L **79,74/76,25/87,35/79,28 %**.
+La collecte inclut désormais les moteurs imbriqués/pédagogiques et exclut
+les fixtures de tests ; le global n'est donc pas directement comparable au
+périmètre de la PR #147. Les 70 scénarios Chromium ont réussi avant cette
+dernière extraction ; la validation finale du lot reste distincte.
+
+Le triage consultatif au même commit mesure **1 237 warnings / 182 fichiers** :
+728 accès calculés, 405 fichiers, 85 propriétés DOM, 9 regex complexes,
+6 constructions RegExp et 4 timing. Dix-huit faux positifs contextuels ont
+été examinés ; **1 219 diagnostics restent non revus**, aucun bug confirmé
+dans ce triage borné. Le gate strict et Biome sont verts : cela ne certifie
+ni l'absence de vulnérabilités ni un audit exhaustif. Aucun warning n'a été
+masqué pour rendre le résultat vert.
+
+Priorité au reset Mastermind déterministe et aux contrats communs des six
+moteurs, **sans migration des états JSON**. Puis caractérisation et extraction
+du clavier/focus, du chargement commun, du lecteur réel et des validations
+du stockage. Les responsabilités Triomino/Tetris/Dames/Go et le RNG ne sont
+mutualisés qu'après protection des replays ; pas de super-moteur générique.
+
+Le moteur pédagogique Diese & Mat possède déjà des tests mais était absent
+de la collecte `games/**/engine.{js,ts}`. La baseline diagnostique locale à
+`611a29b`, avant extension de la politique, donne **4 suites / 144 tests**
+et S/B/F/L **93,73/84,76/95,58/94,58 %** pour son dossier `src/engine`.
+Ce périmètre distinct n'est pas directement comparable au total des six
+moteurs du rapport historique. La collecte devra aussi suivre les modules
+extraits : cette extension est réalisée dans le lot cœur, déplacer le code
+hors instrumentation n'est pas un gain de qualité.
+
+Les mises à jour de dépendances sont vérifiées avec les vrais runtimes
+navigateur, pas seulement les mocks. Les heuristiques consultatives sont
+triées sans transformer des warnings en vulnérabilités confirmées.
+Complexité, couverture et CI verte sont des preuves ciblées, **pas une certification**
+du cœur entier. Après les garde-fous finaux, **122 suites / 2 636 tests** et
+lint/types/audit npm/OpenSpec sont verts dans Docker ; les treize seuils
+hérités et les onze nouveaux sélecteurs sont appliqués. La CI native du head
+final reste à consigner une fois effectivement réalisée.
+Au commit `74ebcef`, deux builds Docker **hors réseau** produisent le même
+manifeste de hashes, avec `SOURCE_DATE_EPOCH=1791061551` (main de référence).
+Les **1 024 fichiers** sont vérifiés, la restauration tar détecte une corruption
+et les **70 scénarios Chromium** passent sur ce site préparé, vérifié à nouveau
+après les interactions. Ces preuves locales ne se substituent pas à la CI native.
 
 ## Maintenance des références et exceptions
 

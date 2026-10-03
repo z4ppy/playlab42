@@ -39,9 +39,9 @@ import { SeededRandom } from '../../lib/seeded-random.js';
  */
 
 /**
- * @typedef {Object} MastermindAction
- * @property {'submit'|'reset'} type - Type d'action
- * @property {Color[]} [code] - Code à soumettre (pour submit)
+ * @typedef {{type: 'submit', code: Color[]} | {type: 'reset', seed: number}} MastermindAction
+ *
+ * @typedef {Omit<MastermindState, 'secretCode'> & {secretCode: Color[] | null}} MastermindView
  */
 
 /**
@@ -97,9 +97,7 @@ export class MastermindEngine {
     }
 
     if (action.type === 'reset') {
-      // Générer un nouveau seed aléatoire pour la nouvelle partie
-      const newSeed = Date.now();
-      return this.init({ seed: newSeed, playerId });
+      return this.init({ seed: action.seed, playerId });
     }
 
     // Action 'submit'
@@ -137,13 +135,16 @@ export class MastermindEngine {
    * @returns {boolean}
    */
   isValidAction(state, action, playerId) {
+    if (!action || typeof action !== 'object' || Array.isArray(action)) {
+      return false;
+    }
     // Seul le joueur propriétaire peut agir
     if (playerId !== state.playerId) {
       return false;
     }
 
     if (action.type === 'reset') {
-      return true; // Reset toujours valide
+      return Number.isSafeInteger(action.seed);
     }
 
     if (action.type === 'submit') {
@@ -157,8 +158,8 @@ export class MastermindEngine {
         return false;
       }
 
-      // Vérifier que toutes les couleurs sont valides
-      return action.code.every((color) => COLORS.includes(color));
+      // Matérialiser les cases creuses, que Array.every ignorerait.
+      return Array.from(action.code).every((color) => COLORS.includes(color));
     }
 
     return false;
@@ -171,28 +172,39 @@ export class MastermindEngine {
    * @returns {MastermindAction[]}
    */
   getValidActions(state, playerId) {
-    if (playerId !== state.playerId) {
+    if (playerId !== state.playerId || state.gameOver) {
       return [];
     }
 
-    const actions = [{ type: 'reset' }];
-
-    if (!state.gameOver) {
-      // Générer toutes les combinaisons possibles (6^4 = 1296)
-      // Pour l'instant, on retourne juste l'action submit générique
-      // L'interface se chargera de construire les codes valides
-      actions.push({ type: 'submit', code: [] });
+    // Ordre lexicographique stable, sans consulter le code secret.
+    const actions = [];
+    for (const a of COLORS) {
+      for (const b of COLORS) {
+        for (const c of COLORS) {
+          for (const d of COLORS) {
+            actions.push({ type: 'submit', code: [a, b, c, d] });
+          }
+        }
+      }
     }
-
     return actions;
   }
+
+  /** @param {MastermindState} state @returns {boolean} */
+  isGameOver(state) { return state.gameOver; }
+
+  /** @param {MastermindState} state @returns {string[] | null} */
+  getWinners(state) { return state.winner === null ? null : [state.winner]; }
+
+  /** @param {MastermindState} state @returns {string | null} */
+  getCurrentPlayer(state) { return state.gameOver ? null : state.playerId; }
 
   /**
    * Retourne la vue du joueur (fog of war)
    * Le code secret est caché pendant le jeu, révélé à la fin
    * @param {MastermindState} state
    * @param {string} _playerId - Non utilisé (jeu single-player)
-   * @returns {MastermindState}
+   * @returns {MastermindView}
    */
   getPlayerView(state, _playerId) {
     if (state.gameOver) {

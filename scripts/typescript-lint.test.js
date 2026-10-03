@@ -1,25 +1,16 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { globSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const biome = resolve(root, 'node_modules/.bin/biome');
-const trackedSources = [
-  'games/triomino/bots/greedy.ts',
-  'games/triomino/bots/random.ts',
-  'games/triomino/engine.test.ts',
-  'games/triomino/engine.ts',
-  'lib/types/game-engine.ts',
-  'lib/types/gamekit.test.ts',
-  'lib/types/gamekit.ts',
-  'lib/types/index.test.ts',
-  'lib/types/index.ts',
-  'tools/particle-life/__tests__/Simulation.test.ts',
-  'tools/particle-life/src/Renderer.ts',
-  'tools/particle-life/src/Simulation.ts',
-  'tools/particle-life/src/main.ts',
-  'tools/particle-life/src/types.ts',
-];
+const trackedSources = globSync('**/*.ts', {
+  cwd: root,
+  exclude: [
+    'node_modules', 'dist', 'coverage', 'data', 'test-results',
+    'playwright-report', 'site', 'vendor', '.git',
+  ].map(directory => `**/${directory}/**`),
+});
 
 function runLint(paths, options = []) {
   const result = spawnSync(biome, [
@@ -155,7 +146,7 @@ describe('gate TypeScript avec le vrai CLI Biome', () => {
     );
   });
 
-  it('vérifie les 14 fichiers TS réels du dépôt, y compris les bots et tests', () => {
+  it('vérifie tous les fichiers TS réels du dépôt, y compris les bots et tests', () => {
     const result = runLint(['.'], ['--verbose']);
     expect(result.status).toBe(0);
     const processed = `${result.stdout}\n${result.stderr}`

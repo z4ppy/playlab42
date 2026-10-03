@@ -123,6 +123,14 @@ Le moteur de jeu (`engine.js`) implémente toutes les règles. Principales méth
 - `applyAction(state, action, playerId)` : Applique une action
 - `getValidActions(state, playerId)` : Retourne les coups valides
 - `getPlayerView(state, playerId)` : Vue du joueur (pas de fog of war)
+- `isGameOver(state)` : Vrai si le statut n'est plus `playing`
+- `getWinners(state)` : IDs du gagnant dans un tableau, ou `null` (en cours/nul)
+- `getCurrentPlayer(state)` : ID du joueur actif, ou `null` après la fin
+
+Ces accesseurs sont additifs : `status`, `winner` (index 0/1), `currentPlayer`
+et le format JSON ne changent pas. Les actions sans type `move` ou sans
+extrémités sont refusées explicitement. Les trajets de capture et les règles
+géométriques existants restent inchangés.
 
 ## 📚 Références
 

@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "types": ["jest"]
+  },
+  "files": [
+    "lib/types/game-engine.contract.test.ts",
+    "lib/seeded-random.types.test.ts",
+    "games/triomino/engine/api.types.test.ts"
+  ],
+  "include": [],
+  "exclude": []
+}

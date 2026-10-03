@@ -339,11 +339,7 @@ describe('ProgressTracker', () => {
         bestStreak: 25,
       });
 
-      // streak25 sera nouveau si pas encore débloqué
-      // Note: streak10 peut déjà être débloqué par des tests précédents
-      const hasStreak25 = newAchievements.some((a) => a.id === 'streak25') ||
-        tracker.progress.achievements.includes('streak25');
-      expect(hasStreak25).toBe(true);
+      expect(newAchievements.map((a) => a.id)).toEqual(['streak10', 'streak25']);
     });
 
     test('checkAchievements() doit débloquer level5', async () => {
@@ -398,7 +394,6 @@ describe('ProgressTracker', () => {
       expect(perfect).toHaveProperty('name');
       expect(perfect).toHaveProperty('description');
 
-      // first-perfect doit être débloqué (dans ce test ou précédemment)
       expect(perfect.unlocked).toBe(true);
     });
   });

@@ -99,9 +99,40 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(quality).toContain('## Application tests-first');
     expect(quality).toContain('tests de comportement avant les refactorings');
     expect(quality).toContain('sans seuil global artificiel');
-    expect(quality).toContain('non intégrés à main');
+    expect(quality).toContain('PR #147');
+    expect(quality).toContain('611a29b');
     expect(slide).toContain('Tests avant refactoring');
     expect(slide).toContain('une couverture élevée ne prouve pas la qualité des assertions');
+  });
+
+  it('distingue le lot tests-first livré des corrections du cœur en cours', () => {
+    const quality = readFileSync(resolve(root, 'docs/guides/software-quality.md'), 'utf8');
+    const factory = readFileSync(resolve(root, 'docs/guides/software-factory.md'), 'utf8');
+    const delivered = quality.split('## Application tests-first')[1]
+      .split('## Corrections prioritaires du cœur')[0];
+    expect(delivered).toContain('intégrés à main et publiés');
+    expect(delivered).toContain('37153902594');
+    expect(factory).toContain('37153902484');
+    const current = quality.split('## Corrections prioritaires du cœur')[1]
+      .split('## Maintenance des références')[0];
+    expect(current).toContain('quality/core-refactors');
+    expect(current).toContain('non intégrés à main');
+    expect(current).toContain('refactor-core-with-contracts');
+    expect(current).toContain('sans migration des états JSON');
+    expect(current).toContain('pas une certification');
+  });
+
+  it('enseigne les entrées déterministes et situe les lots du parcours', () => {
+    const engine = readFileSync(resolve(epicDir, 'slides/05-creer-jeu/index.html'), 'utf8');
+    const quality = readFileSync(resolve(epicDir, 'slides/10-qualite-ci/index.html'), 'utf8');
+    const readme = readFileSync(resolve(epicDir, 'README.md'), 'utf8');
+    expect(engine).toContain('Date.now()');
+    expect(engine).toContain('seed explicite');
+    expect(engine).toContain('états JSON propres');
+    for (const document of [quality, readme]) {
+      expect(document).toContain('PR #147');
+      expect(document).toContain('quality/core-refactors');
+    }
   });
 
   describe.each(ids)('Slide %s', id => {

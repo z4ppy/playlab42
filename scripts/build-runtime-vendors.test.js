@@ -11,7 +11,29 @@ describe('Contrat des distributions runtime', () => {
       'vexflow@5.0.0',
       'mathjax@4.1.3',
       '@mathjax/mathjax-newcm-font@4.1.3',
+      'three@0.186.1',
+      'lil-gui@0.21.0',
     ]);
+  });
+
+  test('aligner les versions 3D, le lockfile et les imports locaux du consommateur', () => {
+    const read = path => JSON.parse(readFileSync(new URL(path, import.meta.url)));
+    const config = read('./runtime-vendors.json');
+    const packages = read('../package.json').devDependencies;
+    const lock = read('../package-lock.json');
+    for (const name of ['three', 'lil-gui']) {
+      const library = config.libraries.find(item => item.package === name);
+      expect(library).toBeDefined();
+      expect(packages[name]).toBe(library.version);
+      expect(lock.packages[`node_modules/${name}`].version).toBe(library.version);
+    }
+    const html = readFileSync(new URL('../tools/relativity-lab/index.html', import.meta.url), 'utf8');
+    const { imports } = JSON.parse(html.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]);
+    expect(imports).toEqual({
+      three: '../../assets/vendor/three/build/three.module.js',
+      'three/addons/': '../../assets/vendor/three/examples/jsm/',
+      'lil-gui': '../../assets/vendor/lil-gui/dist/lil-gui.esm.js',
+    });
   });
 
   test('refuser une version installée différente', () => {

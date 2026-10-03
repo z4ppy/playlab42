@@ -92,10 +92,25 @@ export default [
   },
 
   {
-    files: ['games/checkers/engine.js'],
+    files: [
+      'games/checkers/engine.js',
+      'games/go-9x9/engine.js',
+      'games/tetris/engine.js',
+      'games/tetris/engine/**/*.js',
+      'app/keyboard-commands.js',
+      'app/game-messages.js',
+      'app/game-loader.js',
+      'lib/parcours-viewer.js',
+      'lib/parcours/ParcoursUI.js',
+      'lib/parcours/{events,keyboard,loading,slide-messages}.js',
+      'lib/local-data.js',
+      'lib/local-data/**/*.js',
+      'games/diese-et-mat/src/engine/ExerciseEngine.js',
+      'games/diese-et-mat/src/engine/ProgressTracker.js',
+    ],
+    ignores: ['**/*.test.js'],
     rules: {
-      // applyAction reste à 11 ; les helpers de captures refactorés sont à 10 ou moins.
-      complexity: ['error', 11],
+      complexity: ['error', 10],
     },
   },
 

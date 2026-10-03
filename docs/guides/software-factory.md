@@ -48,9 +48,18 @@ fusionné ; chaque PR suivante doit vérifier les checks de sa propre tête.
 La [suite qualité proposée](software-quality.md#suite-proposée--qualité-du-code-par-étapes)
 part de cette branche de revue. Après sa fusion squash, sa branche de plan
 a été réalignée sur main après vérification d'égalité des sources, pour ne pas
-réintroduire les correctifs dans une nouvelle pile. La PR #146 décrit la
-proposition ; la demande suivante autorise sa mise en œuvre dans
-`quality/tests-first`, avec tests de comportement avant refactoring.
+réintroduire les correctifs dans une nouvelle pile. La PR #146 décrivait la proposition, reprise dans `quality/tests-first`
+avec tests de comportement avant refactoring. La
+[PR #147](https://github.com/z4ppy/playlab42/pull/147) est maintenant
+**intégrée à `main` et publiée**, au commit
+`611a29bebe6409f5fb0e59413ff35f3d03751f92`. La
+[publication 37153902594](https://github.com/z4ppy/playlab42/actions/runs/37153902594)
+et l'[audit 37153902484](https://github.com/z4ppy/playlab42/actions/runs/37153902484)
+ont réussi. Le plan #146 est fermé comme remplacé ; les preuves de la
+dernière tête et de la livraison sont détaillées dans le guide qualité.
+
+La suite `quality/core-refactors` traite les corrections du cœur par priorité :
+contrats moteurs et déterminisme, puis refactorings et mutualisations ciblées.
 Ces nouveaux travaux ne sont pas encore intégrés à main ni publiés.
 
 ## Carte de l'usine
@@ -167,7 +176,7 @@ Cette identité n'est pas une provenance signée ni une attestation SLSA.
   HIGH/CRITICAL peuvent échouer, Hadolint et les heuristiques lint restent
   consultatifs. Le rapport distingue les états des jobs, pas « aucun problème »
   lorsqu'un résultat manque. Aucun rapport ne garantit l'absence de défaut.
-- Les seuils Jest ciblent SeededRandom, packaging et smoke ; il n'y a pas de
+- Les seuils Jest ciblent SeededRandom, packaging, smoke, portail, moteurs et Simulation ; il n'y a pas de
   seuil global ni de contrôle bloquant universel du code modifié. L'envoi Codecov
   est non bloquant. Voir le [guide qualité et son plan](software-quality.md).
 - Sur autorisation ultérieure, une protection classique de `main` a été activée

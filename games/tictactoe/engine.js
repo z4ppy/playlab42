@@ -16,6 +16,8 @@
  * @property {string[]|null} winners - Gagnant(s) ou null si nul
  * @property {number} turn - Numéro du tour
  * @property {number} rngState - État du RNG (pour replay)
+ * @property {[string, string]} playerIds - IDs des deux joueurs
+ * @property {Record<string, 'X' | 'O'>} symbols - Symboles par ID de joueur
  *
  * @typedef {Object} TicTacToeAction
  * @property {'place'} type - Type d'action
@@ -117,7 +119,11 @@ export class TicTacToeEngine {
     return (
       !state.gameOver &&
       state.currentPlayerId === playerId &&
+      action !== null &&
+      typeof action === 'object' &&
+      !Array.isArray(action) &&
       action.type === 'place' &&
+      Number.isInteger(action.position) &&
       action.position >= 0 &&
       action.position <= 8 &&
       state.board[action.position] === null

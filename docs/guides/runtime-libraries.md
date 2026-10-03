@@ -1,6 +1,6 @@
 # Bibliothèques navigateur locales
 
-Diese et Mat et les slides mathématiques utilisent les distributions réelles
+Diese et Mat, Relativity Lab et les slides mathématiques utilisent les distributions réelles
 suivantes, sans CDN :
 
 | Bibliothèque | Version | Entrée locale |
@@ -9,6 +9,8 @@ suivantes, sans CDN :
 | VexFlow | 5.0.0 | `assets/vendor/vexflow/vexflow.js` |
 | MathJax | 4.1.3 | `assets/vendor/mathjax/tex-mml-chtml.js` |
 | Fonte MathJax NewCM | 4.1.3 | `assets/vendor/mathjax-newcm-font/` |
+| Three.js | 0.186.1 | `assets/vendor/three/build/three.module.js` |
+| lil-gui | 0.21.0 | `assets/vendor/lil-gui/dist/lil-gui.esm.js` |
 
 Les versions exactes sont déclarées dans `scripts/runtime-vendors.json`,
 `package.json` et le lockfile. `MathJax` dépend de NewCM ; le build vérifie
@@ -20,26 +22,29 @@ Tout runtime passe par Docker. Après installation verrouillée des dépendances
 
 ```sh
 make npm CMD="ci"
-make npm CMD="run build:runtime-vendors"
+make npm CMD="run build:runtime"
 make serve
 ```
 
 Le script sous-jacent est `node scripts/build-runtime-vendors.js`. Il n'effectue
 aucun téléchargement : esbuild existant assemble Tone et VexFlow en ESM ; les
-composants MathJax et les fontes sont copiés sans modification. Le serveur ne
-fait que servir des fichiers statiques. Il faut construire les vendors avant
+composants MathJax et les fontes sont copiés sans modification. Three.js et
+lil-gui ne sont pas transformés : leurs modules ESM et OrbitControls sont
+copiés avec leurs licences. `three.module.js` importe aussi `three.core.js` ;
+les deux fichiers doivent rester côte à côte. L'import map de Relativity Lab
+résout le cœur, `three/addons/` et lil-gui vers ces distributions locales.
+Le serveur ne fait que servir des fichiers statiques. Il faut construire les vendors avant
 de servir les clients concernés ; les imports ESM nécessitent HTTP(S), pas
 une ouverture directe `file://`.
 
 `assets/vendor/` est généré, non versionné et doit accompagner le site déployé.
 Le build échoue si une version installée diffère du contrat. Il nettoie seulement
-les répertoires Tone, VexFlow, MathJax, NewCM et les licences de ses paquets,
+les répertoires déclarés et les licences de ses paquets,
 pour ne pas conserver d'ancienne distribution. Les assets et licences produits
-par un autre builder (Three/lil-gui notamment) restent intacts. Le manifest
+par un autre builder restent intacts. Le manifest
 `assets/vendor/manifest.json` liste les paquets, leurs licences et l'empreinte
 SHA-256 de chaque fichier, sans horodatage ni chemin absolu.
-Son inventaire est limité aux fichiers de ce builder ; un manifest 3D distinct
-peut coexister dans le même répertoire.
+Son inventaire est limité aux fichiers de ce builder.
 
 Les commandes npm/Make et le pipeline du site doivent appeler ce build avant
 le service local, les tests navigateur et la publication. Une installation
@@ -48,6 +53,19 @@ que l'installation npm fonctionne sans réseau.
 
 ## Compatibilité navigateur
 
+- Relativity Lab utilise le renderer WebGL, pas WebGPU. Three r163 a retiré
+  WebGL 1 : **WebGL 2 est désormais requis**, avec les modules ESM et import
+  maps du socle navigateur. Chromium réel valide le framebuffer non uniforme,
+  les géométries et textures, l'espace sRGB, les contrôles orbitaux, le zoom,
+  le redimensionnement et la destruction des signaux au reset. La migration
+  ne change ni les lumières, ni les couleurs, ni les règles physiques.
+  lil-gui est exercé avec les vrais contrôleurs et boutons : valeurs, options
+  de référentiel, dossiers récursifs reconstruits, filtrage et retrait
+  d'observateurs. Les APIs utilisées restent compatibles en 0.21.0.
+  Références amont : [guide de migration Three](https://github.com/mrdoob/three.js/wiki/Migration-Guide)
+  et [documentation lil-gui 0.21.0](https://lil-gui.georgealways.com/).
+  Particle Life utilise Canvas 2D, sans Three.js ni lil-gui ; sa régression
+  navigateur vérifie néanmoins rendu, pause et matrice après mise à jour.
 - Tone utilise réellement Web Audio. Une action utilisateur autorise le
   démarrage, avec un seul démarrage concurrent et un état de contrôle cohérent.
   Le relâchement ou la fermeture annule les notes encore en attente. L'échec
@@ -85,8 +103,8 @@ métadonnées. Les fontes embarquées VexFlow restent intégralement préservée
 Une mise à jour doit contrôler les notices de la nouvelle distribution, pas
 simplement recopier les noms des licences.
 
-**Exclus** : Neural Style, Magenta, TensorFlow, modèles ML, Three.js, lil-gui et
-Relativity Lab. Ce build ne télécharge ni ne transforme leurs ressources.
+**Exclus** : Neural Style, Magenta, TensorFlow et modèles ML.
+Ce build ne télécharge ni ne transforme leurs ressources.
 Le contrat JSON peut accueillir d'autres bibliothèques dans une demande
 distincte ; chaque ajout nécessite un pin exact, une destination locale,
 les licences et une validation réelle de son consommateur.
@@ -116,3 +134,15 @@ Les trois scénarios couvrent le geste audio, le relâchement pendant
 l'initialisation, les 15 presets, l'état accessible du métronome, le vrai
 ScoreRenderer et les 16 slides avec extensions et fontes dynamiques. Ils
 réutilisent les fixtures communes et refusent toute requête HTTP(S) externe.
+
+Les scénarios 3D et les autres outils se lancent ensemble :
+
+```sh
+make npm CMD="exec -- playwright test e2e/three-runtime.spec.js e2e/relativity.spec.js e2e/tools.spec.js e2e/runtime-libraries.spec.js"
+```
+
+`three-runtime.spec.js` vérifie aussi les versions, licences et requêtes
+transitives locales. Les fixtures n'interceptent plus de CDN Three/lil-gui :
+Chromium charge les fichiers réellement produits par le build et destinés
+au site, jamais les mocks Jest. Exécuter aussi avec
+`PLAYWRIGHT_PREBUILT=1` dans Docker pour contrôler l'archive `site/`.
