@@ -10,11 +10,12 @@ Exécuter uniquement dans un rôle autorisé à utiliser Docker.
 | Moteur d'un jeu | `make npm CMD="test -- --runTestsByPath games/mon-jeu/engine.test.js"` |
 | Helpers DOM/thème | `make npm CMD="test -- --runTestsByPath lib/dom.test.js lib/theme.test.js"` |
 | JS modifié | `make npm CMD="exec -- eslint chemin/du/fichier.js --max-warnings=0"` |
-| Sécurité JavaScript | `make npm CMD="run lint:security"` ; diagnostics consultatifs séparés, pas de verdict global |
+| Scripts HTML | ESLint ciblé sur le HTML, test de politique `scripts/source-lint.test.js`, puis interaction navigateur ; le markup n'est pas linté |
+| Sécurité JS et scripts HTML | `make npm CMD="run lint:security"` ; diagnostics consultatifs séparés, pas de verdict global |
 | Manifeste tool/game | `make build-catalogue` |
 | Epic/slides | `make build-parcours` puis parcours dans le viewer |
 | Logique de parcours | `make npm CMD="test -- --runTestsByPath scripts/parcours-utils.test.js"` |
-| TypeScript | `make typecheck` et `make build-ts` |
+| TypeScript | `make npm CMD="run lint:ts"`, `make typecheck`, tests affectés et `make build-ts` |
 | Interaction navigateur | `make test-e2e` |
 | Préparation locale sans collecte OpenGraph | `make npm CMD="run build:local"` |
 | Transport/enrichissement OG | Tests `scripts/og-fetcher.test.js`, `scripts/og-fetcher-process.test.js`, `scripts/build-bookmarks-offline.test.js`, puis vrai build réseau chronométré |
@@ -51,8 +52,9 @@ affiche le port du worktree. Ne pas coder un port local fixe.
 Pour une référence d'action/image/scanner, vérifier la valeur officielle puis
 les contrats d'épinglage et l'exécution de l'outil. Un SHA/digest/checksum n'est
 pas une preuve de conformité SLSA. Ne pas exécuter un téléchargement avant sa
-vérification. Le lint TS demeure non supporté avec les peers du parser actuel ;
-`make typecheck` reste nécessaire mais ne remplace pas ce lint.
+vérification. Biome fournit le lint `.ts` sans peer du compilateur ; les peers
+typescript-eslint restent incompatibles. `make typecheck` est complémentaire,
+pas un substitut. Aucun plugin de sécurité ESLint n'est exécuté sur TS.
 
 ## Inspection Git et branche
 

@@ -1,21 +1,19 @@
 import security from 'eslint-plugin-security';
 import noUnsanitized from 'eslint-plugin-no-unsanitized';
 import globals from 'globals';
+import html from 'eslint-plugin-html';
+import { sourceIgnores } from './scripts/lint-source-policy.js';
 
 export default [
   {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/coverage/**',
-      'data/**',
-      'assets/vendor/**',
-      'docs/site/**',
-      'site/**',
-    ],
+    ignores: sourceIgnores,
   },
   {
-    files: ['**/*.{js,mjs,cjs}'],
+    files: ['**/*.html'],
+    plugins: { html },
+  },
+  {
+    files: ['**/*.{js,mjs,cjs,html}'],
     // Les directives de qualité existantes ne sont pas des diagnostics de sécurité.
     linterOptions: {
       reportUnusedDisableDirectives: 'off',

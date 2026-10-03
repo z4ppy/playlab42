@@ -192,13 +192,13 @@
 </head>
 <body>
   <h1>🎲 Jeu de Dames</h1>
-  
+
   <div class="game-container">
     <div class="info-panel">
       <div class="status" id="status" role="status" aria-live="polite">Tour du joueur Blanc</div>
       <div id="move-message" role="status" aria-live="polite"></div>
       <div id="captures-info"></div>
-      
+
       <div style="margin-top: 1rem;">
         <label>Joueur Blanc: 
           <select id="white-player">
@@ -208,7 +208,7 @@
           </select>
         </label>
       </div>
-      
+
       <div style="margin-top: 0.5rem;">
         <label>Joueur Noir: 
           <select id="black-player">
@@ -245,8 +245,8 @@
     let state = null;
     let selectedSquare = null;
     let possibleMoves = [];
-    let bots = { random: null, smart: null };
-    let playerTypes = { 0: 'human', 1: 'smart' }; // Par défaut: Humain vs Bot
+    const bots = { random: null, smart: null };
+    const playerTypes = { 0: 'human', 1: 'smart' }; // Par défaut: Humain vs Bot
     let gameStarted = false; // Pour gérer le démarrage
 
     const statusEl = document.getElementById('status');
@@ -263,7 +263,7 @@
       try {
         const [RandomBot, SmartBot] = await Promise.all([
           import('./bots/random.js'),
-          import('./bots/smart.js')
+          import('./bots/smart.js'),
         ]);
         bots.random = new RandomBot.default();
         bots.smart = new SmartBot.default();
@@ -281,7 +281,7 @@
       try {
         state = engine.init({
           seed: Date.now(),
-          playerIds: ['player1', 'player2']
+          playerIds: ['player1', 'player2'],
         });
         console.log('État initial:', state);
         selectedSquare = null;
@@ -291,7 +291,7 @@
         playerTypes[1] = blackPlayerSelect.value;
         console.log('Types de joueurs:', playerTypes);
         gameStarted = false;
-        
+
         // Afficher le bouton Start si les blancs ne sont pas humains
         if (playerTypes[0] !== 'human') {
           startGameBtn.style.display = 'inline-block';
@@ -299,19 +299,19 @@
           startGameBtn.style.display = 'none';
           gameStarted = true;
         }
-        
+
         render();
-        
+
         // Démarrer automatiquement si les blancs sont humains
         if (gameStarted) {
           checkBotTurn();
         }
       } catch (error) {
         console.error('Erreur lors de l\'initialisation:', error);
-        alert('Erreur: ' + error.message);
+        alert(`Erreur: ${  error.message}`);
       }
     }
-    
+
     // Démarrer le jeu (pour bot vs bot ou bot vs humain quand bot commence)
     function startGame() {
       gameStarted = true;
@@ -321,8 +321,8 @@
 
     // Vérifier si c'est au tour d'un bot
     async function checkBotTurn() {
-      if (state.status !== 'playing' || !gameStarted) return;
-      
+      if (state.status !== 'playing' || !gameStarted) {return;}
+
       const currentPlayerType = playerTypes[state.currentPlayer];
       if (currentPlayerType !== 'human') {
         // Attendre que les bots soient chargés
@@ -332,21 +332,21 @@
           checkBotTurn(); // Réessayer
           return;
         }
-        
+
         // Attendre un peu pour que le joueur voit le plateau
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         const bot = bots[currentPlayerType];
         try {
           const playerId = state.playerIds[state.currentPlayer];
           const validActions = engine.getValidActions(state, playerId);
-          
+
           if (validActions.length > 0) {
             // Créer un RNG simple pour le bot
             const rng = {
-              pick: (arr) => arr[Math.floor(Math.random() * arr.length)]
+              pick: (arr) => arr[Math.floor(Math.random() * arr.length)],
             };
-            
+
             const move = bot.chooseAction(state, validActions, rng);
             if (move) {
               state = engine.applyAction(state, move, playerId);
@@ -424,11 +424,11 @@
 
     // Gérer le clic sur une case
     function handleSquareClick(row, col) {
-      if (state.status !== 'playing') return;
-      
+      if (state.status !== 'playing') {return;}
+
       // Bloquer si c'est le tour d'un bot
       const currentPlayerType = playerTypes[state.currentPlayer];
-      if (currentPlayerType !== 'human') return;
+      if (currentPlayerType !== 'human') {return;}
 
       const piece = state.board[row][col];
       const currentPlayer = state.currentPlayer;

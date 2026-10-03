@@ -3,7 +3,7 @@ import securityConfig from '../eslint.security.config.js';
 export default [
   ...securityConfig,
   {
-    files: ['**/*.{js,mjs,cjs}'],
+    files: ['**/*.{js,mjs,cjs,html}'],
     rules: {
       'no-unsanitized/property': 'warn',
       'security/detect-unsafe-regex': 'warn',

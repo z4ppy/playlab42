@@ -177,7 +177,7 @@
                 <div id="toast-title" class="dl-text-primary font-semibold text-sm">Early Stop</div>
                 <div id="toast-message" class="dl-text-muted text-xs">Convergence atteinte</div>
             </div>
-            <button type="button" onclick="hideToast()" aria-label="Fermer la notification" class="dl-text-muted hover:opacity-70 ml-2">✕</button>
+            <button type="button" id="toast-close" aria-label="Fermer la notification" class="dl-text-muted hover:opacity-70 ml-2">✕</button>
         </div>
     </div>
 
@@ -205,6 +205,7 @@
             setTimeout(() => hideToast(), 4000);
         }
         function hideToast() { document.getElementById('toast').classList.remove('show'); }
+        document.getElementById('toast-close').addEventListener('click', hideToast);
 
         // --- NEURAL NETWORK with Adam ---
         class DeepNeuralNetwork {
@@ -228,19 +229,19 @@
                         mB: new Float32Array(outSize).fill(0),
                         vB: new Float32Array(outSize).fill(0),
                         inputs: null, outputs: null, gradients: null,
-                        inSize, outSize
+                        inSize, outSize,
                     });
                 }
             }
 
             forward(input) {
                 let curr = Float32Array.from(input);
-                for(let l of this.layers) {
+                for(const l of this.layers) {
                     l.inputs = curr;
-                    let next = new Float32Array(l.outSize);
+                    const next = new Float32Array(l.outSize);
                     for(let j=0; j<l.outSize; j++) {
                         let sum = l.biases[j];
-                        for(let k=0; k<l.inSize; k++) sum += curr[k] * l.weights[k * l.outSize + j];
+                        for(let k=0; k<l.inSize; k++) {sum += curr[k] * l.weights[k * l.outSize + j];}
                         next[j] = tanh(sum);
                     }
                     l.outputs = next;
@@ -298,7 +299,7 @@
                 let totalLoss = 0;
                 for(const d of dataset) {
                     const out = this.forward(d.i);
-                    for(let i = 0; i < out.length; i++) totalLoss += (d.t[i] - out[i]) ** 2;
+                    for(let i = 0; i < out.length; i++) {totalLoss += (d.t[i] - out[i]) ** 2;}
                 }
                 return totalLoss / dataset.length;
             }
@@ -307,17 +308,17 @@
         // --- TASKS (optimized from hyperparameter search) ---
         const TASKS = {
             'xor': { arch: [2, 8, 4, 1], type: 'classif', defaultLR: 0.05,
-                gen: () => { let d = []; for(let i=0; i<20; i++) { d.push({i:[-0.9+rand(-0.1,0.1),-0.9+rand(-0.1,0.1)],t:[-0.9]}); d.push({i:[-0.9+rand(-0.1,0.1),0.9+rand(-0.1,0.1)],t:[0.9]}); d.push({i:[0.9+rand(-0.1,0.1),-0.9+rand(-0.1,0.1)],t:[0.9]}); d.push({i:[0.9+rand(-0.1,0.1),0.9+rand(-0.1,0.1)],t:[-0.9]}); } return d; }
+                gen: () => { const d = []; for(let i=0; i<20; i++) { d.push({ i:[-0.9+rand(-0.1,0.1),-0.9+rand(-0.1,0.1)],t:[-0.9] }); d.push({ i:[-0.9+rand(-0.1,0.1),0.9+rand(-0.1,0.1)],t:[0.9] }); d.push({ i:[0.9+rand(-0.1,0.1),-0.9+rand(-0.1,0.1)],t:[0.9] }); d.push({ i:[0.9+rand(-0.1,0.1),0.9+rand(-0.1,0.1)],t:[-0.9] }); } return d; },
             },
             'circle': { arch: [2, 16, 8, 1], type: 'classif', defaultLR: 0.03,
-                gen: () => { let d = []; for(let i=0; i<120; i++) { let x=rand(-1,1), y=rand(-1,1); d.push({i:[x,y], t:[(x*x+y*y<0.4)?0.9:-0.9]}); } return d; }
+                gen: () => { const d = []; for(let i=0; i<120; i++) { const x=rand(-1,1), y=rand(-1,1); d.push({ i:[x,y], t:[(x*x+y*y<0.4)?0.9:-0.9] }); } return d; },
             },
             'sine': { arch: [1, 32, 32, 1], type: 'reg', defaultLR: 0.01,
-                gen: () => { let d = []; for(let i=0; i<100; i++) { let x=rand(-1,1); d.push({i:[x], t:[Math.sin(x*Math.PI)]}); } return d; }
+                gen: () => { const d = []; for(let i=0; i<100; i++) { const x=rand(-1,1); d.push({ i:[x], t:[Math.sin(x*Math.PI)] }); } return d; },
             },
             'spiral': { arch: [2, 64, 32, 1], type: 'classif', defaultLR: 0.01,
-                gen: () => { let d = []; const N=150; for(let i=0; i<N; i++) { let r=(i/N)*0.95+0.05, t=1.75*i/N*2*Math.PI+rand(-0.1,0.1); let noise=()=>rand(-0.02,0.02); d.push({i:[r*Math.sin(t)+noise(),r*Math.cos(t)+noise()],t:[0.9]}); d.push({i:[r*Math.sin(t+Math.PI)+noise(),r*Math.cos(t+Math.PI)+noise()],t:[-0.9]}); } return d; }
-            }
+                gen: () => { const d = []; const N=150; for(let i=0; i<N; i++) { const r=(i/N)*0.95+0.05, t=1.75*i/N*2*Math.PI+rand(-0.1,0.1); const noise=() => rand(-0.02,0.02); d.push({ i:[r*Math.sin(t)+noise(),r*Math.cos(t)+noise()],t:[0.9] }); d.push({ i:[r*Math.sin(t+Math.PI)+noise(),r*Math.cos(t+Math.PI)+noise()],t:[-0.9] }); } return d; },
+    },
         };
 
         // --- STATE ---
@@ -331,16 +332,16 @@
         const ctxNet = cNet.getContext('2d');
         const ctxVis = cVis.getContext('2d');
 
-        let chart = new Chart(document.getElementById('lossChart').getContext('2d'), {
+        const chart = new window.Chart(document.getElementById('lossChart').getContext('2d'), {
             type: 'line',
             data: { labels: [], datasets: [
                 { label: 'Train', data: [], borderColor: '#f87171', borderWidth: 2, pointRadius: 0, tension: 0.3 },
-                { label: 'Val', data: [], borderColor: '#fbbf24', borderWidth: 2, pointRadius: 0, tension: 0.3 }
-            ]},
+                { label: 'Val', data: [], borderColor: '#fbbf24', borderWidth: 2, pointRadius: 0, tension: 0.3 },
+            ] },
             options: { responsive: true, maintainAspectRatio: false, animation: false,
-                scales: { x: {display:false}, y: {display:true, grid:{color:'#334155'}, ticks:{color:'#64748b',font:{size:10}}, min:0} },
-                plugins: { legend: {display:false} }
-            }
+                scales: { x: { display:false }, y: { display:true, grid:{ color:'#334155' }, ticks:{ color:'#64748b',font:{ size:10 } }, min:0 } },
+                plugins: { legend: { display:false } },
+            },
         });
 
         function setupToggle(id, onChange) {
@@ -361,8 +362,8 @@
             const btn = document.getElementById('btn-train');
             btn.innerHTML = '<span>DÉMARRER</span>';
             btn.classList.remove('from-red-600','to-red-500'); btn.classList.add('from-blue-600','to-blue-500');
-            document.getElementById('status-dot').className = "w-2.5 h-2.5 rounded-full bg-slate-500";
-            document.getElementById('status-text').textContent = "Prêt";
+            document.getElementById('status-dot').className = 'w-2.5 h-2.5 rounded-full bg-slate-500';
+            document.getElementById('status-text').textContent = 'Prêt';
             document.getElementById('overfit-indicator').classList.add('hidden');
             document.getElementById('fast-mode-overlay').classList.add('hidden');
 
@@ -396,18 +397,19 @@
         window.onresize = () => { resize(); if(!isTraining) { drawNet(); drawVis(); } };
 
         function loop() {
-            if(!isTraining) return;
+            if(!isTraining) {return;}
             fastMode = document.getElementById('render-toggle').dataset.active !== 'true';
             document.getElementById('fast-mode-overlay').classList.toggle('hidden', !fastMode);
 
-            let steps = fastMode ? 50 : 5, totalLoss = 0;
-            for(let k=0; k<steps; k++) { let idx = Math.floor(Math.random()*trainData.length); totalLoss += dnn.train(trainData[idx].i, trainData[idx].t); }
+            const steps = fastMode ? 50 : 5;
+            let totalLoss = 0;
+            for(let k=0; k<steps; k++) { const idx = Math.floor(Math.random()*trainData.length); totalLoss += dnn.train(trainData[idx].i, trainData[idx].t); }
             epoch += steps;
-            let avgTrainLoss = totalLoss / steps, valLoss = dnn.evaluate(valData);
+            const avgTrainLoss = totalLoss / steps, valLoss = dnn.evaluate(valData);
 
             const isOverfitting = checkOverfitting(valLoss);
             updateMetrics(avgTrainLoss, valLoss);
-            if (!fastMode) { drawNet(); if(epoch % 10 === 0) drawVis(); }
+            if (!fastMode) { drawNet(); if(epoch % 10 === 0) {drawVis();} }
             if (isOverfitting && autoStopEnabled) { stopTraining(true); return; }
             animationId = requestAnimationFrame(loop);
         }
@@ -416,7 +418,7 @@
             const ind = document.getElementById('overfit-indicator');
             if (valLoss < bestValLoss * 0.999) { bestValLoss = valLoss; epochsWithoutImprovement = 0; document.getElementById('metric-best-loss').textContent = bestValLoss.toFixed(4); ind.classList.add('hidden'); return false; }
             epochsWithoutImprovement += (fastMode ? 50 : 5);
-            if (epochsWithoutImprovement > PATIENCE / 3) ind.classList.remove('hidden');
+            if (epochsWithoutImprovement > PATIENCE / 3) {ind.classList.remove('hidden');}
             return epochsWithoutImprovement >= PATIENCE;
         }
 
@@ -425,10 +427,10 @@
             const btn = document.getElementById('btn-train');
             btn.innerHTML = '<span>REPRENDRE</span>';
             btn.classList.remove('from-red-600','to-red-500'); btn.classList.add('from-blue-600','to-blue-500');
-            document.getElementById('status-dot').className = "w-2.5 h-2.5 rounded-full bg-yellow-500";
-            document.getElementById('status-text').textContent = autoStopped ? "Stoppé" : "Pause";
+            document.getElementById('status-dot').className = 'w-2.5 h-2.5 rounded-full bg-yellow-500';
+            document.getElementById('status-text').textContent = autoStopped ? 'Stoppé' : 'Pause';
             document.getElementById('fast-mode-overlay').classList.add('hidden');
-            if (autoStopped) showToast('Early Stop', `Convergence après ${epoch} epochs`);
+            if (autoStopped) {showToast('Early Stop', `Convergence après ${epoch} epochs`);}
             drawNet(); drawVis();
         }
 
@@ -451,7 +453,7 @@
             const displayCounts = layerCounts.map(c => Math.min(c, maxDisplay));
             const padding = { x: w * 0.12, y: h * 0.12 };
             const layerX = displayCounts.map((_, i) => padding.x + (i * (w - 2*padding.x) / (displayCounts.length - 1)));
-            const nodePos = displayCounts.map((count) => { let step = Math.min((h - 2*padding.y) / count, 35); return Array(count).fill(0).map((_, j) => (h / 2) - ((count-1)*step/2) + (j*step)); });
+            const nodePos = displayCounts.map((count) => { const step = Math.min((h - 2*padding.y) / count, 35); return Array(count).fill(0).map((_, j) => (h / 2) - ((count-1)*step/2) + (j*step)); });
 
             ctx.globalAlpha = 0.5;
             for(let i=0; i<dnn.layers.length; i++) {
@@ -460,8 +462,8 @@
                 for(let src=0; src<srcCount; src++) {
                     for(let dst=0; dst<dstCount; dst++) {
                         const actualSrc = Math.floor(src * l.inSize / srcCount), actualDst = Math.floor(dst * l.outSize / dstCount);
-                        let weight = l.weights[actualSrc * l.outSize + actualDst];
-                        let grad = l.gradients ? l.gradients[actualDst] : 0;
+                        const weight = l.weights[actualSrc * l.outSize + actualDst];
+                        const grad = l.gradients ? l.gradients[actualDst] : 0;
                         ctx.beginPath(); ctx.moveTo(layerX[i], nodePos[i][src]); ctx.lineTo(layerX[i+1], nodePos[i+1][dst]);
                         if(isTraining && Math.abs(grad) > 0.02 && !fastMode) { ctx.strokeStyle = `rgba(250, 204, 21, ${Math.min(1, Math.abs(grad)*15)})`; ctx.lineWidth = 2; }
                         else { const intensity = Math.min(1, Math.abs(weight) * 0.8); ctx.strokeStyle = weight > 0 ? `rgba(59, 130, 246, ${intensity})` : `rgba(239, 68, 68, ${intensity})`; ctx.lineWidth = Math.max(0.5, Math.min(2.5, Math.abs(weight)*2)); }
@@ -486,16 +488,25 @@
             ctx.clearRect(0, 0, w, h);
             if (taskType === 'classif') {
                 const res = 35, cellW = w/res, cellH = h/res;
-                for(let i=0; i<res; i++) { for(let j=0; j<res; j++) { let x = (i/res)*2.4-1.2, y = (j/res)*2.4-1.2, out = dnn.forward([x,y])[0]; let r=0, g=0, b=0; if(out>0){b=Math.floor(Math.min(1,out)*180);g=30;}else{r=Math.floor(Math.min(1,Math.abs(out))*180);g=20;} ctx.fillStyle=`rgba(${r},${g},${b},0.4)`; ctx.fillRect(i*cellW,j*cellH,cellW+1,cellH+1); }}
-                trainData.forEach(p => { let px=((p.i[0]+1.2)/2.4)*w, py=((p.i[1]+1.2)/2.4)*h; ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle=p.t[0]>0?'#3b82f6':'#ef4444'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.stroke(); });
-                valData.forEach(p => { let px=((p.i[0]+1.2)/2.4)*w, py=((p.i[1]+1.2)/2.4)*h; ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2); ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.5; ctx.stroke(); });
+                for(let i=0; i<res; i++) {
+                    for(let j=0; j<res; j++) {
+                        const x = (i/res)*2.4-1.2, y = (j/res)*2.4-1.2;
+                        const out = dnn.forward([x,y])[0];
+                        const intensity = Math.floor(Math.min(1,Math.abs(out))*180);
+                        const [r, g, b] = out > 0 ? [0, 30, intensity] : [intensity, 20, 0];
+                        ctx.fillStyle=`rgba(${r},${g},${b},0.4)`;
+                        ctx.fillRect(i*cellW,j*cellH,cellW+1,cellH+1);
+                    }
+                }
+                trainData.forEach(p => { const px=((p.i[0]+1.2)/2.4)*w, py=((p.i[1]+1.2)/2.4)*h; ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle=p.t[0]>0?'#3b82f6':'#ef4444'; ctx.fill(); ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.stroke(); });
+                valData.forEach(p => { const px=((p.i[0]+1.2)/2.4)*w, py=((p.i[1]+1.2)/2.4)*h; ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2); ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.5; ctx.stroke(); });
             } else {
                 ctx.strokeStyle='#fbbf24'; ctx.lineWidth=3; ctx.shadowColor='#fbbf24'; ctx.shadowBlur=8; ctx.beginPath();
-                for(let px=0;px<w;px+=3){ let x=(px/w)*2-1, y=dnn.forward([x])[0], py=h/2-(y*h*0.4); if(px===0)ctx.moveTo(px,py);else ctx.lineTo(px,py); } ctx.stroke(); ctx.shadowBlur=0;
+                for(let px=0;px<w;px+=3){ const x=(px/w)*2-1, y=dnn.forward([x])[0], py=h/2-(y*h*0.4); if(px===0){ctx.moveTo(px,py);}else {ctx.lineTo(px,py);} } ctx.stroke(); ctx.shadowBlur=0;
                 ctx.strokeStyle='rgba(100,116,139,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.beginPath();
-                for(let px=0;px<w;px+=3){ let x=(px/w)*2-1, y=Math.sin(x*Math.PI), py=h/2-(y*h*0.4); if(px===0)ctx.moveTo(px,py);else ctx.lineTo(px,py); } ctx.stroke(); ctx.setLineDash([]);
-                trainData.forEach(p => { let px=((p.i[0]+1)/2)*w, py=h/2-(p.t[0]*h*0.4); ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle='#3b82f6'; ctx.fill(); });
-                valData.forEach(p => { let px=((p.i[0]+1)/2)*w, py=h/2-(p.t[0]*h*0.4); ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2); ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.5; ctx.stroke(); });
+                for(let px=0;px<w;px+=3){ const x=(px/w)*2-1, y=Math.sin(x*Math.PI), py=h/2-(y*h*0.4); if(px===0){ctx.moveTo(px,py);}else {ctx.lineTo(px,py);} } ctx.stroke(); ctx.setLineDash([]);
+                trainData.forEach(p => { const px=((p.i[0]+1)/2)*w, py=h/2-(p.t[0]*h*0.4); ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle='#3b82f6'; ctx.fill(); });
+                valData.forEach(p => { const px=((p.i[0]+1)/2)*w, py=h/2-(p.t[0]*h*0.4); ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2); ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.5; ctx.stroke(); });
                 ctx.strokeStyle='#334155'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
             }
         }
@@ -504,11 +515,11 @@
         document.getElementById('lr-input').oninput = (e) => { dnn.lr = parseFloat(e.target.value); document.getElementById('lr-val').innerText = dnn.lr.toFixed(3); };
         document.getElementById('btn-train').onclick = () => {
             isTraining = !isTraining;
-            if(isTraining) { epochsWithoutImprovement = 0; const btn = document.getElementById('btn-train'); btn.innerHTML = '<span>PAUSE</span>'; btn.classList.remove('from-blue-600','to-blue-500'); btn.classList.add('from-red-600','to-red-500'); document.getElementById('status-dot').className = "w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"; document.getElementById('status-text').textContent = "Training"; loop(); }
+            if(isTraining) { epochsWithoutImprovement = 0; const btn = document.getElementById('btn-train'); btn.innerHTML = '<span>PAUSE</span>'; btn.classList.remove('from-blue-600','to-blue-500'); btn.classList.add('from-red-600','to-red-500'); document.getElementById('status-dot').className = 'w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse'; document.getElementById('status-text').textContent = 'Training'; loop(); }
             else { stopTraining(false); }
         };
         document.getElementById('btn-reset').onclick = () => init(document.getElementById('task-select').value);
-        document.getElementById('btn-step').onclick = () => { if(isTraining) stopTraining(false); let totalLoss=0; shuffle(trainData); trainData.forEach(d=>{totalLoss+=dnn.train(d.i,d.t);}); epoch+=trainData.length; const trainLoss=totalLoss/trainData.length, valLoss=dnn.evaluate(valData); checkOverfitting(valLoss); updateMetrics(trainLoss,valLoss); drawNet(); drawVis(); };
+        document.getElementById('btn-step').onclick = () => { if(isTraining) {stopTraining(false);} let totalLoss=0; shuffle(trainData); trainData.forEach(d => {totalLoss+=dnn.train(d.i,d.t);}); epoch+=trainData.length; const trainLoss=totalLoss/trainData.length, valLoss=dnn.evaluate(valData); checkOverfitting(valLoss); updateMetrics(trainLoss,valLoss); drawNet(); drawVis(); };
 
         init('xor');
     </script>

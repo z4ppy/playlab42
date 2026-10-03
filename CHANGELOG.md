@@ -8,6 +8,9 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [Unreleased]
 
 ### Added
+- Lint des sources `.ts` avec Biome 2.5.15 et des scripts HTML avec
+  eslint-plugin-html 8.2.1 ; commande globale requise en local et CI,
+  fixtures des vrais CLI et politique sans attributs événementiels.
 - `package.json` : champ `engines` fixant Node >= 24, pour qu'un runtime trop
   ancien produise un avertissement npm au lieu d'échouer plus loin
 
@@ -16,6 +19,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   elles ne correspondaient plus à aucune URL du catalogue
 
 ### Changed
+- Triomino : `getPlayerView` refuse explicitement un ID absent, au lieu d'un
+  `TypeError` incident ; `GreedyBot.chooseAction` refuse une liste d'actions
+  vide, au lieu d'un `undefined` contraire à son type. Les appels valides et
+  signatures restent compatibles, avec tests négatifs et de transitions.
+- Listeners des règles/retour Triomino et fermeture de notification du
+  laboratoire Deep Learning déplacés des attributs HTML vers des scripts lintés.
 - CI : les workflows s'exécutent sur Node 26 au lieu de Node 20, pour tester
   sur le runtime réellement déployé (`node:26-alpine` au Dockerfile). Node 20
   n'a plus reçu de version depuis mars 2026. Huit occurrences alignées dans

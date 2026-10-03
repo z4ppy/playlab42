@@ -261,8 +261,8 @@
       </div>
 
       <button class="btn-primary" id="start-btn">Démarrer la partie</button>
-      <button class="btn-secondary" id="btn-rules-setup" onclick="window.open('https://www.regledujeu.fr/triominos/', '_blank')">📖 Règles du jeu</button>
-      <button class="btn-secondary" id="back-btn" onclick="window.location.href='../../index.html'">↩ Retour au menu principal</button>
+      <button class="btn-secondary" id="btn-rules-setup">📖 Règles du jeu</button>
+      <button class="btn-secondary" id="back-btn">↩ Retour au menu principal</button>
     </div>
 
     <!-- Écran de jeu -->
@@ -311,7 +311,7 @@
             <button class="btn-action btn-quit" id="btn-quit">
               ✕ Quitter la partie
             </button>
-            <button class="btn-action btn-rules" onclick="window.open('https://www.regledujeu.fr/triominos/', '_blank')">
+            <button class="btn-action btn-rules">
               📖 Règles du jeu
             </button>
           </div>
@@ -348,10 +348,9 @@
     </div>
 
     <script type="module">
-      import { TriominoEngine, generateAllTiles, isValidPlacement, detectBonus } from './dist/engine.js';
+      import { TriominoEngine, detectBonus } from './dist/engine.js';
       import { SeededRandom } from '../../lib/seeded-random.js';
       import { GreedyBot } from './bots/dist/greedy.js';
-      import { RandomBot } from './bots/dist/random.js';
       import { initTheme } from '../../lib/theme.js';
       import { createPlacementControls } from './placement-controls.js';
       import { observeDialog } from '../dialog-accessibility.js';
@@ -401,6 +400,14 @@
       // — Démarrage —
       document.getElementById('start-btn').addEventListener('click', startGame);
       document.getElementById('restart-btn').addEventListener('click', () => showScreen(setupScreen));
+      document.getElementById('back-btn').addEventListener('click', () => {
+        window.location.href = '../../index.html';
+      });
+      document.querySelectorAll('#btn-rules-setup, .btn-rules').forEach(button => {
+        button.addEventListener('click', () => {
+          window.open('https://www.regledujeu.fr/triominos/', '_blank', 'noopener');
+        });
+      });
 
       btnDraw.addEventListener('click', () => {
         const currentPlayer = gameState.players[gameState.currentPlayerIndex];
@@ -496,7 +503,7 @@
 
       // — Rendu —
       function render() {
-        if (!gameState) return;
+        if (!gameState) {return;}
         const focusedTile = rackEl.contains(document.activeElement) ? document.activeElement.dataset.tileId : null;
         renderStatus();
         renderScores();
@@ -522,7 +529,7 @@
         scoresBar.innerHTML = '';
         gameState.players.forEach((p, i) => {
           const card = document.createElement('div');
-          card.className = 'score-card' + (i === gameState.currentPlayerIndex ? ' active' : '');
+          card.className = `score-card${  i === gameState.currentPlayerIndex ? ' active' : ''}`;
           card.innerHTML = `<div class="player-name">${p.id}</div><div class="player-score">${p.score} pts</div>`;
           scoresBar.appendChild(card);
         });
@@ -548,10 +555,10 @@
           let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
           for (const pos of allPositions) {
             for (const [x, y] of triangleCorners(pos)) {
-              if (x < minX) minX = x;
-              if (y < minY) minY = y;
-              if (x > maxX) maxX = x;
-              if (y > maxY) maxY = y;
+              if (x < minX) {minX = x;}
+              if (y < minY) {minY = y;}
+              if (x > maxX) {maxX = x;}
+              if (y > maxY) {maxY = y;}
             }
           }
           const pad = SIDE;
@@ -609,7 +616,7 @@
         poly.setAttribute('fill', isLastPlaced ? '#fed7aa' : '#fffff0');
         poly.setAttribute('stroke', isLastPlaced ? '#f97316' : '#000000');
         poly.setAttribute('stroke-width', isLastPlaced ? '3' : '2');
-        if (!isLastPlaced) poly.setAttribute('filter', 'url(#shadow)');
+        if (!isLastPlaced) {poly.setAttribute('filter', 'url(#shadow)');}
         g.appendChild(poly);
 
         // Afficher les 3 valeurs aux sommets, insetées vers le centre.
@@ -642,11 +649,11 @@
           isHuman ? `Ma réglette (${currentPlayer.rack.length} tuiles)` : `${currentPlayer.id} joue...`;
 
         rackEl.innerHTML = '';
-        if (!isHuman) return;
+        if (!isHuman) {return;}
 
         // Trier les tuiles : par chiffre du sommet (values[0]) puis par nombre de points
         const sortedRack = [...currentPlayer.rack].sort((a, b) => {
-          if (a.values[0] !== b.values[0]) return a.values[0] - b.values[0];
+          if (a.values[0] !== b.values[0]) {return a.values[0] - b.values[0];}
           const sumA = a.values[0] + a.values[1] + a.values[2];
           const sumB = b.values[0] + b.values[1] + b.values[2];
           return sumA - sumB;
@@ -668,8 +675,8 @@
           svg.setAttribute('height', '56');
           svg.setAttribute('viewBox', '-28 -28 56 56');
           svg.classList.add('rack-tile');
-          if (tile.id === selectedTileId) svg.classList.add('selected');
-          if (gameState.lastDrawnTile && tile.id === gameState.lastDrawnTile.id) svg.classList.add('drawn');
+          if (tile.id === selectedTileId) {svg.classList.add('selected');}
+          if (gameState.lastDrawnTile && tile.id === gameState.lastDrawnTile.id) {svg.classList.add('drawn');}
 
           const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
           poly.setAttribute('points', '0,-22 -22,18 22,18');
@@ -737,12 +744,12 @@
       // — Interactions —
       function getLegalPositionsForSelected() {
         const activeId = selectedTileId ?? hoveredTileId;
-        if (activeId === null || gameState.phase === 'finished') return [];
+        if (activeId === null || gameState.phase === 'finished') {return [];}
         const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        if (!humanPlayerIds.includes(currentPlayer.id)) return [];
+        if (!humanPlayerIds.includes(currentPlayer.id)) {return [];}
 
         const tile = currentPlayer.rack.find(t => t.id === activeId);
-        if (!tile) return [];
+        if (!tile) {return [];}
 
         const actions = engine.getLegalActions(gameState, currentPlayer.id);
         return actions
@@ -752,10 +759,10 @@
 
       function placeTile(pos, placed) {
         const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        if (selectedTileId === null) return;
+        if (selectedTileId === null) {return;}
 
         const action = { type: 'PLACE', triominoId: selectedTileId, position: pos, placed };
-        if (!engine.isValidAction(gameState, action, currentPlayer.id)) return;
+        if (!engine.isValidAction(gameState, action, currentPlayer.id)) {return;}
 
         // Détecter le bonus avant d'appliquer (pour affichage)
         const boardAfter = {
@@ -775,7 +782,7 @@
         render();
         (rackEl.querySelector('button') || gameScreen).focus();
 
-        if (bonus) showBonus(bonus);
+        if (bonus) {showBonus(bonus);}
 
         if (gameState.phase === 'finished') {
           setTimeout(showEnd, bonus ? 1800 : 400);
@@ -787,7 +794,7 @@
 
       // — Bots —
       function scheduleBotTurnIfNeeded() {
-        if (!gameState || gameState.phase === 'finished') return;
+        if (!gameState || gameState.phase === 'finished') {return;}
         const currentPlayer = gameState.players[gameState.currentPlayerIndex];
         const botEntry = botPlayers.find(b => b.id === currentPlayer.id);
         if (botEntry) {
@@ -796,13 +803,13 @@
       }
 
       function playBotTurn(botEntry) {
-        if (!gameState || gameState.phase === 'finished') return;
+        if (!gameState || gameState.phase === 'finished') {return;}
         const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        if (currentPlayer.id !== botEntry.id) return;
+        if (currentPlayer.id !== botEntry.id) {return;}
 
         const view = engine.getPlayerView(gameState, botEntry.id);
         const actions = engine.getLegalActions(gameState, botEntry.id);
-        if (actions.length === 0) return;
+        if (actions.length === 0) {return;}
 
         const action = botEntry.bot.chooseAction(view, actions, rng);
 
@@ -823,7 +830,7 @@
         gameState = engine.applyAction(gameState, action, botEntry.id);
         render();
 
-        if (bonus) showBonus(bonus);
+        if (bonus) {showBonus(bonus);}
 
         if (gameState.phase === 'finished') {
           setTimeout(showEnd, bonus ? 1800 : 400);
@@ -858,7 +865,7 @@
 
         sorted.forEach((p, i) => {
           const li = document.createElement('li');
-          li.innerHTML = `<span class="rank">${ranks[i] ?? (i+1)+'.'}</span> <span>${p.id}</span> <strong>${p.score} pts</strong>`;
+          li.innerHTML = `<span class="rank">${ranks[i] ?? `${i+1}.`}</span> <span>${p.id}</span> <strong>${p.score} pts</strong>`;
           podiumEl.appendChild(li);
         });
 
@@ -902,11 +909,6 @@
             [rightX, topY],
           ];
         }
-      }
-
-      function isVisuallyUp(pos) {
-        const seqX = pos.col * 2 + (pos.orientation === 'DOWN' ? 1 : 0);
-        return ((seqX + pos.row) % 2 + 2) % 2 === 0;
       }
 
       function trianglePoints(pos) {

@@ -50,7 +50,9 @@ Pour un changement d'action, image ou scanner, vérifier SHA/digest/checksum
 sur la source officielle, puis les contrats et l'exécution de l'outil.
 Suivre la politique d'exceptions du guide qualité : portée, preuve, suivi et
 date de réexamen. Une dépendance incompatible n'est pas installée avec force ;
-signaler explicitement le lint TS non supporté plutôt qu'annoncer tsc comme du lint.
+utiliser le lint `.ts` Biome puis tsc, sans annoncer une analyse typée ou les
+règles de sécurité ESLint sur TS. Pour les HTML, vérifier scripts et politique
+sans attributs événementiels ; le plugin ne contrôle pas le markup.
 
 Ne pas ignorer un code de sortie, supprimer un test, modifier les règles d'un jeu
 ou mettre à jour une dépendance sans rapport pour faire passer une release.

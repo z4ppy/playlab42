@@ -304,7 +304,7 @@
     GameKit.init('tictactoe');
 
     // === État ===
-    let engine = new TicTacToeEngine();
+    const engine = new TicTacToeEngine();
     let state = null;
     let rng = null;
     let bot = null;
@@ -441,16 +441,16 @@
     }
 
     function handleCellClick(index) {
-      if (state.gameOver) return;
+      if (state.gameOver) {return;}
 
       const currentPlayer = state.currentPlayerId;
 
       // En mode vs bot, seul l'humain peut jouer avec les clics
-      if (isVsBot && currentPlayer !== humanId) return;
+      if (isVsBot && currentPlayer !== humanId) {return;}
 
       const action = { type: 'place', position: index };
 
-      if (!engine.isValidAction(state, action, currentPlayer)) return;
+      if (!engine.isValidAction(state, action, currentPlayer)) {return;}
 
       // Appliquer l'action
       state = engine.applyAction(state, action, currentPlayer);
@@ -469,12 +469,12 @@
     }
 
     function playBot() {
-      if (state.gameOver || state.currentPlayerId !== opponentId) return;
+      if (state.gameOver || state.currentPlayerId !== opponentId) {return;}
 
       const view = engine.getPlayerView(state, opponentId);
       const validActions = engine.getValidActions(state, opponentId);
 
-      if (validActions.length === 0) return;
+      if (validActions.length === 0) {return;}
 
       const action = bot.chooseAction(view, validActions, rng);
       state = engine.applyAction(state, action, opponentId);

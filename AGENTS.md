@@ -140,7 +140,7 @@ applicable) et une décision explicite ; ne jamais archiver pour simuler l'achè
 | Build TS | esbuild (transpilation rapide) |
 | Tests unitaires | Jest + esbuild |
 | Tests navigateur | Playwright |
-| Linting | ESLint |
+| Linting | ESLint (JS et scripts HTML), Biome (sources `.ts`) |
 | Infra | Docker, Docker Compose |
 | CI/CD | GitHub Actions |
 | Hébergement | GitHub Pages |
@@ -158,6 +158,7 @@ Le projet supporte TypeScript pour les tools, games et epics complexes. L'utilis
 
 ```bash
 make typecheck      # Vérifier les types (tsc --noEmit)
+make npm CMD="run lint:ts" # Lint TS avec Biome, distinct de tsc
 make build-ts       # Transpiler .ts → .js (dans dist/)
 ```
 
@@ -217,6 +218,14 @@ make typecheck          # Vérification des types
 make lint               # Lint (exclut dist/)
 make build-ts           # Regénérer les fichiers dist/
 ```
+
+`make lint` exécute ESLint puis Biome avec warnings bloquants. Les scripts
+HTML sont analysés, pas le markup ou les attributs événementiels : utiliser
+`addEventListener` dans un script linté. Un test de politique refuse les
+attributs `onclick` et analogues dans les HTML source, templates compris.
+Les sorties générées et bibliothèques tierces ne sont pas des sources à linter.
+Le lint Biome utilise son propre parser : il ne remplace pas tsc et ne fournit
+pas les règles de sécurité des plugins ESLint pour TS.
 
 ### Déploiement (GitHub Pages)
 

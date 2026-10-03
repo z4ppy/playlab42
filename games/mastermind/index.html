@@ -420,7 +420,6 @@
       const COLOR_NAMES = { R: 'rouge', B: 'bleu', G: 'vert', Y: 'jaune', O: 'orange', V: 'violet' };
       let state = null;
       let currentCode = ['', '', '', ''];
-      let currentPegIndex = 0;
 
       // Éléments DOM
       const attemptsGrid = document.getElementById('attempts-grid');
@@ -437,7 +436,6 @@
         const seed = Date.now();
         state = engine.init({ seed, playerId: 'human' });
         currentCode = ['', '', '', ''];
-        currentPegIndex = 0;
         attemptsGrid.innerHTML = '';
         gameOverDiv.style.display = 'none';
         currentAttempt.style.display = 'flex';

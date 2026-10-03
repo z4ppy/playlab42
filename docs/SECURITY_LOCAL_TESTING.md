@@ -19,7 +19,7 @@ Ne pas utiliser `--force` ou `--legacy-peer-deps` pour contourner une incompatib
 
 ```bash
 make security-npm       # npm audit, seuil moderate (développement compris)
-make security-eslint    # npm run lint:security, JavaScript
+make security-eslint    # npm run lint:security, JS et scripts HTML
 make security-yaml      # syntaxe et clés uniques des quatre YAML de sécurité/CI
 make security-audit     # ces contrôles, packages obsolètes, puis npm ls
 ```
@@ -88,16 +88,19 @@ Les rapports générés sont des artefacts locaux, pas des fichiers à commiter.
 
 ## Limites connues
 
-- Périmètre : fichiers JavaScript de `lib/`, `games/`, `tools/`, `app.js`,
-  `app/`, `scripts/`, `parcours/`, `e2e/` et `playwright.config.js`, tests compris.
+- Périmètre : JavaScript et scripts HTML du dépôt, configs et tests compris.
   Dépendances, bibliothèques tierces et sorties générées (`dist`, `coverage`,
   `data`, `site`, `docs/site`, `assets/vendor`) sont exclues.
-- Le JavaScript inline des HTML et la sécurité du contenu pédagogique ne sont
-  pas analysés par ce gate. Le code inline doit être revu séparément.
-- Le lint TypeScript est **différé** : `typescript-eslint` 8.71.0 annonce
+- Les scripts HTML sont analysés ; le markup et les attributs inline ne le sont
+  pas. Les attributs événementiels sont migrés vers des listeners lintés et
+  interdits par `scripts/source-lint.test.js`. Le contenu pédagogique n'est
+  pas certifié sûr par cette analyse.
+- Le lint `.ts` utilise **Biome 2.5.15**, séparément du gate sécurité ESLint.
+  `typescript-eslint` 8.71.0 annonce
   TypeScript `>=4.8.4 <6.1.0`, incompatible avec le compilateur 7.0.2 du projet.
   Aucun parser incompatible n'est ajouté, le compilateur n'est pas rétrogradé.
-  `make typecheck` et les tests TS restent distincts du lint JavaScript.
+  `make typecheck` et les tests TS restent requis ; Biome ne reproduit pas les
+  plugins de sécurité ESLint ni l'analyse utilisant le compilateur.
 - Le lint ne valide ni la provenance des données, ni les protocoles d'URL, ni
   les origines `postMessage`, ni les autorisations. Il ne remplace pas les
   tests, la revue de code, l'audit de dépendances ou les scanners de secrets.

@@ -64,7 +64,7 @@ jobs:
       - name: Installation des dépendances
         run: npm ci
 
-      - name: ESLint
+      - name: Lint JS, scripts HTML et TypeScript
         run: npm run lint
 
   # Job de tests avec coverage
