@@ -600,7 +600,7 @@
      */
     function setStatus(message, type = '') {
       statusEl.textContent = message;
-      statusEl.className = 'status' + (type ? ' ' + type : '');
+      statusEl.className = `status${  type ? ` ${  type}` : ''}`;
     }
 
     /**
@@ -730,7 +730,7 @@
 
         // Gestion du clic
         card.onclick = async () => {
-          if (card.classList.contains('loading')) return;
+          if (card.classList.contains('loading')) {return;}
 
           // Marquer comme loading
           card.setAttribute('aria-busy', 'true');
@@ -766,7 +766,7 @@
      * Effectue le transfert de style
      */
     async function stylize() {
-      if (!contentImg || !styleImg || !model || isProcessing) return;
+      if (!contentImg || !styleImg || !model || isProcessing) {return;}
 
       isProcessing = true;
       document.getElementById('resultZone').setAttribute('aria-busy', 'true');
@@ -860,14 +860,14 @@
      */
     function openLightbox() {
       const dataUrl = getResultDataUrl();
-      if (!dataUrl) return;
+      if (!dataUrl) {return;}
       lightboxImage.src = dataUrl;
       if (!lightbox.classList.contains('active')) {
         lightboxTrigger = document.activeElement;
       }
       lightbox.classList.add('active');
       [...lightbox.parentElement.children].forEach(element => {
-        if (element !== lightbox) element.inert = true;
+        if (element !== lightbox) {element.inert = true;}
       });
       document.body.style.overflow = 'hidden';
       lightboxClose.focus();
@@ -879,7 +879,7 @@
     function closeLightbox() {
       lightbox.classList.remove('active');
       [...lightbox.parentElement.children].forEach(element => {
-        if (element !== lightbox) element.inert = false;
+        if (element !== lightbox) {element.inert = false;}
       });
       document.body.style.overflow = '';
       lightboxTrigger?.focus();
@@ -903,7 +903,7 @@
      */
     function setupImageImport(zone, input, kind) {
       const loadFile = async (file) => {
-        if (!file) return;
+        if (!file) {return;}
         if (!file.type.startsWith('image/')) {
           setStatus('Choisissez un fichier image.', 'error');
           return;
@@ -966,7 +966,7 @@
 
       // Fermer la lightbox en cliquant sur le fond
       lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) closeLightbox();
+        if (e.target === lightbox) {closeLightbox();}
       });
 
       // Fermer avec la touche Échap

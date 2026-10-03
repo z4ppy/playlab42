@@ -435,17 +435,17 @@
                             for (let px = margin.left; px <= W - margin.right; px++) {
                                 const x = fromCanvasX(px);
                                 let y = fn(x);
-                                if (clip) y = Math.min(Math.max(y, yMin), yMax);
+                                if (clip) {y = Math.min(Math.max(y, yMin), yMax);}
                                 const py = toCanvasY(y);
                                 if (!started) { ctx.moveTo(px, py); started = true; }
-                                else ctx.lineTo(px, py);
+                                else {ctx.lineTo(px, py);}
                             }
                             ctx.stroke();
                         }
 
-                        if (showTanh) drawCurve(tanh, '#22d3ee');
-                        if (showSigmoid) drawCurve(sigmoid, '#a855f7');
-                        if (showRelu) drawCurve(relu, '#22c55e', true);
+                        if (showTanh) {drawCurve(tanh, '#22d3ee');}
+                        if (showSigmoid) {drawCurve(sigmoid, '#a855f7');}
+                        if (showRelu) {drawCurve(relu, '#22c55e', true);}
 
                         // Curseur et valeurs
                         if (mouseX !== null && mouseX >= margin.left && mouseX <= W - margin.right) {

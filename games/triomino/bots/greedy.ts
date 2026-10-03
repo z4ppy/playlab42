@@ -19,6 +19,7 @@ export class GreedyBot {
   /**
    * Choisit l'action qui rapporte le plus de points immédiatement.
    * Si aucun placement n'est possible, pioche ou passe.
+   * @throws Si aucune action valide n'est fournie.
    */
   chooseAction(
     view: PlayerView,
@@ -31,7 +32,9 @@ export class GreedyBot {
       // Piocher si possible, sinon passer
       const draw = validActions.find((a) => a.type === 'DRAW');
       if (draw) return draw;
-      return validActions.find((a) => a.type === 'PASS')!;
+      const pass = validActions.find((a) => a.type === 'PASS');
+      if (pass) return pass;
+      throw new Error('Aucune action valide');
     }
 
     // Évaluer chaque placement et choisir le meilleur

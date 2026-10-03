@@ -15,7 +15,8 @@ class SeededRandom {
   #state: number;
   constructor(seed: number) { this.#state = seed >>> 0; }
   random(): number {
-    let t = (this.#state += 0x6d2b79f5);
+    this.#state += 0x6d2b79f5;
+    let t = this.#state;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -419,15 +420,6 @@ export function isValidPlacement(
 // ---------------------------------------------------------------------------
 
 /**
- * Retourne toutes les positions occupées voisines d'une position.
- */
-function occupiedNeighbors(board: Board, pos: Position): PlacedTile[] {
-  return getNeighbors(pos)
-    .map((n) => board[posKey(n.pos)])
-    .filter((t): t is PlacedTile => t !== undefined);
-}
-
-/**
  * Détecte si un pont a été formé par la tuile posée en `pos`.
  * Un pont : exactement 2 voisins occupés qui ne sont pas voisins entre eux.
  */
@@ -795,9 +787,11 @@ export class TriominoEngine {
 
   /**
    * Retourne la vue d'un joueur (fog of war : valeurs des tuiles adverses masquées).
+   * @throws Si le joueur n'appartient pas à la partie.
    */
   getPlayerView(state: TriominoState, playerId: string): PlayerView {
-    const me = state.players.find((p) => p.id === playerId)!;
+    const me = state.players.find((p) => p.id === playerId);
+    if (!me) throw new Error(`Joueur inconnu : ${playerId}`);
 
     const opponentRackSizes: Record<string, number> = {};
     const scores: Record<string, number> = {};
@@ -864,7 +858,8 @@ export class TriominoEngine {
   #applyPlace(state: TriominoState, action: PlaceAction): TriominoState {
     const playerIdx = state.currentPlayerIndex;
     const player = state.players[playerIdx];
-    const tile = player.rack.find((t) => t.id === action.triominoId)!;
+    const tile = player.rack.find((t) => t.id === action.triominoId);
+    if (!tile) throw new Error(`Tuile absente du rack : ${action.triominoId}`);
 
     // Mettre à jour le plateau
     const key = posKey(action.position);
@@ -916,7 +911,8 @@ export class TriominoEngine {
   #applyDraw(state: TriominoState): TriominoState {
     const playerIdx = state.currentPlayerIndex;
     const newDrawPile = [...state.drawPile];
-    const drawnTile = newDrawPile.pop()!;
+    const drawnTile = newDrawPile.pop();
+    if (!drawnTile) throw new Error('Pioche vide');
 
     const newDrawsThisTurn = state.drawsThisTurn + 1;
 
@@ -1087,8 +1083,8 @@ export class TriominoEngine {
     for (const candidateKey of candidates) {
       const parts = candidateKey.split(',');
       const pos: Position = {
-        col: parseInt(parts[0]),
-        row: parseInt(parts[1]),
+        col: parseInt(parts[0], 10),
+        row: parseInt(parts[1], 10),
         orientation: parts[2] as Orientation,
       };
 

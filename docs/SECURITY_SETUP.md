@@ -32,8 +32,8 @@ dans un workflow ou un target Make, ni utiliser les anciens arguments
   `npm run lint:security` propage tout échec et permet l'export JSON.
 - `scripts/security-lint-advisory.config.js` étend ce gate avec des diagnostics
   heuristiques en warnings, accessibles par `npm run lint:security:advisory`.
-- `eslint.config.js` demeure la configuration de qualité existante, sans
-  modification de ses motifs ni mélange avec le gate sécurité.
+- `eslint.config.js` définit la qualité JS et scripts HTML, sans mélange
+  avec les règles du gate sécurité. Les exclusions de sources sont partagées.
 
 Les contrôles d'exécution dynamique, de méthodes DOM non sanitizées, de buffers
 et de caractères bidi sont bloquants. Les propriétés DOM, accès calculés,
@@ -70,11 +70,13 @@ Le compilateur du projet reste TypeScript 7.0.2 (contrainte existante `^7.0.2`).
 Le parser `typescript-eslint` 8.71.0 supporte officiellement
 `>=4.8.4 <6.1.0` : il ne constitue pas une solution supportée ici.
 
-**Le lint TypeScript est différé jusqu'à un parser compatible et supporté.**
-Ni rétrogradation du compilateur, ni installation forcée, ni contournement des
-peers n'est effectué. `make typecheck` et les tests TypeScript restent utiles,
-mais ne sont pas des preuves de lint sécurité TS. Les scripts JS issus du build
-dans `dist/` sont exclus pour éviter d'analyser des sorties générées.
+**Biome 2.5.15 fournit le lint `.ts`**, via son parser indépendant du compilateur.
+Son preset recommandé et les warnings bloquants sont vérifiés sur les sources
+réelles. Aucune rétrogradation, installation forcée ou contournement des peers.
+`make typecheck` reste le contrôle strict des types ; les règles de sécurité
+des plugins ESLint ne sont pas exécutées sur TS. Les JS générés dans `dist/`
+restent exclus. Le gate ESLint inclut maintenant les scripts HTML exécutables,
+pas le markup ni les attributs inline, refusés par un test de politique.
 
 ## Vérification avant évolution des règles
 

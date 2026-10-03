@@ -16,8 +16,11 @@ describe('Garde-fous de qualité logicielle', () => {
   });
 
   test('un avertissement seul fait échouer la commande lint', () => {
-    expect(JSON.parse(read('package.json')).scripts.lint).toContain('--max-warnings=0');
-    expect(JSON.parse(read('package.json')).scripts['lint:fix']).toContain('--max-warnings=0');
+    const { scripts } = JSON.parse(read('package.json'));
+    expect(scripts.lint).toBe('npm run lint:js && npm run lint:ts');
+    expect(scripts['lint:js']).toContain('--max-warnings=0');
+    expect(scripts['lint:ts']).toContain('--error-on-warnings');
+    expect(scripts['lint:fix']).toBe('npm run lint:js -- --fix && npm run lint:ts -- --write');
     const result = spawnSync(process.execPath, [
       'node_modules/eslint/bin/eslint.js', '--stdin', '--stdin-filename', 'lib/quality-probe.js',
       '--max-warnings=0', '--rule', 'no-console:warn',

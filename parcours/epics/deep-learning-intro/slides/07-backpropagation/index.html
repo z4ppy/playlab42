@@ -435,7 +435,7 @@
                         ctx.fillStyle = textColor; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'left';
                         ctx.fillText(`w=${w.toFixed(2)}  L=${currentLoss.toFixed(2)}  step=${history.length - 1}`, margin.left + 5, margin.top + 12);
 
-                        let lrStatus = '', lrColor = textColor;
+                        let lrStatus, lrColor;
                         if (lr > 0.8) { lrStatus = '⚠️ trop grand'; lrColor = '#ef4444'; }
                         else if (lr < 0.1) { lrStatus = '🐌 lent'; lrColor = '#eab308'; }
                         else { lrStatus = '✓'; lrColor = '#22c55e'; }
@@ -445,7 +445,7 @@
                     function step() {
                         const lr = parseFloat(lrSlider.value), grad = gradient(w);
                         w = Math.max(xMin + 0.1, Math.min(xMax - 0.1, w - lr * grad));
-                        history.push(w); if (history.length > 100) history.shift(); draw();
+                        history.push(w); if (history.length > 100) {history.shift();} draw();
                     }
 
                     function stop() {
@@ -462,7 +462,7 @@
                         running = true; runBtn.textContent = '⏹ Stop';
                         runBtn.classList.remove('bg-purple-500/20', 'border-purple-500/50');
                         runBtn.classList.add('bg-red-500/20', 'border-red-500/50');
-                        (function animate() { if (!running) return; step(); animId = setTimeout(animate, 80); })();
+                        (function animate() { if (!running) {return;} step(); animId = setTimeout(animate, 80); })();
                     }
 
                     canvas.addEventListener('click', e => {
@@ -569,7 +569,6 @@
                         const isDark = document.documentElement.classList.contains('dark');
                         const bgColor = isDark ? '#1a1a2e' : '#f8fafc';
                         const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-                        const axisColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)';
                         const textColor = isDark ? '#94a3b8' : '#64748b';
 
                         ctx.fillStyle = bgColor; ctx.fillRect(0, 0, W, H);
@@ -619,8 +618,8 @@
                         wAdam = Math.max(xMin + 0.1, Math.min(xMax - 0.1, wAdam - lr * mHat / (Math.sqrt(vHat) + epsilon)));
                         historyAdam.push(wAdam);
 
-                        if (historyGD.length > 100) historyGD.shift();
-                        if (historyAdam.length > 100) historyAdam.shift();
+                        if (historyGD.length > 100) {historyGD.shift();}
+                        if (historyAdam.length > 100) {historyAdam.shift();}
                         draw();
                     }
 
@@ -638,7 +637,7 @@
                         running = true; runBtn.textContent = '⏹';
                         runBtn.classList.remove('bg-purple-500/20', 'border-purple-500/50');
                         runBtn.classList.add('bg-red-500/20', 'border-red-500/50');
-                        (function animate() { if (!running) return; step(); animId = setTimeout(animate, 80); })();
+                        (function animate() { if (!running) {return;} step(); animId = setTimeout(animate, 80); })();
                     }
 
                     canvas.addEventListener('click', e => {

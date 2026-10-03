@@ -242,7 +242,6 @@
                         for (let l = 0; l < layers.length; l++) {
                             const isActive = l <= activeUpTo;
                             const isCurrent = l === activeUpTo && animationPhase < layers.length;
-                            const justActivated = l === activeUpTo && phaseProgress > 0.8;
 
                             for (let n = 0; n < layers[l]; n++) {
                                 const pos = neuronPositions[l][n];
@@ -250,7 +249,7 @@
                                 const preAct = preActivations[l][n];
 
                                 let displayValue = 0;
-                                let radius = 20;
+                                const radius = 20;
                                 let glowIntensity = 0;
 
                                 if (isActive) {
@@ -340,7 +339,7 @@
                     }
 
                     function animate(timestamp) {
-                        if (!lastTime) lastTime = timestamp;
+                        if (!lastTime) {lastTime = timestamp;}
                         const delta = timestamp - lastTime;
                         lastTime = timestamp;
 
