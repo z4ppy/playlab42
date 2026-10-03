@@ -37,6 +37,21 @@ const colors = {
   dim: '\x1b[2m',
 };
 
+// Racines scannées par le build ponctuel comme par le mode watch
+const SCAN_DIRS = ['lib', 'tools', 'games', 'parcours'].map(name => join(ROOT_DIR, name));
+const IGNORED_DIRECTORIES = new Set(['node_modules', 'dist', '__tests__', '__mocks__']);
+
+function isIgnoredDirectory(name) {
+  return IGNORED_DIRECTORIES.has(name) || name.startsWith('.');
+}
+
+function isSourceFile(entry) {
+  return entry.isFile()
+    && entry.name.endsWith('.ts')
+    && !entry.name.endsWith('.d.ts')
+    && !entry.name.endsWith('.test.ts');
+}
+
 /**
  * Trouve tous les fichiers TypeScript dans un dossier
  * @param {string} dir - Dossier à scanner
@@ -50,24 +65,11 @@ async function findTsFiles(dir, files = []) {
     for (const entry of entries) {
       const fullPath = join(dir, entry.name);
 
-      // Ignorer les dossiers spéciaux
       if (entry.isDirectory()) {
-        if (
-          entry.name === 'node_modules' ||
-          entry.name === 'dist' ||
-          entry.name === '__tests__' ||
-          entry.name === '__mocks__' ||
-          entry.name.startsWith('.')
-        ) {
-          continue;
+        if (!isIgnoredDirectory(entry.name)) {
+          await findTsFiles(fullPath, files);
         }
-        await findTsFiles(fullPath, files);
-      } else if (
-        entry.isFile() &&
-        entry.name.endsWith('.ts') &&
-        !entry.name.endsWith('.d.ts') &&
-        !entry.name.endsWith('.test.ts')
-      ) {
+      } else if (isSourceFile(entry)) {
         files.push(fullPath);
       }
     }
@@ -76,6 +78,18 @@ async function findTsFiles(dir, files = []) {
   }
 
   return files;
+}
+
+/**
+ * Trouve les sources TypeScript de toutes les racines scannées
+ * @returns {Promise<string[]>}
+ */
+async function findAllTsFiles() {
+  const allFiles = [];
+  for (const dir of SCAN_DIRS) {
+    allFiles.push(...await findTsFiles(dir));
+  }
+  return allFiles;
 }
 
 /**
@@ -193,20 +207,7 @@ async function buildFile(srcPath) {
 async function buildAll() {
   console.log(`\n${colors.cyan}Building TypeScript files...${colors.reset}\n`);
 
-  // Dossiers à scanner
-  const scanDirs = [
-    join(ROOT_DIR, 'lib'),
-    join(ROOT_DIR, 'tools'),
-    join(ROOT_DIR, 'games'),
-    join(ROOT_DIR, 'parcours'),
-  ];
-
-  // Trouver tous les fichiers .ts
-  const allFiles = [];
-  for (const dir of scanDirs) {
-    const files = await findTsFiles(dir);
-    allFiles.push(...files);
-  }
+  const allFiles = await findAllTsFiles();
 
   if (allFiles.length === 0) {
     console.log(`${colors.yellow}  Aucun fichier TypeScript trouvé${colors.reset}`);
@@ -254,19 +255,7 @@ async function watch() {
   await buildAll();
 
   // Surveiller les changements avec esbuild context
-  const scanDirs = [
-    join(ROOT_DIR, 'lib'),
-    join(ROOT_DIR, 'tools'),
-    join(ROOT_DIR, 'games'),
-    join(ROOT_DIR, 'parcours'),
-  ];
-
-  // Trouver tous les fichiers .ts initiaux
-  const allFiles = [];
-  for (const dir of scanDirs) {
-    const files = await findTsFiles(dir);
-    allFiles.push(...files);
-  }
+  const allFiles = await findAllTsFiles();
 
   if (allFiles.length === 0) {
     console.log(`${colors.yellow}  Aucun fichier à surveiller${colors.reset}`);

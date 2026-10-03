@@ -7,6 +7,7 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { getRootDir, readJSONSync, writeJSONAtomicSync, getBuildTimestamp } from './lib/build-utils.js';
+import { printDiagnostics } from './lib/build-report.js';
 import {
   extractSlideIds,
   countSlides,
@@ -151,6 +152,68 @@ function convertMarkdownSlide(slideDir, template, slideData) {
 }
 
 /**
+ * Inspecte les sources d'une slide (HTML, Markdown, marqueur de génération)
+ * @param {string} slideDir - Chemin du dossier de la slide
+ */
+function inspectSlideSources(slideDir) {
+  const htmlPath = join(slideDir, 'index.html');
+  const hasHtml = existsSync(htmlPath);
+  const htmlContent = hasHtml ? readFileSync(htmlPath, 'utf-8') : '';
+  return {
+    hasHtml,
+    hasMd: existsSync(join(slideDir, 'index.md')),
+    isGenerated: htmlContent.startsWith(`${GENERATED_SLIDE_MARKER}\n`)
+      || htmlContent.startsWith(`${GENERATED_SLIDE_MARKER}\r\n`),
+  };
+}
+
+/**
+ * Convertit la source Markdown d'une slide
+ * @returns {string|null} Erreur de conversion, sinon null
+ */
+function convertSlideSource(slideId, slideDir, template) {
+  if (!template) {
+    return `Template Markdown manquant (${SLIDE_TEMPLATE_FILE}) pour: ${slideId}`;
+  }
+  const slideData = readJSONSync(join(slideDir, 'slide.json'), stats);
+  if (!slideData) {
+    return `slide.json invalide pour: ${slideId}`;
+  }
+  return convertMarkdownSlide(slideDir, template, slideData)
+    ? null
+    : `Échec conversion Markdown pour: ${slideId}`;
+}
+
+/**
+ * Vérifie une slide référencée et convertit sa source Markdown si besoin
+ * @returns {string|null} Première erreur de la slide, sinon null
+ */
+function checkSlide(slideId, epicDir, template) {
+  const slideDir = join(epicDir, 'slides', slideId);
+  if (!existsSync(slideDir)) {
+    return `Slide non trouvée: ${slideId}`;
+  }
+  if (!existsSync(join(slideDir, 'slide.json'))) {
+    return `slide.json manquant pour: ${slideId}`;
+  }
+
+  const { hasHtml, hasMd, isGenerated } = inspectSlideSources(slideDir);
+  if (hasMd && hasHtml && !isGenerated) {
+    return `Sources ambiguës pour ${slideId}: index.md et index.html sans marqueur généré. `
+      + 'Choisir une source : conserver index.html et retirer index.md, ou sauvegarder puis '
+      + 'supprimer index.html pour le régénérer depuis index.md.';
+  }
+  if (hasMd) {
+    return convertSlideSource(slideId, slideDir, template);
+  }
+  if (isGenerated) {
+    return `Source index.md manquante pour le HTML généré: ${slideId}. `
+      + 'Restaurer index.md ou retirer le marqueur pour adopter index.html comme source auteur.';
+  }
+  return hasHtml ? null : `Contenu manquant (index.html ou index.md) pour: ${slideId}`;
+}
+
+/**
  * Valide un manifest d'epic et convertit les slides Markdown
  * @param {object} epic - Manifest de l'epic
  * @param {string} epicDir - Chemin du dossier de l'epic
@@ -160,63 +223,71 @@ function validateEpic(epic, epicDir, template) {
   // Valider les champs requis via l'utilitaire
   const { errors, warnings } = validateEpicFields(epic);
 
-  // Vérifier que les slides existent
-  if (epic.content) {
-    const slideIds = extractSlideIds(epic.content);
-    for (const slideId of slideIds) {
-      const slideDir = join(epicDir, 'slides', slideId);
-      if (!existsSync(slideDir)) {
-        errors.push(`Slide non trouvée: ${slideId}`);
-        continue;
-      }
-
-      const slideJson = join(slideDir, 'slide.json');
-      if (!existsSync(slideJson)) {
-        errors.push(`slide.json manquant pour: ${slideId}`);
-        continue;
-      }
-
-      const htmlPath = join(slideDir, 'index.html');
-      const hasHtml = existsSync(htmlPath);
-      const hasMd = existsSync(join(slideDir, 'index.md'));
-      const htmlContent = hasHtml ? readFileSync(htmlPath, 'utf-8') : '';
-      const isGenerated = htmlContent.startsWith(`${GENERATED_SLIDE_MARKER}\n`)
-        || htmlContent.startsWith(`${GENERATED_SLIDE_MARKER}\r\n`);
-
-      if (hasMd && hasHtml && !isGenerated) {
-        errors.push(`Sources ambiguës pour ${slideId}: index.md et index.html sans marqueur généré. `
-          + 'Choisir une source : conserver index.html et retirer index.md, ou sauvegarder puis '
-          + 'supprimer index.html pour le régénérer depuis index.md.');
-      } else if (hasMd && !template) {
-        errors.push(`Template Markdown manquant (${SLIDE_TEMPLATE_FILE}) pour: ${slideId}`);
-      } else if (hasMd) {
-        const slideData = readJSONSync(slideJson, stats);
-        if (!slideData) {
-          errors.push(`slide.json invalide pour: ${slideId}`);
-          continue;
-        }
-        const converted = convertMarkdownSlide(slideDir, template, slideData);
-        if (!converted) {
-          errors.push(`Échec conversion Markdown pour: ${slideId}`);
-        }
-      } else if (isGenerated) {
-        errors.push(`Source index.md manquante pour le HTML généré: ${slideId}. `
-          + 'Restaurer index.md ou retirer le marqueur pour adopter index.html comme source auteur.');
-      } else if (!hasHtml && !hasMd) {
-        errors.push(`Contenu manquant (index.html ou index.md) pour: ${slideId}`);
-      }
+  const slideIds = epic.content ? extractSlideIds(epic.content) : [];
+  for (const slideId of slideIds) {
+    const error = checkSlide(slideId, epicDir, template);
+    if (error) {
+      errors.push(error);
     }
   }
 
   // Vérifier vignette si spécifiée
-  if (epic.thumbnail) {
-    const thumbPath = join(epicDir, epic.thumbnail);
-    if (!existsSync(thumbPath)) {
-      warnings.push(`Vignette non trouvée: ${epic.thumbnail}`);
-    }
+  if (epic.thumbnail && !existsSync(join(epicDir, epic.thumbnail))) {
+    warnings.push(`Vignette non trouvée: ${epic.thumbnail}`);
   }
 
   return { errors, warnings };
+}
+
+/**
+ * Charge, valide et consigne les avertissements du glossaire d'un epic
+ * @returns {number} Nombre de termes du glossaire fusionné
+ */
+function checkEpicGlossary(epicId, epicDir, globalGlossary) {
+  const { terms, termCount } = loadEpicGlossary(epicDir, globalGlossary);
+  if (termCount > 0) {
+    const glossaryWarnings = validateGlossary(terms, epicId);
+    if (glossaryWarnings.length > 0) {
+      stats.warnings.push(`${epicId}: ${glossaryWarnings.join(', ')}`);
+    }
+  }
+  return termCount;
+}
+
+/**
+ * Construit l'entrée de catalogue d'un epic valide
+ */
+function buildEpicEntry(epic, epicId, epicDir, glossaryTermCount) {
+  const { total, optional } = countSlides(epic.content);
+  const metadata = epic.metadata || {};
+
+  // Fonction pour récupérer les données d'une slide (utilisée par buildStructure)
+  const getSlideData = (slideId) => {
+    const slideJson = join(epicDir, 'slides', slideId, 'slide.json');
+    return readJSONSync(slideJson, stats);
+  };
+
+  return {
+    id: epic.id,
+    title: epic.title,
+    description: epic.description,
+    path: `./parcours/epics/${epicId}`,
+    hierarchy: epic.hierarchy || ['autres'],
+    order: epic.order,
+    tags: epic.tags || [],
+    author: metadata.author || 'Anonyme',
+    created: metadata.created,
+    updated: metadata.updated,
+    duration: metadata.duration,
+    difficulty: metadata.difficulty,
+    icon: epic.icon,
+    thumbnail: epic.thumbnail ? `./parcours/epics/${epicId}/${epic.thumbnail}` : null,
+    slideCount: total,
+    optionalSlideCount: optional,
+    hasIndex: !!epic.index,
+    structure: buildStructure(epic.content, getSlideData),
+    glossaryTermCount: glossaryTermCount > 0 ? glossaryTermCount : undefined,
+  };
 }
 
 /**
@@ -255,52 +326,49 @@ function processEpic(epicId, template, globalGlossary) {
     stats.warnings.push(`${epicId}: ${validation.warnings.join(', ')}`);
   }
 
-  // Charger et valider le glossaire
-  const { terms: glossaryTerms, termCount: glossaryTermCount } = loadEpicGlossary(epicDir, globalGlossary);
-  if (glossaryTermCount > 0) {
-    const glossaryWarnings = validateGlossary(glossaryTerms, epicId);
-    if (glossaryWarnings.length > 0) {
-      stats.warnings.push(`${epicId}: ${glossaryWarnings.join(', ')}`);
-    }
-  }
-
-  // Compter les slides via l'utilitaire
-  const { total, optional } = countSlides(epic.content);
-
-  // Fonction pour récupérer les données d'une slide (utilisée par buildStructure)
-  const getSlideData = (slideId) => {
-    const slideJson = join(epicDir, 'slides', slideId, 'slide.json');
-    return readJSONSync(slideJson, stats);
-  };
-
-  // Construire l'entrée
-  const entry = {
-    id: epic.id,
-    title: epic.title,
-    description: epic.description,
-    path: `./parcours/epics/${epicId}`,
-    hierarchy: epic.hierarchy || ['autres'],
-    order: epic.order,
-    tags: epic.tags || [],
-    author: epic.metadata?.author || 'Anonyme',
-    created: epic.metadata?.created,
-    updated: epic.metadata?.updated,
-    duration: epic.metadata?.duration,
-    difficulty: epic.metadata?.difficulty,
-    icon: epic.icon,
-    thumbnail: epic.thumbnail ? `./parcours/epics/${epicId}/${epic.thumbnail}` : null,
-    slideCount: total,
-    optionalSlideCount: optional,
-    hasIndex: !!epic.index,
-    structure: buildStructure(epic.content, getSlideData),
-    // Glossaire
-    glossaryTermCount: glossaryTermCount > 0 ? glossaryTermCount : undefined,
-  };
+  const glossaryTermCount = checkEpicGlossary(epicId, epicDir, globalGlossary);
+  const entry = buildEpicEntry(epic, epicId, epicDir, glossaryTermCount);
 
   const glossaryInfo = glossaryTermCount > 0 ? `, ${glossaryTermCount} termes glossaire` : '';
   stats.published++;
-  console.log(`  [OK] ${epicId} (${total} slides${glossaryInfo})`);
+  console.log(`  [OK] ${epicId} (${entry.slideCount} slides${glossaryInfo})`);
   return entry;
+}
+
+/**
+ * Charge le glossaire global (optionnel)
+ * @returns {object|null}
+ */
+function loadGlobalGlossary() {
+  if (!existsSync(GLOBAL_GLOSSARY_FILE)) {
+    return null;
+  }
+  try {
+    const data = JSON.parse(readFileSync(GLOBAL_GLOSSARY_FILE, 'utf-8'));
+    const glossary = data.terms || data;
+    console.log(`Glossaire global chargé: ${Object.keys(glossary).length} termes`);
+    return glossary;
+  } catch (err) {
+    stats.warnings.push(`Erreur lecture glossaire global: ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Affiche les compteurs du rapport, avant avertissements et erreurs
+ */
+function printCounts(catalogue) {
+  console.log('\n--- Rapport ---');
+  console.log(`Epics trouvés: ${stats.found}`);
+  console.log(`Epics publiés: ${stats.published}`);
+  console.log(`Brouillons: ${stats.drafts}`);
+  console.log(`Tags uniques: ${catalogue.taxonomy.tags.length}`);
+  if (stats.markdownConverted > 0) {
+    console.log(`Slides Markdown converties: ${stats.markdownConverted}`);
+  }
+  if (stats.glossaryTermsTotal > 0) {
+    console.log(`Termes de glossaire: ${stats.glossaryTermsTotal}`);
+  }
 }
 
 /**
@@ -320,17 +388,7 @@ function main() {
     console.log('Template slides Markdown chargé');
   }
 
-  // Charger le glossaire global (optionnel)
-  let globalGlossary = null;
-  if (existsSync(GLOBAL_GLOSSARY_FILE)) {
-    try {
-      const data = JSON.parse(readFileSync(GLOBAL_GLOSSARY_FILE, 'utf-8'));
-      globalGlossary = data.terms || data;
-      console.log(`Glossaire global chargé: ${Object.keys(globalGlossary).length} termes`);
-    } catch (err) {
-      stats.warnings.push(`Erreur lecture glossaire global: ${err.message}`);
-    }
-  }
+  const globalGlossary = loadGlobalGlossary();
 
   // Scanner les epics
   console.log('\nScan des epics...');
@@ -356,27 +414,8 @@ function main() {
     featured: buildFeatured(epics, config),
   };
 
-  // Rapport
-  console.log('\n--- Rapport ---');
-  console.log(`Epics trouvés: ${stats.found}`);
-  console.log(`Epics publiés: ${stats.published}`);
-  console.log(`Brouillons: ${stats.drafts}`);
-  console.log(`Tags uniques: ${catalogue.taxonomy.tags.length}`);
-  if (stats.markdownConverted > 0) {
-    console.log(`Slides Markdown converties: ${stats.markdownConverted}`);
-  }
-  if (stats.glossaryTermsTotal > 0) {
-    console.log(`Termes de glossaire: ${stats.glossaryTermsTotal}`);
-  }
-
-  if (stats.warnings.length > 0) {
-    console.log(`\nWarnings (${stats.warnings.length}):`);
-    stats.warnings.forEach(w => console.log(`  ⚠️  ${w}`));
-  }
-
-  if (stats.errors.length > 0) {
-    console.log(`\nErreurs (${stats.errors.length}):`);
-    stats.errors.forEach(e => console.log(`  ❌ ${e}`));
+  printCounts(catalogue);
+  if (!printDiagnostics(stats)) {
     process.exit(1);
   }
 

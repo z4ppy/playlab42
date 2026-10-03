@@ -8,7 +8,7 @@
  */
 
 import { readdir } from 'fs/promises';
-import { join } from 'path';
+import { basename, join } from 'path';
 import {
   colors,
   getRootDir,
@@ -16,8 +16,8 @@ import {
   readJSONAsync,
   writeJSONAtomicSync,
   getBuildTimestamp,
-  isValidId,
 } from './lib/build-utils.js';
+import { validateRequiredFields, validateTagsAndVersion } from './lib/manifest-validation.js';
 
 // Obtenir le répertoire racine du projet
 const ROOT_DIR = getRootDir(import.meta.url);
@@ -27,41 +27,42 @@ const TOOLS_DIR = join(ROOT_DIR, 'tools');
 const GAMES_DIR = join(ROOT_DIR, 'games');
 const OUTPUT_FILE = join(ROOT_DIR, 'data/catalogue.json');
 
-// Pattern semver pour validation du champ version (optionnel)
-const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/;
-
 /**
  * Valide un manifest de tool
  * @param {object} manifest
  * @returns {{valid: boolean, errors: string[]}}
  */
 function validateToolManifest(manifest) {
-  const errors = [];
-  const required = ['id', 'name', 'description', 'tags'];
+  return toValidation([
+    ...validateRequiredFields(manifest, ['id', 'name', 'description', 'tags']),
+    ...validateTagsAndVersion(manifest),
+  ]);
+}
 
-  // Vérifier que tous les champs requis existent
-  for (const field of required) {
-    if (!manifest[field]) {
-      errors.push(`Missing required field '${field}'`);
-    }
-  }
-
-  // Valider le format de l'id (seulement si présent pour éviter erreur double)
-  if (manifest.id && !isValidId(manifest.id)) {
-    errors.push("'id' must be kebab-case (lowercase letters, numbers, hyphens)");
-  }
-
-  // Valider le type du champ tags
-  if (manifest.tags && !Array.isArray(manifest.tags)) {
-    errors.push("'tags' must be an array");
-  }
-
-  // Valider le format de version si présent (optionnel, doit être semver)
-  if (manifest.version && !SEMVER_PATTERN.test(manifest.version)) {
-    errors.push("'version' must be semver format (e.g., '1.0.0')");
-  }
-
+function toValidation(errors) {
   return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Valide la structure de players
+ * @param {object} manifest
+ * @returns {string[]}
+ */
+function validatePlayers({ players }) {
+  if (!players) {
+    return [];
+  }
+  const errors = [];
+  if (typeof players.min !== 'number') {
+    errors.push("'players.min' must be a number");
+  }
+  if (typeof players.max !== 'number') {
+    errors.push("'players.max' must be a number");
+  }
+  if (players.min > players.max) {
+    errors.push("'players.min' cannot be greater than 'players.max'");
+  }
+  return errors;
 }
 
 /**
@@ -70,50 +71,61 @@ function validateToolManifest(manifest) {
  * @returns {{valid: boolean, errors: string[]}}
  */
 function validateGameManifest(manifest) {
-  const errors = [];
-  const required = ['id', 'name', 'description', 'players', 'type', 'tags'];
-
-  // Vérifier que tous les champs requis existent
-  for (const field of required) {
-    if (!manifest[field]) {
-      errors.push(`Missing required field '${field}'`);
-    }
-  }
-
-  // Valider le format de l'id (seulement si présent pour éviter erreur double)
-  if (manifest.id && !isValidId(manifest.id)) {
-    errors.push("'id' must be kebab-case (lowercase letters, numbers, hyphens)");
-  }
-
-  // Valider la structure de players
-  if (manifest.players) {
-    if (typeof manifest.players.min !== 'number') {
-      errors.push("'players.min' must be a number");
-    }
-    if (typeof manifest.players.max !== 'number') {
-      errors.push("'players.max' must be a number");
-    }
-    if (manifest.players.min > manifest.players.max) {
-      errors.push("'players.min' cannot be greater than 'players.max'");
-    }
-  }
-
-  // Valider les valeurs de type
+  const errors = [
+    ...validateRequiredFields(manifest, ['id', 'name', 'description', 'players', 'type', 'tags']),
+    ...validatePlayers(manifest),
+  ];
   if (manifest.type && !['turn-based', 'real-time'].includes(manifest.type)) {
     errors.push("'type' must be 'turn-based' or 'real-time'");
   }
+  errors.push(...validateTagsAndVersion(manifest));
+  return toValidation(errors);
+}
 
-  // Valider le type du champ tags
-  if (manifest.tags && !Array.isArray(manifest.tags)) {
-    errors.push("'tags' must be an array");
+/**
+ * Lit et valide un manifest, puis vérifie la présence de la page associée.
+ * Les erreurs sont accumulées dans `errors` avec le libellé du manifest.
+ * @returns {Promise<object|null>} Le manifest valide, sinon null
+ */
+async function readCatalogueManifest({ manifestPath, label, validate, pagePath, errors }) {
+  const manifest = await readJSONAsync(manifestPath, { errors });
+  if (!manifest) {
+    return null;
   }
 
-  // Valider le format de version si présent (optionnel, doit être semver)
-  if (manifest.version && !SEMVER_PATTERN.test(manifest.version)) {
-    errors.push("'version' must be semver format (e.g., '1.0.0')");
+  const validation = validate(manifest);
+  if (!validation.valid) {
+    errors.push(`${label}: ${validation.errors.join(', ')}`);
+    return null;
   }
 
-  return { valid: errors.length === 0, errors };
+  if (!(await fileExistsAsync(pagePath))) {
+    errors.push(`${label}: No ${basename(pagePath)} found`);
+    return null;
+  }
+  return manifest;
+}
+
+/**
+ * Champs communs d'une entrée de catalogue, version/author/icon seulement s'ils existent
+ */
+function optionalFields(manifest) {
+  return {
+    ...(manifest.version && { version: manifest.version }),
+    ...(manifest.author && { author: manifest.author }),
+    ...(manifest.icon && { icon: manifest.icon }),
+  };
+}
+
+function toToolEntry(manifest, path) {
+  return {
+    id: manifest.id,
+    name: manifest.name,
+    description: manifest.description,
+    path,
+    tags: manifest.tags || [],
+    ...optionalFields(manifest),
+  };
 }
 
 /**
@@ -134,41 +146,18 @@ async function scanSimpleTools() {
   const jsonFiles = files.filter(f => f.endsWith('.json'));
 
   for (const jsonFile of jsonFiles) {
-    const manifestPath = join(TOOLS_DIR, jsonFile);
-    const manifest = await readJSONAsync(manifestPath, { errors });
-
-    if (!manifest) {
-      continue;
-    }
-
-    const validation = validateToolManifest(manifest);
-    if (!validation.valid) {
-      errors.push(`${jsonFile}: ${validation.errors.join(', ')}`);
-      continue;
-    }
-
-    // Vérifier que le fichier HTML correspondant existe
     const htmlFile = jsonFile.replace('.json', '.html');
-    const htmlPath = join(TOOLS_DIR, htmlFile);
-
-    if (!(await fileExistsAsync(htmlPath))) {
-      errors.push(`${jsonFile}: No ${htmlFile} found`);
-      continue;
-    }
-
-    // Ajouter au catalogue
-    tools.push({
-      id: manifest.id,
-      name: manifest.name,
-      description: manifest.description,
-      path: `tools/${htmlFile}`,
-      tags: manifest.tags || [],
-      ...(manifest.version && { version: manifest.version }),
-      ...(manifest.author && { author: manifest.author }),
-      ...(manifest.icon && { icon: manifest.icon }),
+    const manifest = await readCatalogueManifest({
+      manifestPath: join(TOOLS_DIR, jsonFile),
+      label: jsonFile,
+      validate: validateToolManifest,
+      pagePath: join(TOOLS_DIR, htmlFile),
+      errors,
     });
-
-    console.log(`${colors.green}  ✓ ${manifest.name}${colors.reset}`);
+    if (manifest) {
+      tools.push(toToolEntry(manifest, `tools/${htmlFile}`));
+      console.log(`${colors.green}  ✓ ${manifest.name}${colors.reset}`);
+    }
   }
 
   return { tools, errors };
@@ -199,38 +188,17 @@ async function scanComplexTools() {
       continue;
     }
 
-    const manifest = await readJSONAsync(manifestPath, { errors });
-
-    if (!manifest) {
-      continue;
-    }
-
-    const validation = validateToolManifest(manifest);
-    if (!validation.valid) {
-      errors.push(`${dir.name}/tool.json: ${validation.errors.join(', ')}`);
-      continue;
-    }
-
-    // Vérifier que index.html existe
-    const indexPath = join(toolDir, 'index.html');
-    if (!(await fileExistsAsync(indexPath))) {
-      errors.push(`${dir.name}/tool.json: No index.html found`);
-      continue;
-    }
-
-    // Ajouter au catalogue (noter le path différent)
-    tools.push({
-      id: manifest.id,
-      name: manifest.name,
-      description: manifest.description,
-      path: `tools/${dir.name}/index.html`,
-      tags: manifest.tags || [],
-      ...(manifest.version && { version: manifest.version }),
-      ...(manifest.author && { author: manifest.author }),
-      ...(manifest.icon && { icon: manifest.icon }),
+    const manifest = await readCatalogueManifest({
+      manifestPath,
+      label: `${dir.name}/tool.json`,
+      validate: validateToolManifest,
+      pagePath: join(toolDir, 'index.html'),
+      errors,
     });
-
-    console.log(`${colors.green}  ✓ ${manifest.name} (complex)${colors.reset}`);
+    if (manifest) {
+      tools.push(toToolEntry(manifest, `tools/${dir.name}/index.html`));
+      console.log(`${colors.green}  ✓ ${manifest.name} (complex)${colors.reset}`);
+    }
   }
 
   return { tools, errors };
@@ -261,40 +229,26 @@ async function scanGames() {
       continue;
     }
 
-    const manifest = await readJSONAsync(manifestPath, { errors });
-
-    if (!manifest) {
-      continue;
-    }
-
-    const validation = validateGameManifest(manifest);
-    if (!validation.valid) {
-      errors.push(`${dir.name}/game.json: ${validation.errors.join(', ')}`);
-      continue;
-    }
-
-    // Vérifier que index.html existe
-    const indexPath = join(gameDir, 'index.html');
-    if (!(await fileExistsAsync(indexPath))) {
-      errors.push(`${dir.name}/game.json: No index.html found`);
-      continue;
-    }
-
-    // Ajouter au catalogue
-    games.push({
-      id: manifest.id,
-      name: manifest.name,
-      description: manifest.description,
-      path: `games/${dir.name}/index.html`,
-      players: manifest.players,
-      tags: manifest.tags || [],
-      type: manifest.type,
-      ...(manifest.version && { version: manifest.version }),
-      ...(manifest.author && { author: manifest.author }),
-      ...(manifest.icon && { icon: manifest.icon }),
+    const manifest = await readCatalogueManifest({
+      manifestPath,
+      label: `${dir.name}/game.json`,
+      validate: validateGameManifest,
+      pagePath: join(gameDir, 'index.html'),
+      errors,
     });
-
-    console.log(`${colors.green}  ✓ ${manifest.name}${colors.reset}`);
+    if (manifest) {
+      games.push({
+        id: manifest.id,
+        name: manifest.name,
+        description: manifest.description,
+        path: `games/${dir.name}/index.html`,
+        players: manifest.players,
+        tags: manifest.tags || [],
+        type: manifest.type,
+        ...optionalFields(manifest),
+      });
+      console.log(`${colors.green}  ✓ ${manifest.name}${colors.reset}`);
+    }
   }
 
   return { games, errors };
