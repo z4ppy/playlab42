@@ -15,7 +15,7 @@ import { switchTab, registerRenderCallbacks, handleTabKeydown } from './tabs.js'
 import { renderCatalogue } from './catalogue.js';
 import { renderParcours, selectParcoursCategory } from './parcours.js';
 import { renderBookmarks, selectBookmarkTag } from './bookmarks.js';
-import { unloadGame, toggleFullscreen, toggleSound } from './game-loader.js';
+import { unloadGame, toggleFullscreen, toggleSound, isCurrentGameSession } from './game-loader.js';
 import { showSettings, hideSettings, setSoundPreference, setThemePreference, clearAllData } from './settings.js';
 
 /**
@@ -107,7 +107,7 @@ export function setupEventListeners() {
   on(window, 'message', (e) => {
     if (!e.data || typeof e.data !== 'object' || Array.isArray(e.data) ||
         typeof e.data.type !== 'string') { return; }
-    if (!state.currentGame || !e.source ||
+    if (!isCurrentGameSession() || !e.source ||
         e.source !== el.gameIframe?.contentWindow ||
         e.origin !== window.location.origin) { return; }
     // Le WindowProxy peut survivre à une navigation ; le slug distingue alors les jeux.

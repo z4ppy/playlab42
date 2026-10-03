@@ -29,6 +29,15 @@ function setLoadingText(text) {
 }
 
 /**
+ * Indique si la session affichée peut encore piloter le portail.
+ * Un HEAD suivant la suspend ; unload l'invalide immédiatement.
+ * @returns {boolean}
+ */
+export function isCurrentGameSession() {
+  return iframeSession !== null && iframeSession === state.currentGame && !pendingNavigation;
+}
+
+/**
  * Charge un jeu depuis son ID
  * Valide l'existence et synchronise le hash, uniquement si la demande est courante.
  * @param {string} gameId - ID du jeu
@@ -36,7 +45,7 @@ function setLoadingText(text) {
 export async function openGame(gameId) {
   const navigation = beginNavigation();
   // Ne pas recharger si le jeu est déjà ouvert
-  if (state.currentGame?.id === gameId && state.currentView === 'game') {
+  if (isCurrentGameSession() && state.currentGame.id === gameId && state.currentView === 'game') {
     return;
   }
 
@@ -81,7 +90,7 @@ export async function openGame(gameId) {
 export async function openTool(toolId) {
   const navigation = beginNavigation();
   // Ne pas recharger si l'outil est déjà ouvert
-  if (state.currentGame?.id === toolId && state.currentView === 'game') {
+  if (isCurrentGameSession() && state.currentGame.id === toolId && state.currentView === 'game') {
     return;
   }
 
@@ -141,15 +150,15 @@ export function loadGame(path, name, type, id) {
 
 function renderGame(path, name, type, id) {
   clearTimeout(loadTimeout);
-  const session = {};
+  const session = { path, name, type, id };
   iframeSession = session;
   // Le HEAD suivant suspend les callbacks ; resélectionner ce jeu les réautorise.
-  const isCurrent = () => iframeSession === session && !pendingNavigation;
+  const isCurrent = () => iframeSession === session && isCurrentGameSession();
   if (state.currentView !== 'game') {
     returnFocus = document.activeElement;
   }
   setState({
-    currentGame: { path, name, type, id },
+    currentGame: session,
     currentView: 'game',
   });
 
