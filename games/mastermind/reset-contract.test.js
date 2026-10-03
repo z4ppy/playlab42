@@ -18,7 +18,7 @@ describe('Contrat de reset Mastermind', () => {
     expect(clock).not.toHaveBeenCalled();
   });
 
-  it.each([undefined, null, '123', NaN, Infinity, -Infinity, 1.5])(
+  it.each([undefined, null, '123', NaN, Infinity, -Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1])(
     'refuse explicitement une seed invalide : %s',
     (seed) => {
       const action = { type: 'reset', seed };
