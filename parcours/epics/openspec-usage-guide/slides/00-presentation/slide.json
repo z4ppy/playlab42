@@ -1,5 +1,8 @@
 {
   "id": "00-presentation",
-  "title": "OpenSpec — Guide d'utilisation",
-  "type": "presentation"
+  "title": "OpenSpec — Spécifier avant de coder",
+  "type": "presentation",
+  "duration": "3 min",
+  "description": "Présentation du parcours OpenSpec 1.14.0 : objectifs, fil rouge add-dark-mode (exemple officiel) et distinction entre usage générique et usage dans Playlab42 (CLI local épinglé, skills).",
+  "icon": "📋"
 }

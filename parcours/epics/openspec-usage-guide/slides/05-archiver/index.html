@@ -3,310 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Archiver après déploiement — OpenSpec Guide</title>
+  <title>Archiver un change — OpenSpec Guide</title>
   <link rel="stylesheet" href="../../../../../lib/theme.css">
   <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../openspec-guide.css">
   <script type="module">
-    import { initTheme } from '../../../../../lib/theme.js';
-    initTheme();
+    import { initSlide } from '../../../../_shared/slide-utils.js';
+    initSlide();
   </script>
-  <style>
-    .command-box {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid var(--color-accent);
-      font-family: var(--font-mono);
-      margin: var(--space-lg) 0;
-      font-size: 1.05rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .command-box strong {
-      color: var(--color-accent);
-    }
-    .step-box {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      margin: var(--space-lg) 0;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .step-box h3 {
-      margin-top: 0;
-      color: var(--color-accent);
-    }
-    .step-number {
-      display: inline-block;
-      width: 2.5rem;
-      height: 2.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 2.5rem;
-      font-weight: bold;
-      margin-right: var(--space-sm);
-      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-    }
-    .before-after {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-lg);
-      margin: var(--space-lg) 0;
-    }
-    .before-after > div {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .before-after h4 {
-      margin-top: 0;
-      color: var(--color-accent);
-    }
-    .folder-structure {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      white-space: pre;
-      overflow-x: auto;
-      line-height: 1.7;
-      border: 1px solid var(--color-border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .warning-box {
-      background: #fff3cd;
-      color: #856404;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #ffc107;
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .warning-box strong {
-      color: #856404;
-    }
-    .success-box {
-      background: #d4edda;
-      color: #155724;
-      padding: var(--space-lg);
-      border-radius: var(--radius-md);
-      border-left: 4px solid #28a745;
-      margin: var(--space-lg) 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .success-box strong {
-      color: #155724;
-    }
-  </style>
 </head>
-<body>
+<body class="openspec-guide">
   <article class="slide">
-    <h1>Archiver après déploiement</h1>
+    <p class="guide-kicker">Étape 5 · Archiver</p>
+    <h1>Archiver un change</h1>
+    <p class="guide-lead">Archiver ferme le change et fait entrer ses deltas dans les specs principales : c'est ce moment qui transforme « ce qu'on a proposé » en « ce que le système fait ».</p>
 
-    <p>Une fois le changement <strong>déployé en production</strong>, il faut archiver la proposal pour garder le dossier <code>changes/</code> propre et fusionner les deltas dans les specs officielles.</p>
-
-    <div class="warning-box">
-      <p><strong>⚠️ Important : N'archiver qu'après déploiement</strong></p>
-      <p>L'archivage signifie que le changement est <strong>terminé et en production</strong>. Ne pas archiver si le code est seulement mergé mais pas encore déployé.</p>
-    </div>
-
-    <h2>Quand archiver ?</h2>
-
-    <ul>
-      <li>✅ Le changement est mergé sur la branche principale</li>
-      <li>✅ Le changement est déployé en production (GitHub Pages pour Playlab42)</li>
-      <li>✅ Les tests passent en production</li>
-      <li>✅ Aucune régression détectée</li>
-    </ul>
-
-    <h2>Lancer l'archivage</h2>
-
-    <div class="command-box">
-      <strong>Avec un agent IA :</strong><br>
-      /openspec:archive
-    </div>
-
-    <p>Ou manuellement avec le CLI :</p>
-
-    <div class="command-box">
-      openspec archive &lt;change-id&gt;
+    <div class="guide-callout">
+      <p><strong>Archiver n'est pas déployer.</strong> OpenSpec ne déploie rien : il déplace un dossier et fusionne des specs. En général, on archive quand le comportement décrit est réellement livré.</p>
+      <p><strong>Politique de Playlab42 (règle du projet) :</strong> ne synchroniser ni archiver qu'<em>après</em> la livraison (merge, puis déploiement si applicable) <em>et</em> une décision explicite du mainteneur. Un code relu, ou même fusionné, ne suffit pas à lui seul.</p>
     </div>
 
     <h2>Ce que fait l'archivage</h2>
 
-    <div class="step-box">
-      <h3><span class="step-number">1</span> Fusionner les deltas dans les specs</h3>
-      <p>Les modifications dans <code>changes/[id]/specs/</code> sont intégrées dans <code>specs/</code>.</p>
-      <p><strong>Exemple :</strong></p>
-      <ul>
-        <li><code>changes/add-poker-game/specs/catalogue/delta.md</code></li>
-        <li>→ Fusionné dans <code>specs/catalogue/spec.md</code></li>
-      </ul>
-    </div>
-
-    <div class="step-box">
-      <h3><span class="step-number">2</span> Déplacer vers archive/</h3>
-      <p>Le dossier de la proposal est déplacé avec un timestamp :</p>
-      <div class="folder-structure">changes/add-poker-game/
-→ changes/archive/2025-12-15-add-poker-game/</div>
-      <p><strong>Format du timestamp :</strong> <code>YYYY-MM-DD-[change-id]</code></p>
-    </div>
-
-    <div class="step-box">
-      <h3><span class="step-number">3</span> Mettre à jour AGENTS.md (si nécessaire)</h3>
-      <p>Si votre changement introduit de nouvelles conventions ou workflows, mettez à jour <code>openspec/AGENTS.md</code>.</p>
-    </div>
-
-    <h2>Avant / Après archivage</h2>
-
-    <div class="before-after">
-      <div>
-        <h4>📁 Avant (changes actifs)</h4>
-        <div class="folder-structure">openspec/
-├── changes/
-│   ├── add-poker-game/
-│   │   ├── proposal.md
-│   │   ├── tasks.md
-│   │   └── specs/
-│   │       └── catalogue/
-│   │           └── delta.md
-│   └── archive/
-└── specs/
-    └── catalogue/
-        └── spec.md</div>
-      </div>
-
-      <div>
-        <h4>📁 Après archivage</h4>
-        <div class="folder-structure">openspec/
-├── changes/
-│   └── archive/
-│       └── 2025-12-15-add-poker-game/
-│           ├── proposal.md
-│           ├── tasks.md
-│           └── specs/ (conservé)
-└── specs/
-    └── catalogue/
-        └── spec.md (mis à jour ✓)</div>
-      </div>
-    </div>
-
-    <h2>Fusionner les deltas : Exemple concret</h2>
-
-    <p><strong>Contenu du delta :</strong> <code>changes/add-poker-game/specs/catalogue/delta.md</code></p>
-
-    <div class="folder-structure">## ADDED Requirements
-
-### Requirement: Poker Game Entry
-The catalogue SHALL include an entry for the poker game.
-
-#### Scenario: Poker appears in catalogue
-- **WHEN** the catalogue is rebuilt
-- **THEN** the poker game is listed with correct metadata</div>
-
-    <p><strong>Après fusion dans</strong> <code>specs/catalogue/spec.md</code> :</p>
-
-    <div class="folder-structure"># Catalogue Specification
-
-## Requirements
-
-### Requirement: Game Entries
-The catalogue SHALL list all games with metadata.
-
-### Requirement: Poker Game Entry
-The catalogue SHALL include an entry for the poker game.
-
-#### Scenario: Poker appears in catalogue
-- **WHEN** the catalogue is rebuilt
-- **THEN** the poker game is listed with correct metadata</div>
-
-    <h2>Procédure manuelle d'archivage</h2>
-
-    <p>Si vous préférez archiver manuellement :</p>
-
-    <ol>
-      <li>
-        <strong>Vérifier l'état</strong>
-        <pre><code>openspec show add-poker-game</code></pre>
-      </li>
-      <li>
-        <strong>Fusionner les deltas</strong>
-        <p>Copiez le contenu de <code>changes/[id]/specs/</code> dans <code>specs/</code> en respectant les sections ADDED/UPDATED/REMOVED.</p>
-      </li>
-      <li>
-        <strong>Déplacer le dossier</strong>
-        <pre><code>mv openspec/changes/add-poker-game \
-   openspec/changes/archive/2025-12-15-add-poker-game</code></pre>
-      </li>
-      <li>
-        <strong>Commiter</strong>
-        <pre><code>git add openspec/
-git commit -m "docs(openspec): archivage add-poker-game"</code></pre>
-      </li>
+    <ol class="guide-steps">
+      <li><strong>Contrôle</strong> : statut des artefacts et des tâches (avertit si des tâches restent à cocher).</li>
+      <li><strong>Synchronisation</strong> : fusion des deltas <code>ADDED</code>, <code>MODIFIED</code>, <code>REMOVED</code> dans <code>openspec/specs/</code>. Le contenu non mentionné par le delta est conservé.</li>
+      <li><strong>Déplacement</strong> : <code>openspec/changes/add-dark-mode/</code> devient <code>openspec/changes/archive/AAAA-MM-JJ-add-dark-mode/</code>, avec tous les artefacts pour l'historique.</li>
     </ol>
 
-    <div class="success-box">
-      <p><strong>✅ Archivage terminé !</strong></p>
-      <p>Votre changement est maintenant :</p>
-      <ul>
-        <li>Intégré dans les specs officielles</li>
-        <li>Archivé avec historique complet</li>
-        <li>Traçable pour les futurs contributeurs</li>
-      </ul>
+    <div class="guide-table-wrapper" tabindex="0">
+      <table>
+        <thead>
+          <tr><th>Section du delta</th><th>Effet sur la spec principale</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>## ADDED Requirements</code></td><td>Exigence ajoutée</td></tr>
+          <tr><td><code>## MODIFIED Requirements</code></td><td>Exigence existante remplacée</td></tr>
+          <tr><td><code>## REMOVED Requirements</code></td><td>Exigence supprimée</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <h2>Pourquoi archiver est important</h2>
+    <h2>Deux façons d'archiver</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Bénéfice</th>
-          <th>Explication</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Specs à jour</strong></td>
-          <td>Les specs reflètent toujours l'état actuel du système</td>
-        </tr>
-        <tr>
-          <td><strong>Dossier propre</strong></td>
-          <td><code>changes/</code> ne contient que les proposals actives</td>
-        </tr>
-        <tr>
-          <td><strong>Historique</strong></td>
-          <td>L'archive garde la trace de toutes les décisions passées</td>
-        </tr>
-        <tr>
-          <td><strong>Onboarding</strong></td>
-          <td>Les nouveaux contributeurs voient clairement ce qui est en cours</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="guide-grid">
+      <section class="guide-card">
+        <h3>/opsx:archive (assistant)</h3>
+        <p class="guide-assistant">Dans le chat de l'assistant :</p>
+        <p class="guide-command"><code>/opsx:archive add-dark-mode</code></p>
+        <p class="guide-muted">Dans Playlab42 : demander le skill <code>openspec-archive-change</code> par son nom (aucune commande slash n'est promise).</p>
+        <ul>
+          <li>Vérifie les artefacts et les tâches.</li>
+          <li>Propose de synchroniser les deltas s'ils ne le sont pas encore.</li>
+          <li>Déplace le change vers <code>archive/</code>.</li>
+        </ul>
+        <span class="guide-badge">profil core</span>
+      </section>
+      <section class="guide-card">
+        <h3>openspec archive (CLI)</h3>
+        <p class="guide-terminal">Dans le terminal :</p>
+<pre><code>openspec archive add-dark-mode
+openspec archive add-dark-mode --yes</code></pre>
+        <p class="guide-muted">Dans Playlab42, via Docker :</p>
+<pre><code>make npm CMD="exec -- openspec archive add-dark-mode --yes"</code></pre>
+        <ul>
+          <li>Valide le change (sauf <code>--no-validate</code>).</li>
+          <li>Demande confirmation ; <code>--yes</code> est requis pour un agent, la CI ou stdin fermé.</li>
+          <li>Fusionne les deltas puis déplace le dossier.</li>
+          <li><code>--skip-specs</code> : change sans impact sur les specs (outillage, CI).</li>
+        </ul>
+      </section>
+    </div>
 
-    <h2>Checklist avant archivage</h2>
+    <p>Le résultat visé est le même ; la différence est qui conduit l'opération : l'assistant, de façon interactive, ou la CLI, de façon déterministe et scriptable.</p>
 
-    <ul>
-      <li>✅ Changement déployé en production</li>
-      <li>✅ Tests passent en production</li>
-      <li>✅ Aucune régression signalée</li>
-      <li>✅ Deltas de specs identifiés</li>
-      <li>✅ Branche feature mergée et supprimée</li>
+    <h2>Synchroniser sans archiver : /opsx:sync</h2>
+
+    <p><code>/opsx:sync</code> (skill <code>openspec-sync-specs</code> dans ce dépôt, profil <code>core</code>) fusionne les deltas dans les specs principales mais laisse le change actif. Utile pour un change long ou si d'autres changes parallèles ont besoin des specs à jour. Pour un change rapide, archivez directement : l'archivage propose la synchronisation. Dans Playlab42, la politique d'archivage ci-dessus vaut aussi pour la synchronisation.</p>
+
+    <h2>Plusieurs changes à la fois</h2>
+
+    <p><code>/opsx:bulk-archive</code> archive plusieurs changes terminés et traite les conflits de specs en regardant ce qui est réellement implémenté. Commande du profil <strong>expanded</strong> uniquement.</p>
+
+    <details>
+      <summary>Approfondir : retirer une capacité entière</summary>
+      <p>Si un change supprime la dernière exigence d'une capacité, l'archivage ne supprime son <code>spec.md</code> que si le fichier <code>.openspec.yaml</code> du change déclare <code>retire_capabilities: true</code>. Sans ce marqueur, l'archivage s'arrête avant de modifier quoi que ce soit.</p>
+<pre><code># openspec/changes/retire-legacy/.openspec.yaml
+schema: spec-driven
+retire_capabilities: true</code></pre>
+    </details>
+
+    <h2>Fil rouge : archiver add-dark-mode (une fois livré)</h2>
+
+<pre><code>make npm CMD="exec -- openspec validate add-dark-mode --strict --no-interactive"
+make npm CMD="exec -- openspec archive add-dark-mode --yes"
+make npm CMD="exec -- openspec list --specs"</code></pre>
+
+    <p>Après archivage, la spec principale concernée (par exemple <code>openspec/specs/ui/spec.md</code>) contient les exigences du mode sombre et le dossier du change est sous <code>openspec/changes/archive/</code>.</p>
+
+    <h2>Avant d'archiver</h2>
+
+    <ul class="guide-checklist">
+      <li>Le change est livré (merge, puis déploiement si applicable) et le mainteneur a décidé explicitement d'archiver.</li>
+      <li>Les tâches sont cochées et le code a été relu.</li>
+      <li>Les deltas décrivent le comportement réellement livré.</li>
+      <li>La validation stricte du change passe.</li>
+      <li>Si le workflow <code>verify</code> a été installé (profil expanded) : <code>/opsx:verify</code> a été passé.</li>
     </ul>
 
-    <div class="warning-box">
-      <p><strong>⚠️ Ne pas supprimer l'archive</strong></p>
-      <p>Les proposals archivées servent de documentation historique. Ne jamais les supprimer, même des années plus tard.</p>
+    <h2>Mini exercice</h2>
+
+    <div class="guide-exercise">
+      <div class="guide-card" data-guide-quiz>
+        <p id="quiz-archive-q">Un agent de CI doit archiver <code>add-dark-mode</code> sans interaction. Quelle commande convient ?</p>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="/opsx:archive se tape dans le chat d'un assistant, pas dans un script CI.">/opsx:archive add-dark-mode</button>
+        <button type="button" data-guide-answer="correct" data-guide-explanation="La CLI avec --yes évite la confirmation, que personne ne peut donner en CI.">openspec archive add-dark-mode --yes</button>
+        <button type="button" data-guide-answer="incorrect" data-guide-explanation="Archiver ne déploie pas, et cette commande n'existe pas.">openspec deploy add-dark-mode</button>
+        <p data-guide-quiz-result></p>
+      </div>
     </div>
 
-    <p style="margin-top: var(--space-xl); text-align: center;">
-      <strong>Vous maîtrisez maintenant le cycle complet ! Découvrons les bonnes pratiques 👉</strong>
-    </p>
+    <p class="guide-source">Sources : OpenSpec v1.14.0 — <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md" target="_blank" rel="noopener">docs/cli.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener">docs/commands.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/workflows.md" target="_blank" rel="noopener">docs/workflows.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/concepts.md" target="_blank" rel="noopener">docs/concepts.md</a>.</p>
+
+    <p><strong>Dernière étape : les bonnes pratiques 👉</strong></p>
+    <footer class="guide-footer">
+      <p class="guide-muted" data-slide-footer></p>
+    </footer>
   </article>
+  <script type="module" src="../../openspec-guide.js"></script>
 </body>
 </html>

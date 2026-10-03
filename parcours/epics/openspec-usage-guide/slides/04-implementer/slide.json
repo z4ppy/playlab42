@@ -1,5 +1,7 @@
 {
   "id": "04-implementer",
-  "title": "Implémenter avec /openspec:apply",
-  "type": "content"
+  "title": "Implémenter avec /opsx:apply",
+  "type": "content",
+  "duration": "12 min",
+  "description": "Implémenter avec revue humaine, réviser les artefacts et distinguer validation structurelle, revue de conformité et tests."
 }
