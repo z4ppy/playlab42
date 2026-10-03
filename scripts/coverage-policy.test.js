@@ -14,7 +14,22 @@ const floors = {
   './games/triomino/engine.ts': { statements: 95, branches: 95, functions: 95, lines: 95 },
   './tools/relativity-lab/src/Simulation.js': { statements: 100, branches: 90, functions: 100, lines: 100 },
   './scripts/coverage-report.js': { statements: 80, branches: 80, functions: 90, lines: 80 },
+  './app/keyboard-commands.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './app/game-messages.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './lib/parcours-viewer.js': { statements: 100, branches: 95, functions: 100, lines: 100 },
+  './lib/parcours/{events,keyboard,loading,slide-messages}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './lib/local-data.js': { statements: 100, branches: 85, functions: 100, lines: 100 },
+  './lib/local-data/*.js': { statements: 100, branches: 95, functions: 100, lines: 100 },
+  './games/diese-et-mat/src/engine/*.js': { statements: 95, branches: 90, functions: 100, lines: 98 },
+  './games/go-9x9/engine.js': { statements: 99, branches: 98, functions: 100, lines: 99 },
+  './games/tetris/engine.js': { statements: 100, branches: 98, functions: 100, lines: 100 },
+  './games/tetris/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './games/triomino/engine/{placement,scoring}.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
 };
+const concreteSource = selector => selector
+  .replace('{events,keyboard,loading,slide-messages}', 'loading')
+  .replace('{placement,scoring}', 'placement')
+  .replace('*', 'scoring');
 const inherited = {
   './lib/seeded-random.js': { branches: 100, functions: 100, lines: 100, statements: 100 },
   './scripts/build-site.js': { branches: 80, functions: 100, lines: 80, statements: 80 },
@@ -102,8 +117,9 @@ describe('Ratchet de couverture mesuré par module', () => {
     expect(config.coverageThreshold[source]).toEqual(threshold);
   });
 
-  test.each(Object.keys(floors))('le vrai CLI Jest refuse une régression instrumentée de %s', source => {
-    expect(config.coverageThreshold[source]).toEqual(floors[source]);
+  test.each(Object.keys(floors))('le vrai CLI Jest refuse une régression instrumentée de %s', selector => {
+    const source = concreteSource(selector);
+    expect(config.coverageThreshold[selector]).toEqual(floors[selector]);
     const directory = join(root, 'coverage', `ratchet-${randomUUID()}`);
     const filename = join(directory, source);
     mkdirSync(dirname(filename), { recursive: true });
@@ -127,7 +143,7 @@ describe('Ratchet de couverture mesuré par module', () => {
         transform: { '^.+\\.ts$': join(root, 'jest.transform.cjs') },
         extensionsToTreatAsEsm: config.extensionsToTreatAsEsm,
         collectCoverageFrom: [source.slice(2)],
-        coverageThreshold: { [source]: config.coverageThreshold[source] },
+        coverageThreshold: { [selector]: config.coverageThreshold[selector] },
         coverageReporters: ['json-summary'],
         coverageDirectory: join(directory, 'results'),
       };
@@ -154,7 +170,7 @@ describe('Ratchet de couverture mesuré par module', () => {
       expect(passing.stderr).not.toMatch(/Coverage data for .* was not found|No tests found|Cannot find module/);
       expect(passing.status).toBe(0);
       const readMetrics = () => JSON.parse(readFileSync(join(directory, 'results/coverage-summary.json'), 'utf8'))[filename];
-      for (const measure of Object.keys(floors[source])) {
+      for (const measure of Object.keys(floors[selector])) {
         expect(readMetrics()[measure].pct).toBe(100);
       }
 
@@ -163,12 +179,13 @@ describe('Ratchet de couverture mesuré par module', () => {
       expect(failing.status).toBe(1);
       expect(failing.stderr).toContain('Tests:       1 passed');
       expect(failing.stderr).not.toMatch(/Coverage data for .* was not found|No tests found|Cannot find module/);
-      for (const [measure, threshold] of Object.entries(floors[source])) {
+      for (const [measure, threshold] of Object.entries(floors[selector])) {
         const metrics = readMetrics()[measure];
         expect(metrics.total).toBeGreaterThan(0);
         expect(metrics.pct).toBeLessThan(threshold);
         expect(failing.stderr).toContain(`Coverage for ${measure}`);
-        expect(failing.stderr).toContain(`"${source}" threshold (${threshold}%)`);
+        const diagnosticSource = selector === source ? selector : filename;
+        expect(failing.stderr).toContain(`"${diagnosticSource}" threshold (${threshold}%)`);
       }
     } finally {
       rmSync(directory, { recursive: true, force: true });

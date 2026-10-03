@@ -6,7 +6,20 @@ const cwd = getRootDir(import.meta.url);
 test.each([
   ['scripts/og-fetcher.js', 10],
   ['scripts/lib/build-utils.js', 10],
-  ['games/checkers/engine.js', 11],
+  ['games/checkers/engine.js', 10],
+  ['games/go-9x9/engine.js', 10],
+  ['games/tetris/engine.js', 10],
+  ['games/tetris/engine/commands.js', 10],
+  ['app/game-loader.js', 10],
+  ['app/keyboard-commands.js', 10],
+  ['app/game-messages.js', 10],
+  ['lib/parcours-viewer.js', 10],
+  ['lib/parcours/ParcoursUI.js', 10],
+  ['lib/parcours/loading.js', 10],
+  ['lib/local-data.js', 10],
+  ['lib/local-data/backup.js', 10],
+  ['games/diese-et-mat/src/engine/ExerciseEngine.js', 10],
+  ['games/diese-et-mat/src/engine/ProgressTracker.js', 10],
 ])(
   'le vrai gate complexité cible %s à %i sans ignorer son entrée',
   (filename, limit) => {

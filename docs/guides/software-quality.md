@@ -49,6 +49,13 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | `games/triomino/engine.ts` | 95 % | 95 % | 95 % |
 | `tools/relativity-lab/src/Simulation.js` | 90 % | 100 % | 100 % |
 | `scripts/coverage-report.js` | 80 % | 90 % | 80 % |
+| Clavier/messages du portail ; events/clavier/chargement/messages du lecteur | 100 % | 100 % | 100 % |
+| `lib/parcours-viewer.js` | 95 % | 100 % | 100 % |
+| `lib/local-data.js` ; modules `lib/local-data/*.js` | 85 % ; 95 % | 100 % | 100 % |
+| Moteur Diese & Mat, chaque module | 90 % | 100 % | 98 % lignes / 95 % statements |
+| `games/go-9x9/engine.js` | 98 % | 100 % | 99 % |
+| Tetris : racine ; modules extraits | 98 % ; 100 % | 100 % | 100 % |
+| Triomino : placement et scoring extraits | 100 % | 100 % | 100 % |
 
 Ces composants protègent déterminisme, portail, moteurs, outils et livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -258,7 +265,9 @@ Dans le lot cœur, `typecheck` appelle aussi `typecheck:engine-contracts`.
 Le projet `tsconfig.engine-contracts.json` compile la fixture des six signatures
 réelles avec `allowJs`, sans analyse exhaustive des corps JS (`checkJs: false`).
 Ses exclusions distinctes empêchent le tsconfig principal de masquer cette
-fixture `.test.ts`. Un vrai appel du compilateur accepte un contrat complet
+fixture `.test.ts` et les preuves de types RNG/Triomino, dont les assertions
+`@ts-expect-error` sont désormais vérifiées par le compilateur, pas seulement
+transpilées par Jest. Un vrai appel du compilateur accepte un contrat complet
 et refuse une méthode manquante ; ce n'est pas une garantie de pureté ou de
 sérialisation à l'exécution, qui restent testées séparément.
 
@@ -534,6 +543,46 @@ Le change [refactor-core-with-contracts](../../openspec/changes/refactor-core-wi
 part du socle livré `611a29b`. La demande de corrections autorise le code,
 pas une fusion, une publication ou un archivage.
 
+Les corrections et extractions sont réalisées dans cette branche : seed de
+reset fournie par l'UI Mastermind, contrats canoniques des six moteurs,
+orchestration du portail et du lecteur, persistance/validation JSON,
+collections de progression indépendantes et reset réellement vierge.
+Le RNG Triomino utilise le module partagé sans modifier les séquences.
+Les imports émis résolvent les modules imbriqués depuis `dist`.
+Three 0.186.1 et lil-gui 0.21.0 sont distribués localement et exercés avec
+WebGL2 réel ; les cinq mises à jour conservent le lockfile.
+
+| Surface | Maximum cyclomatique avant → après |
+|---------|------------------------------------|
+| Clavier portail | 27 → 6 |
+| Chargement jeu / outil | 11 / 15 → 1 / 1 ; orchestration commune 7 |
+| Lecteur : chargement / clavier / menu | 24 / 27 / 23 → 6 / 1 / 1 |
+| Validation JSON / valeur / écriture / backup | 19 / 16 / 13 / 23 → 7 / 3 / 5 / 4 |
+| Tetris / Dames applyAction / Go | 20 / 11 / 16 → 10 / 10 / 10 |
+| Triomino | 19 → 9 ; maximum cognitif 15 → 7 |
+
+Le budget ESLint ≤ 10 protège désormais les sources JS refactorées ciblées,
+y compris les modules extraits, sans l'appliquer aux tests ou à tout le dépôt.
+Les preuves CLI acceptent la borne et refusent son dépassement. Les treize
+seuils hérités restent inchangés ; onze nouveaux sélecteurs protègent aussi
+les extractions, avec refus réel des quatre métriques. Les patterns Jest
+appliquent ces seuils à chaque fichier correspondant, pas seulement au wrapper.
+
+Mesure locale après extraction Triomino (`c35611e`) : **122 suites,
+2 601 tests**, couverture S/B/F/L **79,74/76,25/87,35/79,28 %**.
+La collecte inclut désormais les moteurs imbriqués/pédagogiques et exclut
+les fixtures de tests ; le global n'est donc pas directement comparable au
+périmètre de la PR #147. Les 70 scénarios Chromium ont réussi avant cette
+dernière extraction ; la validation finale du lot reste distincte.
+
+Le triage consultatif au même commit mesure **1 237 warnings / 182 fichiers** :
+728 accès calculés, 405 fichiers, 85 propriétés DOM, 9 regex complexes,
+6 constructions RegExp et 4 timing. Dix-huit faux positifs contextuels ont
+été examinés ; **1 219 diagnostics restent non revus**, aucun bug confirmé
+dans ce triage borné. Le gate strict et Biome sont verts : cela ne certifie
+ni l'absence de vulnérabilités ni un audit exhaustif. Aucun warning n'a été
+masqué pour rendre le résultat vert.
+
 Priorité au reset Mastermind déterministe et aux contrats communs des six
 moteurs, **sans migration des états JSON**. Puis caractérisation et extraction
 du clavier/focus, du chargement commun, du lecteur réel et des validations
@@ -546,14 +595,17 @@ de la collecte `games/**/engine.{js,ts}`. La baseline diagnostique locale à
 et S/B/F/L **93,73/84,76/95,58/94,58 %** pour son dossier `src/engine`.
 Ce périmètre distinct n'est pas directement comparable au total des six
 moteurs du rapport historique. La collecte devra aussi suivre les modules
-extraits : déplacer le code hors instrumentation n'est pas un gain de qualité.
+extraits : cette extension est réalisée dans le lot cœur, déplacer le code
+hors instrumentation n'est pas un gain de qualité.
 
 Les mises à jour de dépendances sont vérifiées avec les vrais runtimes
 navigateur, pas seulement les mocks. Les heuristiques consultatives sont
 triées sans transformer des warnings en vulnérabilités confirmées.
 Complexité, couverture et CI verte sont des preuves ciblées, **pas une certification**
-du cœur entier. Les mesures après correction et la CI du head final restent
-à consigner une fois effectivement réalisées.
+du cœur entier. Après les garde-fous finaux, **122 suites / 2 636 tests** et
+lint/types/audit npm/OpenSpec sont verts dans Docker ; les treize seuils
+hérités et les onze nouveaux sélecteurs sont appliqués. La CI native du head
+final reste à consigner une fois effectivement réalisée.
 
 ## Maintenance des références et exceptions
 

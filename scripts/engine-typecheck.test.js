@@ -15,6 +15,12 @@ test('le contrôle de types CI compile les signatures des six moteurs réels', (
   expect(result.status).toBe(0);
   const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
   expect(manifest.scripts.typecheck).toContain('npm run typecheck:engine-contracts');
+  const project = JSON.parse(readFileSync(join(root, 'tsconfig.engine-contracts.json'), 'utf8'));
+  expect(project.files).toEqual(expect.arrayContaining([
+    'lib/types/game-engine.contract.test.ts',
+    'lib/seeded-random.types.test.ts',
+    'games/triomino/engine/api.types.test.ts',
+  ]));
 });
 
 test('le vrai compilateur refuse un moteur dont une méthode du contrat manque', () => {
