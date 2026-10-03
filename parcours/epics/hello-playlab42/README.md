@@ -35,7 +35,7 @@ Le change actif `harden-software-factory-delivery` décrit la CI réutilisable,
 l'archive publique testée puis publiée et le smoke HTTP.
 `enforce-software-quality-baseline` ajoute l'audit npm requis, les seuils ciblés
 et le skill de revue. Une protection classique de `main` a ensuite été activée
-sur autorisation : PR et sept checks requis, sans bypass admin. La revue
+sur autorisation : PR et neuf checks requis après observation de la PR #135, sans bypass admin. La revue
 indépendante attend un second reviewer. L'extension des seuils, prévisualisations,
 provenance signée et surveillance périodique restent proposées.
 

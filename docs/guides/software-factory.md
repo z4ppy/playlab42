@@ -112,7 +112,7 @@ Cette identité n'est pas une provenance signée ni une attestation SLSA.
   seuil global ni de contrôle bloquant universel du code modifié. L'envoi Codecov
   est non bloquant. Voir le [guide qualité et son plan](software-quality.md).
 - Sur autorisation ultérieure, une protection classique de `main` a été activée
-  et relue via l'API : PR et sept checks natifs requis, y compris pour l'admin.
+  et relue via l'API : PR et neuf checks natifs requis, y compris pour l'admin.
   Il n'y a pas encore d'approbation indépendante obligatoire, faute de second
   reviewer habilité. Voir le [réglage précis](../DEPLOYMENT.md#protection-de-main--activée-sur-github).
 
@@ -126,7 +126,7 @@ déjà livrées. Les priorités sont adaptées à un support de formation.
 
 | Priorité | État / point restant | Évolution utile et critère observable |
 |----------|----------------------|----------------------------------------|
-| Haute | `main` protégée : PR et sept checks requis ; revue indépendante non obligatoire | Ajouter un second reviewer, exiger une approbation et adapter les noms des checks après livraison de la nouvelle CI |
+| Haute | `main` protégée : PR et neuf checks requis ; noms constatés sur la PR #135 | Ajouter un second reviewer, exiger une approbation et vérifier les noms après évolution du pipeline |
 | Haute | npm requis, audits complémentaires encore partiellement consultatifs | Moderniser les analyses, définir les gates et exceptions datées ; ne jamais annoncer une analyse non exécutée comme réussie |
 | Moyenne | Seuils ciblés sur trois composants, pas sur tout le code | Étendre progressivement aux moteurs et modules partagés, puis contrôler le code modifié avec des tests de comportement |
 | Moyenne | Tags d'actions, image Node et outils d'audit évolutifs | Épingler les références critiques (SHA/digest/version vérifiée), conserver Dependabot et une procédure de mise à jour |

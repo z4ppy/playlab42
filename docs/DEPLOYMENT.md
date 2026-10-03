@@ -55,9 +55,9 @@ plus que `main` est dépourvue de protection.
 - Règles appliquées aussi aux administrateurs, sans contournement.
 - Historique linéaire : squash ou rebase, tous deux disponibles dans le dépôt.
 - Force-push et suppression de `main` interdits.
-- Sept checks requis, rattachés à GitHub Actions (app ID `15368`) :
-  `Lint`, `Tests`, `TypeScript`, `Build`, `Chromium interactions`,
-  `Audit dépendances npm` et `Détection de secrets`.
+- Neuf checks requis, rattachés à GitHub Actions (app ID `15368`) :
+  `Lint`, `Tests`, `TypeScript`, `Build`, `Browser / Chromium interactions`,
+  `OpenSpec`, `Dependency audit`, `Audit dépendances npm` et `Détection de secrets`.
 
 Ces noms ont été observés sur une PR native réussie, pas déduits des noms de
 workflows. Les contrôles consultatifs et le job Docker ignoré sur PR ne sont
@@ -68,11 +68,11 @@ qu'un mainteneur capable de revoir les PR. Les PR et checks restent obligatoires
 pour lui ; cela ne constitue pas une revue indépendante. Passer à au moins une
 approbation dès qu'un second reviewer habilité est disponible.
 
-Lors de la livraison de la nouvelle CI réutilisée, observer ses `check-runs` :
-adapter le contexte navigateur si son nom change et ajouter `OpenSpec` /
-`Dependency audit` seulement après constat des noms réellement publiés.
-Ne pas exiger un check inexistant ni désactiver les autres protections pendant
-cette transition. Les workflows seuls ne remplacent pas ce réglage externe.
+Les `check-runs` de la PR #135 ont permis d'ajuster le contexte navigateur
+réutilisé et d'ajouter OpenSpec/Dependency audit, sans désactiver les autres
+protections. Une ancienne PR doit intégrer ce pipeline avant sa fusion ;
+ne pas contourner un check requis absent. Refaire cette observation après tout
+changement de nom ou structure. Les workflows seuls ne remplacent pas ce réglage.
 
 ## Build et contenu publié
 

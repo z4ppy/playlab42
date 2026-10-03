@@ -124,7 +124,7 @@ de vulnérabilités.
 | 4 — fabrication et exploitation | Snapshot OG séparé, inventaire/SBOM, provenance, monitoring et récupération | Artefact reproductible, provenance vérifiée et restauration exercée |
 
 La **protection classique de `main` est désormais active sur GitHub** :
-PR, sept checks natifs, discussions résolues et historique linéaire, sans bypass
+PR, neuf checks natifs après observation de la PR #135, discussions résolues et historique linéaire, sans bypass
 admin ni force-push/suppression. Elle a été activée sur autorisation et relue
 via l'API, pas simplement déclarée dans un fichier.
 La revue indépendante reste à organiser : zéro approbation externe obligatoire

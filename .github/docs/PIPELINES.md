@@ -99,7 +99,7 @@ une liste de vulnérabilités confirmées.
   (80 % lignes/statements/branches, 100 % fonctions). Aucun seuil global.
   Voir la [politique qualité](../../docs/guides/software-quality.md).
 - Une protection classique de `main` a été activée sur autorisation et relue
-  via l'API le 3 octobre 2026 : PR, sept checks natifs, branche à jour,
+  via l'API le 3 octobre 2026 : PR, neuf checks natifs après observation de la PR #135, branche à jour,
   discussions résolues et historique linéaire, y compris pour l'admin.
   Aucun force-push ni suppression. Zéro approbation externe obligatoire tant
   qu'un seul reviewer habilité est disponible. Voir le
