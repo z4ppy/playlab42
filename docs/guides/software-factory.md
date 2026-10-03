@@ -48,8 +48,10 @@ fusionné ; chaque PR suivante doit vérifier les checks de sa propre tête.
 La [suite qualité proposée](software-quality.md#suite-proposée--qualité-du-code-par-étapes)
 part de cette branche de revue. Après sa fusion squash, sa branche de plan
 a été réalignée sur main après vérification d'égalité des sources, pour ne pas
-réintroduire les correctifs dans une nouvelle pile. Le plan n'implémente pas
-ses étapes et ne les présente pas comme livrées.
+réintroduire les correctifs dans une nouvelle pile. La PR #146 décrit la
+proposition ; la demande suivante autorise sa mise en œuvre dans
+`quality/tests-first`, avec tests de comportement avant refactoring.
+Ces nouveaux travaux ne sont pas encore intégrés à main ni publiés.
 
 ## Carte de l'usine
 

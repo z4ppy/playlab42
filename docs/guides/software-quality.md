@@ -249,7 +249,9 @@ compilateur ni utiliser `--force` / `--legacy-peer-deps` pour contourner ce cont
 
 ## Suite proposée : qualité du code par étapes
 
-**Statut : proposition, aucune étape ci-dessous n'est implémentée.** La branche
+**Statut initial : proposition dans la PR #146.** La mise en œuvre est ensuite
+autorisée avec tests avant refactoring ; voir l'[application tests-first](#application-tests-first).
+La branche
 `plan/code-quality-stages` a été créée depuis `fix/review-software-factory`,
 puis réalignée sur main `8a643e8` après la fusion squash de la PR #145.
 L'égalité des sources de cette fusion avec le head revu a été vérifiée avant
@@ -284,7 +286,7 @@ son orchestration temporelle n'est pas couverte par Jest, ce qui ne signifie
 pas « aucun test ». Tetris et les helpers déjà bien protégés ne sont pas les
 premiers candidats à une réécriture.
 
-L'upload Codecov a réussi, mais reste non bloquant. Ses flags mentionnent
+Au head de référence, l'upload Codecov a réussi, mais reste non bloquant. Ses flags mentionnent
 `lib/`, `src/`, `games/`, alors que ce dépôt n'a pas de répertoire racine
 `src/` et que Jest instrumente aussi `app/`, `tools/` et `scripts/`.
 Il faut vérifier cette segmentation avant d'utiliser ses statuts comme gate ;
@@ -362,7 +364,38 @@ la livraison et l'archivage restent des décisions distinctes.
 **Prochaine étape proposée : Q0 pour la lisibilité des preuves, puis Q1a
 sur les messages et Q1b sur le cycle de vie**, avec des PR séparées.
 Les captures Dames peuvent être travaillées indépendamment si une deuxième
-contribution est disponible. Aucun de ces travaux n'est lancé par ce plan.
+contribution est disponible. Cette proposition seule ne lançait aucun travail ;
+la demande utilisateur suivante autorise l'application ci-dessous.
+
+## Application tests-first
+
+**En cours dans `quality/tests-first`, non intégrés à main et non publiés.**
+La demande « c'est parti » autorise les travaux, pas leur fusion ou leur
+archivage. La proposition reste traçable dans la PR #146 ; l'implémentation
+fait l'objet d'une PR distincte vers main.
+
+L'ordre est **tests de comportement avant les refactorings** :
+caractériser les refus, erreurs, courses et invariants, exécuter sur le code
+initial, conserver les reproductions, puis corriger les causes confirmées.
+Un module déjà conforme reçoit des tests, pas une réécriture de convenance.
+Les moteurs et la Simulation restent réels ; seuls leurs frontières sont doublées.
+
+Les scopes Q0 à Q3 avancent indépendamment : preuves CI, messages iframe,
+cycle de chargement, reset, captures Dames, scoring/reprise Triomino et
+orchestration de Relativity. Leur intégration précède la mesure complète et
+les nouveaux seuils ciblés Q5, **sans seuil global artificiel** ni baisse
+des seuils déjà actifs. Q4 reste une amélioration ciblée après caractérisation :
+pas de migration générale de RNG ou de framework.
+
+Une mesure partielle de module sert au diagnostic ; elle ne remplace pas
+le runner complet avec les seuils versionnés. Une couverture élevée n'est
+pas une preuve d'assertions pertinentes. Distinguer données Jest, tests CLI,
+archive navigateur et CI native du head effectivement proposé.
+
+Le change [strengthen-tests-first-quality](../../openspec/changes/strengthen-tests-first-quality/proposal.md)
+consigne les contrats, dépendances et limites. Les tâches ne sont cochées
+qu'après les vérifications correspondantes ; la livraison et l'archivage
+restent distincts de l'implémentation.
 
 ## Maintenance des références et exceptions
 

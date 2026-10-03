@@ -115,6 +115,15 @@
       Les neuf checks GitHub actuellement requis ne sont pas modifiés.
     </p>
 
+    <h2>Tests avant refactoring</h2>
+    <p>Commencez par un comportement observable : refus sans mutation, erreur visible,
+      chargements concurrents ou reprise d'un moteur après sauvegarde JSON.
+      Exécutez le test sur le code initial, puis corrigez le défaut reproduit.
+      Une fonction déjà conforme n'a pas besoin d'être réécrite.</p>
+    <p class="guide-note">La couverture guide les priorités ; une couverture élevée ne prouve pas la qualité des assertions.
+      Les seuils s'ajoutent par module après mesure, sans abaisser les protections existantes.
+      Les tests Jest et les interactions d'une vraie archive dans Chromium apportent des preuves différentes.</p>
+
     <h2>Lancer les mêmes contrôles en local (Docker)</h2>
     <pre class="code-block"><code>make info          # instance, port, URL du worktree
 make lint
