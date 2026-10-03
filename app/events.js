@@ -105,18 +105,23 @@ export function setupEventListeners() {
 
   // === Messages du jeu ===
   on(window, 'message', (e) => {
-    if (!e.data || !e.data.type) { return; }
+    if (!e.data || typeof e.data !== 'object' || Array.isArray(e.data) ||
+        typeof e.data.type !== 'string') { return; }
+    if (!state.currentGame || !e.source ||
+        e.source !== el.gameIframe?.contentWindow ||
+        e.origin !== window.location.origin) { return; }
+    // Le WindowProxy peut survivre à une navigation ; le slug distingue alors les jeux.
+    // Les anciens messages sans slug restent acceptés depuis l'iframe courante.
+    if (e.data.game !== undefined && e.data.game !== state.currentGame.id) { return; }
 
     switch (e.data.type) {
       case 'ready':
         console.log(`[Portal] Jeu prêt: ${e.data.game}`);
-        if (e.source === el.gameIframe.contentWindow && e.origin === window.location.origin) {
-          e.source.postMessage({
-            type: 'preference',
-            key: 'sound',
-            value: state.preferences.sound,
-          }, window.location.origin);
-        }
+        e.source.postMessage({
+          type: 'preference',
+          key: 'sound',
+          value: state.preferences.sound,
+        }, window.location.origin);
         break;
       case 'score':
         console.log(`[Portal] Score: ${e.data.score}`);
