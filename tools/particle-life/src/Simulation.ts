@@ -14,6 +14,7 @@ import type {
   SimulationStats,
   AttractionMatrix,
 } from './types.js';
+import { totalForce, wrapCoordinate } from './forces.js';
 import { DEFAULT_CONFIG } from './types.js';
 
 /**
@@ -89,85 +90,23 @@ export class Simulation {
   public update(): void {
     const { particles, attractions, config } = this.state;
 
-    // Calculer les forces pour chaque particule
     for (let i = 0; i < particles.length; i++) {
-      const p1 = particles[i];
-      let fx = 0;
-      let fy = 0;
+      const { fx, fy } = totalForce(particles, i, attractions, config);
+      const p = particles[i];
 
-      for (let j = 0; j < particles.length; j++) {
-        if (i === j) continue;
+      p.vx += fx;
+      p.vy += fy;
 
-        const p2 = particles[j];
-
-        // Distance avec wrapping (monde torique)
-        let dx = p2.x - p1.x;
-        let dy = p2.y - p1.y;
-
-        // Wrapping horizontal
-        if (dx > config.width / 2) dx -= config.width;
-        if (dx < -config.width / 2) dx += config.width;
-
-        // Wrapping vertical
-        if (dy > config.height / 2) dy -= config.height;
-        if (dy < -config.height / 2) dy += config.height;
-
-        const distSq = dx * dx + dy * dy;
-        const dist = Math.sqrt(distSq);
-
-        // Ignorer si trop loin
-        if (dist > config.interactionRadius || dist < 1) continue;
-
-        // Force d'interaction basée sur la matrice
-        const attraction = attractions[p1.group][p2.group];
-
-        // Force qui varie avec la distance (plus forte à mi-distance)
-        const normalizedDist = dist / config.interactionRadius;
-        const forceMagnitude = this.forceFunction(normalizedDist) * attraction * config.forceStrength;
-
-        // Appliquer la force
-        fx += (dx / dist) * forceMagnitude;
-        fy += (dy / dist) * forceMagnitude;
-      }
-
-      // Mettre à jour la vitesse
-      p1.vx += fx;
-      p1.vy += fy;
-
-      // Appliquer la friction
-      p1.vx *= 1 - config.friction;
-      p1.vy *= 1 - config.friction;
+      p.vx *= 1 - config.friction;
+      p.vy *= 1 - config.friction;
     }
 
-    // Mettre à jour les positions
     for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
-
-      // Wrapping (monde torique)
-      if (p.x < 0) p.x += config.width;
-      if (p.x >= config.width) p.x -= config.width;
-      if (p.y < 0) p.y += config.height;
-      if (p.y >= config.height) p.y -= config.height;
+      p.x = wrapCoordinate(p.x + p.vx, config.width);
+      p.y = wrapCoordinate(p.y + p.vy, config.height);
     }
 
     this.state.tick++;
-  }
-
-  /**
-   * Fonction de force en fonction de la distance normalisée
-   * Retourne une force qui :
-   * - Est répulsive à très courte distance (éviter les collisions)
-   * - Atteint son maximum à mi-distance
-   * - Décroît vers zéro à longue distance
-   */
-  private forceFunction(normalizedDist: number): number {
-    // Répulsion à courte distance (< 0.3)
-    if (normalizedDist < 0.3) {
-      return normalizedDist / 0.3 - 1;
-    }
-    // Attraction/répulsion normale au-delà
-    return (1 - Math.abs(2 * normalizedDist - 1.3)) * 0.5;
   }
 
   /**
