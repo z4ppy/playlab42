@@ -308,7 +308,8 @@ export class Simulation {
     this.#pruneInactive();
 
     // Notifier les callbacks
-    for (const callback of this.#updateCallbacks) {
+    // Un désabonnement pendant la notification ne doit pas sauter le suivant.
+    for (const callback of [...this.#updateCallbacks]) {
       callback(this);
     }
   }
@@ -380,7 +381,7 @@ export class Simulation {
             },
           };
 
-          for (const callback of this.#receptionCallbacks) {
+          for (const callback of [...this.#receptionCallbacks]) {
             callback(reception);
           }
         }
@@ -465,6 +466,10 @@ export class Simulation {
    * Libère toutes les ressources
    */
   dispose() {
+    this.state = SimulationState.PAUSED;
+    this.referenceObserver = null;
+    this.visibleSources.clear();
+
     // Supprimer les observateurs
     for (const observer of this.observers) {
       this.scene.remove(observer.mesh);
