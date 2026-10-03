@@ -78,12 +78,14 @@ avant installation, build ou création d'archive. Un simple `needs` ne suffirait
 pas : un check ignoré est accepté par la protection GitHub.
 Le check Build requis couvre ainsi effectivement les deux gates sans mutation
 distante, lorsque ces workflows sont intégrés ; les tests Docker de cette
-correction ne constituent **pas une nouvelle CI native exécutée**.
+correction ne constituent **pas à eux seuls une CI native exécutée**.
+La [preuve native datée de la PR](guides/software-factory.md#livraison-constatée-et-correctifs-locaux)
+est distincte de son intégration et de sa publication.
 
 Les autres contrôles restent parallèles ; seul Build attend Security lint et
 Trivy, puis le navigateur attend Build. Le téléchargement vérifié et la base
-CVE ajoutent du temps et une dépendance réseau au chemin critique : mesurer
-ce pipeline natif après livraison, sans affaiblir le scan.
+CVE ajoutent du temps et une dépendance réseau au chemin critique : suivre
+les durées natives observées sur PR et après livraison, sans affaiblir le scan.
 
 Le rapport complémentaire conserve artefact et résumé pour les PR de forks
 avec token public en lecture seule. Il commente uniquement les PR de branches
