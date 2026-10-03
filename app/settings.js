@@ -93,6 +93,7 @@ export function setThemePreference(theme) {
 
 /**
  * Efface les données gérées, sans modifier les outils exclus.
+ * Une relecture échouée conserve l'état affiché et demande un rechargement.
  */
 export function clearAllData() {
   if (state.currentGame) {
@@ -110,10 +111,18 @@ export function clearAllData() {
     return;
   }
 
-  state.preferences = { sound: true, pseudo: 'Anonyme' };
-  state.recentGames = [];
-  state.activeTab = 'parcours';
+  const previousState = {
+    preferences: state.preferences,
+    recentGames: state.recentGames,
+    activeTab: state.activeTab,
+  };
+  setState({
+    preferences: { sound: true, pseudo: 'Anonyme' },
+    recentGames: [],
+    activeTab: 'parcours',
+  });
   if (!loadPreferences()) {
+    setState(previousState);
     alert('Données effacées, mais leur relecture a échoué. Rechargez le portail et vérifiez vos données.');
     return;
   }
