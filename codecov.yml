@@ -59,9 +59,11 @@ ignore:
 flags:
   unittests:
     paths:
+      - app/
       - lib/
-      - src/
       - games/
+      - tools/
+      - scripts/
     carryforward: true
 
 # Notifications GitHub

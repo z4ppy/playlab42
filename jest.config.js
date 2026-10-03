@@ -68,6 +68,9 @@ export default {
   // Affichage verbose
   verbose: true,
 
+  // JSON vérifiables et LCOV archivés par SHA/run dans le job Tests.
+  coverageReporters: ['text', 'json-summary', 'json', 'lcov'],
+
   // Collecter la couverture depuis ces dossiers
   collectCoverageFrom: [
     'app/**/*.{js,ts}',

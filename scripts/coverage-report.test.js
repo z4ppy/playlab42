@@ -3,6 +3,8 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { parse } from 'yaml';
+import jestConfig from '../jest.config.js';
 import { buildReport } from './coverage-report.js';
 
 const root = process.cwd();
@@ -44,9 +46,36 @@ function fixture() {
 }
 
 describe('rapport de preuves Jest', () => {
+  test('la CI collecte après échec sans neutraliser Tests et conserve Codecov consultatif', () => {
+    const workflow = parse(readFileSync('.github/workflows/ci.yml', 'utf8'));
+    const steps = workflow.jobs.test.steps;
+    const tests = steps.find(step => step.id === 'jest');
+    expect(tests.run).toBe('npm run test:coverage');
+    expect(tests['continue-on-error']).toBeUndefined();
+    const report = steps.find(step => step.run?.includes('node scripts/coverage-report.js'));
+    expect(report.if).toBe('always()');
+    expect(report.env.TEST_OUTCOME).toBe('${{ steps.jest.outcome }}');
+    expect(report['continue-on-error']).toBeUndefined();
+    const artifact = steps.find(step => step.with?.name?.startsWith('jest-coverage-'));
+    expect(artifact.if).toBe('always()');
+    expect(artifact.with.name).toContain('${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}');
+    for (const file of ['coverage-summary.json', 'coverage-final.json', 'lcov.info', 'provenance.json', 'coverage-report.md']) {
+      expect(artifact.with.path).toContain(`coverage/${file}`);
+    }
+    expect(artifact.with['if-no-files-found']).toBe('error');
+    const codecov = steps.find(step => step.uses?.startsWith('codecov/'));
+    expect(codecov.if).toBe('always()');
+    expect(codecov['continue-on-error']).toBe(true);
+    expect(codecov.with.fail_ci_if_error).toBe(false);
+    expect(parse(readFileSync('codecov.yml', 'utf8')).flags.unittests.paths).toEqual(['app/', 'lib/', 'games/', 'tools/', 'scripts/']);
+    expect(jestConfig.coverageReporters).toEqual(expect.arrayContaining(['json', 'json-summary', 'lcov']));
+    expect(jestConfig.coverageThreshold.global).toBeUndefined();
+  });
+
   test('agrège les compteurs, pas les pourcentages, et détaille quatre mesures et priorités', () => {
     const report = buildReport(fixture());
     expect(report).toContain('| app | 18.18% (2/11) | 66.67% (4/6) | 66.67% (2/3) | 18.18% (2/11) |');
+    expect(report).toContain('|---|---|---|---|---|\n| Total instrumenté');
     for (const label of ['lib', 'games', 'tools', 'scripts', ...sources.filter(source => source !== 'lib/example.js' && source !== 'scripts/example.js')]) {
       expect(report).toContain(label);
     }
@@ -67,6 +96,19 @@ describe('rapport de preuves Jest', () => {
     expect(buildReport(input)).toContain('N/A (0/0)');
   });
 
+  test('les lignes partagées prennent le hit maximal sans compter deux lignes', () => {
+    const input = fixture();
+    const file = path.join(root, 'lib/example.js');
+    const final = input.finalCoverage[file];
+    final.s[0] = 0;
+    final.s[1] = 1;
+    final.statementMap[1] = final.statementMap[0];
+    input.summary[file].statements = { total: 2, covered: 1, skipped: 0, pct: 50 };
+    input.summary.total.statements.total++;
+    input.summary.total.statements.pct = input.summary.total.statements.covered / input.summary.total.statements.total * 100;
+    expect(buildReport(input)).toContain('| lib | 50.00% (1/2) | 100.00% (2/2) | 100.00% (1/1) | 100.00% (1/1) |');
+  });
+
   test.each([
     ['résumé absent', input => { input.summary = null; }],
     ['final absent', input => { input.finalCoverage = {}; }],
@@ -78,10 +120,13 @@ describe('rapport de preuves Jest', () => {
     ['compteur excessif', input => { input.summary.total.lines.covered = 1000; }],
     ['pourcentage invalide', input => { input.summary.total.lines.pct = 'unknown'; }],
     ['total incohérent', input => { input.summary.total.lines.total++; }],
+    ['skipped incohérent', input => { input.summary.total.lines.skipped++; }],
     ['final incohérent', input => { input.finalCoverage[path.join(root, sources[0])].s[0] = 1; }],
     ['final invalide', input => { input.finalCoverage[path.join(root, sources[0])].b[0] = [-1]; }],
     ['provenance absente', input => { input.provenance.sha = ''; }],
     ['run invalide', input => { input.provenance.runId = '123\nspoof'; }],
+    ['run avec saut final', input => { input.provenance.runId = '123\n'; }],
+    ['SHA avec saut final', input => { input.provenance.sha += '\n'; }],
     ['statut invalide', input => { input.provenance.tests = 'unknown'; }],
     ['source hors racine', input => { input.summary['/outside/source.js'] = input.summary[path.join(root, sources[0])]; }],
   ])('refuse %s explicitement', (_name, mutate) => {
@@ -120,6 +165,10 @@ describe('rapport de preuves Jest', () => {
       expect(result.status).toBe(0);
       expect(JSON.parse(readFileSync(path.join(directory, 'provenance.json'), 'utf8'))).toEqual({ ...provenance, tests });
       expect(readFileSync(env.GITHUB_STEP_SUMMARY, 'utf8')).toContain(tests);
+      writeFileSync(path.join(directory, 'lcov.info'), '');
+      const invalid = spawnSync(process.execPath, ['scripts/coverage-report.js', directory], { env, encoding: 'utf8' });
+      expect(invalid.status).toBe(1);
+      expect(invalid.stderr).toContain('lcov.info');
       rmSync(path.join(directory, 'lcov.info'));
       const missing = spawnSync(process.execPath, ['scripts/coverage-report.js', directory], { env, encoding: 'utf8' });
       expect(missing.status).toBe(1);
