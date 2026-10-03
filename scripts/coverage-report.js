@@ -85,10 +85,16 @@ function aggregate(entries) {
   }, { total: 0, covered: 0, skipped: 0 })]));
 }
 
+function percent(covered, total) {
+  // Même ordre d'opérations et troncature à deux décimales qu'Istanbul.
+  const scaled = (100000 * covered) / total;
+  return Math.floor(scaled / 10) / 100;
+}
+
 function row(label, data) {
   const values = measures.map(measure => {
     const { total, covered } = data[measure];
-    return total ? `${(covered / total * 100).toFixed(2)}% (${covered}/${total})` : 'N/A (0/0)';
+    return total ? `${percent(covered, total).toFixed(2)}% (${covered}/${total})` : 'N/A (0/0)';
   });
   return `| ${escapeMarkdown(label)} | ${values.join(' | ')} |`;
 }
@@ -137,7 +143,7 @@ export function buildReport({ summary, finalCoverage, provenance, root }) {
     `État du pas Tests : **${provenance.tests}**. La présence de couverture ne prouve pas leur succès.`,
     '', header, ...rows,
     '',
-    'Limites : couverture Jest des sources collectCoverageFrom seulement. Les subprocessus ne sont pas instrumentés automatiquement ; HTML inline et interactions navigateur/E2E ne sont pas mesurés ici. N/A signifie aucun compteur, pas 100% ni absence de tests. Aucun seuil nouveau ni certification globale.',
+    'Limites : couverture Jest des sources collectCoverageFrom seulement. Les subprocessus ne sont pas instrumentés automatiquement ; HTML inline et interactions navigateur/E2E ne sont pas mesurés ici. N/A signifie aucun compteur, pas 100% ni absence de tests. Ce rapport n’applique pas de seuil ; Jest applique les seuils versionnés. Aucune certification globale.',
     '',
     '<details><summary>Fichiers instrumentés (compteurs vérifiés)</summary>\n',
     header, ...entries.sort((a, b) => a.file.localeCompare(b.file)).map(entry => row(entry.file, entry.data)),
