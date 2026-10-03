@@ -80,6 +80,7 @@ export default {
     'tools/**/src/**/*.{js,ts}',
     'scripts/**/*.js',
     '!**/*.test.{js,ts}',
+    '!**/__tests__/**',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/dist/**',
