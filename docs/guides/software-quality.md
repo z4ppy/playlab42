@@ -150,10 +150,11 @@ de vulnérabilités.
 
 | Lot | Résultat visé | Critère de sortie |
 |-----|---------------|-------------------|
-| 1 — socle, PR #135 | Lint strict, audit npm requis, seuils ciblés, rapports fidèles, guide/revue | Les chemins d'échec sont éprouvés ; vérifier les checks natifs de la PR |
+| 1 — socle, PR #135 intégrée | Lint strict, audit npm requis, seuils ciblés, rapports fidèles, guide/revue | Checks natifs constatés et code intégré à main ; archivage sur décision distincte |
 | 2 — sécurité et reproductibilité, branche empilée | Moderniser ESLint Security, épingler actions/scanners/images, définir gates et exceptions | Outil réellement exécuté, références vérifiables, limites du parser TS explicites |
-| 3 — assurance logicielle | Étendre les seuils aux moteurs, contrôle du code modifié, tests d'invariants, budget performance | Une régression représentative est détectée sans masquer le comportement |
-| 4 — fabrication et exploitation | Snapshot OG séparé, inventaire/SBOM, provenance, monitoring et récupération | Artefact reproductible, provenance vérifiée et restauration exercée |
+| 3 — couverture du lint, priorité suivante | Résoudre la compatibilité TS, couvrir le JS embarqué pertinent, corriger l'existant, aligner local et CI | Règles retenues réellement exécutées et bloquantes ; entrées interdites refusées sans forçage ni désactivation générale |
+| 4 — qualité du code | Complexité, duplication, responsabilités, erreurs, tests d'invariants et seuils ciblés | Refactorings justifiés par des défauts observables ; régressions représentatives détectées |
+| 5 — fabrication et exploitation | Snapshot OG séparé, inventaire/SBOM, provenance, monitoring et récupération | Artefact reproductible, provenance vérifiée et restauration exercée |
 
 La **protection classique de `main` est désormais active sur GitHub** :
 PR, neuf checks natifs après observation de la PR #135, discussions résolues et historique linéaire, sans bypass
@@ -209,7 +210,7 @@ dérogations silencieuses ni un résultat « zéro problème ».
 
 | Contrôle | Décision du 3 octobre 2026 | Suivi |
 |----------|---------------------------|-------|
-| Lint TypeScript | Parser 8.71.0 incompatible TS 7 ; pas d'installation forcée ni de downgrade | Mainteneur : réexaminer au plus tard le 3 novembre 2026 ou dès une release supportant TS 7 ; maintenir tsc strict et les tests |
+| Lint TypeScript | Parser 8.71.0 incompatible TS 7 ; pas d'installation forcée ni de downgrade | Priorité du lot 3 : étudier une chaîne compatible, pas seulement attendre une release ; maintenir tsc strict et les tests |
 
 Ce report est une limite technique déclarée, pas une exception à un gate installé.
 
