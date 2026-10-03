@@ -40,6 +40,11 @@ Une nouvelle URL sans métadonnées conserve ses champs manuels avec un warning.
 Ne pas modifier les catalogues générés pour corriger une métadonnée :
 modifier les sources/snapshot puis reconstruire. Voir
 [fabrication et reprise](guides/artifact-operations.md).
+Le build normal ne consulte pas les images du cache en repli. Le refresh
+conserve une URL OG distante pour un nouveau téléchargement ignoré par Git,
+ou l'image locale éditoriale déjà revue ; un échec conserve les métadonnées
+précédentes. Le packaging refuse les images locales référencées absentes et
+exclut les images non référencées du cache.
 
 ### Structure des scripts
 
@@ -86,11 +91,12 @@ En cas d'erreur, le build échoue avec un message explicite.
 ## CI/CD
 
 Le workflow GitHub Actions (`deploy.yml`) :
-1. Installe les dépendances (`npm ci`)
-2. Lance le build complet (`npm run build`)
-3. Déploie sur GitHub Pages
+1. Réutilise la CI : installation, gates, build complet depuis le snapshot revu.
+2. Compare deux fabrications avec la même epoch et vérifie l'archive.
+3. Teste cette même archive dans Chromium, puis la publie sur GitHub Pages.
 
-Les fichiers `data/*.json` sont générés à chaque déploiement, garantissant leur cohérence avec les sources.
+Les fichiers `data/*.json` sont générés par la CI ; la publication ne les
+reconstruit pas et réutilise l'artefact testé.
 
 ## Module partagé
 

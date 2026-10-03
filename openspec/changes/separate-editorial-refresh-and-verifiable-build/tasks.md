@@ -18,3 +18,12 @@ Commit propre 72e8cd7 : deux builds dans Docker sans réseau, manifestes égaux,
 1 069 fichiers vérifiés et reprise tar réussie. SBOM npm : 511 composants de
 fabrication sur la plateforme locale. 64 Chromium sur ce site inchangé ;
 hash du manifeste et inventaire complet revérifiés après navigateur.
+
+Limite découverte après cette première preuve : le build local incluait 96
+images du cache ignorées par Git ; l'archive native n'avait que 973 fichiers.
+Les hashes et Chromium seuls n'ont pas détecté les références d'images absentes.
+Cette preuve initiale ne suffit donc pas à clôturer le lot.
+Correction : snapshot avec trois images locales revues et 98 références HTTP(S),
+pas de repli implicite sur le cache au build, copie des seules images locales
+référencées et contrôle de ces références dans l'archive vérifiée.
+Les contrôles du correctif et du dernier head restent à constater avant tâche 6.

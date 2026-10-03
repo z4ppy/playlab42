@@ -1,4 +1,5 @@
 import { readJSONSync } from './build-utils.js';
+import { decodeHTMLEntities } from '../og-fetcher.js';
 
 const TEXT_FIELDS = new Set([
   'ogTitle', 'ogDescription', 'ogImage', 'ogImageOriginal',
@@ -27,7 +28,47 @@ export function validateOGSnapshot(snapshot) {
   return snapshot.entries;
 }
 
-/** @param {string} path Fichier éditorial. @returns {object} Métadonnées validées. */
-export function loadOGSnapshot(path) {
-  return validateOGSnapshot(readJSONSync(path));
+/**
+ * @param {string} path Fichier éditorial
+ * @param {boolean} optional Absence autorisée uniquement pour initialiser un refresh
+ * @returns {object} Métadonnées validées
+ */
+export function loadOGSnapshot(path, optional = false) {
+  try {
+    return validateOGSnapshot(readJSONSync(path));
+  } catch (error) {
+    if (optional && error.cause?.code === 'ENOENT') {return {};}
+    throw error;
+  }
+}
+
+/**
+ * Conserve une image éditoriale locale déjà revue, jamais un cache technique nouveau.
+ * @param {object} result - Résultat OG avec son état d'échec
+ * @param {string} url - Page source
+ * @param {object} previous - Snapshot précédent
+ * @returns {object} Métadonnées persistables
+ */
+export function editorialMetadata(result, url, previous = {}) {
+  if (result.failed && previous[url]) {return { ...previous[url] };}
+  const meta = { ...result.meta };
+  if (!meta.ogImage?.startsWith('data/bookmarks-images/')) {return meta;}
+  const curated = previous[url]?.ogImage;
+  if (curated?.startsWith('data/bookmarks-images/')) {
+    meta.ogImage = curated;
+    return meta;
+  }
+  if (meta.ogImageOriginal) {
+    const remote = new URL(decodeHTMLEntities(meta.ogImageOriginal), url);
+    if (!['http:', 'https:'].includes(remote.protocol) || remote.username || remote.password) {
+      throw new Error('Image éditoriale distante invalide : HTTP(S) sans identifiants requis.');
+    }
+    meta.ogImage = remote.href;
+    delete meta.fromVersionedImage;
+    return meta;
+  }
+  console.warn(`Image OG du cache technique non retenue dans le snapshot : ${url}`);
+  delete meta.ogImage;
+  delete meta.fromVersionedImage;
+  return meta;
 }

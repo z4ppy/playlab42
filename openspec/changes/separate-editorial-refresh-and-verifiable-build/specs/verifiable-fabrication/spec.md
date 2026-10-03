@@ -27,6 +27,14 @@ et refuser une altération, absence ou fichier supplémentaire.
 - **WHEN** un fichier est altéré après fabrication
 - **THEN** la vérification d'intégrité échoue explicitement
 
+#### Scenario: Local preview missing from source checkout
+- **WHEN** le catalogue référence une image locale absente ou issue d'un cache non publié
+- **THEN** la fabrication refuse l'image absente et ne publie pas de cache non référencé
+
+#### Scenario: Coherent hashes but broken local preview
+- **WHEN** une archive possède un inventaire cohérent mais référence une image locale absente
+- **THEN** la vérification de l'archive échoue explicitement
+
 ### Requirement: Documented recovery boundaries
 La reprise SHALL être exercée localement et rester une décision humaine en production.
 

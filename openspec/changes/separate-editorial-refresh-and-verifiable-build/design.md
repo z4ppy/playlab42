@@ -5,6 +5,11 @@ Absent/corrompu : erreur explicite. Une URL nouvelle sans entrée reste utilisab
 avec son titre/description manuels et un diagnostic ; le build ne fetch pas.
 `refresh:bookmarks` réalise le refresh, conserve les replis d'images versionnées,
 écrit un snapshot atomique à relire avant commit. Le cache technique reste ignoré.
+Un fichier téléchargé ignoré par Git ne devient pas une image locale éditoriale :
+l'URL distante d'origine est conservée, sauf image locale déjà revue dans le
+snapshot. Les images locales référencées doivent exister et être régulières ;
+le packaging ignore les autres fichiers du cache. Un refresh raté conserve
+les métadonnées précédentes plutôt que promouvoir un cache implicite.
 
 ## Fabrication vérifiable
 

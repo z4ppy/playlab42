@@ -59,6 +59,22 @@ reste une étape préalable avec réseau ; ce n'est pas une certification de
 build hermétique. Des CDN et modèles du navigateur restent externes, notamment
 Chart.js non versionné et Magenta Image/modèles : le site entier n'est pas offline.
 
+### Images : source revue, pas cache local implicite
+
+Les images téléchargées dans `data/bookmarks-images/` sont ignorées par Git,
+sauf les fichiers explicitement versionnés. Une image nouvelle de ce cache
+ne devient **pas** une dépendance locale du snapshot : son URL OG d'origine,
+résolue sur la page et décodée, reste une ressource HTTP(S) externe.
+Le snapshot conserve trois images locales déjà revues et 98 références distantes.
+Les images locales nouvelles demandent revue/licence et ajout Git explicite,
+pas publication automatique d'un cache. Le packaging copie les seules images
+locales référencées et refuse celles absentes, non régulières ou hors périmètre
+avant remplacement du site. Les caches supplémentaires n'influencent plus
+l'inventaire public. La vérification de l'archive extraite contrôle aussi ces
+références : des hashes cohérents ne suffisent pas si une image référencée manque.
+Lors d'un refresh en erreur, les métadonnées éditoriales
+précédentes restent disponibles, sans promouvoir un fichier temporaire.
+
 ## Inventaire, SBOM et source de confiance
 
 - `build-info.json` : version et SHA CI (null en développement sans SHA fourni).
