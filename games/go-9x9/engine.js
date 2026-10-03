@@ -1,6 +1,8 @@
 /**
  * Go 9x9 - Moteur isomorphe
  * Règles : plateau 9x9, ko simple, suicide interdit, scoring chinois avec komi 6.5.
+ * Validation et énumération partagent le même contrôle suicide/ko ; le score
+ * distingue le comptage des pierres et l'exploration des régions vides.
  *
  * @typedef {{type: 'place', x: number, y: number} | {type: 'pass' | 'resign'}} GoAction
  * @typedef {{seed: number, playerIds: [string, string]}} GoConfig
@@ -78,40 +80,45 @@ function floodTerritory(board) {
     for (let x = 0; x < BOARD_SIZE; x++) {
       if (board[y][x] !== EMPTY || visited[y][x]) {continue;}
 
-      const queue = [[x, y]];
-      visited[y][x] = true;
-      const empties = [];
-      const borders = new Set();
-
-      while (queue.length) {
-        const [cx, cy] = queue.pop();
-        empties.push([cx, cy]);
-
-        for (const [nx, ny] of getNeighbors(cx, cy)) {
-          const cell = board[ny][nx];
-          if (cell === EMPTY && !visited[ny][nx]) {
-            visited[ny][nx] = true;
-            queue.push([nx, ny]);
-          } else if (cell === BLACK) {
-            borders.add(BLACK);
-          } else if (cell === WHITE) {
-            borders.add(WHITE);
-          }
-        }
-      }
-
+      const { size, borders } = collectTerritory(board, visited, x, y);
       if (borders.size === 1) {
-        const owner = borders.has(BLACK) ? BLACK : WHITE;
-        if (owner === BLACK) {
-          black += empties.length;
+        if (borders.has(BLACK)) {
+          black += size;
         } else {
-          white += empties.length;
+          white += size;
         }
       }
     }
   }
 
   return { black, white };
+}
+
+/** Explore une région vide ; les frontières mixtes restent neutres. */
+function collectTerritory(board, visited, x, y) {
+  const queue = [[x, y]];
+  visited[y][x] = true;
+  let size = 0;
+  const borders = new Set();
+  while (queue.length) {
+    const [cx, cy] = queue.pop();
+    size++;
+    for (const [nx, ny] of getNeighbors(cx, cy)) {
+      const cell = board[ny][nx];
+      if (cell === EMPTY && !visited[ny][nx]) {
+        visited[ny][nx] = true;
+        queue.push([nx, ny]);
+      } else if (cell === BLACK || cell === WHITE) {
+        borders.add(cell);
+      }
+    }
+  }
+  return { size, borders };
+}
+
+function availableIntersection(board, x, y) {
+  return Number.isInteger(x) && Number.isInteger(y)
+    && inBounds(x, y) && board[y][x] === EMPTY;
 }
 
 function cloneState(state) {
@@ -205,20 +212,10 @@ export class Go9x9Engine {
 
     if (action.type !== 'place') {return false;}
     const { x, y } = action;
-    if (!Number.isInteger(x) || !Number.isInteger(y)) {return false;}
-    if (!inBounds(x, y)) {return false;}
-    if (state.board[y][x] !== EMPTY) {return false;}
+    if (!availableIntersection(state.board, x, y)) {return false;}
 
     const color = this.#colorForPlayer(state, playerId);
-    const sim = this.#simulatePlacement(state, x, y, color);
-
-    // Suicide interdit
-    if (sim.suicide) {return false;}
-
-    // Ko simple : ne pas recréer le plateau précédent
-    if (state.previousBoard && boardsEqual(sim.board, state.previousBoard)) {return false;}
-
-    return true;
+    return this.#isLegalPlacement(state, x, y, color);
   }
 
   /** @param {GoState} state @param {string} playerId @returns {GoAction[]} */
@@ -231,9 +228,7 @@ export class Go9x9Engine {
     for (let y = 0; y < BOARD_SIZE; y++) {
       for (let x = 0; x < BOARD_SIZE; x++) {
         if (state.board[y][x] !== EMPTY) {continue;}
-        const sim = this.#simulatePlacement(state, x, y, color);
-        if (sim.suicide) {continue;}
-        if (state.previousBoard && boardsEqual(sim.board, state.previousBoard)) {continue;}
+        if (!this.#isLegalPlacement(state, x, y, color)) {continue;}
         actions.push({ type: 'place', x, y });
       }
     }
@@ -279,6 +274,12 @@ export class Go9x9Engine {
     return state.currentPlayerId === state.playerIds[0]
       ? state.playerIds[1]
       : state.playerIds[0];
+  }
+
+  /** Suicide et ko ont exactement les mêmes critères en validation et énumération. */
+  #isLegalPlacement(state, x, y, color) {
+    const sim = this.#simulatePlacement(state, x, y, color);
+    return !sim.suicide && !(state.previousBoard && boardsEqual(sim.board, state.previousBoard));
   }
 
   #simulatePlacement(state, x, y, color) {
