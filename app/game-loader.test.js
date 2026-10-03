@@ -41,7 +41,7 @@ jest.unstable_mockModule('./storage.js', () => ({
 }));
 
 // Import dynamique après les mocks
-const { openGame, openTool } = await import('./game-loader.js');
+const { openGame, openTool, loadGame } = await import('./game-loader.js');
 
 describe('game-loader: openGame and openTool functions', () => {
   beforeEach(() => {
@@ -93,8 +93,7 @@ describe('game-loader: openGame and openTool functions', () => {
     });
 
     it('does not reload if same game already open', async () => {
-      state.currentGame = { id: 'tictactoe' };
-      state.currentView = 'game';
+      loadGame('games/tictactoe/index.html', 'Tictactoe', 'game', 'tictactoe');
 
       await openGame('tictactoe');
 
@@ -189,8 +188,7 @@ describe('game-loader: openGame and openTool functions', () => {
     });
 
     it('does not reload if same tool already open', async () => {
-      state.currentGame = { id: 'json-formatter' };
-      state.currentView = 'game';
+      loadGame('tools/json-formatter.html', 'JSON', 'tool', 'json-formatter');
 
       await openTool('json-formatter');
 
