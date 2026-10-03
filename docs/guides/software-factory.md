@@ -26,12 +26,21 @@ ont réussi sur ce commit. Cette preuve concerne cette livraison, pas les
 modifications ultérieures du worktree `fix/review-software-factory`.
 
 Les correctifs de revue des builders, de préservation des images OG et du mode
-d'écriture atomique sont préparés dans ce worktree. Il prépare aussi un gate
+d'écriture atomique sont proposés dans la
+[PR #145](https://github.com/z4ppy/playlab42/pull/145). Elle ajoute aussi un gate
 sur **Build, déjà requis**, exigeant le succès de Security lint et de Trivy
 HIGH/CRITICAL via un workflow réutilisable partagé ; un gate ignoré ne doit
-pas autoriser la suite. Ces correctifs ne sont **ni intégrés à `main`, ni
-validés par une CI native**. Les neuf checks GitHub requis restent le réglage
-actuellement observé ; aucune mutation distante n'est impliquée.
+pas autoriser la suite. Ces correctifs restent **non intégrés à `main` et non
+déployés**. Les neuf checks GitHub requis restent le réglage actuellement
+observé ; aucune mutation distante n'est impliquée.
+
+**Validation native constatée le 3 octobre 2026, head `a5598b2` :**
+[CI 37148235271](https://github.com/z4ppy/playlab42/actions/runs/37148235271)
+et [Security Audit 37148235235](https://github.com/z4ppy/playlab42/actions/runs/37148235235)
+réussis : 100 suites / 2 124 tests, seuils ciblés, lint, types, Trivy,
+double fabrication/reprise et 64 interactions Chromium. L'upload Codecov
+a réussi, mais il reste non bloquant. Cette preuve datée concerne ce head ;
+les checks de la tête courante de la PR restent à consulter après chaque push.
 
 ## Carte de l'usine
 

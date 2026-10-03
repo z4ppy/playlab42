@@ -4,8 +4,9 @@ Ce runbook décrit le lot 5 **intégré à `main` et publié** avec les lots 3 e
 via la PR #144 le 3 octobre 2026. Les runs de publication et de sécurité sur
 le commit livré sont référencés dans la
 [preuve de livraison](software-factory.md#livraison-constatée-et-correctifs-locaux).
-Les correctifs de revue préparés dans `fix/review-software-factory` restent
-distincts : ni intégrés à `main`, ni validés par une CI native.
+Les correctifs de revue proposés depuis `fix/review-software-factory` restent
+distincts : **non intégrés à `main` et non déployés**. Leur validation native
+datée est référencée dans la même preuve, sans annoncer leur livraison.
 Application statique, pas de backend ou plateforme d'exploitation ajoutée.
 
 ## Actualisation éditoriale et fabrication
