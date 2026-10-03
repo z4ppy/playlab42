@@ -12,7 +12,7 @@ Ce guide est la référence commune aux contributeurs et aux skills ; la
 | ESLint JS et scripts HTML | Erreurs et warnings bloquants ; eslint-plugin-html 8.2.1, pas d'eval, `Function` dynamique ni URL JavaScript | Pas de lint du markup ; attributs événementiels refusés par un test de politique |
 | Biome TypeScript | Version 2.5.15, preset recommandé, syntaxe et règles `.ts`, warnings bloquants | Pas d'analyse utilisant le compilateur TS ni de couverture des plugins de sécurité ESLint |
 | ESLint Security | Plugins 4.2.0 / 4.1.5 verrouillés, configuration flat, gate JS et scripts HTML ciblé | Propriétés DOM et heuristiques consultatives ; pas de règles ESLint sécurité sur TS |
-| TypeScript | Contrôle strict des sources TS ; JS reste autorisé | La transpilation ne vérifie pas les types |
+| TypeScript | Sources TS strictes et signatures réelles des six moteurs | Les corps JS ne sont pas tous analysés ; la transpilation ne vérifie pas les types |
 | Jest | Tests avec seuils ciblés ci-dessous | Couverture de lignes, pas qualité des assertions |
 | Playwright | Interactions, clavier, thèmes et ressources du site préparé | Socle Chromium, pas tous les navigateurs |
 | npm audit | Seuil modéré bloquant, dépendances de fabrication incluses | CVE connues au moment de l'exécution ; panne du registre = échec |
@@ -253,6 +253,14 @@ Le lint TS est désormais fourni par Biome. L'intégration **typescript-eslint**
 8.71.0 reste non supportée : son peer `>=4.8.4 <6.1.0` exclut TS 7.
 Le contrôle strict `tsc` reste requis et distinct. Ne pas downgrader le
 compilateur ni utiliser `--force` / `--legacy-peer-deps` pour contourner ce contrat.
+
+Dans le lot cœur, `typecheck` appelle aussi `typecheck:engine-contracts`.
+Le projet `tsconfig.engine-contracts.json` compile la fixture des six signatures
+réelles avec `allowJs`, sans analyse exhaustive des corps JS (`checkJs: false`).
+Ses exclusions distinctes empêchent le tsconfig principal de masquer cette
+fixture `.test.ts`. Un vrai appel du compilateur accepte un contrat complet
+et refuse une méthode manquante ; ce n'est pas une garantie de pureté ou de
+sérialisation à l'exécution, qui restent testées séparément.
 
 ## Suite proposée : qualité du code par étapes
 
