@@ -1,0 +1,982 @@
+{
+  "version": 1,
+  "entries": {
+    "https://ai.google.dev": {},
+    "https://aider.chat": {
+      "ogTitle": "Aider - AI Pair Programming in Your Terminal",
+      "favicon": "https://aider.chat/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:29.683Z"
+    },
+    "https://aider.chat/docs/leaderboards/": {
+      "ogTitle": "Aider LLM Leaderboards",
+      "ogDescription": "Quantitative benchmarks of LLM code editing skill.",
+      "ogImage": "https://aider.chat/assets/leaderboard.jpg",
+      "ogSiteName": "aider",
+      "ogImageOriginal": "https://aider.chat/assets/leaderboard.jpg",
+      "favicon": "https://aider.chat/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:48.109Z"
+    },
+    "https://ainativedev.io": {
+      "ogTitle": "Tessl - Agent Enablement Platform",
+      "ogDescription": "Tessl helps teams build AI-native software by giving coding agents structured, versioned context. Ship AI-powered systems that hold up in real codebases.",
+      "ogImage": "https://cdn.sanity.io/images/ojuglg5y/production/fa12cfb35dd51f280b764adf7122a6c0f7911e12-2400x1260.png?w=1200&fit=max&auto=format",
+      "ogImageOriginal": "https://cdn.sanity.io/images/ojuglg5y/production/fa12cfb35dd51f280b764adf7122a6c0f7911e12-2400x1260.png?w=1200&amp;fit=max&amp;auto=format",
+      "favicon": "https://ainativedev.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.467Z"
+    },
+    "https://anthropic.skilljar.com": {
+      "ogTitle": "Anthropic Courses",
+      "ogDescription": "Browse all Anthropic courses",
+      "ogImage": "https://cc.sj-cdn.net/instructor/4hdejjwplbrm-anthropic/catalog_page/33z62i4zzunao/tile-image.1750175621.png",
+      "ogSiteName": "Anthropic",
+      "ogImageOriginal": "https://cc.sj-cdn.net/instructor/4hdejjwplbrm-anthropic/catalog_page/33z62i4zzunao/tile-image.1750175621.png",
+      "favicon": "https://anthropic.skilljar.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:48.764Z"
+    },
+    "https://anthropic.skilljar.com/introduction-to-model-context-protocol": {
+      "ogTitle": "Introduction to Model Context Protocol",
+      "ogDescription": "Learn to build Model Context Protocol servers and clients from scratch using Python. Master MCP's three core primitives—tools, resources, and prompts—to connect Claude with external services",
+      "ogImage": "https://cc.sj-cdn.net/instructor/4hdejjwplbrm-anthropic/courses/47ajyxsragmw/promo-image.1750170896.svg",
+      "ogSiteName": "Anthropic",
+      "ogImageOriginal": "https://cc.sj-cdn.net/instructor/4hdejjwplbrm-anthropic/courses/47ajyxsragmw/promo-image.1750170896.svg",
+      "favicon": "https://anthropic.skilljar.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:43.961Z"
+    },
+    "https://argoproj.github.io/cd/": {
+      "ogTitle": "Argo CD",
+      "ogDescription": "Declarative continuous delivery with a fully-loaded UI.",
+      "ogImage": "https://argoproj.github.io/static/7be772ca35570178d9cd85ad8b4696ff/gitops-cd-thumbnail.png",
+      "ogImageOriginal": "/static/7be772ca35570178d9cd85ad8b4696ff/gitops-cd-thumbnail.png",
+      "favicon": "https://argoproj.github.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.528Z"
+    },
+    "https://arxiv.org/abs/2310.14735": {
+      "ogTitle": "Unleashing the potential of prompt engineering for large language models",
+      "ogDescription": "This comprehensive review delves into the pivotal role of prompt engineering in unleashing the capabilities of Large Language Models (LLMs). The development of Artificial Intelligence (AI), from its inception in the 1950s to the emergence of advanced neural networks and deep learning architectures, has made a breakthrough in LLMs, with models such as GPT-4o and Claude-3, and in Vision-Language Models (VLMs), with models such as CLIP and ALIGN. Prompt engineering is the process of structuring inputs, which has emerged as a crucial technique to maximize the utility and accuracy of these models. This paper explores both foundational and advanced methodologies of prompt engineering, including techniques such as self-consistency, chain-of-thought, and generated knowledge, which significantly enhance model performance. Additionally, it examines the prompt method of VLMs through innovative approaches such as Context Optimization (CoOp), Conditional Context Optimization (CoCoOp), and Multimodal Prompt Learning (MaPLe). Critical to this discussion is the aspect of AI security, particularly adversarial attacks that exploit vulnerabilities in prompt engineering. Strategies to mitigate these risks and enhance model robustness are thoroughly reviewed. The evaluation of prompt methods is also addressed through both subjective and objective metrics, ensuring a robust analysis of their efficacy. This review also reflects the essential role of prompt engineering in advancing AI capabilities, providing a structured framework for future research and application.",
+      "ogImage": "https://arxiv.org/static/browse/0.3.4/images/arxiv-logo-fb.png",
+      "ogSiteName": "arXiv.org",
+      "ogImageOriginal": "/static/browse/0.3.4/images/arxiv-logo-fb.png",
+      "favicon": "https://arxiv.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:44.015Z"
+    },
+    "https://arxiv.org/abs/2402.07927": {
+      "ogTitle": "A Systematic Survey of Prompt Engineering in Large Language Models: Techniques and Applications",
+      "ogDescription": "Prompt engineering has emerged as an indispensable technique for extending the capabilities of large language models (LLMs) and vision-language models (VLMs). This approach leverages task-specific instructions, known as prompts, to enhance model efficacy without modifying the core model parameters. Rather than updating the model parameters, prompts allow seamless integration of pre-trained models into downstream tasks by eliciting desired model behaviors solely based on the given prompt. Prompts can be natural language instructions that provide context to guide the model or learned vector representations that activate relevant knowledge. This burgeoning field has enabled success across various applications, from question-answering to commonsense reasoning. However, there remains a lack of systematic organization and understanding of the diverse prompt engineering methods and techniques. This survey paper addresses the gap by providing a structured overview of recent advancements in prompt engineering, categorized by application area. For each prompting approach, we provide a summary detailing the prompting methodology, its applications, the models involved, and the datasets utilized. We also delve into the strengths and limitations of each approach and include a taxonomy diagram and table summarizing datasets, models, and critical points of each prompting technique. This systematic analysis enables a better understanding of this rapidly developing field and facilitates future research by illuminating open challenges and opportunities for prompt engineering.",
+      "ogImage": "https://arxiv.org/static/browse/0.3.4/images/arxiv-logo-fb.png",
+      "ogSiteName": "arXiv.org",
+      "ogImageOriginal": "/static/browse/0.3.4/images/arxiv-logo-fb.png",
+      "favicon": "https://arxiv.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:44.019Z"
+    },
+    "https://arxiv.org/html/2510.12399v2": {
+      "ogTitle": "A Survey of Vibe Coding with Large Language Models",
+      "favicon": "https://arxiv.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:45.098Z"
+    },
+    "https://aws.amazon.com/blogs/devops/amazon-introduces-swe-polybench-a-multi-lingual-benchmark-for-ai-coding-agents/": {
+      "ogTitle": "Amazon introduces SWE-PolyBench, a multilingual benchmark for AI Coding Agents | Amazon Web Services",
+      "ogDescription": "Coding agents powered by large language models have shown impressive capabilities in software engineering tasks, but evaluating their performance across diverse programming languages and real-world scenarios remains challenging. This led to a recent explosion in benchmark creation to assess the coding effectiveness of said systems in controlled environments. In particular, SWE-Bench which measures the performance […]",
+      "ogImage": "https://d2908q01vomqb2.cloudfront.net/7719a1c782a1ba91c031a682a0a2f8658209adbf/2025/04/23/polybench-featured-image-1120x630.png",
+      "ogSiteName": "Amazon Web Services",
+      "ogImageOriginal": "https://d2908q01vomqb2.cloudfront.net/7719a1c782a1ba91c031a682a0a2f8658209adbf/2025/04/23/polybench-featured-image-1120x630.png",
+      "favicon": "https://aws.amazon.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:47.801Z"
+    },
+    "https://aws.amazon.com/q/developer/": {
+      "ogTitle": "Amazon Q Developer",
+      "ogDescription": "Amazon Q Developer est l’assistant d’IA générative le plus performant pour la création, l’exploitation et la transformation des logiciels, avec des fonctionnalités avancées de gestion des données et d’IA/ML.",
+      "ogSiteName": "Amazon Web Services, Inc.",
+      "favicon": "https://aws.amazon.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:24.067Z"
+    },
+    "https://backstage.io/": {
+      "ogTitle": "Backstage Software Catalog and Developer Platform",
+      "favicon": "https://backstage.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.383Z"
+    },
+    "https://blog.n8n.io/best-ai-for-coding/": {
+      "ogTitle": "8 best AI coding tools for developers: tested & compared!",
+      "ogDescription": "Struggling to choose the best AI tool for coding? We tested 8 leading platforms to help you decide. Discover our top picks—and see how n8n stands out by combining AI with powerful automation to streamline your development workflows!",
+      "ogImage": "https://storage.ghost.io/c/0d/78/0d78b34c-0c5f-4975-900e-61d00ccb1c2d/content/images/size/w1200/2025/03/11-ai-tools-coding--2---2-.png",
+      "ogSiteName": "n8n Blog",
+      "ogImageOriginal": "https://storage.ghost.io/c/0d/78/0d78b34c-0c5f-4975-900e-61d00ccb1c2d/content/images/size/w1200/2025/03/11-ai-tools-coding--2---2-.png",
+      "favicon": "https://blog.n8n.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.268Z"
+    },
+    "https://bolt.new": {
+      "ogTitle": "Bolt AI builder: Websites, apps & prototypes",
+      "ogDescription": "Build and scale high-performing websites & apps using your words. Join millions and start building today.",
+      "ogImage": "https://bolt.new/static/social_preview_index.jpg",
+      "ogSiteName": "bolt.new",
+      "ogImageOriginal": "https://bolt.new/static/social_preview_index.jpg",
+      "favicon": "https://bolt.new/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:30.822Z"
+    },
+    "https://cfengine.com/": {
+      "ogTitle": "CFEngine - Know more, react faster",
+      "ogDescription": "Automate your infrastructure, security & compliance.",
+      "ogImage": "https://cfengine.com/images/previews/logo_wide_opengraph.png",
+      "ogImageOriginal": "https://cfengine.com/images/previews/logo_wide_opengraph.png",
+      "favicon": "https://cfengine.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:58.620Z"
+    },
+    "https://cloud.google.com/discover/what-is-vibe-coding": {
+      "ogTitle": "Explication du vibe coding : outils et guides",
+      "ogDescription": "Le vibe coding et le vibe deploying transforment le développement de logiciels. Découvrez comment créer et lancer des applications instantanément à l'aide de prompts en langage naturel.",
+      "ogImage": "https://cloud.google.com/_static/cloud/images/social-icon-google-cloud-1200-630.png",
+      "ogSiteName": "Google Cloud",
+      "ogImageOriginal": "https://cloud.google.com/_static/cloud/images/social-icon-google-cloud-1200-630.png",
+      "favicon": "https://cloud.google.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:46.275Z"
+    },
+    "https://code.visualstudio.com/docs/agent-customization/agent-skills": {
+      "ogTitle": "Use Agent Skills in VS Code",
+      "ogDescription": "Create portable Agent Skills in VS Code for specialized AI workflows across supported coding agents.",
+      "ogImage": "https://code.visualstudio.com/opengraphimg/generated/docs/agent-customization/agent-skills.webp",
+      "ogImageOriginal": "https://code.visualstudio.com/opengraphimg/generated/docs/agent-customization/agent-skills.webp",
+      "favicon": "https://code.visualstudio.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.224Z"
+    },
+    "https://code.visualstudio.com/docs/copilot/overview": {
+      "ogTitle": "Build with AI in VS Code",
+      "ogDescription": "Explore AI in Visual Studio Code, from code suggestions to agents that plan, edit, and test changes.",
+      "ogImage": "https://code.visualstudio.com/opengraphimg/generated/docs/agents/overview.webp",
+      "ogImageOriginal": "https://code.visualstudio.com/opengraphimg/generated/docs/agents/overview.webp",
+      "favicon": "https://code.visualstudio.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.280Z"
+    },
+    "https://code.visualstudio.com/updates/v1_140": {
+      "ogTitle": "Visual Studio Code 1.140",
+      "ogDescription": "Learn what's new in Visual Studio Code 1.140",
+      "ogImage": "https://code.visualstudio.com/assets/updates/1_140/release-highlights.webp",
+      "ogImageOriginal": "https://code.visualstudio.com/assets/updates/1_140/release-highlights.webp",
+      "favicon": "https://code.visualstudio.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.440Z"
+    },
+    "https://codeium.com/windsurf": {
+      "ogTitle": "Devin Desktop | Devin",
+      "ogDescription": "Manage fleets of local and cloud agents from one surface. Plan, delegate, review, and ship without leaving your editor.",
+      "ogImage": "https://devin.ai/assets/images/desktop/og-desktop.png",
+      "ogSiteName": "Devin",
+      "ogImageOriginal": "https://devin.ai/assets/images/desktop/og-desktop.png",
+      "favicon": "https://codeium.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:23.784Z"
+    },
+    "https://codestral.mistral.ai": {},
+    "https://community.openai.com": {
+      "ogTitle": "OpenAI Developer Community",
+      "ogDescription": "Connect with other developers building with the OpenAI API Platform.",
+      "ogImage": "https://us1.discourse-cdn.com/openai1/original/4X/0/4/c/04c8546833f0824a49d21f50e2b08dd44bfd3d05.png",
+      "ogSiteName": "OpenAI Developer Community",
+      "ogImageOriginal": "https://us1.discourse-cdn.com/openai1/original/4X/0/4/c/04c8546833f0824a49d21f50e2b08dd44bfd3d05.png",
+      "favicon": "https://community.openai.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:58.284Z"
+    },
+    "https://cursor.com": {
+      "ogTitle": "AI Coding Agent for Building Ambitious Software | Cursor",
+      "ogDescription": "Construits pour décupler votre productivité, les agents transforment vos idées en code. Accélérez le développement en confiant des tâches à Cursor.",
+      "ogImage": "https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/og/opengraph-default.png",
+      "ogSiteName": "Cursor",
+      "ogImageOriginal": "https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/og/opengraph-default.png",
+      "favicon": "https://cursor.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:23.139Z"
+    },
+    "https://deepseek.com": {
+      "ogTitle": "DeepSeek | 深度求索",
+      "ogDescription": "深度求索（DeepSeek），探索未至之境。专注于研究世界领先的通用人工智能底层模型与技术，开源 DeepSeek-V4、DeepSeek-R1 等前沿大模型。和 DeepSeek AI 对话，轻松接入 API。",
+      "ogImage": "https://www.deepseek.com/images/deepseek-social.jpg",
+      "ogImageOriginal": "https://www.deepseek.com/images/deepseek-social.jpg",
+      "favicon": "https://deepseek.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:33.360Z"
+    },
+    "https://developer.hashicorp.com/terraform": {
+      "ogTitle": "Terraform | HashiCorp Developer",
+      "ogDescription": "Explore Terraform product documentation, tutorials, and examples.",
+      "ogImage": "https://developer.hashicorp.com/og-image/terraform.jpg",
+      "ogSiteName": "Terraform | HashiCorp Developer",
+      "ogImageOriginal": "https://developer.hashicorp.com/og-image/terraform.jpg",
+      "favicon": "https://developer.hashicorp.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:58.516Z"
+    },
+    "https://devopsdays.org/": {
+      "ogTitle": "DevOpsDays",
+      "ogDescription": "devopsdays is a worldwide community conference series for anyone interested in IT improvement.",
+      "ogImage": "https://www.devopsdays.org/img/sharing.jpg",
+      "ogImageOriginal": "https://www.devopsdays.org/img/sharing.jpg",
+      "favicon": "https://devopsdays.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.941Z"
+    },
+    "https://discord.gg/anthropic": {
+      "ogTitle": "Join the Claude Discord Server!",
+      "ogDescription": "Check out the Claude community on Discord - hang out with 130624 other members and enjoy free voice and text chat.",
+      "ogImage": "https://cdn.discordapp.com/splashes/1072196207201501266/bcd410250d44f10be3851007524578cd.jpg?size=512",
+      "ogSiteName": "Discord",
+      "ogImageOriginal": "https://cdn.discordapp.com/splashes/1072196207201501266/bcd410250d44f10be3851007524578cd.jpg?size=512",
+      "favicon": "https://discord.gg/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.885Z"
+    },
+    "https://discord.gg/cursor": {
+      "ogTitle": "Join the Cursor Discord Server!",
+      "ogDescription": "Welcome to the official Cursor Discord where people who build with AI hang out in real time. Introduce yourself, share what you're working on, and help each other get unstuck. | 39445 members",
+      "ogImage": "https://cdn.discordapp.com/splashes/1074847526655643750/f0ea8c645f9843898d8e5dda3998d950.jpg?size=512",
+      "ogSiteName": "Discord",
+      "ogImageOriginal": "https://cdn.discordapp.com/splashes/1074847526655643750/f0ea8c645f9843898d8e5dda3998d950.jpg?size=512",
+      "favicon": "https://discord.gg/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:58.126Z"
+    },
+    "https://docs.agentinterviews.com/blog/parallel-ai-coding-with-gitworktrees/": {
+      "ogTitle": "Parallel AI Coding with Git Worktrees and Custom Claude Code Commands | Agent Interviews",
+      "ogDescription": "Learn how to design an AI interview dashboard using parallel Claude Code agents and git worktrees. Build multiple versions of audio recording, transcription, sentiment analysis, and insights interfaces simultaneously.",
+      "ogImage": "https://docs.agentinterviews.com/img/agent-interviews-logo-zip-file/png/logo-color.png",
+      "ogSiteName": "Agent Interviews",
+      "ogImageOriginal": "https://docs.agentinterviews.com/img/agent-interviews-logo-zip-file/png/logo-color.png",
+      "favicon": "https://docs.agentinterviews.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.013Z"
+    },
+    "https://docs.anthropic.com": {
+      "ogTitle": "Documentation",
+      "ogDescription": "Documentation de l'API Claude",
+      "ogImage": "https://platform.claude.com/docs/images/og-claude-platform-docs.png",
+      "ogSiteName": "Claude Platform Docs",
+      "ogImageOriginal": "https://platform.claude.com/docs/images/og-claude-platform-docs.png",
+      "favicon": "https://docs.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:32.956Z"
+    },
+    "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview": {
+      "ogTitle": "Prompt engineering overview",
+      "ogDescription": "Learn when prompt engineering is the right solution, and find Claude prompting techniques and interactive tutorials.",
+      "ogImage": "https://platform.claude.com/web-api/og/docs/en/build-with-claude/prompt-engineering/overview?design-rev=2",
+      "ogSiteName": "Claude Platform Docs",
+      "ogImageOriginal": "https://platform.claude.com/web-api/og/docs/en/build-with-claude/prompt-engineering/overview?design-rev=2",
+      "favicon": "https://docs.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:45.005Z"
+    },
+    "https://docs.anthropic.com/en/docs/claude-code": {
+      "ogTitle": "Overview - Claude Code Docs",
+      "ogDescription": "Claude Code is an agentic coding tool that reads your codebase, edits files, runs commands, and integrates with your development tools. Available in your terminal, IDE, desktop app, and browser.",
+      "ogImage": "https://claude-code.mintlify.app/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DGetting%2Bstarted%26title%3DOverview%26description%3DClaude%2BCode%2Bis%2Ban%2Bagentic%2Bcoding%2Btool%2Bthat%2Breads%2Byour%2Bcodebase%252C%2Bedits%2Bfiles%252C%2Bruns%2Bcommands%252C%2Band%2Bintegrates%2Bwith%2Byour%2Bdevelopment%2Btools.%2BAvailable%2Bin%2Byour%2Btermin%26theme%3D03628e99c753a03aec319053&amp;w=1200&amp;q=100",
+      "ogSiteName": "Claude Code Docs",
+      "favicon": "https://docs.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:26.023Z"
+    },
+    "https://docs.github.com/copilot": {
+      "ogTitle": "Documentation de GitHub Copilot - Documentation GitHub",
+      "ogImage": "data/bookmarks-images/755a92c7c5c8.png",
+      "ogSiteName": "GitHub Docs",
+      "ogDescription": "Vous pouvez utiliser GitHub Copilot pour améliorer votre productivité et vous aider à travailler sur le code.",
+      "ogImageOriginal": "https://docs.github.com/assets/cb-345/images/social-cards/copilot.png",
+      "favicon": "https://docs.github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.036Z"
+    },
+    "https://docs.github.com/en/copilot/concepts/billing-and-usage/individuals/billing": {
+      "ogTitle": "Usage-based billing for individuals - GitHub Docs",
+      "ogImage": "https://docs.github.com/assets/cb-345/images/social-cards/copilot.png",
+      "ogSiteName": "GitHub Docs",
+      "ogDescription": "Your Copilot plan includes a monthly allowance of GitHub AI Credits. If you exhaust your AI credits, you can pay extra to keep working.",
+      "ogImageOriginal": "https://docs.github.com/assets/cb-345/images/social-cards/copilot.png",
+      "favicon": "https://docs.github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.038Z"
+    },
+    "https://en.wikipedia.org/wiki/Model_Context_Protocol": {
+      "ogTitle": "Model Context Protocol - Wikipedia",
+      "ogImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Model_Context_Protocol_logo.svg/1280px-Model_Context_Protocol_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail",
+      "ogImageOriginal": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Model_Context_Protocol_logo.svg/1280px-Model_Context_Protocol_logo.svg.png?utm_source=en.wikipedia.org&amp;utm_campaign=index&amp;utm_content=thumbnail",
+      "favicon": "https://en.wikipedia.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:42.928Z"
+    },
+    "https://en.wikipedia.org/wiki/Vibe_coding": {
+      "ogTitle": "Vibe coding - Wikipedia",
+      "ogImage": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Microphone_to_chat_with_the_chat_bot.jpg/960px-Microphone_to_chat_with_the_chat_bot.jpg?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail",
+      "ogImageOriginal": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Microphone_to_chat_with_the_chat_bot.jpg/960px-Microphone_to_chat_with_the_chat_bot.jpg?utm_source=en.wikipedia.org&amp;utm_campaign=index&amp;utm_content=thumbnail",
+      "favicon": "https://en.wikipedia.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:45.125Z"
+    },
+    "https://epoch.ai/benchmarks/swe-bench-verified": {
+      "ogTitle": "SWE-bench Verified",
+      "ogDescription": "GitHub issues from real-world Python repos, testing whether models can implement valid code fixes.\nNote: our SWE-bench Verified scaffold was significantly upgraded in February 2026.",
+      "ogImage": "https://epoch.ai/assets/images/datahub/thumbnails/benchmarking-thumbnail.png",
+      "ogSiteName": "Epoch AI",
+      "ogImageOriginal": "https://epoch.ai/assets/images/datahub/thumbnails/benchmarking-thumbnail.png",
+      "favicon": "https://epoch.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:47.279Z"
+    },
+    "https://fluxcd.io/": {
+      "ogTitle": "Flux - the GitOps family of projects",
+      "ogDescription": "Flux is a set of continuous and progressive delivery solutions for Kubernetes, and they are open and extensible. \nThe APIs of Flux are stable now.\n",
+      "ogImage": "https://fluxcd.io/img/flux-social.png",
+      "ogImageOriginal": "https://fluxcd.io/img/flux-social.png",
+      "favicon": "https://fluxcd.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.525Z"
+    },
+    "https://git-scm.com/docs/git-worktree": {
+      "ogTitle": "Git - git-worktree Documentation",
+      "favicon": "https://git-scm.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.540Z"
+    },
+    "https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/": {
+      "ogTitle": "Spec-driven development with AI: Get started with a new open source toolkit",
+      "ogDescription": "Developers can use their AI tool of choice for spec-driven development with this open source toolkit.",
+      "ogImage": "https://github.blog/wp-content/uploads/2025/08/wallpaper-generic-image-header.png",
+      "ogSiteName": "The GitHub Blog",
+      "ogImageOriginal": "https://github.blog/wp-content/uploads/2025/08/wallpaper-generic-image-header.png",
+      "favicon": "https://github.blog/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:46.817Z"
+    },
+    "https://github.com/Fission-AI/OpenSpec": {
+      "ogTitle": "GitHub - Fission-AI/OpenSpec: Spec-driven development (SDD) for AI coding assistants.",
+      "ogDescription": "Spec-driven development (SDD) for AI coding assistants. - Fission-AI/OpenSpec",
+      "ogImage": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:47.127Z"
+    },
+    "https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md": {
+      "ogTitle": "OpenSpec/docs/cli.md at v1.14.0 · Fission-AI/OpenSpec",
+      "ogDescription": "Spec-driven development (SDD) for AI coding assistants. - Fission-AI/OpenSpec",
+      "ogImage": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:01.320Z"
+    },
+    "https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md": {
+      "ogTitle": "OpenSpec/docs/commands.md at v1.14.0 · Fission-AI/OpenSpec",
+      "ogDescription": "Spec-driven development (SDD) for AI coding assistants. - Fission-AI/OpenSpec",
+      "ogImage": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:01.281Z"
+    },
+    "https://github.com/Fission-AI/OpenSpec/tree/v1.14.0/docs": {
+      "ogTitle": "OpenSpec/docs at v1.14.0 · Fission-AI/OpenSpec",
+      "ogDescription": "Spec-driven development (SDD) for AI coding assistants. - Fission-AI/OpenSpec",
+      "ogImage": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/d76977afd1a4f94e9d371ae23000833b9dc0de54c3ed9a43b17fc25c42375e3b/Fission-AI/OpenSpec",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.882Z"
+    },
+    "https://github.com/QwenLM/Qwen2.5-Coder": {
+      "ogTitle": "GitHub - QwenLM/Qwen3-Coder: Qwen3-Coder is the code version of Qwen3, the large language model series developed by Qwen team.",
+      "ogDescription": "Qwen3-Coder is the code version of Qwen3, the large language model series developed by Qwen team. - QwenLM/Qwen3-Coder",
+      "ogImage": "https://opengraph.githubassets.com/d79c9e533ca99fff9b77725ab5636b03b9d1f5c33138482959eba8bfe0732bab/QwenLM/Qwen3-Coder",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/d79c9e533ca99fff9b77725ab5636b03b9d1f5c33138482959eba8bfe0732bab/QwenLM/Qwen3-Coder",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:39.433Z"
+    },
+    "https://github.com/SWE-bench/SWE-bench": {
+      "ogTitle": "GitHub - SWE-bench/SWE-bench: SWE-bench: Can Language Models Resolve Real-world Github Issues?",
+      "ogDescription": "SWE-bench: Can Language Models Resolve Real-world Github Issues? - SWE-bench/SWE-bench",
+      "ogImage": "https://opengraph.githubassets.com/4f9d90da84e5e51948066ea491d1eb524c469c37f1ad222db456e3d570993218/SWE-bench/SWE-bench",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/4f9d90da84e5e51948066ea491d1eb524c469c37f1ad222db456e3d570993218/SWE-bench/SWE-bench",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:47.139Z"
+    },
+    "https://github.com/anthropics/claude-code": {
+      "ogTitle": "GitHub - anthropics/claude-code: Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.",
+      "ogDescription": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflo...",
+      "ogImage": "https://opengraph.githubassets.com/d93384f35d2108c7243d969311d212ca304d28ede5e064fcb99e5a0310876a40/anthropics/claude-code",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/d93384f35d2108c7243d969311d212ca304d28ede5e064fcb99e5a0310876a40/anthropics/claude-code",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:30.298Z"
+    },
+    "https://github.com/coderabbitai/git-worktree-runner": {
+      "ogTitle": "GitHub - coderabbitai/git-worktree-runner: Bash-based Git worktree manager with editor and AI tool integration. Automates per-branch worktree creation, configuration copying, dependency installation, and workspace setup for efficient parallel development.",
+      "ogDescription": "Bash-based Git worktree manager with editor and AI tool integration. Automates per-branch worktree creation, configuration copying, dependency installation, and workspace setup for efficient parall...",
+      "ogImage": "https://opengraph.githubassets.com/3427b6b2ce955caf59954c7553b160b53ffa40dbc1c51138a6cb3da52787de8b/coderabbitai/git-worktree-runner",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/3427b6b2ce955caf59954c7553b160b53ffa40dbc1c51138a6cb3da52787de8b/coderabbitai/git-worktree-runner",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:31.672Z"
+    },
+    "https://github.com/dair-ai/Prompt-Engineering-Guide": {
+      "ogTitle": "GitHub - dair-ai/Prompt-Engineering-Guide: 🐙 Guides, papers, lessons, notebooks and resources for prompt engineering, context engineering, RAG, and AI Agents.",
+      "ogDescription": "🐙 Guides, papers, lessons, notebooks and resources for prompt engineering, context engineering, RAG, and AI Agents. - dair-ai/Prompt-Engineering-Guide",
+      "ogImage": "https://opengraph.githubassets.com/4ce11b56c4966e523e1b52eba6101fcf30814b5a57e8b0ceff993d04ab42688f/dair-ai/Prompt-Engineering-Guide",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/4ce11b56c4966e523e1b52eba6101fcf30814b5a57e8b0ceff993d04ab42688f/dair-ai/Prompt-Engineering-Guide",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:43.206Z"
+    },
+    "https://github.com/deepseek-ai/DeepSeek-Coder": {
+      "ogTitle": "GitHub - deepseek-ai/DeepSeek-Coder: DeepSeek Coder: Let the Code Write Itself",
+      "ogDescription": "DeepSeek Coder: Let the Code Write Itself. Contribute to deepseek-ai/DeepSeek-Coder development by creating an account on GitHub.",
+      "ogImage": "https://opengraph.githubassets.com/d955e18088022176d856cded080ebcd2995cd12ff23d8b397e4f07f9e64d7b0e/deepseek-ai/DeepSeek-Coder",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/d955e18088022176d856cded080ebcd2995cd12ff23d8b397e4f07f9e64d7b0e/deepseek-ai/DeepSeek-Coder",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:39.926Z"
+    },
+    "https://github.com/features/copilot": {
+      "ogTitle": "GitHub Copilot · Votre agent de codage IA",
+      "ogDescription": "GitHub Copilot intervient à chaque étape, de l’ouverture d’une issue à la révision et à la fusion d’une pull request. Utilisez-le dans votre éditeur, dans le terminal, sur votre bureau et sur GitHub.",
+      "ogImage": "data/bookmarks-images/dba769c840cc.png",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://images.ctfassets.net/8aevphvgewt8/4KxWJH8PVVXdqBLs1V3UJ8/8926c7d150a8b8f3bf33c1c8a133724b/github-copilot-social-img.png",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:24.419Z"
+    },
+    "https://github.com/github/copilot-cli": {
+      "ogTitle": "GitHub - github/copilot-cli: GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal.",
+      "ogDescription": "GitHub Copilot CLI brings the power of Copilot coding agent directly to your terminal.  - github/copilot-cli",
+      "ogImage": "https://repository-images.githubusercontent.com/585860664/88c02908-2585-431c-9c8a-8db1f3521e91",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://repository-images.githubusercontent.com/585860664/88c02908-2585-431c-9c8a-8db1f3521e91",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.413Z"
+    },
+    "https://github.com/github/spec-kit": {
+      "ogTitle": "GitHub - github/spec-kit: 💫 Toolkit to help you get started with SDD or any other process!",
+      "ogDescription": "💫 Toolkit to help you get started with SDD or any other process! - github/spec-kit",
+      "ogImage": "https://opengraph.githubassets.com/98c906d2a7fc8aa64fe3c4d376d91d84537b4e35b6ec46c63b2410bad94af037/github/spec-kit",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/98c906d2a7fc8aa64fe3c4d376d91d84537b4e35b6ec46c63b2410bad94af037/github/spec-kit",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:47.119Z"
+    },
+    "https://github.com/kbwo/ccmanager": {
+      "ogTitle": "GitHub - kbwo/ccmanager: Coding Agent Session Manager for Claude Code / Gemini CLI / Codex CLI / Cursor Agent / Copilot CLI / Cline CLI / OpenCode / Kimi CLI",
+      "ogDescription": "Coding Agent Session Manager for Claude Code / Gemini CLI / Codex CLI / Cursor Agent / Copilot CLI / Cline CLI / OpenCode / Kimi CLI - kbwo/ccmanager",
+      "ogImage": "https://opengraph.githubassets.com/f10188eb58adbe5c44f2ce3cc99808a365575236612d088d298c031c5a1963e4/kbwo/ccmanager",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/f10188eb58adbe5c44f2ce3cc99808a365575236612d088d298c031c5a1963e4/kbwo/ccmanager",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:31.634Z"
+    },
+    "https://github.com/modelcontextprotocol": {
+      "ogTitle": "Model Context Protocol",
+      "ogDescription": "An open protocol that enables seamless integration between LLM applications and external data sources and tools. - Model Context Protocol",
+      "ogImage": "https://avatars.githubusercontent.com/u/182288589?s=280&v=4",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://avatars.githubusercontent.com/u/182288589?s=280&amp;v=4",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:39.904Z"
+    },
+    "https://github.com/paul-gauthier/aider": {
+      "ogTitle": "GitHub - Aider-AI/aider: aider is AI pair programming in your terminal",
+      "ogDescription": "aider is AI pair programming in your terminal. Contribute to Aider-AI/aider development by creating an account on GitHub.",
+      "ogImage": "https://repository-images.githubusercontent.com/638629097/1d3d6251-f8be-4d11-bbb1-4e44b7364b74",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://repository-images.githubusercontent.com/638629097/1d3d6251-f8be-4d11-bbb1-4e44b7364b74",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:30.369Z"
+    },
+    "https://github.com/smtg-ai/claude-squad": {
+      "ogTitle": "GitHub - smtg-ai/claude-squad: Manage multiple AI terminal agents like Claude Code, Codex, OpenCode, and Amp.",
+      "ogDescription": "Manage multiple AI terminal agents like Claude Code, Codex, OpenCode, and Amp. - smtg-ai/claude-squad",
+      "ogImage": "https://opengraph.githubassets.com/4bbffdc31e80952053d5ecd2936893d135fdef5e8d1ed62414e2ff3b31400816/smtg-ai/claude-squad",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/4bbffdc31e80952053d5ecd2936893d135fdef5e8d1ed62414e2ff3b31400816/smtg-ai/claude-squad",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:30.781Z"
+    },
+    "https://github.com/tmux/tmux/wiki": {
+      "ogTitle": "Home",
+      "ogDescription": "tmux source code. Contribute to tmux/tmux development by creating an account on GitHub.",
+      "ogImage": "https://opengraph.githubassets.com/15735090adb377673e30eed7bb95f5ff8fab1e578692775c00f12e4ac8c33105/tmux/tmux",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/15735090adb377673e30eed7bb95f5ff8fab1e578692775c00f12e4ac8c33105/tmux/tmux",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.905Z"
+    },
+    "https://github.com/topics/ai-coding": {
+      "ogTitle": "Build software better, together",
+      "ogDescription": "GitHub is where people build software. More than 150 million people use GitHub to discover, fork, and contribute to over 420 million projects.",
+      "ogImage": "https://github.githubassets.com/assets/github-logo-55c5b9a1fe52.png",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://github.githubassets.com/assets/github-logo-55c5b9a1fe52.png",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.196Z"
+    },
+    "https://github.com/z4ppy/playlab42": {
+      "ogTitle": "GitHub - z4ppy/playlab42: Plateforme pédagogique complète pour la formation au développement assisté par IA : supports de cours, base de connaissance, outils et jeux collaboratifs.",
+      "ogDescription": "Plateforme pédagogique complète pour la formation au développement assisté par IA : supports de cours, base de connaissance, outils et jeux collaboratifs. - z4ppy/playlab42",
+      "ogImage": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.894Z"
+    },
+    "https://github.com/z4ppy/playlab42/blob/main/docs/guides/contribution-kit.md": {
+      "ogTitle": "playlab42/docs/guides/contribution-kit.md at main · z4ppy/playlab42",
+      "ogDescription": "Plateforme pédagogique complète pour la formation au développement assisté par IA : supports de cours, base de connaissance, outils et jeux collaboratifs. - z4ppy/playlab42",
+      "ogImage": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.892Z"
+    },
+    "https://github.com/z4ppy/playlab42/blob/main/docs/guides/openspec-workflow.md": {
+      "ogTitle": "playlab42/docs/guides/openspec-workflow.md at main · z4ppy/playlab42",
+      "ogDescription": "Plateforme pédagogique complète pour la formation au développement assisté par IA : supports de cours, base de connaissance, outils et jeux collaboratifs. - z4ppy/playlab42",
+      "ogImage": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:00.888Z"
+    },
+    "https://github.com/z4ppy/playlab42/tree/main/openspec": {
+      "ogTitle": "playlab42/openspec at main · z4ppy/playlab42",
+      "ogDescription": "Plateforme pédagogique complète pour la formation au développement assisté par IA : supports de cours, base de connaissance, outils et jeux collaboratifs. - z4ppy/playlab42",
+      "ogImage": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "ogSiteName": "GitHub",
+      "ogImageOriginal": "https://opengraph.githubassets.com/c328edae510e1b8c07116d95cedcea9ba155bd45a5a66bb10e3745a13756fb63/z4ppy/playlab42",
+      "favicon": "https://github.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:47:01.250Z"
+    },
+    "https://groq.com": {
+      "ogTitle": "Groq is the premier neocloud for fast inference",
+      "ogDescription": "Groq is the premier neocloud for fast inference. One fully integrated platform for infrastructure, inference, and control. Millions of developers run trillions of tokens on Groq every week.",
+      "ogImage": "https://groq.com/images/og.png",
+      "ogSiteName": "Groq",
+      "ogImageOriginal": "https://groq.com/images/og.png",
+      "favicon": "https://groq.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:38.748Z"
+    },
+    "https://huggingface.co": {
+      "ogTitle": "Hugging Face – The AI community building the future.",
+      "ogDescription": "We’re on a journey to advance and democratize artificial intelligence through open source and open science.",
+      "ogImage": "https://huggingface.co/front/thumbnails/v2-2.png",
+      "ogImageOriginal": "https://huggingface.co/front/thumbnails/v2-2.png",
+      "favicon": "https://huggingface.co/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:38.812Z"
+    },
+    "https://idx.google.com": {
+      "ogTitle": "Firebase Studio",
+      "ogDescription": "Firebase Studio is an entirely web-based workspace for full-stack application development, complete with the latest generative AI from Gemini, and full-fidelity app previews, powered by cloud emulators.",
+      "ogImage": "https://rstr.in/google/firebase-studio/jeRsLd9j3NZ",
+      "ogImageOriginal": "https://rstr.in/google/firebase-studio/jeRsLd9j3NZ",
+      "favicon": "https://idx.google.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:25.251Z"
+    },
+    "https://kubernetes.io/": {
+      "ogTitle": "Production-Grade Container Orchestration",
+      "ogDescription": "Kubernetes, also known as K8s, is an open source system for automating deployment, scaling, and management of containerized applications.\nIt groups containers that make up an application into logical units for easy management and discovery. Kubernetes builds upon 15 years of experience of running production workloads at Google, combined with best-of-breed ideas and practices from the community.\nPlanet scaleDesigned on the same principles that allow Google to run billions of containers a week, Kubernetes can scale without increasing your operations team.",
+      "ogImage": "https://kubernetes.io/images/kubernetes-open-graph.png",
+      "ogSiteName": "Kubernetes",
+      "ogImageOriginal": "/images/kubernetes-open-graph.png",
+      "favicon": "https://kubernetes.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.294Z"
+    },
+    "https://learn.deeplearning.ai": {
+      "ogTitle": "DeepLearning.AI",
+      "ogDescription": "Learn AI with DeepLearning.AI",
+      "ogSiteName": "DeepLearning.AI",
+      "favicon": "https://learn.deeplearning.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:49.885Z"
+    },
+    "https://llm-stats.com/benchmarks/swe-bench-verified": {},
+    "https://lmstudio.ai": {
+      "ogTitle": "LM Studio Bionic - Your Agent for Work and Code",
+      "ogDescription": "Bionic is LM Studio's agent for work and code. Create documents, slides, PDFs, and software with local or frontier open models.",
+      "ogImage": "https://files.lmstudio.ai/bionic/lm-studio-bionic-og.jpg",
+      "ogImageOriginal": "https://files.lmstudio.ai/bionic/lm-studio-bionic-og.jpg",
+      "favicon": "https://lmstudio.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:39.007Z"
+    },
+    "https://lovable.dev": {},
+    "https://markburgess.org/promises.html": {
+      "ogTitle": "A Theory of Voluntary Cooperation",
+      "ogDescription": "website description",
+      "favicon": "https://markburgess.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.794Z"
+    },
+    "https://mistral.ai": {
+      "ogTitle": "Frontier AI LLMs, assistants, agents, services | Mistral",
+      "ogDescription": "The most powerful AI platform for enterprises. Customize, fine-tune, and deploy AI assistants, autonomous agents, and multimodal AI with open models.",
+      "ogImage": "https://mistral.ai/cms-media/api/media/file/OG-mistral-main_1x.jpg",
+      "ogSiteName": "Mistral",
+      "ogImageOriginal": "https://mistral.ai/cms-media/api/media/file/OG-mistral-main_1x.jpg",
+      "favicon": "https://mistral.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:33.275Z"
+    },
+    "https://modelcontextprotocol.io": {
+      "ogTitle": "What is the Model Context Protocol (MCP)? - Model Context Protocol",
+      "ogImage": "data/bookmarks-images/69eebb0309ab.png",
+      "ogSiteName": "Model Context Protocol",
+      "ogImageOriginal": "https://raw.githubusercontent.com/modelcontextprotocol/docs/2eb6171ddbfeefde349dc3b8d5e2b87414c26250/images/og-image.png",
+      "favicon": "https://modelcontextprotocol.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:39.596Z"
+    },
+    "https://ollama.ai": {
+      "ogTitle": "Ollama",
+      "ogDescription": "Ollama is an API for open models. Get inference locally or in the cloud, anywhere you already work.",
+      "ogImage": "https://ollama.com/public/og.png",
+      "ogImageOriginal": "https://ollama.com/public/og.png",
+      "favicon": "https://ollama.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:38.851Z"
+    },
+    "https://openai.com/api": {},
+    "https://openai.com/index/introducing-codex/": {},
+    "https://openai.com/index/introducing-swe-bench-verified/": {},
+    "https://openai.com/news": {},
+    "https://opengitops.dev/": {
+      "ogTitle": "Home",
+      "ogDescription": "OpenGitOps is a set of open-source standards and best practices.",
+      "ogImage": "https://opengitops.dev/static/thumbnail-default-28daea91b25c13140a8352ed6a1aa031.png",
+      "ogImageOriginal": "/static/thumbnail-default-28daea91b25c13140a8352ed6a1aa031.png",
+      "favicon": "https://opengitops.dev/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.609Z"
+    },
+    "https://pieces.app": {
+      "ogTitle": "Pieces — The AI memory layer for modern work",
+      "ogDescription": "Pieces builds artificial memory from your work so you can recover decisions, resume where you left off, and bring real context into every AI tool.",
+      "ogImage": "https://ik.imagekit.io/pieces/images/open-graph/home.jpg",
+      "ogSiteName": "Pieces",
+      "ogImageOriginal": "https://ik.imagekit.io/pieces/images/open-graph/home.jpg",
+      "favicon": "https://pieces.app/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:25.365Z"
+    },
+    "https://pieces.app/blog/9-best-ai-code-generation-tools": {
+      "ogTitle": "10 Best AI code generators in 2025 [Free & Paid]",
+      "ogDescription": "AI tools can help generate code, research, and debug. In this article, we talk about some of the best AI code generators that can speed up your development workflow.",
+      "ogImage": "https://ik.imagekit.io/pieces/images/blog/9-best-ai-code-generation-tools/hero.png",
+      "ogSiteName": "Pieces",
+      "ogImageOriginal": "https://ik.imagekit.io/pieces/images/blog/9-best-ai-code-generation-tools/hero.png",
+      "favicon": "https://pieces.app/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.588Z"
+    },
+    "https://platform.openai.com/docs": {
+      "ogTitle": "OpenAI API Platform Documentation",
+      "ogDescription": "Explore guides, API docs, and examples for the OpenAI API.",
+      "ogImage": "https://developers.openai.com/og/api/docs.png",
+      "ogSiteName": "OpenAI Developers",
+      "ogImageOriginal": "https://developers.openai.com/og/api/docs.png",
+      "favicon": "https://platform.openai.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:33.435Z"
+    },
+    "https://platform.openai.com/docs/guides/prompt-engineering": {
+      "ogTitle": "Prompt engineering | OpenAI API",
+      "ogDescription": "Learn strategies and tactics for better results using large language models in the OpenAI API.",
+      "ogImage": "https://developers.openai.com/og/api/docs/guides/prompt-engineering.png",
+      "ogSiteName": "OpenAI Developers",
+      "ogImageOriginal": "https://developers.openai.com/og/api/docs/guides/prompt-engineering.png",
+      "favicon": "https://platform.openai.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:44.356Z"
+    },
+    "https://replit.com": {
+      "ogTitle": "AI App and Website Builder",
+      "ogDescription": "Describe what you want. Replit builds it. Get a working app or website in minutes. No coding required.",
+      "ogImage": "https://replit.com/public/images/opengraph_rebrand.jpg",
+      "ogSiteName": "replit",
+      "ogImageOriginal": "https://replit.com/public/images/opengraph_rebrand.jpg",
+      "favicon": "https://replit.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:23.410Z"
+    },
+    "https://scale.com/blog/swe-bench-pro": {
+      "ogTitle": "SWE-Bench Pro: Raising the Bar for Agentic Coding",
+      "ogDescription": "SWE-Bench Pro raises the bar for coding benchmarks with diverse, real-world, contamination-resistant tasks.",
+      "ogImage": "https://scale.com/api/og/eyJ0aXRsZSI6IlNXRS1CZW5jaCBQcm86IFJhaXNpbmcgdGhlIEJhciBmb3IgQWdlbnRpYyBDb2RpbmciLCJpbWFnZSI6Imh0dHBzOi8vY2RuLnNhbml0eS5pby9pbWFnZXMvNTB6YmEwZW8vcHJvZHVjdGlvbi9hZDRiYmU3NGM2N2FkNWI2ZWZmYTY3MjgyNGRhN2IwY2NlMzQzZTAzLTEyMDB4Njc1LnBuZz9hdXRvPWZvcm1hdCZxPTgwIiwibG9nbyI6Im5vbmUiLCJ2IjoiYjdhMzFlMTAifQ.jpg",
+      "ogSiteName": "Scale AI",
+      "ogImageOriginal": "https://scale.com/api/og/eyJ0aXRsZSI6IlNXRS1CZW5jaCBQcm86IFJhaXNpbmcgdGhlIEJhciBmb3IgQWdlbnRpYyBDb2RpbmciLCJpbWFnZSI6Imh0dHBzOi8vY2RuLnNhbml0eS5pby9pbWFnZXMvNTB6YmEwZW8vcHJvZHVjdGlvbi9hZDRiYmU3NGM2N2FkNWI2ZWZmYTY3MjgyNGRhN2IwY2NlMzQzZTAzLTEyMDB4Njc1LnBuZz9hdXRvPWZvcm1hdCZxPTgwIiwibG9nbyI6Im5vbmUiLCJ2IjoiYjdhMzFlMTAifQ.jpg",
+      "favicon": "https://scale.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:47.813Z"
+    },
+    "https://scale.com/leaderboard/swe_bench_pro_public": {
+      "ogTitle": "SWE-Bench Pro",
+      "ogDescription": "Compare the resolve rates of GPT-5.4, Muse Spark, Claude Opus 4.6, and Gemini 3.1 Pro on SWE-Bench Pro.",
+      "ogImage": "https://labs.scale.com/og?title=SWE-Bench%20Pro&subtitle=Scale%20Labs&theme=light",
+      "ogSiteName": "Scale Labs Leaderboards",
+      "ogImageOriginal": "https://labs.scale.com/og?title=SWE-Bench%20Pro&amp;subtitle=Scale%20Labs&amp;theme=light",
+      "favicon": "https://scale.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:47.762Z"
+    },
+    "https://simonwillison.net": {
+      "ogSiteName": "Simon Willison’s Weblog",
+      "ogTitle": "Simon Willison’s Weblog",
+      "favicon": "https://simonwillison.net/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:55.866Z"
+    },
+    "https://simonwillison.net/2025/Mar/19/vibe-coding/": {
+      "ogTitle": "Not all AI-assisted programming is vibe coding (but vibe coding rocks)",
+      "ogDescription": "Vibe coding is having a moment. The term was coined by Andrej Karpathy just a few weeks ago (on February 6th) and has since been featured in the New York …",
+      "ogSiteName": "Simon Willison’s Weblog",
+      "favicon": "https://simonwillison.net/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:45.071Z"
+    },
+    "https://simonwillison.net/2025/Oct/20/claude-code-for-web/": {
+      "ogTitle": "Claude Code for web—a new asynchronous coding agent from Anthropic",
+      "ogDescription": "Anthropic launched Claude Code for web this morning. It’s an asynchronous coding agent—their answer to OpenAI’s Codex Cloud and Google’s Jules, and has a very similar shape. I had preview …",
+      "ogImage": "https://static.simonwillison.net/static/2025/claude-code-for-web-card.jpg",
+      "ogSiteName": "Simon Willison’s Weblog",
+      "ogImageOriginal": "https://static.simonwillison.net/static/2025/claude-code-for-web-card.jpg",
+      "favicon": "https://simonwillison.net/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.021Z"
+    },
+    "https://snyk.io": {
+      "ogTitle": "Snyk AI Security Platform | Sécurisez le code, les agents et les applications | Snyk",
+      "ogDescription": "Chaque équipe qui développe des systèmes d’IA se pose une question : peut-on faire confiance à ce qu’on met en production ? Snyk sécurise le code écrit par l’IA, les agents qu’elle exécute et les applications qu’elle crée. Commencez gratuitement ou réservez une démo.",
+      "ogImage": "https://snyk.io/_next/static/immutable/media/default-social.1it2bxqetxg-k.png",
+      "ogSiteName": "Snyk",
+      "ogImageOriginal": "https://snyk.io/_next/static/immutable/media/default-social.1it2bxqetxg-k.png",
+      "favicon": "https://snyk.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.441Z"
+    },
+    "https://sourcegraph.com/cody": {
+      "ogTitle": "Cody - Sourcegraph docs",
+      "ogDescription": "Documentation for Sourcegraph, the code intelligence platform.",
+      "ogImage": "https://sourcegraph.com/docs/api/og/cody",
+      "ogImageOriginal": "https://sourcegraph.com/docs/api/og/cody",
+      "favicon": "https://sourcegraph.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:25.619Z"
+    },
+    "https://v0.dev": {
+      "ogTitle": "v0 by Vercel - Build Full-Stack Web Apps with AI",
+      "ogDescription": "Your collaborative AI assistant to design, iterate, and scale full-stack applications for the web.",
+      "ogImage": "https://v0.app/chat/api/og",
+      "ogImageOriginal": "https://v0.app/chat/api/og",
+      "favicon": "https://v0.dev/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:31.192Z"
+    },
+    "https://www.ansible.com/": {
+      "ogTitle": "Ansible Collaborative",
+      "ogDescription": "Ansible Collaborative",
+      "ogImage": "https://www.redhat.com/themes/custom/rhdc/img/red-hat-social-share.jpg",
+      "ogImageOriginal": "https://www.redhat.com/themes/custom/rhdc/img/red-hat-social-share.jpg",
+      "favicon": "https://www.ansible.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:58.459Z"
+    },
+    "https://www.anthropic.com": {
+      "ogTitle": "Home \\ Anthropic",
+      "ogDescription": "Anthropic is an AI safety and research company that's working to build reliable, interpretable, and steerable AI systems.",
+      "ogImage": "https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/68309ab48369f7ad9b4a40e1_open-graph.jpg",
+      "ogImageOriginal": "https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/68309ab48369f7ad9b4a40e1_open-graph.jpg",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:31.292Z"
+    },
+    "https://www.anthropic.com/claude-code": {
+      "ogTitle": "Claude Code by Anthropic | Agent de codage IA, Terminal, IDE",
+      "ogDescription": "Outil agentic coding d'Anthropic pour développeurs. Claude Code comprend votre code, édite des fichiers, exécute des commandes et accélère vos livraisons.",
+      "ogImage": "https://assets.claude.com/b3d55d767e7796957c7c80317ff33cd1dbd164fa.jpg?w=1200&h=630&fit=crop",
+      "ogSiteName": "Claude",
+      "ogImageOriginal": "https://assets.claude.com/b3d55d767e7796957c7c80317ff33cd1dbd164fa.jpg?w=1200&amp;h=630&amp;fit=crop",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:25.698Z"
+    },
+    "https://www.anthropic.com/engineering": {
+      "ogTitle": "Engineering",
+      "ogDescription": "Anthropic is an AI safety and research company that's working to build reliable, interpretable, and steerable AI systems.",
+      "ogImage": "https://www-cdn.anthropic.com/images/4zrzovbb/website/6d4a0d28992ade92d6fa63646fd9c9d318245c6c-2400x1260.jpg",
+      "ogImageOriginal": "https://www-cdn.anthropic.com/images/4zrzovbb/website/6d4a0d28992ade92d6fa63646fd9c9d318245c6c-2400x1260.jpg",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.077Z"
+    },
+    "https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk": {
+      "ogTitle": "Building agents with the Claude Agent SDK | Claude by Anthropic",
+      "ogDescription": "How to get started with the Claude Agent SDK and best practices for using it.",
+      "ogSiteName": "Claude",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.128Z"
+    },
+    "https://www.anthropic.com/engineering/claude-code-best-practices": {
+      "ogTitle": "Best practices for Claude Code - Claude Code Docs",
+      "ogDescription": "Tips and patterns for getting the most out of Claude Code, from configuring your environment to scaling across parallel sessions.",
+      "ogImage": "https://claude-code.mintlify.app/_next/image?url=%2F_mintlify%2Fapi%2Fog%3Fdivision%3DUse%2BClaude%2BCode%26title%3DBest%2Bpractices%2Bfor%2BClaude%2BCode%26description%3DTips%2Band%2Bpatterns%2Bfor%2Bgetting%2Bthe%2Bmost%2Bout%2Bof%2BClaude%2BCode%252C%2Bfrom%2Bconfiguring%2Byour%2Benvironment%2Bto%2Bscaling%2Bacross%2Bparallel%2Bsessions.%26theme%3D03628e99c753a03aec319053&amp;w=1200&amp;q=100",
+      "ogSiteName": "Claude Code Docs",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:29.893Z"
+    },
+    "https://www.anthropic.com/engineering/code-execution-with-mcp": {
+      "ogTitle": "Code execution with MCP: building more efficient AI agents",
+      "ogDescription": "Learn how code execution with the Model Context Protocol enables agents to handle more tools while using fewer tokens, reducing context overhead by up to 98.7%.",
+      "ogImage": "https://www-cdn.anthropic.com/images/4zrzovbb/website/8071ace7b1158ab6d3f8fa04679cef31234425ab-2400x1260.png",
+      "ogImageOriginal": "https://www-cdn.anthropic.com/images/4zrzovbb/website/8071ace7b1158ab6d3f8fa04679cef31234425ab-2400x1260.png",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:43.047Z"
+    },
+    "https://www.anthropic.com/news": {
+      "ogTitle": "Newsroom",
+      "ogDescription": "Anthropic is an AI safety and research company that's working to build reliable, interpretable, and steerable AI systems.",
+      "ogImage": "https://www-cdn.anthropic.com/images/4zrzovbb/website/6d4a0d28992ade92d6fa63646fd9c9d318245c6c-2400x1260.jpg",
+      "ogImageOriginal": "https://www-cdn.anthropic.com/images/4zrzovbb/website/6d4a0d28992ade92d6fa63646fd9c9d318245c6c-2400x1260.jpg",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.169Z"
+    },
+    "https://www.anthropic.com/news/model-context-protocol": {
+      "ogTitle": "Introducing the Model Context Protocol",
+      "ogDescription": "The Model Context Protocol (MCP) is an open standard for connecting AI assistants to the systems where data lives, including content repositories, business tools, and development environments. Its aim is to help frontier models produce better, more relevant responses.",
+      "ogImage": "https://www-cdn.anthropic.com/images/4zrzovbb/website/1aef864f9b246c740fe3cef6e1068f2220995d5e-2400x1260.png",
+      "ogImageOriginal": "https://www-cdn.anthropic.com/images/4zrzovbb/website/1aef864f9b246c740fe3cef6e1068f2220995d5e-2400x1260.png",
+      "favicon": "https://www.anthropic.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:39.795Z"
+    },
+    "https://www.augmentcode.com": {
+      "ogTitle": "Augment Code: Agentic software development at organizational scale",
+      "ogDescription": "Your engineers have agents. Your organization doesn't. Cosmos is the platform that closes the gap.",
+      "ogImage": "https://www.augmentcode.com/api/og?title=Augment+Code%3A+Agentic+software+development+at+organizational+scale",
+      "ogImageOriginal": "https://www.augmentcode.com/api/og?title=Augment+Code%3A+Agentic+software+development+at+organizational+scale",
+      "favicon": "https://www.augmentcode.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:29.632Z"
+    },
+    "https://www.builder.io": {
+      "ogTitle": "Builder.io: Collaborative Platform to Build With AI Agents",
+      "ogDescription": "One codebase for engineers, designers, PMs, and marketers. Everyone works from one source of truth, on brand and in code, with no handoffs to clean up.",
+      "ogImage": "https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2F59eed212865745c5a0bf0cfc28c38173?width=1200",
+      "ogSiteName": "Builder.io",
+      "ogImageOriginal": "https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2F59eed212865745c5a0bf0cfc28c38173?width=1200",
+      "favicon": "https://www.builder.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:30.542Z"
+    },
+    "https://www.builder.io/blog/best-ai-coding-tools-2025": {
+      "ogTitle": "The Best AI Coding Tools in 2025",
+      "ogDescription": "Discover the best AI tools for coding in 2025 and transform how you build with these powerful coding assistants.",
+      "ogImage": "https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2Ff7d745144ddb4ebf96a7c20dd57c71f4?width=1200",
+      "ogSiteName": "Builder.io",
+      "ogImageOriginal": "https://cdn.builder.io/api/v1/image/assets%2FYJIGb4i01jvw0SRdL5Bt%2Ff7d745144ddb4ebf96a7c20dd57c71f4?width=1200",
+      "favicon": "https://www.builder.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.360Z"
+    },
+    "https://www.cncf.io/reports/cncf-annual-survey-2024/": {
+      "ogTitle": "Cloud Native 2024: Approaching a Decade of Code, Cloud, and Change",
+      "ogDescription": "In its tenth year, the CNCF Annual Survey provides the cloud native community with insight into adoption, cloud and container usage, Kubernetes reach, and project growth. In the fall of 2024…",
+      "ogImage": "https://www.cncf.io/wp-content/uploads/2025/04/cncf_ar24_hdr_rev2.jpg",
+      "ogSiteName": "CNCF",
+      "ogImageOriginal": "https://www.cncf.io/wp-content/uploads/2025/04/cncf_ar24_hdr_rev2.jpg",
+      "favicon": "https://www.cncf.io/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.683Z"
+    },
+    "https://www.hashicorp.com/en/products/terraform": {},
+    "https://www.ibm.com/think/topics/vibe-coding": {
+      "ogTitle": "What is Vibe Coding? | IBM",
+      "ogDescription": "Vibe Coding is a fresh take in coding where users express their intention using plain speech, and the AI transforms that thinking into executable code. The goal of Vibe Coding is to create an AI powered development environment where AI agents serve as coding assistants making suggestions in real time, automating tedious processes, and even producing standard codebase structures.",
+      "ogImage": "https://www.ibm.com/content/dam/worldwide-content/stock-assets/adb-stk/ul/g/00/1b/adobestock_637245895.jpeg/_jcr_content/renditions/cq5dam.web.1280.1280.jpeg",
+      "ogImageOriginal": "https://www.ibm.com/content/dam/worldwide-content/stock-assets/adb-stk/ul/g/00/1b/adobestock_637245895.jpeg/_jcr_content/renditions/cq5dam.web.1280.1280.jpeg",
+      "favicon": "https://www.ibm.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:46.696Z"
+    },
+    "https://www.jetbrains.com/ai/": {
+      "ogTitle": "JetBrains AI | Intelligent Coding Assistance, AI Solutions, and More",
+      "ogDescription": "Transform your business with JetBrains AI solutions and services, including integrated AI tools and software development expertise.",
+      "ogImage": "https://resources.jetbrains.com/storage/products/ai/img/meta/ai_solutions_preview.png",
+      "ogSiteName": "JetBrains",
+      "ogImageOriginal": "https://resources.jetbrains.com/storage/products/ai/img/meta/ai_solutions_preview.png",
+      "favicon": "https://www.jetbrains.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:23.284Z"
+    },
+    "https://www.latent.space": {
+      "ogTitle": "Latent.Space | Substack",
+      "ogDescription": "The AI Engineer newsletter + Top technical AI podcast. How leading labs build Agents, Models, Infra, & AI for Science. See https://latent.space/about for highlights from Greg Brockman, Andrej Karpathy, George Hotz, Simon Willison, Soumith Chintala et al! Click to read Latent.Space, a Substack publication with hundreds of thousands of subscribers.",
+      "ogImage": "https://substackcdn.com/image/fetch/$s_!2Y6l!,f_auto,q_auto:best,fl_progressive:steep/https%3A%2F%2Fswyx.substack.com%2Ftwitter%2Fsubscribe-card.jpg%3Fv%3D-602510947%26version%3D9",
+      "ogImageOriginal": "https://substackcdn.com/image/fetch/$s_!2Y6l!,f_auto,q_auto:best,fl_progressive:steep/https%3A%2F%2Fswyx.substack.com%2Ftwitter%2Fsubscribe-card.jpg%3Fv%3D-602510947%26version%3D9",
+      "favicon": "https://www.latent.space/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:48.007Z"
+    },
+    "https://www.latent.space/p/claude-code": {
+      "ogTitle": "Claude Code: Anthropic's Agent in Your Terminal",
+      "ogDescription": "Cat Wu and Boris Cherny from the Claude Code team stop by to tell all!",
+      "ogImage": "https://substackcdn.com/image/fetch/$s_!1mZ7!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fcd59d811-4ab8-4e38-aa46-f1d84ab1650b_1920x1080.jpeg",
+      "ogImageOriginal": "https://substackcdn.com/image/fetch/$s_!1mZ7!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fcd59d811-4ab8-4e38-aa46-f1d84ab1650b_1920x1080.jpeg",
+      "favicon": "https://www.latent.space/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:55.944Z"
+    },
+    "https://www.openpolicyagent.org/": {
+      "ogTitle": "Open Policy Agent - Homepage | Open Policy Agent",
+      "favicon": "https://www.openpolicyagent.org/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:59.692Z"
+    },
+    "https://www.pragmaticcoders.com/resources/ai-developer-tools": {
+      "ogTitle": "Best AI for coding in 2026: 6 top tools you NEED",
+      "ogDescription": "We tested 20+ AI coding tools – agents, reviewers, and assistants. See what stood out and what features the best tools offer.",
+      "ogImage": "https://www.pragmaticcoders.com/wp-content/uploads/2024/05/top-ai-tools-for-developers-cover-2026.png",
+      "ogSiteName": "Pragmatic Coders",
+      "ogImageOriginal": "https://www.pragmaticcoders.com/wp-content/uploads/2024/05/top-ai-tools-for-developers-cover-2026.png",
+      "favicon": "https://www.pragmaticcoders.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.591Z"
+    },
+    "https://www.promptingguide.ai": {
+      "ogTitle": "Prompt Engineering Guide – Nextra",
+      "ogDescription": "A Comprehensive Overview of Prompt Engineering",
+      "favicon": "https://www.promptingguide.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:42.846Z"
+    },
+    "https://www.promptingguide.ai/papers": {
+      "ogTitle": "Papers – Nextra",
+      "ogDescription": "A Comprehensive Overview of Prompt Engineering",
+      "favicon": "https://www.promptingguide.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:44.014Z"
+    },
+    "https://www.qodo.ai": {
+      "ogTitle": "Qodo | AI Agents for Code, Review & Workflows",
+      "ogDescription": "Qodo is an agentic code review and integrity platform for improving code quality at every stage.",
+      "ogImage": "https://www.qodo.ai/wp-content/uploads/2025/06/social-share-new.webp",
+      "ogSiteName": "Qodo",
+      "ogImageOriginal": "https://www.qodo.ai/wp-content/uploads/2025/06/social-share-new.webp",
+      "favicon": "https://www.qodo.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:23.892Z"
+    },
+    "https://www.qodo.ai/blog/best-ai-coding-assistant-tools/": {
+      "ogTitle": "14 AI Coding Assistant Tools, Tested Across Real Engineering Workflows 2026",
+      "ogDescription": "We tested 14 AI coding tools across editor assistants, agents, app builders, and review platforms, covering real workflows, real limitations, no vendor spin.",
+      "ogImage": "https://www.qodo.ai/wp-content/uploads/2026/02/14-best-ai-coding-assistant-tools.png",
+      "ogSiteName": "Qodo",
+      "ogImageOriginal": "https://www.qodo.ai/wp-content/uploads/2026/02/14-best-ai-coding-assistant-tools.png",
+      "favicon": "https://www.qodo.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.564Z"
+    },
+    "https://www.reddit.com/r/ChatGPTCoding/": {
+      "ogTitle": "Reddit",
+      "favicon": "https://www.reddit.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.507Z"
+    },
+    "https://www.reddit.com/r/LocalLLaMA/": {
+      "ogTitle": "Reddit",
+      "favicon": "https://www.reddit.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.505Z"
+    },
+    "https://www.tabnine.com": {
+      "ogTitle": "Ship AI-generated code with confidence",
+      "ogDescription": "AI writes code faster than teams can test it. Tricentis deploys a team of specialized AI agents, governed by AI Workspace, to test, validate, and release at AI speed.",
+      "ogImage": "https://be.tricentis.com/media-assets/2026/03/Product_platforms-share-image.webp",
+      "ogSiteName": "Tricentis",
+      "ogImageOriginal": "https://be.tricentis.com/media-assets/2026/03/Product_platforms-share-image.webp",
+      "favicon": "https://www.tabnine.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:24.018Z"
+    },
+    "https://www.technologyreview.com/2025/11/05/1127477/from-vibe-coding-to-context-engineering-2025-in-software-development/": {
+      "ogTitle": "From vibe coding to context engineering: 2025 in software development",
+      "ogDescription": "2025 has seen a significant shift in the use of AI in software engineering— a loose, vibes-based approach has given way to a systematic approach to managing how AI systems process context.",
+      "ogImage": "https://wp.technologyreview.com/wp-content/uploads/2025/11/TR33_MIT_inline_2.jpg?resize=1200,600",
+      "ogSiteName": "MIT Technology Review",
+      "ogImageOriginal": "https://wp.technologyreview.com/wp-content/uploads/2025/11/TR33_MIT_inline_2.jpg?resize=1200,600",
+      "favicon": "https://www.technologyreview.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:46.796Z"
+    },
+    "https://www.technologyreview.com/2025/12/15/1128352/rise-of-ai-coding-developers-2026/": {
+      "ogTitle": "AI coding is now everywhere. But not everyone is convinced.",
+      "ogDescription": "Developers are navigating confusing gaps between expectation and reality. So are the rest of us.",
+      "ogImage": "https://wp.technologyreview.com/wp-content/uploads/2025/12/MIT_AI-Hype_1-2-social.jpg?resize=1200,600",
+      "ogSiteName": "MIT Technology Review",
+      "ogImageOriginal": "https://wp.technologyreview.com/wp-content/uploads/2025/12/MIT_AI-Hype_1-2-social.jpg?resize=1200,600",
+      "favicon": "https://www.technologyreview.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:56.261Z"
+    },
+    "https://www.thedroidsonroids.com/blog/best-ai-coding-assistant-tools": {},
+    "https://www.together.ai": {
+      "ogTitle": "Together AI | The AI Native Cloud",
+      "ogDescription": "Build what's next on the AI Native Cloud. Full-stack AI platform for inference, fine-tuning, and GPU clusters — powered by cutting-edge research.",
+      "ogImage": "https://cdn.prod.website-files.com/69654e88dce9154b5f1206dd/69a49f86fc70648ca04854f6_OG-image-home.png",
+      "ogImageOriginal": "https://cdn.prod.website-files.com/69654e88dce9154b5f1206dd/69a49f86fc70648ca04854f6_OG-image-home.png",
+      "favicon": "https://www.together.ai/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:33.107Z"
+    },
+    "https://www.weave.works/blog/gitops-operations-by-pull-request": {},
+    "https://www.ywian.com/blog/the-git-worktree-claude-code-playbook": {
+      "favicon": "https://www.ywian.com/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:57.317Z"
+    },
+    "https://zed.dev": {
+      "ogTitle": "Zed — Your last next editor",
+      "ogDescription": "Zed is a high-performance, multiplayer code editor from the creators of Atom and Tree-sitter.",
+      "ogImage": "https://zed.dev/img/home/og.webp",
+      "ogSiteName": "Zed",
+      "ogImageOriginal": "https://zed.dev/img/home/og.webp",
+      "favicon": "https://zed.dev/favicon.ico",
+      "fetchedAt": "2026-10-03T16:46:23.210Z"
+    }
+  }
+}

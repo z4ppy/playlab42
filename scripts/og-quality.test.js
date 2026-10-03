@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, basename } from 'node:path';
 import { loadCache, saveCache, fetchOGMetadata, hashUrl } from './og-fetcher.js';
 import { getRootDir } from './lib/build-utils.js';
+import { editorialMetadata } from './lib/bookmark-metadata.js';
 
 const url = 'https://build-quality.test/page';
 let directory;
@@ -92,7 +93,9 @@ describe('Qualité des métadonnées et du cache OG', () => {
     ['application/octet-stream', '/image.jpeg', '.jpg'],
     [null, '/image.png', '.png'],
     [null, '/image.unknown', '.jpg'],
-  ])('télécharger réellement les octets du type %s, chemin %s', async (contentType, image, extension) => {
+    ['image/png', '/image.png?a=1&amp;b=2', '.png', '/image.png?a=1&b=2'],
+    ['image/png', '/image.png?a=1&amp;amp;b=2', '.png', '/image.png?a=1&amp;b=2'],
+  ])('télécharger réellement les octets du type %s, chemin %s', async (contentType, image, extension, decodedImage = image) => {
     const pageUrl = `${url}/${basename(directory)}`;
     const relative = `data/bookmarks-images/${hashUrl(pageUrl)}${extension}`;
     const path = join(getRootDir(import.meta.url), relative);
@@ -107,7 +110,8 @@ describe('Qualité des métadonnées et du cache OG', () => {
     expect(result.meta.ogImage).toBe(relative);
     expect(result.meta.ogImageOriginal).toBe(image);
     expect(readFileSync(path, 'utf8')).toBe('image-bytes');
-    expect(fetch.mock.calls[1][0]).toBe(new URL(image, pageUrl).href);
+    expect(fetch.mock.calls[1][0]).toBe(new URL(decodedImage, pageUrl).href);
+    expect(editorialMetadata(result, pageUrl).ogImage).toBe(new URL(decodedImage, pageUrl).href);
     const again = await fetchOGMetadata(pageUrl, {});
     expect(again.meta.ogImage).toBe(relative);
     expect(fetch).toHaveBeenCalledTimes(3);

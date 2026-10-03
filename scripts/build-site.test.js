@@ -18,6 +18,7 @@ describe('Packaging du site public', () => {
       put(`${name}/example.txt`);
     }
     for (const name of ['catalogue', 'parcours', 'bookmarks']) {put(`data/${name}.json`, '{}');}
+    put('data/bookmarks.json', '{"categories":[]}');
     put('docs/site/index.html', '<html>Guides</html>');
   });
   afterEach(() => rmSync(root, { recursive: true, force: true }));
@@ -76,5 +77,41 @@ describe('Packaging du site public', () => {
     for (const name of ['../etc/passwd', 'Makefile', '.github/skills/a.md', 'app/a.test.js']) {
       expect(isPublicSitePath(name)).toBe(false);
     }
+  });
+
+  test('publier les seules images éditoriales référencées, jamais un cache technique résiduel', () => {
+    put('data/bookmarks-images/curated.png', 'reviewed');
+    put('data/bookmarks-images/cache.png', 'ignored cache');
+    put('data/bookmarks.json', JSON.stringify({
+      categories: [{ bookmarks: [{ meta: { ogImage: 'data/bookmarks-images/curated.png' } }] }],
+    }));
+    const output = buildSite({ root, commit: null });
+    expect(readFileSync(join(output, 'data/bookmarks-images/curated.png'), 'utf8')).toBe('reviewed');
+    expect(existsSync(join(output, 'data/bookmarks-images/cache.png'))).toBe(false);
+  });
+
+  test.each(['data/bookmarks-images/missing.png', 'data/bookmarks-images/../private.png'])(
+    'refuser une image locale non publiable %s avant remplacement du site',
+    image => {
+      const output = buildSite({ root, commit: null });
+      put('data/bookmarks.json', JSON.stringify({ categories: [{ bookmarks: [{ meta: { ogImage: image } }] }] }));
+      expect(() => buildSite({ root, commit: null })).toThrow(/image|Image/);
+      expect(existsSync(join(output, 'index.html'))).toBe(true);
+    },
+  );
+
+  test('accepter une image manuelle et refuser un catalogue malformé ou un lien d’image', () => {
+    put('data/bookmarks-images/manual.png', 'reviewed');
+    put('data/bookmarks.json', JSON.stringify({
+      categories: [{ bookmarks: [{ image: 'data/bookmarks-images/manual.png' }, { meta: { ogImage: 'https://example.test/image.png' } }] }],
+    }));
+    expect(existsSync(join(buildSite({ root, commit: null }), 'data/bookmarks-images/manual.png'))).toBe(true);
+    rmSync(join(root, 'data/bookmarks-images/manual.png'));
+    symlinkSync(join(root, 'package.json'), join(root, 'data/bookmarks-images/manual.png'));
+    expect(() => buildSite({ root, commit: null })).toThrow(/non régulière/);
+    put('data/bookmarks.json', '{"categories":[{}]}');
+    expect(() => buildSite({ root, commit: null })).toThrow(/bookmarks requis/);
+    put('data/bookmarks.json', '{}');
+    expect(() => buildSite({ root, commit: null })).toThrow(/categories requises/);
   });
 });

@@ -40,6 +40,7 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | `scripts/check-deployment.js` | 80 % | 100 % | 80 % |
 | `scripts/lib/build-utils.js` | 100 % | 100 % | 100 % |
 | `scripts/og-fetcher.js` | 85 % | 100 % | 90 % |
+| `scripts/lib/artifact-inventory.js` | 85 % | 100 % | 100 % |
 
 Ces composants sont critiques pour le déterminisme et la livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -209,8 +210,8 @@ de vulnérabilités.
 | 2 — sécurité et reproductibilité, PR #136 intégrée | Moderniser ESLint Security, épingler actions/scanners/images, définir gates et exceptions | Outils exécutés, références vérifiables, intégration à main constatée ; archive distincte |
 | Avant 3 — optimisation CI | Corriger l'attente HTTP après enrichissement OG ; installations/cache/parallélisme conservés après mesure | Fixtures quittant naturellement sous 3 s, comparaison native avant/après ; gates et archive inchangés |
 | 3 — couverture du lint, PR #140 | Biome TS, ESLint scripts HTML et corrections de l'existant, alignement local/CI | Vrais CLI, entrées interdites refusées ; checks natifs constatés, intégration distincte |
-| 4 — qualité du code | Complexité, duplication, responsabilités, erreurs, tests d'invariants et seuils ciblés | Refactorings justifiés par des défauts observables ; régressions représentatives détectées |
-| 5 — fabrication et exploitation | Snapshot OG séparé, inventaire/SBOM, provenance, monitoring et récupération | Artefact reproductible, provenance vérifiée et restauration exercée |
+| 4 — qualité du code, PR #142 validée | Contrats JSON/cache, responsabilités, complexité ciblée, persistance atomique et idempotence Diese & Mat | Défauts reproduits et checks natifs constatés ; intégration distincte |
+| 5 — fabrication et exploitation préparée | Snapshot OG séparé, inventaire/SBOM, provenance non signée, monitoring et reprise locale | Deux fabrications comparées, archive vérifiée et restauration tar exercée ; publication/monitoring natif distincts |
 
 La **protection classique de `main` est désormais active sur GitHub** :
 PR, neuf checks natifs après observation de la PR #135, discussions résolues et historique linéaire, sans bypass

@@ -46,6 +46,7 @@
       <li><code>build:bookmarks</code> : écrit <code>data/bookmarks.json</code>.</li>
       <li><code>build:guides</code> : transforme les Markdown de <code>docs/</code> en pages HTML dans <code>docs/site/</code>.</li>
       <li><code>build:site</code> : copie les ressources publiques dans <code>site/</code>, avec <code>build-info.json</code> (version et commit CI).</li>
+      <li><code>build:provenance</code> : ajoute SBOM npm de fabrication et manifeste des fichiers publics avec SHA-256.</li>
     </ol>
     <p>
       Les fichiers générés (<code>dist/</code>, catalogues, <code>assets/vendor/</code>, <code>docs/site/</code>, <code>site/</code>) sont ignorés par Git :
@@ -55,7 +56,8 @@
     <h2>Ce qui n'est PAS automatique</h2>
     <p class="guide-note">
       Seul le dossier public est archivé : pas de <code>node_modules/</code>, tests, caches ou configuration d'agents.
-      Le build production conserve la collecte Open Graph ; il n'est donc pas entièrement sans réseau.
+      Le build utilise le snapshot OG revu ; la collecte est réservée à <code>refresh:bookmarks</code>.
+      La CI compare deux fabrications à epoch identique et vérifie l'archive avant le navigateur.
       Le workflow n'archive pas les changes OpenSpec et ne crée pas de release.
       L'archivage demande une <strong>livraison effective</strong> puis une <strong>décision explicite</strong>
       du mainteneur (<code>openspec-archive-change</code>). Et aucun skill ne fusionne une PR à votre place.
@@ -74,8 +76,11 @@ make serve         # sert sur le port affiché par make info</code></pre>
     <p>
       Chaque worktree Git a son projet Docker et son port (plage 5200-5299, calculé depuis le nom du dossier) :
       plusieurs branches peuvent tourner en parallèle sans conflit. Pour reconstruire comme le fait le déploiement,
-      le mode local prépare aussi <code>site/</code>, sans la collecte Open Graph du build de production.
+      le mode local prépare aussi <code>site/</code>, mais omet l'enrichissement du snapshot.
     </p>
+    <p class="guide-resource"><a href="../../../../../docs/site/guides/artifact-operations.html" target="_top">
+      Lire le runbook : reproductibilité, inventaire, monitoring et reprise</a>.
+      <code>check:recovery</code> teste une vraie archive localement ; aucune reprise de production n'est implicite.</p>
 
     <h2>hello-usine : le trajet complet</h2>
     <ol class="guide-flow">

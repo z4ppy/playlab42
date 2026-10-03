@@ -6,7 +6,7 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { getRootDir, readJSONSync, writeJSONAtomicSync } from './lib/build-utils.js';
+import { getRootDir, readJSONSync, writeJSONAtomicSync, getBuildTimestamp } from './lib/build-utils.js';
 import {
   extractSlideIds,
   countSlides,
@@ -330,7 +330,7 @@ function main() {
   console.log('\nConstruction du catalogue...');
   const catalogue = {
     version: '1.0',
-    generatedAt: new Date().toISOString(),
+    generatedAt: getBuildTimestamp(),
     epics,
     taxonomy: {
       hierarchy: buildHierarchy(epics, config),

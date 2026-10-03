@@ -1,0 +1,26 @@
+name: Published site monitor
+
+on:
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  monitor:
+    name: Published identity and resources
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '26'
+      - name: Vérifier la publication attendue sans déployer
+        env:
+          SITE_URL: ${{ vars.PLAYLAB_SITE_URL || 'https://z4ppy.github.io/playlab42/' }}
+        run: node scripts/check-deployment.js "$SITE_URL" "$(git rev-parse HEAD)"

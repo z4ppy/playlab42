@@ -17,18 +17,26 @@ Exécuter uniquement dans un rôle autorisé à utiliser Docker.
 | Logique de parcours | `make npm CMD="test -- --runTestsByPath scripts/parcours-utils.test.js"` |
 | TypeScript | `make npm CMD="run lint:ts"`, `make typecheck`, tests affectés et `make build-ts` |
 | Interaction navigateur | `make test-e2e` |
-| Préparation locale sans collecte OpenGraph | `make npm CMD="run build:local"` |
-| Transport/enrichissement OG | Tests `scripts/og-fetcher.test.js`, `scripts/og-fetcher-process.test.js`, `scripts/build-bookmarks-offline.test.js`, puis vrai build réseau chronométré |
+| Préparation locale sans enrichissement OG | `make npm CMD="run build:local"` ; production utilise un snapshot revu sans collecte |
+| Transport/refresh éditorial OG | Tests `scripts/og-fetcher.test.js`, `scripts/og-fetcher-process.test.js`, `scripts/build-bookmarks-offline.test.js` ; refresh réseau uniquement s'il est autorisé, puis relire snapshot/images |
+| Artefact/provenance/reprise | `scripts/artifact-integrity.test.js`, `make npm CMD="run verify:site"`, `make npm CMD="run check:recovery"` ; comparer deux builds avec mêmes sources/outils/epoch |
 | Helpers/builders/cache JSON | Tests `scripts/build-utils.test.js`, `scripts/build-input-errors.test.js`, `scripts/og-quality.test.js`, `scripts/quality-lint.test.js`, puis couverture ciblée requise ; pas de baisse de seuil |
 | Livraison complète | `make lint`, `make npm CMD="run test:coverage"`, `make typecheck`, `make npm CMD="run audit:dependencies"`, OpenSpec et build selon AGENTS/CI |
 
 Ne pas supposer qu'un test existe : vérifier son chemin avant de le cibler.
-La CI complète peut effectuer un build des bookmarks avec accès réseau ;
-`build:local` n'est pas la preuve de réussite de ce build de production.
+La CI normale utilise le snapshot OG ; `build:local` omet cet enrichissement.
+Ne pas exécuter un refresh éditorial juste pour verdir une fabrication.
 Le build complet prépare `site/`. La CI navigateur teste l'archive publique
 extraite avec `PLAYWRIGHT_PREBUILT=1` ; ne pas reconstruire cette archive avant
 de la déclarer validée. La publication réutilise la CI et cette même archive.
+Vérifier les images locales réellement référencées, pas seulement les hashes :
+le cache OG ignoré ne doit pas entrer dans l'archive. Une nouvelle image OG
+utilise son URL distante, sauf revue et versionnement local explicites.
 Le smoke HTTP vérifie ensuite le SHA publié, sans rollback automatique.
+La SBOM npm décrit la fabrication, pas tout le runtime du navigateur.
+L'inventaire est hashé mais non signé ; consulter le
+[runbook](../../../../docs/guides/artifact-operations.md) avant récupération.
+Tester une reprise locale n'autorise aucun redéploiement en production.
 Si le travail est terminé mais que le processus reste vivant, examiner minuteurs
 et corps HTTP abandonnés ; ne pas ajouter de sortie forcée. Un test de transport
 doit couvrir la lecture du corps et la sortie naturelle, pas seulement un mock
