@@ -116,4 +116,13 @@ describe('Contrats des utilitaires de fabrication', () => {
       log.mockRestore();
     }
   });
+
+  test('fixer la date de fabrication depuis l’epoch sans masquer une entrée invalide', () => {
+    expect(build.getBuildTimestamp('0')).toBe('1970-01-01T00:00:00.000Z');
+    expect(build.getBuildTimestamp('8640000000000')).toBe('+275760-09-13T00:00:00.000Z');
+    expect(build.getBuildTimestamp()).toMatch(/^\d{4}-/);
+    for (const epoch of ['', '-1', '01', '1.2', 'abc', '9007199254740992', '8640000000001']) {
+      expect(() => build.getBuildTimestamp(epoch)).toThrow(/SOURCE_DATE_EPOCH/);
+    }
+  });
 });

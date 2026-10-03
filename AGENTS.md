@@ -235,6 +235,12 @@ Le build complet `npm run build` inclut `build:ts`, puis prépare le dossier
 public `site/`. La CI teste l'archive produite dans Chromium avant que le workflow
 de publication ne déploie cette même archive. Le contrôle HTTP après publication
 vérifie le commit ; il ne remplace pas les tests ni les protections GitHub.
+Le build normal utilise `metadata/bookmarks-og.json`, sans collecte distante.
+`make npm CMD="run refresh:bookmarks"` est une actualisation éditoriale explicite :
+relire snapshot et images avant commit. `build:local` omet cet enrichissement.
+La CI fixe SOURCE_DATE_EPOCH, compare deux fabrications, vérifie manifeste/SBOM
+et exerce une reprise locale. Aucune attestation signée ou restauration en
+production n'est implicite ; voir `docs/guides/artifact-operations.md`.
 
 ### Types disponibles
 

@@ -53,6 +53,10 @@ date de réexamen. Une dépendance incompatible n'est pas installée avec force 
 utiliser le lint `.ts` Biome puis tsc, sans annoncer une analyse typée ou les
 règles de sécurité ESLint sur TS. Pour les HTML, vérifier scripts et politique
 sans attributs événementiels ; le plugin ne contrôle pas le markup.
+Pour la fabrication, vérifier snapshot OG, manifeste/SBOM et comparaison des
+deux builds. `check:recovery` n'exerce qu'une archive locale ; le
+[runbook](../../../docs/guides/artifact-operations.md) ne donne aucune autorisation
+de restaurer la production. Ne pas confondre manifeste hashé et signature.
 
 Ne pas ignorer un code de sortie, supprimer un test, modifier les règles d'un jeu
 ou mettre à jour une dépendance sans rapport pour faire passer une release.

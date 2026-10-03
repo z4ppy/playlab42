@@ -71,10 +71,29 @@ describe('Contrat des workflows de livraison', () => {
     const { scripts } = JSON.parse(read('package.json'));
     for (const key of ['build', 'build:local']) {
       expect(scripts[key]).toMatch(/^npm run build:ts &&/);
-      expect(scripts[key]).toMatch(/&& npm run build:site$/);
+      expect(scripts[key]).toMatch(/&& npm run build:site && npm run build:provenance$/);
     }
     expect(scripts['build:local']).toContain('--skip-og');
     expect(scripts.build).not.toContain('--skip-og');
+    expect(scripts.build).not.toContain('--refresh-og');
+    expect(scripts['refresh:bookmarks']).toContain('--refresh-og');
+  });
+
+  test('comparer deux builds, exercer la reprise et vérifier l’archive reçue', () => {
+    const build = ci.jobs.build.steps.find(step => step.name === 'Build').run;
+    expect(build).toContain('SOURCE_DATE_EPOCH');
+    expect(build.match(/npm run build\n/g)).toHaveLength(2);
+    expect(build).toContain('cmp "$RUNNER_TEMP/first-build-manifest.json" site/build-manifest.json');
+    expect(build).toContain('npm run check:recovery');
+    const steps = browser.jobs.browser.steps;
+    expect(steps.findIndex(step => step.run === 'npm run verify:site'))
+      .toBeLessThan(steps.findIndex(step => step.run === 'npm run test:e2e'));
+    expect(steps.find(step => step.run === 'npm run verify:site').if).toBe('inputs.prebuilt');
+    const monitor = parse(read('.github/workflows/site-monitor.yml'));
+    expect(monitor.permissions).toEqual({ contents: 'read' });
+    expect(monitor.on.schedule).toHaveLength(1);
+    expect(monitor.jobs.monitor.steps.some(step => step.with?.ref === 'main')).toBe(true);
+    expect(monitor.jobs.monitor.steps.find(step => step.env?.SITE_URL).run).toContain('git rev-parse HEAD');
   });
 
   test('le lint requis couvre JS, scripts HTML et TS avec les mêmes commandes locales', () => {

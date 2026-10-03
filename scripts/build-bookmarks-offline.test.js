@@ -14,11 +14,16 @@ afterEach(() => {
   }
 });
 
-function build(args) {
+function build(args, snapshot = {
+  version: 1, entries: { 'https://example.invalid/docs': { ogDescription: 'Snapshot revu' } },
+}) {
   root = mkdtempSync(join(tmpdir(), 'bookmarks-offline-'));
   mkdirSync(join(root, 'scripts'));
   mkdirSync(join(root, 'bookmarks'));
   mkdirSync(join(root, 'data'));
+  mkdirSync(join(root, 'metadata'));
+  writeFileSync(join(root, 'metadata/bookmarks-og.json'), JSON.stringify(snapshot));
+  writeFileSync(join(root, 'data/bookmarks.json'), '{"previous":true}');
   for (const filename of ['build-bookmarks.js', 'og-fetcher.js']) {
     cpSync(fileURLToPath(new URL(filename, import.meta.url)), join(root, 'scripts', filename));
   }
@@ -56,10 +61,32 @@ describe('Catalogue bookmarks sans enrichissement réseau', () => {
     expect(result.stdout).toContain('Enrichissement Open Graph ignoré');
   });
 
-  test('conserve les tentatives Open Graph par défaut', () => {
+  test('utilise le snapshot par défaut sans effectuer une requête', () => {
     const result = build([]);
+    expect(result.error).toBeUndefined();
+    expect(result.status).toBe(0);
+    const catalogue = JSON.parse(readFileSync(join(root, 'data/bookmarks.json'), 'utf8'));
+    expect(catalogue.categories[0].bookmarks[0].displayDescription).toBe('Snapshot revu');
+    expect(result.stdout).toContain('snapshot éditorial');
+  });
+
+  test('réserve les tentatives réseau au refresh éditorial explicite', () => {
+    const result = build(['--refresh-og']);
     expect(result.error).toBeUndefined();
     expect(result.status).toBe(89);
     expect(result.stdout).not.toContain('Enrichissement Open Graph ignoré');
+  });
+
+  test.each([null, { version: 2, entries: {} }])('refuser un snapshot corrompu sans réseau ni remplacement du catalogue', snapshot => {
+    const result = build([], snapshot);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Build Bookmarks impossible');
+    expect(readFileSync(join(root, 'data/bookmarks.json'), 'utf8')).toBe('{"previous":true}');
+  });
+
+  test('refuser les options contradictoires sans annoncer un build réussi', () => {
+    const result = build(['--skip-og', '--refresh-og']);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('incompatibles');
   });
 });

@@ -8,6 +8,11 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [Unreleased]
 
 ### Added
+- Snapshot OG éditorial et refresh explicite, SOURCE_DATE_EPOCH pour les
+  catalogues, SBOM CycloneDX de fabrication, manifeste public SHA-256,
+  vérification de l'archive et exercice local de reprise tar.
+- Comparaison de deux fabrications en CI et monitoring HTTP quotidien préparé,
+  sans déploiement/rollback implicite ni attestation signée.
 - Gate de complexité ciblé (10) et seuils de couverture sur helpers de fabrication
   et OG ; régressions de contrats JSON, permissions, cache et persistance.
 - Lint des sources `.ts` avec Biome 2.5.15 et des scripts HTML avec
@@ -21,6 +26,9 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   elles ne correspondaient plus à aucune URL du catalogue
 
 ### Changed
+- Le build normal ne collecte plus les métadonnées OG distantes :
+  `refresh:bookmarks` produit le snapshot à relire ; `build:local` omet
+  l'enrichissement. Les échecs et limites restent explicites.
 - Diese & Mat : la fin de session conserve son timestamp ; terminer deux fois
   ne modifie plus la durée du bilan. Régression à horloge contrôlée, y compris
   réinitialisation pour une nouvelle session et événement émis une seule fois.
