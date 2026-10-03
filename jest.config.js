@@ -91,6 +91,14 @@ export default {
     './scripts/lib/build-utils.js': { branches: 100, functions: 100, lines: 100, statements: 100 },
     './scripts/og-fetcher.js': { branches: 85, functions: 100, lines: 90, statements: 90 },
     './scripts/lib/artifact-inventory.js': { branches: 85, functions: 100, lines: 100, statements: 100 },
+    './app/events.js': { statements: 95, branches: 95, functions: 100, lines: 95 },
+    './app/game-loader.js': { statements: 95, branches: 90, functions: 100, lines: 95 },
+    './app/settings.js': { statements: 100, branches: 80, functions: 100, lines: 100 },
+    './games/checkers/engine.js': { statements: 95, branches: 90, functions: 100, lines: 95 },
+    './games/triomino/engine.ts': { statements: 95, branches: 95, functions: 95, lines: 95 },
+    './tools/relativity-lab/src/Simulation.js': { statements: 100, branches: 90, functions: 100, lines: 100 },
+    // Les appels CLI en subprocessus ne contribuent pas à l'instrumentation Jest.
+    './scripts/coverage-report.js': { statements: 80, branches: 80, functions: 90, lines: 80 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)

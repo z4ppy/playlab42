@@ -91,6 +91,14 @@ export default [
     },
   },
 
+  {
+    files: ['games/checkers/engine.js'],
+    rules: {
+      // applyAction reste à 11 ; les helpers de captures refactorés sont à 10 ou moins.
+      complexity: ['error', 11],
+    },
+  },
+
   // Configuration spécifique pour les tests
   {
     files: ['**/*.test.js', '**/*.spec.js', '**/tests/**/*.js'],

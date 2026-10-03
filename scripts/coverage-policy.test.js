@@ -60,7 +60,7 @@ describe('Ratchet de couverture mesuré par module', () => {
         testMatch: ['<rootDir>/probe.test.js'],
         transform: { '^.+\\.ts$': join(root, 'jest.transform.cjs') },
         extensionsToTreatAsEsm: config.extensionsToTreatAsEsm,
-        collectCoverageFrom: [source],
+        collectCoverageFrom: [source.slice(2)],
         coverageThreshold: { [source]: config.coverageThreshold[source] },
         coverageReporters: ['json-summary'],
         coverageDirectory: join(directory, 'results'),
@@ -80,11 +80,12 @@ describe('Ratchet de couverture mesuré par module', () => {
           '--experimental-vm-modules', join(root, 'node_modules/jest/bin/jest.js'),
           '--config', join(directory, 'jest.config.json'), '--coverage', '--runInBand', '--no-cache',
           '--cacheDirectory', join(directory, 'jest-cache'),
-        ], { cwd: root, encoding: 'utf8', timeout: 20000 });
+        ], { cwd: directory, encoding: 'utf8', timeout: 20000 });
       };
       const passing = run(true);
       expect(passing.error).toBeUndefined();
       expect(passing.stderr).toContain('Tests:       1 passed');
+      expect(passing.stderr).not.toMatch(/Coverage data for .* was not found|No tests found|Cannot find module/);
       expect(passing.status).toBe(0);
       const readMetrics = () => JSON.parse(readFileSync(join(directory, 'results/coverage-summary.json'), 'utf8'))[filename];
       for (const measure of Object.keys(floors[source])) {
