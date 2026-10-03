@@ -73,6 +73,18 @@ Si le joueur **ne peut pas ou ne veut pas** poser :
 
 ## Architecture technique
 
+Le moteur utilise directement `lib/seeded-random.js` (Mulberry32 partagé),
+avec son contrat TypeScript adjacent. La fabrication recale cet import depuis
+`dist/engine.js` vers `../../../lib/seeded-random.js`, sans embarquer une copie.
+Les futurs modules source `engine/*.ts` sont émis dans `dist/engine/*.js` ;
+les bots gardent leur chemin historique `bots/dist/`.
+
+Le corpus `fixtures/rng-legacy.json`, figé avant extraction sur `205ece9`,
+protège les seeds négatives et supérieures à 32 bits, les racks, la pile,
+le premier joueur et les replays `PLACE`/`DRAW`/`PASS` avec reprise JSON.
+Pour compatibilité des sauvegardes, `rngState` reste la seed de configuration
+historique ; ce champ n'est pas converti en état RNG après mélange.
+
 ```
 games/triomino/
 ??? engine.ts         # Moteur isomorphe TypeScript

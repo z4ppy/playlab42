@@ -1,6 +1,6 @@
-import { mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 
 const repository = resolve(import.meta.dirname, '..');
 const root = join(repository, `.core-rng-build-fixture-${process.pid}`);
@@ -61,4 +61,42 @@ test('les modules TS émis chargent le vrai JS partagé et préservent les arbre
   expect(emitted).toContain('../../../../lib/seeded-random.js');
   expect(emitted).not.toContain('class SeededRandom');
   expect(readFileSync(join(root, 'games/example/dist/engine.js'), 'utf8')).toContain('./engine/random.js');
+});
+
+test('le mode watch utilise les mêmes sorties sans créer de JS dans les sources', async () => {
+  const child = spawn(process.execPath, ['scripts/build-typescript.js', '--watch'], {
+    cwd: root, stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let output = '';
+  child.stdout.on('data', data => { output += data; });
+  child.stderr.on('data', data => { output += data; });
+  const exited = new Promise(resolveExit => child.on('exit', resolveExit));
+  const waitFor = async predicate => {
+    const deadline = Date.now() + 5000;
+    while (!predicate()) {
+      if (child.exitCode !== null || Date.now() > deadline) {
+        throw new Error(`Watch indisponible : ${output}`);
+      }
+      await new Promise(resolveWait => setTimeout(resolveWait, 50));
+    }
+  };
+  try {
+    await waitFor(() => output.includes('fichier(s) transpilé(s)'));
+    write('games/example/engine/sibling.ts', 'export const sibling: string = "updated";');
+    await waitFor(() => readFileSync(join(root, 'games/example/dist/engine/sibling.js'), 'utf8').includes('updated'));
+    write('games/example/engine/sibling.ts', 'export const sibling: string = "watched";');
+    await waitFor(() => readFileSync(join(root, 'games/example/dist/engine/sibling.js'), 'utf8').includes('watched'));
+    expect(existsSync(join(root, 'games/example/engine.js'))).toBe(false);
+    expect(existsSync(join(root, 'games/example/engine/sibling.js'))).toBe(false);
+    const smoke = spawnSync(process.execPath, ['smoke.mjs'], {
+      cwd: root, encoding: 'utf8', timeout: 10000,
+    });
+    expect(smoke.status).toBe(0);
+    expect(JSON.parse(smoke.stdout)).toEqual([
+      0.6011037519201636, 'local-js', 'watched', 'local-js', 17,
+    ]);
+  } finally {
+    child.kill('SIGINT');
+    await exited;
+  }
 });
