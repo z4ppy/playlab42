@@ -382,107 +382,105 @@ export class CheckersEngine {
     visitedPositions.add(posKey);
 
     for (const [dr, dc] of directions) {
-      if (piece.type === 'pawn') {
-        // Pion : capture simple
-        const target = { row: pos.row + dr, col: pos.col + dc };
-        const landing = { row: pos.row + dr * 2, col: pos.col + dc * 2 };
+      const steps = piece.type === 'pawn'
+        ? this.#getPawnCaptureSteps(state, pos, piece, dr, dc, capturedSoFar)
+        : this.#getKingCaptureSteps(state, pos, piece, dr, dc, capturedSoFar);
 
-        if (
-          this.#isValidPosition(target) &&
-          this.#isValidPosition(landing) &&
-          state.board[target.row][target.col] &&
-          state.board[target.row][target.col].player !== piece.player &&
-          !state.board[landing.row][landing.col] &&
-          !this.#isPositionCaptured(target, capturedSoFar)
-        ) {
-          const newCaptured = [...capturedSoFar, target];
+      for (const { target, landing } of steps) {
+        const newCaptured = [...capturedSoFar, target];
+        const tempBoard = state.board.map((row) => [...row]);
+        tempBoard[landing.row][landing.col] = piece;
+        tempBoard[pos.row][pos.col] = null;
+        tempBoard[target.row][target.col] = null;
 
-          // Simuler l'état après cette capture
-          const tempBoard = state.board.map((row) => [...row]);
-          tempBoard[landing.row][landing.col] = piece;
-          tempBoard[pos.row][pos.col] = null;
-          tempBoard[target.row][target.col] = null;
+        const furtherCaptures = this.#findAllCaptureSequences(
+          { ...state, board: tempBoard },
+          landing,
+          newCaptured,
+          new Set(visitedPositions),
+        );
 
-          const tempState = { ...state, board: tempBoard };
-
-          // Chercher des captures multiples
-          const furtherCaptures = this.#findAllCaptureSequences(
-            tempState,
-            landing,
-            newCaptured,
-            new Set(visitedPositions),
-          );
-
-          if (furtherCaptures.length > 0) {
-            sequences.push(...furtherCaptures);
-          } else {
-            sequences.push({ positions: [landing], captured: newCaptured });
-          }
-        }
-      } else {
-        // Dame : capture avec atterrissage libre
-        let step = 1;
-        let targetFound = null;
-
-        // Trouver la pièce adverse
-        while (true) {
-          const checkPos = { row: pos.row + dr * step, col: pos.col + dc * step };
-          if (!this.#isValidPosition(checkPos)) {break;}
-
-          const checkPiece = state.board[checkPos.row][checkPos.col];
-          if (checkPiece) {
-            if (
-              checkPiece.player !== piece.player &&
-              !this.#isPositionCaptured(checkPos, capturedSoFar)
-            ) {
-              targetFound = checkPos;
-              step++;
-              break;
-            } else {
-              break; // Pièce alliée ou déjà capturée
-            }
-          }
-          step++;
-        }
-
-        // Si une pièce adverse est trouvée, chercher les positions d'atterrissage
-        if (targetFound) {
-          while (true) {
-            const landing = { row: pos.row + dr * step, col: pos.col + dc * step };
-            if (!this.#isValidPosition(landing)) {break;}
-            if (state.board[landing.row][landing.col]) {break;}
-
-            const newCaptured = [...capturedSoFar, targetFound];
-
-            // Simuler l'état après cette capture
-            const tempBoard = state.board.map((row) => [...row]);
-            tempBoard[landing.row][landing.col] = piece;
-            tempBoard[pos.row][pos.col] = null;
-            tempBoard[targetFound.row][targetFound.col] = null;
-
-            const tempState = { ...state, board: tempBoard };
-
-            // Chercher des captures multiples
-            const furtherCaptures = this.#findAllCaptureSequences(
-              tempState,
-              landing,
-              newCaptured,
-              new Set(visitedPositions),
-            );
-
-            if (furtherCaptures.length > 0) {
-              sequences.push(...furtherCaptures);
-            } else {
-              sequences.push({ positions: [landing], captured: newCaptured });
-            }
-
-            step++;
-          }
+        if (furtherCaptures.length > 0) {
+          sequences.push(...furtherCaptures);
+        } else {
+          sequences.push({ positions: [landing], captured: newCaptured });
         }
       }
     }
 
     return sequences;
+  }
+
+  /**
+   * Calcule le saut immédiat d'un pion dans une diagonale, sans modifier l'état.
+   * @param {CheckersState} state
+   * @param {Position} pos
+   * @param {Piece} piece
+   * @param {number} dr
+   * @param {number} dc
+   * @param {Position[]} capturedSoFar
+   * @returns {{target: Position, landing: Position}[]}
+   */
+  #getPawnCaptureSteps(state, pos, piece, dr, dc, capturedSoFar) {
+    const target = { row: pos.row + dr, col: pos.col + dc };
+    const landing = { row: pos.row + dr * 2, col: pos.col + dc * 2 };
+
+    if (
+      this.#isValidPosition(target) &&
+      this.#isValidPosition(landing) &&
+      state.board[target.row][target.col] &&
+      state.board[target.row][target.col].player !== piece.player &&
+      !state.board[landing.row][landing.col] &&
+      !this.#isPositionCaptured(target, capturedSoFar)
+    ) {
+      return [{ target, landing }];
+    }
+    return [];
+  }
+
+  /**
+   * Calcule les atterrissages d'une dame derrière la première pièce adverse.
+   * Leur ordre conserve le parcours de la diagonale, du plus proche au plus loin.
+   * @param {CheckersState} state
+   * @param {Position} pos
+   * @param {Piece} piece
+   * @param {number} dr
+   * @param {number} dc
+   * @param {Position[]} capturedSoFar
+   * @returns {{target: Position, landing: Position}[]}
+   */
+  #getKingCaptureSteps(state, pos, piece, dr, dc, capturedSoFar) {
+    let step = 1;
+    let target = null;
+
+    while (true) {
+      const checkPos = { row: pos.row + dr * step, col: pos.col + dc * step };
+      if (!this.#isValidPosition(checkPos)) {break;}
+
+      const checkPiece = state.board[checkPos.row][checkPos.col];
+      if (checkPiece) {
+        if (
+          checkPiece.player !== piece.player &&
+          !this.#isPositionCaptured(checkPos, capturedSoFar)
+        ) {
+          target = checkPos;
+          step++;
+        }
+        break;
+      }
+      step++;
+    }
+
+    if (!target) {return [];}
+    const steps = [];
+    while (true) {
+      const landing = { row: pos.row + dr * step, col: pos.col + dc * step };
+      if (!this.#isValidPosition(landing)) {break;}
+      if (state.board[landing.row][landing.col]) {break;}
+      steps.push({ target, landing });
+      step++;
+    }
+    return steps;
   }
 
   /**
