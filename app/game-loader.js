@@ -43,41 +43,18 @@ export function isCurrentGameSession(allowPendingNavigation = false) {
  * Charge un jeu depuis son ID
  * Valide l'existence et synchronise le hash, uniquement si la demande est courante.
  * @param {string} gameId - ID du jeu
+ * @returns {Promise<void>} - Résolution après validation de la demande
  */
-export async function openGame(gameId) {
-  const navigation = beginNavigation();
-  // Ne pas recharger si le jeu est déjà ouvert
-  if (isCurrentGameSession() && state.currentGame.id === gameId && state.currentView === 'game') {
-    return;
-  }
+export function openGame(gameId) {
+  return openResource(gameId, 'game', describeGame);
+}
 
-  const path = `games/${gameId}/index.html`;
-  pendingNavigation = true;
-
-  try {
-    // Valider que le jeu existe avec une HEAD request
-    const response = await fetch(path, { method: 'HEAD' });
-    if (navigation !== navigationId) { return; }
-    pendingNavigation = false;
-    if (!response.ok) {
-      console.error(`Jeu non trouvé: ${gameId}`);
-      window.location.hash = '#/';
-      return;
-    }
-
-    // Charger le jeu (le nom sera trouvé dans le catalogue ou utilisé comme fallback)
-    const name = state.catalogue?.games.find(game => game.id === gameId)?.name || gameId;
-    renderGame(path, name, 'game', gameId);
-
-    // Synchroniser le hash
-    window.location.hash = `#/games/${gameId}`;
-
-  } catch (error) {
-    if (navigation !== navigationId) { return; }
-    pendingNavigation = false;
-    console.error(`Erreur chargement jeu ${gameId}:`, error);
-    window.location.hash = '#/';
-  }
+function describeGame(id) {
+  return {
+    paths: [`games/${id}/index.html`],
+    // Le catalogue des jeux peut arriver pendant le HEAD.
+    getName: () => state.catalogue?.games.find(game => game.id === id)?.name || id,
+  };
 }
 
 /**
@@ -88,52 +65,57 @@ export async function openGame(gameId) {
  * - Complexes: tools/{id}/index.html
  * Une demande remplacée ne poursuit pas le repli et ne modifie pas le portail.
  * @param {string} toolId - ID de l'outil
+ * @returns {Promise<void>} - Résolution après validation de la demande
  */
-export async function openTool(toolId) {
-  const navigation = beginNavigation();
-  // Ne pas recharger si l'outil est déjà ouvert
-  if (isCurrentGameSession() && state.currentGame.id === toolId && state.currentView === 'game') {
-    return;
-  }
+export function openTool(toolId) {
+  return openResource(toolId, 'tool', describeTool);
+}
 
-  const tool = state.catalogue?.tools.find(item => item.id === toolId);
-  // Le catalogue evite une requete 404 pour les outils au format fichier.
-  const paths = tool?.path ? [tool.path] : [
-    `tools/${toolId}/index.html`,
-    `tools/${toolId}.html`,
-  ];
+function describeTool(id) {
+  const tool = state.catalogue?.tools.find(item => item.id === id);
+  return {
+    // Le catalogue évite une requête 404 pour les outils au format fichier.
+    paths: tool?.path ? [tool.path] : [`tools/${id}/index.html`, `tools/${id}.html`],
+    getName: () => tool?.name || id,
+  };
+}
+
+function isAlreadyDisplayed(id) {
+  return isCurrentGameSession() && state.currentGame.id === id && state.currentView === 'game';
+}
+
+async function findExistingPath(paths, navigation) {
+  for (const path of paths) {
+    const response = await fetch(path, { method: 'HEAD' });
+    if (navigation !== navigationId) { return null; }
+    if (response.ok) { return path; }
+  }
+  return null;
+}
+
+async function openResource(id, type, describe) {
+  const navigation = beginNavigation();
+  if (isAlreadyDisplayed(id)) { return; }
+  const { paths, getName } = describe(id);
+  const label = type === 'game' ? 'Jeu' : 'Outil';
   pendingNavigation = true;
 
   try {
-    let validPath = null;
-
-    for (const path of paths) {
-      const response = await fetch(path, { method: 'HEAD' });
-      if (navigation !== navigationId) { return; }
-      if (response.ok) {
-        validPath = path;
-        break;
-      }
-    }
+    const path = await findExistingPath(paths, navigation);
+    if (navigation !== navigationId) { return; }
     pendingNavigation = false;
-
-    if (!validPath) {
-      console.error(`Outil non trouvé: ${toolId}`);
+    if (!path) {
+      console.error(`${label} non trouvé: ${id}`);
       window.location.hash = '#/';
       return;
     }
 
-    // Charger l'outil
-    const name = tool?.name || toolId;
-    renderGame(validPath, name, 'tool', toolId);
-
-    // Synchroniser le hash
-    window.location.hash = `#/tools/${toolId}`;
-
+    renderGame(path, getName(), type, id);
+    window.location.hash = `#/${type}s/${id}`;
   } catch (error) {
     if (navigation !== navigationId) { return; }
     pendingNavigation = false;
-    console.error(`Erreur chargement outil ${toolId}:`, error);
+    console.error(`Erreur chargement ${label.toLowerCase()} ${id}:`, error);
     window.location.hash = '#/';
   }
 }
