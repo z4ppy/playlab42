@@ -144,7 +144,11 @@ sans `process.exit()` ni suppression d'analyse.
 
 La fabrication de production locale corrigée a pris 35 s, avec 115 pages
 enrichies, zéro entrée de cache et dix échecs explicitement signalés. Ce n'est
-pas encore une mesure native avant/après sur un runner comparable.
+pas à elle seule une mesure native avant/après.
+Le run natif `37134037265` confirme ensuite un job Build de **1 min 03 s**
+contre **5 min 40 s** (environ 81 % de réduction) ; la commande de fabrication
+passe de 315 s à 39 s. Tous les checks exécutés réussissent, navigateur inclus.
+Les variations de réseau et de charge runner restent possibles.
 Les installations isolées, le cache de téléchargement npm, les jobs parallèles,
 tous les gates et le test de la même archive restent inchangés. Ne pas partager
 `node_modules` entre Alpine et Ubuntu ; les modules natifs peuvent différer.
