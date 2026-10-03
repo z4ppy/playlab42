@@ -99,9 +99,27 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(quality).toContain('## Application tests-first');
     expect(quality).toContain('tests de comportement avant les refactorings');
     expect(quality).toContain('sans seuil global artificiel');
-    expect(quality).toContain('non intégrés à main');
+    expect(quality).toContain('PR #147');
+    expect(quality).toContain('611a29b');
     expect(slide).toContain('Tests avant refactoring');
     expect(slide).toContain('une couverture élevée ne prouve pas la qualité des assertions');
+  });
+
+  it('distingue le lot tests-first livré des corrections du cœur en cours', () => {
+    const quality = readFileSync(resolve(root, 'docs/guides/software-quality.md'), 'utf8');
+    const factory = readFileSync(resolve(root, 'docs/guides/software-factory.md'), 'utf8');
+    const delivered = quality.split('## Application tests-first')[1]
+      .split('## Corrections prioritaires du cœur')[0];
+    expect(delivered).toContain('intégrés à main et publiés');
+    expect(delivered).toContain('37153902594');
+    expect(factory).toContain('37153902484');
+    const current = quality.split('## Corrections prioritaires du cœur')[1]
+      .split('## Maintenance des références')[0];
+    expect(current).toContain('quality/core-refactors');
+    expect(current).toContain('non intégrés à main');
+    expect(current).toContain('refactor-core-with-contracts');
+    expect(current).toContain('sans migration des états JSON');
+    expect(current).toContain('pas une certification');
   });
 
   describe.each(ids)('Slide %s', id => {
