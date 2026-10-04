@@ -16,5 +16,5 @@
 - [x] Resserer budgets/floors mesures et aligner guides/parcours.
 - [x] Revalider gates, deux builds, archive/reprise et navigateurs apres portabilite des references CSS.
 - [x] Ouvrir la PR.
-- [ ] Verifier derniere tete native corrigee et artefacts.
+- [x] Verifier derniere tete native corrigee et artefacts (8195c4e, CI 37231437359 ; toute tete documentaire suivante reverifiee dans la PR).
 - [ ] Fusion, publication et archivage sur decision distincte, hors autorisation.
