@@ -836,6 +836,16 @@ Sur le périmètre Jest élargi, le total est **73,03/70,19/77,71/72,75 %** S/B/
 les modules voisins non caractérisés restent visibles, dont ExerciseController
 et les anciennes vues musicales à zéro. Aucun floor historique n'a baissé.
 
+Deux builds Docker hors réseau, à `SOURCE_DATE_EPOCH=1791113577`, produisent
+le même manifeste pour les **1 047 fichiers** publics. Le SHA réel est
+contrôlé dans `build-info.json`, l'inventaire est vérifié et la reprise tar
+refuse une corruption avant restauration. Les **77 scénarios Chromium**
+passent sur cette archive montée en lecture seule, notamment le vrai
+AudioEngine/Tone, les plateaux et les interactions des panneaux.
+La revue indépendante bornée n'a trouvé aucune régression qualifiée ;
+elle ne remplace ni ces exécutions ni une revue exhaustive.
+La dernière tête native et ses artefacts seront consignés en PR.
+
 Des doubles Tone peuvent vérifier contrats et ordre, pas l'audition ni un
 microphone physique. Les interactions d'un vrai navigateur et la validation
 de l'archive constituent des preuves complémentaires, pas une validation
