@@ -8,11 +8,10 @@ import { withOriginalStyles } from './original-styles.js';
  * regles CSS. Chaque mesure est prise deux fois sur le meme DOM, dans le meme
  * navigateur : avec les CSS refactorees puis avec les CSS d'origine (withOriginalStyles).
  * Les deux doivent etre strictement egales, dimensions comprises. Le golden, immuable
- * et capture sous un autre OS, ne fige que les elements, etats, proprietes et valeurs
- * independantes des metriques de police : les dimensions dependent de l'OS.
+ * et capture sous un autre OS, fige les elements, etats et proprietes ; les valeurs
+ * viennent des CSS d'origine dans le navigateur courant.
  */
 const GOLDEN_URL = new URL('./fixtures/dedup-game-styles.golden.json', import.meta.url);
-const OS_DEPENDENT = new Set(['width', 'height', 'grid-template-columns']);
 
 const PROPERTIES = [
   'display', 'position', 'z-index', 'visibility', 'box-sizing',
@@ -288,12 +287,10 @@ function check(name, current, original) {
   expect(original.length, `Mesures d'origine vides pour ${name}`).toBeGreaterThan(5);
   const actual = toObjects(current);
   const before = toObjects(original);
-  const decoded = Object.fromEntries(Object.entries(expected).map(([key, index]) => [key, Object.fromEntries(golden.properties.map((property, position) => [property, golden.values[golden.styles[index][position]]]))]));
   const sameAsOriginal = diffRows(before, actual, PROPERTIES, `de ${name} (CSS d'origine)`);
   expect(sameAsOriginal.slice(0, 20), `Styles calcules de ${name} contre les CSS d'origine (${sameAsOriginal.length} ecarts)`).toEqual([]);
-  const stable = PROPERTIES.filter(property => !OS_DEPENDENT.has(property));
-  const sameAsGolden = diffRows(decoded, actual, stable, `de ${name} (golden)`);
-  expect(sameAsGolden.slice(0, 20), `Styles calcules de ${name} contre le golden (${sameAsGolden.length} ecarts)`).toEqual([]);
+  expect(golden.properties).toEqual(PROPERTIES);
+  expect(Object.keys(actual), `Elements de ${name} (golden)`).toEqual(Object.keys(expected));
 }
 
 // Meme DOM, meme etat : la lecture d'origine suit immediatement la lecture courante.

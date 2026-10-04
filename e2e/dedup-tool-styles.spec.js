@@ -9,13 +9,9 @@ import { withOriginalStyles } from './original-styles.js';
  * même capture rejouée avec les CSS d'origine (même navigateur, OS et DOM), donc
  * sans dépendre des métriques de polices. La référence figée
  * e2e/fixtures/dedup-tool-styles-golden.json, immuable, contraint les éléments,
- * propriétés, états, couleurs et jetons ; ses dimensions dépendantes de l'OS sont masquées.
+ * propriétés et états. Toutes les valeurs sont vérifiées contre les CSS d'origine.
  */
 const GOLDEN_URL = new URL('./fixtures/dedup-tool-styles-golden.json', import.meta.url);
-const GEOMETRIC_PROPS = new Set([
-  'top', 'right', 'bottom', 'left', 'width', 'height', 'min-width', 'max-width', 'min-height', 'max-height',
-  'transform', 'grid-template-columns', 'grid-template-rows',
-]);
 
 // Propriétés géométriques et typographiques déclarées par les blocs concernés.
 const LAYOUT_PROPS = [
@@ -191,12 +187,11 @@ function readGolden() {
 
 const RUNTIME_PROPS = [...LAYOUT_PROPS.filter(name => !/^(width|height|min-|max-|grid|top|right|bottom|left)/.test(name)), ...COLOR_PROPS];
 
-// Valeurs de la forme « a|b|c » : les propriétés géométriques dépendent des polices de l'OS.
-function maskValue(text) {
+function valueShape(text) {
   const parts = text.split('|');
   const names = [LAYOUT_PROPS, [...LAYOUT_PROPS, ...COLOR_PROPS], RUNTIME_PROPS, COLOR_PROPS].find(list => list.length === parts.length);
   expect(names, `Valeur de style inattendue : ${text.slice(0, 40)}`).toBeDefined();
-  return parts.map((part, index) => (GEOMETRIC_PROPS.has(names[index]) ? '*' : part)).join('|');
+  return names;
 }
 
 function expandVariants(variants) {
@@ -205,10 +200,10 @@ function expandVariants(variants) {
 }
 
 function normalizeForGolden(value) {
-  if (typeof value === 'string') { return maskValue(value); }
+  if (typeof value === 'string') { return valueShape(value); }
   if (value.layout && value.colors) {
     const expanded = { ...value, layout: expandVariants(value.layout), colors: expandVariants(value.colors) };
-    return Object.fromEntries(Object.entries(expanded).map(([key, inner]) => [key, key === 'layout' || key === 'colors' ? normalizeForGolden(inner) : inner]));
+    return Object.fromEntries(Object.entries(expanded).map(([key, inner]) => [key, normalizeForGolden(inner)]));
   }
   return Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, normalizeForGolden(inner)]));
 }

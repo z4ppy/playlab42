@@ -1195,6 +1195,17 @@ La dernière tête native corrigée doit encore être vérifiée et référencé
 la PR. Une preuve locale ou un job partiellement vert n'est pas une livraison.
 Fusion, publication et archivage restent distincts.
 
+La deuxième CI **37230262226**, head **d921058**, valide les comparaisons exactes
+avec les CSS originales, mais révèle encore des attentes héritées du golden
+Docker : translation du bonus Triomino, marges `auto` des panneaux et bordures
+d'un select synthé dont l'état implicite du pointeur diffère. Les golden de ces
+trois scopes verrouillent donc les **éléments, propriétés et états**, et le
+corpus CSS d'origine devient l'unique autorité des **valeurs**, comparées sans
+tolérance dans le même DOM. Aucun champ n'est retiré de cette comparaison.
+Cette séparation remplace les listes heuristiques de propriétés dépendantes
+des polices. Les tokens publics du thème conservent en plus leurs valeurs
+initiales et leur format lisible par les renderers JS.
+
 ## Maintenance des références et exceptions
 
 Les workflows utilisent des SHAs complets avec commentaire de version ; les

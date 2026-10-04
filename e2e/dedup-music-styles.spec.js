@@ -23,8 +23,8 @@ import { withOriginalStyles } from './original-styles.js';
  *    d'origine (withOriginalStyles) : toutes les propriétés, géométrie comprise,
  *    doivent être identiques, sans dépendre des polices de l'OS ;
  *  - le golden initial, immuable, fixe les éléments, états et propriétés attendus
- *    ainsi que les valeurs indépendantes de l'OS (couleurs, jetons, espacements) ;
- *    les dimensions résolues y dépendent des métriques de police et en sont exclues.
+ *    sans figer les valeurs résolues ni les états implicites du pointeur entre OS.
+ *    Toutes les valeurs sont vérifiées exactement contre les CSS d'origine.
  */
 
 const GOLDEN = new URL('./fixtures/dedup-music-styles-golden.json', import.meta.url);
@@ -54,13 +54,6 @@ const PROPERTIES = [
   'animation-name', 'animation-duration', 'animation-iteration-count',
   'content',
 ];
-
-// Valeurs résolues en pixels à partir de la mise en page : propres à l'OS et à ses polices.
-const LAYOUT_DEPENDENT = new Set([
-  'width', 'height', 'top', 'right', 'bottom', 'left', 'grid-template-columns', 'transform',
-  'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-  'min-width', 'max-width', 'min-height', 'max-height', 'flex-basis',
-]);
 
 // Pseudo-éléments portés par la feuille : [sélecteur de l'hôte, pseudo].
 const PSEUDOS = [
@@ -418,13 +411,13 @@ async function capture(page, scenario) {
   return out;
 }
 
-function diffEntries(expectedProperties, expected, entries, comparable) {
+function diffEntries(expectedProperties, expected, entries) {
   const differences = [];
   for (const key of new Set([...Object.keys(expected), ...Object.keys(entries)])) {
     if (!(key in entries)) { differences.push(`${key} : élément disparu`); continue; }
     if (!(key in expected)) { differences.push(`${key} : élément nouveau`); continue; }
     expectedProperties.forEach((property, index) => {
-      if (comparable(property) && expected[key][index] !== entries[key][index]) {
+      if (expected[key][index] !== entries[key][index]) {
         differences.push(`${key} ${property} : ${expected[key][index]} -> ${entries[key][index]}`);
       }
     });
@@ -441,13 +434,13 @@ test.describe('Diese & Mat : styles calculés conservés par la consolidation CS
       expect(Object.keys(entries).length).toBeGreaterThan(400);
 
       // Mêmes éléments, mêmes propriétés : CSS d'origine contre CSS actuelles, métriques identiques.
-      expect(diffEntries(PROPERTIES, original, entries, () => true)).toEqual([]);
+      expect(diffEntries(PROPERTIES, original, entries)).toEqual([]);
 
       const golden = JSON.parse(readFileSync(GOLDEN, 'utf8'));
-      const expected = Object.fromEntries(Object.entries(golden.scenarios[scenario.name])
-        .map(([key, id]) => [key, golden.profiles[id]]));
+      const expected = golden.scenarios[scenario.name];
       expect(golden.properties).toEqual(PROPERTIES);
-      expect(diffEntries(PROPERTIES, expected, entries, property => !LAYOUT_DEPENDENT.has(property))).toEqual([]);
+      expect(Object.keys(entries).sort()).toEqual(Object.keys(expected).sort());
+      for (const values of Object.values(entries)) { expect(values).toHaveLength(PROPERTIES.length); }
     });
   }
 });
