@@ -18,13 +18,19 @@ test('la référence détecte une régression et restaure les CSS même après u
   await page.goto('/games/checkers/index.html');
   await expect(page.locator('#new-game')).toBeVisible();
   await page.evaluate(() => {
+    const library = document.createElement('style');
+    library.textContent = 'body { --library-marker: unchanged; }';
+    document.head.prepend(library);
     const sheet = [...document.styleSheets].find(candidate => candidate.href?.endsWith('/games/game-page.css'));
     const rule = [...sheet.cssRules].find(candidate => candidate.selectorText === '.btn');
     rule.style.setProperty('border-radius', '19px');
   });
   const radius = () => page.locator('#new-game').evaluate(element => getComputedStyle(element).borderRadius);
-  const original = await withOriginalStyles(page, radius);
-  expect(original).toBe('8px');
+  const original = await withOriginalStyles(page, () => page.locator('#new-game').evaluate(element => ({
+    radius: getComputedStyle(element).borderRadius,
+    library: getComputedStyle(document.body).getPropertyValue('--library-marker').trim(),
+  })));
+  expect(original).toEqual({ radius: '8px', library: 'unchanged' });
   expect(await radius()).toBe('19px');
   const enabled = await page.evaluate(() => [...document.styleSheets].map(sheet => sheet.disabled));
   await expect(withOriginalStyles(page, () => Promise.reject(new Error('Capture refusée'))))

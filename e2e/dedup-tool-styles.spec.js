@@ -254,39 +254,10 @@ function checkGolden(name, actual) {
   expect(normalizeForGolden(actual)).toEqual(normalizeForGolden(golden.pages[name]));
 }
 
-// lil-gui insère son <style> en tête de <head> : withOriginalStyles désigne les styles de page par rang,
-// on l'écarte donc le temps d'appliquer les CSS d'origine puis on le remet à sa place avant toute mesure.
-async function parkLibraryStyle(page) {
-  return page.evaluateHandle(() => {
-    const node = [...document.head.querySelectorAll('style')].find(style => style.textContent.trimStart().startsWith('.lil-gui'));
-    if (!node) { return []; }
-    const marker = document.createComment('lil-gui');
-    node.before(marker);
-    node.remove();
-    return [node, marker];
-  });
-}
-
-function restoreLibraryStyle(parked) {
-  return parked.evaluate(([node, marker]) => {
-    if (node && !node.isConnected) { marker.replaceWith(node); }
-  });
-}
-
 // Même capture sous les CSS d'origine puis sous les CSS courants, dans le même navigateur et DOM.
 async function paired(page, label, measure) {
   const current = await measure();
-  const parked = await parkLibraryStyle(page);
-  let original;
-  try {
-    original = await withOriginalStyles(page, async () => {
-      await restoreLibraryStyle(parked);
-      return measure();
-    });
-  } finally {
-    await restoreLibraryStyle(parked);
-    await parked.dispose();
-  }
+  const original = await withOriginalStyles(page, measure);
   expect(current, `${label} : styles calculés courants et d'origine`).toEqual(original);
   return current;
 }

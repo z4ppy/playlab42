@@ -1,6 +1,12 @@
 import { readFileSync } from 'node:fs';
 
 const reference = JSON.parse(readFileSync(new URL('./fixtures/styles-before-reduction.json', import.meta.url), 'utf8'));
+const currentInline = Object.fromEntries(Object.entries(reference.inline).map(([route, styles]) => {
+  const html = readFileSync(new URL(`..${route}`, import.meta.url), 'utf8');
+  const blocks = [...html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map(match => match[1].trim());
+  if (blocks.length !== styles.length) { throw new Error(`Styles de page ambigus : ${route}`); }
+  return [route, blocks];
+}));
 
 /**
  * Rejoue les CSS du main de départ dans le même navigateur : les dimensions
@@ -26,11 +32,11 @@ export async function withOriginalStyles(page, capture) {
       }
     }
     const inline = baseline.inline[route] ?? [];
-    const nodes = [...document.head.querySelectorAll('style')];
-    if (nodes.length < inline.length) { throw new Error(`Styles de page absents : ${route}`); }
+    const nodes = [...document.head.querySelectorAll('style:not([data-dedup-original])')];
     for (const [index, text] of inline.entries()) {
-      const node = nodes[index];
-      if (!node.sheet) { throw new Error(`Style de page absent : ${route}/${index}`); }
+      const matching = nodes.filter(node => node.textContent.trim() === baseline.currentInline[route][index]);
+      if (matching.length !== 1 || !matching[0].sheet) { throw new Error(`Style de page absent ou ambigu : ${route}/${index}`); }
+      const node = matching[0];
       plan.push({ node, text });
     }
     if (plan.length === 0) { throw new Error(`Aucun style de référence : ${route}`); }
@@ -53,7 +59,7 @@ export async function withOriginalStyles(page, capture) {
     }
     for (const { sheet } of items) { sheet.disabled = true; }
     return items;
-  }, reference);
+  }, { ...reference, currentInline });
   try {
     await page.evaluate(() => {
       getComputedStyle(document.documentElement).color;
