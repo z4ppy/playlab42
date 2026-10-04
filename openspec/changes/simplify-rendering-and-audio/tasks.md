@@ -1,6 +1,6 @@
 ## Autorisation et baseline
 - [x] Partir de main fusionné et télécharger le dernier rapport natif.
-- [ ] Valider ce change strictement avant code.
+- [x] Valider ce change strictement avant code.
 
 ## Scopes indépendants
 - [ ] Caractériser puis simplifier les rendus Dames/Triomino.

@@ -622,14 +622,18 @@ après les interactions. Ces preuves locales ne se substituent pas à la CI nati
 
 ## Duplication et complexité
 
-**Continuation autorisée dans `quality/duplication-complexity`, non livrée.**
+**Travaux de `quality/duplication-complexity` intégrés à main et publiés via la PR #149.**
+La fusion `72a8f5d057621bd8364cdc0e2fce55fee594e847` est vérifiée :
+[publication 37199116572](https://github.com/z4ppy/playlab42/actions/runs/37199116572)
+et [audit 37199116386](https://github.com/z4ppy/playlab42/actions/runs/37199116386)
+réussis, y compris le contrôle du site publié.
 Le change `reduce-duplication-and-complexity` poursuit les responsabilités
 ciblées après la PR #148, avec tests avant refactoring.
 
 Avant ce lot, la CI publiait lint, couverture et sécurité, mais pas de rapport
 global de duplication/complexité. Le budget ESLint ciblé est un gate,
 pas un rapport de tous les hotspots. Le job **Code quality** ajouté dans cette
-branche exécute `npm ci` puis `npm run quality:report`, publie son résumé dans
+livraison exécute `npm ci` puis `npm run quality:report`, publie son résumé dans
 le run et archive deux fichiers : `code-quality.json` et `code-quality.md`,
 dans `code-quality-<sha>-<run>-<attempt>` (30 jours).
 Ce job appartient à la CI réutilisée par PR et publication ; les neuf checks
@@ -749,6 +753,47 @@ Sa provenance référence la merge SHA `39f0720b1bf7c123c64463c234e61bebba9d969f
 run/tentative `37164388196` / `1`, checkout propre, distinct du head de PR.
 Chaque nouvelle tête exige sa propre validation ; la dernière preuve est
 consignée en commentaire, sans confondre PR verte et livraison.
+
+La [preuve de la dernière tête](https://github.com/z4ppy/playlab42/pull/149#issuecomment-5974962987)
+porte sur `237f3bf`, avec CI `37164576099` et audit `37164576084` réussis.
+La fusion et la publication mentionnées au début de cette section constituent
+une preuve distincte. Le rapport natif du main `72a8f5d`, run `37199116572`,
+confirme les mêmes compteurs de production, avec six fonctions JS/HTML > 20.
+
+## Rendus et audio
+
+**Continuation autorisée dans `quality/rendering-audio`, non livrée.**
+Le change `simplify-rendering-and-audio` cible les six fonctions de production
+au-dessus de 20 du dernier rapport natif, après tests de comportement :
+
+| Responsabilité | Cyclomatique de référence sur main `72a8f5d` |
+|----------------|--------------------------------------------|
+| Rendu Dames | 24 |
+| AudioEngine : réglages | 23 |
+| SynthController : curseurs | 22 |
+| Rendu du plateau Triomino | 22 |
+| AudioEngine : création du synthétiseur | 21 |
+| MenuController : rendu | 21 |
+
+Les extractions locales doivent préserver le DOM observable et ses callbacks,
+les options et connexions Tone, l'ordre des réglages et le cycle de vie audio.
+Pas de moteur de rendu générique ni de hiérarchie de contrôleurs ajoutés
+pour faire baisser un compteur. Les états moteurs, RNG et replays sont hors
+périmètre. Le rapport reste consultatif ; ses paramètres ne changent pas.
+
+L'instrumentation Jest est étendue aux rendus locaux et aux dossiers audio et
+contrôleurs, jusque-là hors collecte : les voisins non caractérisés apparaissent
+également, sans prétendre être protégés. La mesure avant refactoring des tests
+musicaux existants donne seulement **25,03/17,37/18,92/25,61 %** S/B/F/L sur
+audio et contrôleurs ; AudioEngine est à **17,09/5,98/15,90/17,24 %** et
+SynthController à zéro. Ce nouveau périmètre interdit une comparaison directe
+du total avec celui de la PR #149. Les floors existants restent inchangés ;
+les nouveaux floors attendent la couverture réellement mesurée.
+
+Des doubles Tone peuvent vérifier contrats et ordre, pas l'audition ni un
+microphone physique. Les interactions d'un vrai navigateur et la validation
+de l'archive constituent des preuves complémentaires, pas une validation
+audio perceptive.
 
 ## Maintenance des références et exceptions
 

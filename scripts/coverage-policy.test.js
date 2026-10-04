@@ -52,6 +52,10 @@ describe('Ratchet de couverture mesuré par module', () => {
       'games/tetris/engine/scoring.js',
       'games/diese-et-mat/src/engine/ExerciseEngine.js',
       'games/diese-et-mat/src/AppKeyboard.js',
+      'games/checkers/ui/board-renderer.js',
+      'games/triomino/ui/board-renderer.js',
+      'games/diese-et-mat/src/audio/synth-settings.js',
+      'games/diese-et-mat/src/controllers/panel-visibility.js',
     ];
     const fixtureHelper = 'lib/__tests__/engine-contract-helpers.js';
     mkdirSync(directory, { recursive: true });

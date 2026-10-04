@@ -1,6 +1,6 @@
 # PlayLab42 — Guide et usine logicielle
 
-Parcours débutant actualisé le **3 octobre 2026**. Sa première révision partait
+Parcours débutant actualisé le **4 octobre 2026**. Sa première révision partait
 de `main` (`407dd25`, référence historique) ; les lots 3 à 5 ont depuis été
 intégrés à `main` et publiés via la PR #144. Il distingue code
 préparé, livraison réelle et améliorations proposées, sans inventer de backend.
@@ -70,10 +70,14 @@ caractériser avant refactoring, mesurer puis verrouiller les acquis.
 La [suite cœur](../../../docs/guides/software-quality.md#corrections-prioritaires-du-cœur)
 dans `quality/core-refactors` est livrée via la PR #148 (`ef0a2aa`) ; elle protège les contrats
 moteurs puis clarifie les responsabilités, sans migrer tous les états JSON.
-La continuation `quality/duplication-complexity` ajoute `quality:report` :
+La continuation `quality/duplication-complexity`, livrée via la PR #149
+(`72a8f5d`), ajoute `quality:report` :
 duplication locale jscpd, cyclomatique JS/HTML et cognitif TS, dans des scopes
 production/tests/pédagogie séparés. Ce rapport n'existait pas dans la CI des
-lots précédents ; la branche en cours le publie sans seuil global artificiel.
+lots précédents ; la CI le publie sans seuil global artificiel.
+La suite `quality/rendering-audio` traite les six fonctions de production
+JS/HTML > 20, après caractérisation des rendus et contrats audio ;
+elle n'est pas encore livrée.
 Les neuf checks GitHub requis ne sont pas les dix ressources HTTP
 du smoke, qui incluent désormais le manifeste.
 Aucun run cron réussi, rollback de production ou archivage OpenSpec n'est

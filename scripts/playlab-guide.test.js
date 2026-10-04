@@ -121,6 +121,11 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(current).toContain('37162681481');
     expect(current).toContain('## Duplication et complexité');
     expect(current).toContain('quality/duplication-complexity');
+    expect(current).toContain('PR #149');
+    expect(current).toContain('72a8f5d');
+    expect(current).toContain('37199116572');
+    expect(current).toContain('## Rendus et audio');
+    expect(current).toContain('quality/rendering-audio');
     expect(current).toContain('refactor-core-with-contracts');
     expect(current).toContain('sans migration des états JSON');
     expect(current).toContain('pas une certification');
@@ -138,6 +143,7 @@ describe('Playlab42 — Guide et usine logicielle', () => {
       expect(document).toContain('quality/core-refactors');
       expect(document).toContain('PR #148');
       expect(document).toContain('quality:report');
+      expect(document).toContain('PR #149');
     }
   });
 

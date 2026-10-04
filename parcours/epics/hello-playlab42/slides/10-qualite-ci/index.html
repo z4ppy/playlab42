@@ -128,10 +128,12 @@
       La suite <code>quality/core-refactors</code> est livrée via la PR #148 :
       contrats communs, seed explicite, mutualisation du RNG et séparation des responsabilités.
       Extraire du code doit conserver son instrumentation ; ce n'est pas un moyen de gonfler la couverture.</p>
-    <p class="guide-note">La continuation prépare <code>quality:report</code> dans la CI :
+    <p class="guide-note">La PR #149 a livré <code>quality:report</code> dans la CI :
       duplication locale jscpd, complexité cyclomatique JS/HTML et cognitive TS.
       Comparez les compteurs à périmètre constant ; gardez production, tests et supports pédagogiques distincts.
-      Un clone détecté n'est pas automatiquement un défaut à supprimer.</p>
+      Un clone détecté n'est pas automatiquement un défaut à supprimer.
+      La suite <code>quality/rendering-audio</code> traite les six hotspots de production au-dessus de 20,
+      après caractérisation des rendus et contrats audio ; elle n'est pas encore livrée.</p>
 
     <h2>Lancer les mêmes contrôles en local (Docker)</h2>
     <pre class="code-block"><code>make info          # instance, port, URL du worktree

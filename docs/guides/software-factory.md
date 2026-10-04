@@ -62,8 +62,13 @@ La suite `quality/core-refactors` a livré les corrections du cœur par priorit�
 contrats moteurs et déterminisme, puis refactorings et mutualisations ciblées.
 La PR #148 est intégrée à main `ef0a2aa` et publiée
 ([run 37162681481](https://github.com/z4ppy/playlab42/actions/runs/37162681481)).
-La continuation `quality/duplication-complexity` est préparée, non livrée :
-refactorings mesurés et rapport explicite de duplication/complexité.
+La continuation `quality/duplication-complexity` est livrée via la PR #149,
+au commit `72a8f5d` : refactorings mesurés et rapport explicite de
+duplication/complexité. La [publication 37199116572](https://github.com/z4ppy/playlab42/actions/runs/37199116572)
+et l'[audit 37199116386](https://github.com/z4ppy/playlab42/actions/runs/37199116386)
+sont réussis. Le rapport de ce main contient encore six fonctions de production
+JS/HTML > 20 ; `quality/rendering-audio` les traite après caractérisation,
+sans annoncer sa livraison.
 
 ## Carte de l'usine
 
