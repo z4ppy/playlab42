@@ -23,14 +23,18 @@
       transition: background-color var(--transition-normal), color var(--transition-normal);
     }
 
-    header {
-      padding: var(--space-md);
+    header,
+    .panel-header {
       background: var(--color-bg-secondary);
       border-bottom: 1px solid var(--color-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       transition: background-color var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    header {
+      padding: var(--space-md);
     }
 
     header h1 {
@@ -103,12 +107,6 @@
 
     .panel-header {
       padding: 0.75rem var(--space-md);
-      background: var(--color-bg-secondary);
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background-color var(--transition-normal), border-color var(--transition-normal);
     }
 
     @media (max-width: 480px) {

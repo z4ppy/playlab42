@@ -108,25 +108,146 @@
       cursor: grabbing;
     }
 
-    /* HUD Styles - Vue "Je suis..." */
-    .hud {
+    /* === Socle commun des cinq panneaux flottants (le reste est propre à chaque panneau) === */
+    .hud,
+    .observer-view,
+    .motor-panel,
+    .doppler-graph,
+    .clock-panel {
       position: absolute;
-      top: var(--space-md);
-      left: var(--space-md);
       background: var(--color-bg-secondary);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      padding: var(--space-md);
-      min-width: 200px;
-      max-width: 260px;
       font-family: var(--font-family);
       font-size: var(--font-size-sm);
       color: var(--color-text);
       z-index: 100;
       box-shadow: 0 4px 12px var(--color-shadow);
       backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
       pointer-events: auto;
+    }
+
+    /* Seuls ces deux panneaux déclaraient le préfixe WebKit historique. */
+    .hud,
+    .observer-view {
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .hud,
+    .observer-view,
+    .motor-panel {
+      padding: var(--space-md);
+    }
+
+    .doppler-graph,
+    .clock-panel {
+      padding: var(--space-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Lignes communes aux sections et libellés des panneaux d'information */
+    .hud-section,
+    .observer-view-section,
+    .motor-panel-section {
+      margin-bottom: var(--space-sm);
+    }
+
+    .hud-label,
+    .observer-view-label,
+    .motor-panel-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .hud-divider,
+    .observer-view-divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: var(--space-sm) 0;
+    }
+
+    .hud-my-tau,
+    .observer-view-tau {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xl);
+      font-weight: bold;
+    }
+
+    /* Horloges lumineuses : même teinte pour H (rouge) et V (vert) dans toutes les vues */
+    .hud-emission--h,
+    .ov-clock--h,
+    .hud-tick--h {
+      background: rgba(255, 107, 107, 0.15);
+    }
+
+    .hud-emission--v,
+    .ov-clock--v,
+    .hud-tick--v {
+      background: rgba(74, 222, 128, 0.15);
+    }
+
+    .hud-emission--h,
+    .ov-clock--h {
+      border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+
+    .hud-emission--v,
+    .ov-clock--v {
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .hud-emission--h .hud-emission-label,
+    .ov-clock--h .ov-clock-icon,
+    .hud-tick--h {
+      color: #ff6b6b;
+    }
+
+    .hud-emission--v .hud-emission-label,
+    .ov-clock--v .ov-clock-icon,
+    .hud-tick--v {
+      color: #4ade80;
+    }
+
+    /* Listes déroulantes et petits boutons des panneaux */
+    .hud-select,
+    .doppler-graph-timewindow,
+    .oscillo-select,
+    .motor-preset {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .hud-select,
+    .doppler-graph-timewindow,
+    .oscillo-select {
+      color: var(--color-text);
+    }
+
+    .hud-select:hover,
+    .doppler-graph-timewindow:hover,
+    .oscillo-select:hover,
+    .motor-preset:hover,
+    .reset-button:hover {
+      border-color: var(--color-accent);
+    }
+
+    .motor-preset:hover,
+    .reset-button:hover {
+      background: var(--color-bg-hover);
+    }
+
+    /* HUD Styles - Vue "Je suis..." */
+    .hud {
+      top: var(--space-md);
+      left: var(--space-md);
+      min-width: 200px;
+      max-width: 260px;
     }
 
     .hud-state {
@@ -141,39 +262,12 @@
       color: var(--color-text-inverse);
     }
 
-    .hud-section {
-      margin-bottom: var(--space-sm);
-    }
-
-    .hud-label {
-      font-size: var(--font-size-xs);
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-
-    .hud-divider {
-      height: 1px;
-      background: var(--color-border);
-      margin: var(--space-sm) 0;
-    }
-
     .hud-select {
       width: 100%;
       padding: 8px 12px;
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      color: var(--color-text);
       font-family: var(--font-family);
       font-size: var(--font-size-md);
       font-weight: bold;
-      cursor: pointer;
-    }
-
-    .hud-select:hover {
-      border-color: var(--color-accent);
     }
 
     .hud-select:focus-visible {
@@ -186,12 +280,6 @@
       font-size: var(--font-size-xl);
       font-weight: bold;
       color: var(--color-accent);
-    }
-
-    .hud-my-tau {
-      font-family: var(--font-mono);
-      font-size: var(--font-size-xl);
-      font-weight: bold;
     }
 
     .hud-my-emissions {
@@ -208,27 +296,9 @@
       font-family: var(--font-mono);
     }
 
-    .hud-emission--h {
-      background: rgba(255, 107, 107, 0.15);
-      border: 1px solid rgba(255, 107, 107, 0.3);
-    }
-
-    .hud-emission--v {
-      background: rgba(74, 222, 128, 0.15);
-      border: 1px solid rgba(74, 222, 128, 0.3);
-    }
-
     .hud-emission-label {
       font-weight: bold;
       font-size: var(--font-size-md);
-    }
-
-    .hud-emission--h .hud-emission-label {
-      color: #ff6b6b;
-    }
-
-    .hud-emission--v .hud-emission-label {
-      color: #4ade80;
     }
 
     .hud-emission-value {
@@ -276,19 +346,10 @@
       font-family: var(--font-mono);
     }
 
-    .hud-tick {
+    .hud-tick,
+    .hud-inferred-gamma {
       padding: 1px 4px;
       border-radius: 2px;
-    }
-
-    .hud-tick--h {
-      color: #ff6b6b;
-      background: rgba(255, 107, 107, 0.15);
-    }
-
-    .hud-tick--v {
-      color: #4ade80;
-      background: rgba(74, 222, 128, 0.15);
     }
 
     .hud-received-distance {
@@ -300,8 +361,6 @@
     .hud-inferred-gamma {
       color: var(--color-warning);
       background: rgba(251, 191, 36, 0.15);
-      padding: 1px 4px;
-      border-radius: 2px;
       font-family: var(--font-mono);
     }
 
@@ -322,23 +381,10 @@
 
     /* === Vue cockpit (ObserverView) === */
     .observer-view {
-      position: absolute;
       top: var(--space-md);
       right: var(--space-md);
-      background: var(--color-bg-secondary);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
       min-width: 220px;
       max-width: 280px;
-      font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      color: var(--color-text);
-      z-index: 100;
-      box-shadow: 0 4px 12px var(--color-shadow);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      pointer-events: auto;
     }
 
     .observer-view-header {
@@ -361,33 +407,9 @@
       color: var(--color-accent);
     }
 
-    .observer-view-section {
-      margin-bottom: var(--space-sm);
-    }
-
-    .observer-view-label {
-      font-size: var(--font-size-xs);
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-
-    .observer-view-tau {
-      font-family: var(--font-mono);
-      font-size: var(--font-size-xl);
-      font-weight: bold;
-    }
-
     .observer-view-clocks {
       display: flex;
       gap: var(--space-md);
-    }
-
-    .observer-view-divider {
-      height: 1px;
-      background: var(--color-border);
-      margin: var(--space-sm) 0;
     }
 
     .observer-view-received {
@@ -405,27 +427,9 @@
       font-family: var(--font-mono);
     }
 
-    .ov-clock--h {
-      background: rgba(255, 107, 107, 0.15);
-      border: 1px solid rgba(255, 107, 107, 0.3);
-    }
-
-    .ov-clock--v {
-      background: rgba(74, 222, 128, 0.15);
-      border: 1px solid rgba(74, 222, 128, 0.3);
-    }
-
     .ov-clock-icon {
       font-weight: bold;
       font-size: var(--font-size-sm);
-    }
-
-    .ov-clock--h .ov-clock-icon {
-      color: #ff6b6b;
-    }
-
-    .ov-clock--v .ov-clock-icon {
-      color: #4ade80;
     }
 
     .ov-clock-value {
@@ -474,13 +478,20 @@
       font-size: var(--font-size-xs);
     }
 
-    /* === Gros bouton Play/Stop === */
-    .play-button {
+    /* === Gros bouton Play/Stop et bouton Reset à côté === */
+    .play-button,
+    .reset-button {
       position: absolute;
       bottom: var(--space-lg);
+      z-index: 200;
+      font-family: var(--font-family);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+
+    .play-button {
       left: 50%;
       transform: translateX(-50%);
-      z-index: 200;
       display: flex;
       align-items: center;
       gap: var(--space-sm);
@@ -489,11 +500,8 @@
       color: var(--color-text-inverse);
       border: none;
       border-radius: var(--radius-lg);
-      font-family: var(--font-family);
       font-size: var(--font-size-lg);
       font-weight: bold;
-      cursor: pointer;
-      transition: all var(--transition-normal);
       box-shadow: 0 4px 20px rgba(233, 69, 96, 0.4);
     }
 
@@ -521,24 +529,13 @@
 
     /* Bouton Reset à côté */
     .reset-button {
-      position: absolute;
-      bottom: var(--space-lg);
       left: calc(50% + 100px);
-      z-index: 200;
       padding: var(--space-sm) var(--space-md);
       background: var(--color-bg-secondary);
       color: var(--color-text);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      font-family: var(--font-family);
       font-size: var(--font-size-md);
-      cursor: pointer;
-      transition: all var(--transition-normal);
-    }
-
-    .reset-button:hover {
-      background: var(--color-bg-hover);
-      border-color: var(--color-accent);
     }
 
     /* lil-gui customisation pour s'intégrer au thème */
@@ -586,21 +583,9 @@
 
     /* === Panneau Moteur === */
     .motor-panel {
-      position: absolute;
       bottom: calc(var(--space-lg) + 60px);
       right: var(--space-md);
-      background: var(--color-bg-secondary);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-md);
       width: 280px;
-      font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      color: var(--color-text);
-      z-index: 100;
-      box-shadow: 0 4px 12px var(--color-shadow);
-      backdrop-filter: blur(8px);
-      pointer-events: auto;
     }
 
     .motor-panel-header {
@@ -643,20 +628,8 @@
       50% { opacity: 0.7; }
     }
 
-    .motor-panel-section {
-      margin-bottom: var(--space-sm);
-    }
-
     .motor-panel-section--small {
       margin-bottom: var(--space-xs);
-    }
-
-    .motor-panel-label {
-      font-size: var(--font-size-xs);
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
     }
 
     .motor-panel-mass {
@@ -730,16 +703,7 @@
     .motor-preset {
       flex: 1;
       padding: 4px;
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
       font-size: var(--font-size-md);
-    }
-
-    .motor-preset:hover {
-      background: var(--color-bg-hover);
-      border-color: var(--color-accent);
     }
 
     .motor-impulse-controls {
@@ -853,24 +817,10 @@
 
     /* === Graphique Doppler === */
     .doppler-graph {
-      position: absolute;
       bottom: calc(var(--space-lg) + 60px);
       left: var(--space-md);
-      background: var(--color-bg-secondary);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-sm);
       width: 320px;
       height: 180px;
-      font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      color: var(--color-text);
-      z-index: 100;
-      box-shadow: 0 4px 12px var(--color-shadow);
-      backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      pointer-events: auto;
     }
 
     .doppler-graph-header {
@@ -889,15 +839,6 @@
     .doppler-graph-timewindow {
       padding: 2px 6px;
       font-size: var(--font-size-xs);
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      color: var(--color-text);
-      cursor: pointer;
-    }
-
-    .doppler-graph-timewindow:hover {
-      border-color: var(--color-accent);
     }
 
     .doppler-graph-legend {
@@ -944,24 +885,10 @@
 
     /* === Panneau Oscilloscope === */
     .clock-panel {
-      position: absolute;
       top: var(--space-md);
       left: 280px;
-      background: var(--color-bg-secondary);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-sm);
       width: 380px;
       height: 260px;
-      font-family: var(--font-family);
-      font-size: var(--font-size-sm);
-      color: var(--color-text);
-      z-index: 100;
-      box-shadow: 0 4px 12px var(--color-shadow);
-      backdrop-filter: blur(8px);
-      pointer-events: auto;
-      display: flex;
-      flex-direction: column;
     }
 
     .clock-panel .panel-header {
@@ -980,15 +907,6 @@
     .oscillo-select {
       padding: 2px 6px;
       font-size: var(--font-size-xs);
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      color: var(--color-text);
-      cursor: pointer;
-    }
-
-    .oscillo-select:hover {
-      border-color: var(--color-accent);
     }
 
     .oscillo-hint {
