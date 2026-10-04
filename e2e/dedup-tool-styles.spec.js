@@ -1,14 +1,21 @@
 import fs from 'node:fs';
 import { test, expect, activate } from './fixtures.js';
+import { withOriginalStyles } from './original-styles.js';
 
 /**
  * Caractérisation des styles calculés des outils Relativity Lab, JSON Formatter
  * et Mes données locales : le refactoring des feuilles de style ne doit changer
- * aucune propriété calculée. La référence est figée dans
- * e2e/fixtures/dedup-tool-styles-golden.json ; DEDUP_TOOL_STYLES_UPDATE=1 la régénère.
+ * aucune propriété calculée. Les mesures courantes sont comparées exactement à la
+ * même capture rejouée avec les CSS d'origine (même navigateur, OS et DOM), donc
+ * sans dépendre des métriques de polices. La référence figée
+ * e2e/fixtures/dedup-tool-styles-golden.json, immuable, contraint les éléments,
+ * propriétés, états, couleurs et jetons ; ses dimensions dépendantes de l'OS sont masquées.
  */
 const GOLDEN_URL = new URL('./fixtures/dedup-tool-styles-golden.json', import.meta.url);
-const UPDATE = process.env.DEDUP_TOOL_STYLES_UPDATE === '1';
+const GEOMETRIC_PROPS = new Set([
+  'top', 'right', 'bottom', 'left', 'width', 'height', 'min-width', 'max-width', 'min-height', 'max-height',
+  'transform', 'grid-template-columns', 'grid-template-rows',
+]);
 
 // Propriétés géométriques et typographiques déclarées par les blocs concernés.
 const LAYOUT_PROPS = [
@@ -179,7 +186,31 @@ const LOCAL_STATES = [
 ];
 
 function readGolden() {
-  return fs.existsSync(GOLDEN_URL) ? JSON.parse(fs.readFileSync(GOLDEN_URL, 'utf8')) : { pages: {} };
+  return JSON.parse(fs.readFileSync(GOLDEN_URL, 'utf8'));
+}
+
+const RUNTIME_PROPS = [...LAYOUT_PROPS.filter(name => !/^(width|height|min-|max-|grid|top|right|bottom|left)/.test(name)), ...COLOR_PROPS];
+
+// Valeurs de la forme « a|b|c » : les propriétés géométriques dépendent des polices de l'OS.
+function maskValue(text) {
+  const parts = text.split('|');
+  const names = [LAYOUT_PROPS, [...LAYOUT_PROPS, ...COLOR_PROPS], RUNTIME_PROPS, COLOR_PROPS].find(list => list.length === parts.length);
+  expect(names, `Valeur de style inattendue : ${text.slice(0, 40)}`).toBeDefined();
+  return parts.map((part, index) => (GEOMETRIC_PROPS.has(names[index]) ? '*' : part)).join('|');
+}
+
+function expandVariants(variants) {
+  const [[, base]] = Object.entries(variants);
+  return Object.fromEntries(Object.entries(variants).map(([name, values]) => [name, { ...base, ...values }]));
+}
+
+function normalizeForGolden(value) {
+  if (typeof value === 'string') { return maskValue(value); }
+  if (value.layout && value.colors) {
+    const expanded = { ...value, layout: expandVariants(value.layout), colors: expandVariants(value.colors) };
+    return Object.fromEntries(Object.entries(expanded).map(([key, inner]) => [key, key === 'layout' || key === 'colors' ? normalizeForGolden(inner) : inner]));
+  }
+  return Object.fromEntries(Object.entries(value).map(([key, inner]) => [key, normalizeForGolden(inner)]));
 }
 
 // Chaque élément et état mesuré doit exister explicitement : jamais de dictionnaire vide ni de sélecteur manqué.
@@ -218,16 +249,46 @@ function expectCoverage(name, actual) {
 
 function checkGolden(name, actual) {
   expectCoverage(name, actual);
-  if (UPDATE) {
-    const golden = readGolden();
-    golden.meta = { layoutProps: LAYOUT_PROPS, colorProps: COLOR_PROPS };
-    golden.pages[name] = actual;
-    fs.writeFileSync(GOLDEN_URL, `${JSON.stringify(golden, null, 1)}\n`);
-    return;
-  }
   const golden = readGolden();
   expect(golden.meta, 'Références absentes').toEqual({ layoutProps: LAYOUT_PROPS, colorProps: COLOR_PROPS });
-  expect(actual).toEqual(golden.pages[name]);
+  expect(normalizeForGolden(actual)).toEqual(normalizeForGolden(golden.pages[name]));
+}
+
+// lil-gui insère son <style> en tête de <head> : withOriginalStyles désigne les styles de page par rang,
+// on l'écarte donc le temps d'appliquer les CSS d'origine puis on le remet à sa place avant toute mesure.
+async function parkLibraryStyle(page) {
+  return page.evaluateHandle(() => {
+    const node = [...document.head.querySelectorAll('style')].find(style => style.textContent.trimStart().startsWith('.lil-gui'));
+    if (!node) { return []; }
+    const marker = document.createComment('lil-gui');
+    node.before(marker);
+    node.remove();
+    return [node, marker];
+  });
+}
+
+function restoreLibraryStyle(parked) {
+  return parked.evaluate(([node, marker]) => {
+    if (node && !node.isConnected) { marker.replaceWith(node); }
+  });
+}
+
+// Même capture sous les CSS d'origine puis sous les CSS courants, dans le même navigateur et DOM.
+async function paired(page, label, measure) {
+  const current = await measure();
+  const parked = await parkLibraryStyle(page);
+  let original;
+  try {
+    original = await withOriginalStyles(page, async () => {
+      await restoreLibraryStyle(parked);
+      return measure();
+    });
+  } finally {
+    await restoreLibraryStyle(parked);
+    await parked.dispose();
+  }
+  expect(current, `${label} : styles calculés courants et d'origine`).toEqual(original);
+  return current;
 }
 
 // Les transitions de thème et d'état doivent être terminées avant lecture.
@@ -373,15 +434,16 @@ test('Relativity: styles calcules des panneaux, etats generes, themes et respons
     host.innerHTML = html;
     document.querySelector('.app-container').append(host);
   }, RELATIVITY_PROBES);
-  const result = await snapshot(page, { roots: RELATIVITY_ROOTS, viewports: RELATIVITY_VIEWPORTS, states: RELATIVITY_STATES });
+  const options = { roots: RELATIVITY_ROOTS, viewports: RELATIVITY_VIEWPORTS, states: RELATIVITY_STATES };
+  const result = await paired(page, 'Relativity', () => snapshot(page, options));
   // Etat reel d'execution : lecture lancee puis moteur declenche.
   await activate(page.locator('#play-button'));
   await expect(page.locator('#play-button')).toHaveClass(/play-button--running/);
   await activate(page.locator('#motor-fire'));
   await expect(page.locator('.motor-history-item').first()).toBeVisible();
   await settle(page);
-  const runtimeProps = [...LAYOUT_PROPS.filter(name => !/^(width|height|min-|max-|grid|top|right|bottom|left)/.test(name)), ...COLOR_PROPS];
-  result.runtime = await capture(page, [['#play-button', true], ['#hud .hud-state', false]], runtimeProps);
+  result.runtime = await paired(page, 'Relativity en lecture', () =>
+    capture(page, [['#play-button', true], ['#hud .hud-state', false]], RUNTIME_PROPS));
   expect(Object.keys(result.runtime).length).toBeGreaterThan(2);
   checkGolden('relativity', result);
 });
@@ -390,22 +452,22 @@ test('JSON Formatter: styles calcules vide/valide/invalide, themes et responsive
   await page.goto('/tools/json-formatter.html');
   await expect(page.locator('#input')).toBeFocused();
   const options = { roots: JSON_ROOTS, viewports: JSON_VIEWPORTS, states: JSON_STATES };
-  const result = { vide: await snapshot(page, options) };
+  const result = { vide: await paired(page, 'JSON vide', () => snapshot(page, options)) };
   await page.locator('#input').fill('{"nom":"Ada","age":36,"ok":true,"rien":null,"liste":[1,2.5]}');
   await activate(page.locator('#btn-format'));
   await expect(page.locator('#status')).toHaveClass(/valid/);
   await expect(page.locator('#output .key')).toHaveCount(5);
   await expect(page.locator('#output .boolean, #output .null, #output .string, #output .number').first()).toBeVisible();
-  result.valide = await snapshot(page, options);
+  result.valide = await paired(page, 'JSON valide', () => snapshot(page, options));
   await page.locator('#btn-copy').evaluate(button => { button.disabled = true; });
-  result.copie_desactivee = await captureStates(page, [['#btn-copy', 'hover']]);
+  result.copie_desactivee = await paired(page, 'JSON copie désactivée', () => captureStates(page, [['#btn-copy', 'hover']]));
   await page.locator('#btn-copy').evaluate(button => { button.disabled = false; });
   await page.locator('#input').fill('{"nom": }');
   await activate(page.locator('#btn-format'));
   await expect(page.locator('#status')).toHaveClass(/invalid/);
   await expect(page.locator('#output')).toHaveClass(/error/);
   await expect(page.locator('#input')).toHaveAttribute('aria-invalid', 'true');
-  result.invalide = await snapshot(page, options);
+  result.invalide = await paired(page, 'JSON invalide', () => snapshot(page, options));
   checkGolden('json-formatter', result);
 });
 
@@ -413,12 +475,13 @@ test('Mes donnees locales: styles calcules, erreur de restauration, themes et re
   await page.goto('/tools/local-data/index.html');
   await expect(page.locator('#export')).toBeVisible();
   const options = { roots: LOCAL_ROOTS, viewports: LOCAL_VIEWPORTS, states: LOCAL_STATES };
-  const result = { initial: await snapshot(page, options) };
+  const result = { initial: await paired(page, 'Données locales', () => snapshot(page, options)) };
   await activate(page.locator('#import'));
   await expect(page.locator('#status')).not.toHaveText('Aucune opération effectuée.');
-  result.erreur = await snapshot(page, options);
+  result.erreur = await paired(page, 'Données locales en erreur', () => snapshot(page, options));
   await page.locator('#export').evaluate(button => { button.disabled = true; });
-  result.desactive = await capture(page, [['#export', false]], [...LAYOUT_PROPS, ...COLOR_PROPS]);
+  result.desactive = await paired(page, 'Données locales désactivées', () =>
+    capture(page, [['#export', false]], [...LAYOUT_PROPS, ...COLOR_PROPS]));
   checkGolden('local-data', result);
 });
 
@@ -433,7 +496,8 @@ test('Sans JavaScript: JSON Formatter et Mes donnees locales gardent leurs style
         const context = await browser.newContext({ baseURL, javaScriptEnabled: false, colorScheme: preference, viewport });
         const page = await context.newPage();
         await page.goto(path);
-        result[`${name}/${preference}/${viewport.width}`] = await capture(page, roots, [...LAYOUT_PROPS, ...COLOR_PROPS]);
+        result[`${name}/${preference}/${viewport.width}`] = await paired(page, `${name} sans JavaScript`, () =>
+          capture(page, roots, [...LAYOUT_PROPS, ...COLOR_PROPS]));
         await context.close();
       }
     }
