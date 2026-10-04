@@ -97,7 +97,7 @@ function selectPullRequest(event, root, commit, warn) {
     const base = event.pull_request.base.sha;
     if (!/^[a-f0-9]{40}$/.test(base) || !/^[a-f0-9]{40}$/.test(commit)) { throw new Error('Base ou merge absent.'); }
     const paths = git(root, ['diff', '--name-only', '-z', '--no-renames', base, commit]).split('\0').filter(Boolean);
-    return classifyChanges(paths);
+    return { ...classifyChanges(paths), base };
   } catch (error) {
     warn(`Diff CI indisponible, execution complete : ${error.message}`);
     return fullPlan([], 'Diff indisponible : execution complete.');
@@ -108,14 +108,15 @@ function pullRequestMetadata(event, repository) {
   return {
     pr: event.pull_request?.number ?? null,
     branch: event.pull_request?.head?.ref ?? null,
-    fromSameRepo: event.pull_request?.head?.repo?.full_name === repository,
+    fromSameRepo: Boolean(repository) && event.pull_request?.head?.repo?.full_name === repository,
   };
 }
 
 function addFingerprints(plan, root, warn) {
   try {
     const tree = readTree(root, plan.commit);
-    if (tree.some(file => file.activeMarkdown && plan.paths.includes(file.path))) {
+    const baseTree = plan.base ? readTree(root, plan.base) : [];
+    if ([...tree, ...baseTree].some(file => file.activeMarkdown && plan.paths.includes(file.path))) {
       Object.assign(plan, fullPlan(plan.paths, 'Markdown contenant du HTML : validation complete.'));
     }
     for (const id of controls) {

@@ -41,7 +41,9 @@ export function createEvidence(plan, needs, { runId, attempt }) {
     if (mode !== expected && !(expected === 'reused' && mode === 'execute')) {
       throw new Error(`Decision du controle ${id} contraire au plan.`);
     }
-    return [id, { ...plan.controls[id], mode, eligible: needs[id].outputs.eligible === 'true' }];
+    const control = { ...plan.controls[id], mode, eligible: needs[id].outputs.eligible === 'true' };
+    if (mode !== 'reused') { delete control.source; }
+    return [id, control];
   }));
   return { version: proofVersion, repository: plan.repository, pr: plan.pr, commit: plan.commit,
     runner: plan.runner, runId, attempt, controls: results };

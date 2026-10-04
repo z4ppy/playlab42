@@ -22,8 +22,10 @@ describe('Contrat du smoke multi-moteurs', () => {
     expect(steps.some(step => step.run === 'npm run verify:site' && step.if === 'inputs.prebuilt')).toBe(true);
     expect(steps.some(step => step.run === 'npx playwright install --with-deps chromium firefox webkit')).toBe(true);
     const suite = steps.findIndex(step => step.run === 'npm run test:e2e');
+    const documentary = steps.findIndex(step => step.run === 'npm run test:e2e -- e2e/guides.spec.js');
     const smoke = steps.findIndex(step => step.run === 'npx playwright test --config playwright.cross-engine.config.js');
-    expect(smoke).toBe(suite + 1);
+    expect(documentary).toBe(suite + 1);
+    expect(smoke).toBe(documentary + 1);
     expect(steps[smoke]['continue-on-error']).toBeUndefined();
     expect(steps[smoke].if).toBeUndefined();
     expect(steps[smoke].env.PLAYWRIGHT_PREBUILT).toContain('inputs.prebuilt');

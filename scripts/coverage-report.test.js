@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { runInNewContext } from 'node:vm';
 import { parse } from 'yaml';
 import jestConfig from '../jest.config.js';
 import { buildReport } from './coverage-report.js';
@@ -53,18 +54,24 @@ describe('rapport de preuves Jest', () => {
     expect(tests.run).toBe('npm run test:coverage');
     expect(tests['continue-on-error']).toBeUndefined();
     const report = steps.find(step => step.run?.includes('node scripts/coverage-report.js'));
-    expect(report.if).toBe('always()');
+    expect(report.if).toBe("always() && steps.decision.outputs.mode == 'execute'");
     expect(report.env.TEST_OUTCOME).toBe('${{ steps.jest.outcome }}');
     expect(report['continue-on-error']).toBeUndefined();
     const artifact = steps.find(step => step.with?.name?.startsWith('jest-coverage-'));
-    expect(artifact.if).toBe('always()');
+    expect(artifact.if).toBe(report.if);
     expect(artifact.with.name).toContain('${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}');
     for (const file of ['coverage-summary.json', 'coverage-final.json', 'lcov.info', 'provenance.json', 'coverage-report.md']) {
       expect(artifact.with.path).toContain(`coverage/${file}`);
     }
     expect(artifact.with['if-no-files-found']).toBe('error');
     const codecov = steps.find(step => step.uses?.startsWith('codecov/'));
-    expect(codecov.if).toBe('always()');
+    expect(codecov.if).toBe(report.if);
+    for (const mode of ['execute', 'documentation', 'reused', 'not-applicable']) {
+      for (const step of [report, artifact, codecov]) {
+        expect(runInNewContext(step.if, { always: () => true, steps: { decision: { outputs: { mode } } } }))
+          .toBe(mode === 'execute');
+      }
+    }
     expect(codecov['continue-on-error']).toBe(true);
     expect(codecov.with.fail_ci_if_error).toBe(false);
     expect(parse(readFileSync('codecov.yml', 'utf8')).flags.unittests.paths).toEqual(['app/', 'lib/', 'games/', 'tools/', 'scripts/']);
