@@ -9,6 +9,8 @@
 import EventEmitter from '../utils/EventEmitter.js';
 import { hidePanel, isPanelVisible, showPanel } from './panel-visibility.js';
 import { AudioEngine } from '../audio/AudioEngine.js';
+import { listenWithCleanup } from './emitter-listeners.js';
+import { populatePresetSelect } from './preset-select.js';
 
 // ============================================================================
 // Constantes
@@ -205,10 +207,7 @@ export class PianoController extends EventEmitter {
       ['effect-changed', () => this._syncEffectsUI()],
     ];
 
-    for (const [event, handler] of handlers) {
-      this.synthManager.on(event, handler);
-      this._cleanupHandlers.push(() => this.synthManager.off(event, handler));
-    }
+    listenWithCleanup(this.synthManager, handlers, this._cleanupHandlers);
   }
 
   /**
@@ -357,34 +356,8 @@ export class PianoController extends EventEmitter {
     const presets = AudioEngine.getPresets();
     const currentPreset = this.synthManager?.preset || 'piano';
 
-    // Grouper les presets par catégorie
-    const categories = {
-      'Claviers': ['piano', 'electricPiano', 'organ'],
-      'Guitares': ['guitarClassic', 'guitarFolk', 'guitarElectric'],
-      'Synthés': ['synthLead', 'retro8bit', 'bell'],
-      'Percussions': ['percKick', 'percSnare', 'percTom', 'percWood', 'percHihat', 'percCymbal'],
-    };
-
-    select.innerHTML = '';
-
-    // Créer les optgroups
-    for (const [category, presetKeys] of Object.entries(categories)) {
-      const optgroup = document.createElement('optgroup');
-      optgroup.label = category;
-
-      for (const key of presetKeys) {
-        const preset = presets[key];
-        if (!preset) {continue;}
-
-        const option = document.createElement('option');
-        option.value = key;
-        option.textContent = `${PRESET_ICONS[key] || '🎵'} ${preset.name}`;
-        option.selected = currentPreset === key;
-        optgroup.appendChild(option);
-      }
-
-      select.appendChild(optgroup);
-    }
+    populatePresetSelect(select, presets, currentPreset,
+      (preset, key) => `${PRESET_ICONS[key] || '🎵'} ${preset.name}`);
 
     // Event handler pour le changement de preset
     select.addEventListener('change', () => {

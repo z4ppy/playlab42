@@ -8,6 +8,7 @@
  * @module audio/AudioEngine
  */
 
+import { initOnce } from '../core/init-once.js';
 import { EventEmitter } from '../utils/EventEmitter.js';
 import { applyEffectsConfigToNodes, copyEffectsConfig } from './effects-config.js';
 import { buildSynthNodes } from './synth-factory.js';
@@ -277,18 +278,7 @@ export class AudioEngine extends EventEmitter {
    * @returns {Promise<void>}
    */
   init() {
-    if (this._disposed) {
-      return Promise.reject(new Error('Moteur audio détruit'));
-    }
-    if (this.ready) {
-      return Promise.resolve();
-    }
-    if (!this._initPromise) {
-      this._initPromise = this._initialize().finally(() => {
-        this._initPromise = null;
-      });
-    }
-    return this._initPromise;
+    return initOnce(this, 'Moteur audio détruit', () => this._initialize());
   }
 
   async _initialize() {

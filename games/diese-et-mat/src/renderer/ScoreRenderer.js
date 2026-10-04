@@ -7,6 +7,8 @@
  * @module renderer/ScoreRenderer
  */
 
+import { initOnce } from '../core/init-once.js';
+
 // ============================================================================
 // Classe ScoreRenderer
 // ============================================================================
@@ -63,16 +65,7 @@ export class ScoreRenderer {
    * @returns {Promise<void>}
    */
   init() {
-    if (this._disposed) {
-      return Promise.reject(new Error('Renderer détruit'));
-    }
-    if (this.ready) {return Promise.resolve();}
-    if (!this._initPromise) {
-      this._initPromise = this._initialize().finally(() => {
-        this._initPromise = null;
-      });
-    }
-    return this._initPromise;
+    return initOnce(this, 'Renderer détruit', () => this._initialize());
   }
 
   async _initialize() {

@@ -9,6 +9,8 @@
 
 import { EventEmitter } from '../utils/EventEmitter.js';
 import { AudioEngine } from '../audio/AudioEngine.js';
+import { listenWithCleanup } from './emitter-listeners.js';
+import { populatePresetSelect } from './preset-select.js';
 import { hidePanel, isPanelVisible, showPanel } from './panel-visibility.js';
 import { SYNTH_EFFECT_SLIDERS, SYNTH_PARAM_SLIDERS } from './synth-slider-specs.js';
 
@@ -151,10 +153,7 @@ export class SynthController extends EventEmitter {
       ['config-changed', () => this._updateAllSliders()],
     ];
 
-    for (const [event, handler] of handlers) {
-      this.synthManager.on(event, handler);
-      this._cleanupHandlers.push(() => this.synthManager.off(event, handler));
-    }
+    listenWithCleanup(this.synthManager, handlers, this._cleanupHandlers);
   }
 
   // --------------------------------------------------------------------------
@@ -172,34 +171,7 @@ export class SynthController extends EventEmitter {
     const presets = AudioEngine.getPresets();
     const currentPreset = this.synthManager.preset;
 
-    // Catégories de presets
-    const categories = {
-      'Claviers': ['piano', 'electricPiano', 'organ'],
-      'Guitares': ['guitarClassic', 'guitarFolk', 'guitarElectric'],
-      'Synthés': ['synthLead', 'retro8bit', 'bell'],
-      'Percussions': ['percKick', 'percSnare', 'percTom', 'percWood', 'percHihat', 'percCymbal'],
-    };
-
-    select.innerHTML = '';
-
-    for (const [categoryName, presetKeys] of Object.entries(categories)) {
-      const optgroup = document.createElement('optgroup');
-      optgroup.label = categoryName;
-
-      for (const key of presetKeys) {
-        if (presets[key]) {
-          const option = document.createElement('option');
-          option.value = key;
-          option.textContent = presets[key].name;
-          if (key === currentPreset) {
-            option.selected = true;
-          }
-          optgroup.appendChild(option);
-        }
-      }
-
-      select.appendChild(optgroup);
-    }
+    populatePresetSelect(select, presets, currentPreset, (preset) => preset.name);
 
     select.addEventListener('change', () => {
       this.synthManager.setPreset(select.value);

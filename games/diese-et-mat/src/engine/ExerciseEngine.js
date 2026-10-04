@@ -391,6 +391,19 @@ export class ExerciseEngine extends EventEmitter {
   }
 
   /**
+   * Sélectionne le palier d'indice selon le nombre d'indices demandés
+   * @private
+   *
+   * @param {string[]} hints - Indices du plus vague au plus précis
+   */
+  _hintFor(hints) {
+    return {
+      level: Math.min(this.hintsUsed, hints.length),
+      text: hints[Math.min(this.hintsUsed - 1, hints.length - 1)],
+    };
+  }
+
+  /**
    * Retourne un indice pour une note
    * @private
    */
@@ -402,10 +415,7 @@ export class ExerciseEngine extends EventEmitter {
       `C'est la note ${pitch.toFrench()}`,
     ];
 
-    return {
-      level: Math.min(this.hintsUsed, hints.length),
-      text: hints[Math.min(this.hintsUsed - 1, hints.length - 1)],
-    };
+    return this._hintFor(hints);
   }
 
   /**
@@ -419,10 +429,7 @@ export class ExerciseEngine extends EventEmitter {
       `C'est une ${interval.toFrench()}`,
     ];
 
-    return {
-      level: Math.min(this.hintsUsed, hints.length),
-      text: hints[Math.min(this.hintsUsed - 1, hints.length - 1)],
-    };
+    return this._hintFor(hints);
   }
 
   /**
@@ -436,10 +443,7 @@ export class ExerciseEngine extends EventEmitter {
       `C'est un accord ${chord.toFrench()}`,
     ];
 
-    return {
-      level: Math.min(this.hintsUsed, hints.length),
-      text: hints[Math.min(this.hintsUsed - 1, hints.length - 1)],
-    };
+    return this._hintFor(hints);
   }
 
   // --------------------------------------------------------------------------

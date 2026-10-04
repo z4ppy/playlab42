@@ -200,11 +200,22 @@ export class Scale {
    */
   contains(pitch) {
     const intervals = SCALE_INTERVALS[this.type];
+    const relativeInterval = this._relativeInterval(pitch);
+    return intervals.includes(relativeInterval);
+  }
+
+  /**
+   * Intervalle en demi-tons (0-11) entre la tonique et une note, octave ignorée
+   * @private
+   *
+   * @param {Pitch} pitch - Note à situer
+   * @returns {number}
+   */
+  _relativeInterval(pitch) {
     const pitchSemitone = pitch.toMidi() % 12;
     const rootSemitone = this.root.toMidi() % 12;
 
-    const relativeInterval = (pitchSemitone - rootSemitone + 12) % 12;
-    return intervals.includes(relativeInterval);
+    return (pitchSemitone - rootSemitone + 12) % 12;
   }
 
   /**
@@ -215,10 +226,7 @@ export class Scale {
    */
   getDegreeOf(pitch) {
     const intervals = SCALE_INTERVALS[this.type];
-    const pitchSemitone = pitch.toMidi() % 12;
-    const rootSemitone = this.root.toMidi() % 12;
-
-    const relativeInterval = (pitchSemitone - rootSemitone + 12) % 12;
+    const relativeInterval = this._relativeInterval(pitch);
     const index = intervals.indexOf(relativeInterval);
 
     return index !== -1 ? index + 1 : null;
