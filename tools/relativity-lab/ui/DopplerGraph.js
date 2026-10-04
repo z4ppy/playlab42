@@ -65,6 +65,9 @@ export class DopplerGraph {
   /** @type {Map<string, {name: string, color: string}>} Info sur les sources */
   sourceInfo = new Map();
 
+  /** @type {ResizeObserver|undefined} */
+  #resizeObserver;
+
   /**
    * @param {HTMLElement} container - Conteneur DOM
    */
@@ -118,10 +121,17 @@ export class DopplerGraph {
    * Configure l'observation du redimensionnement
    */
   #setupResizeObserver() {
-    const resizeObserver = new ResizeObserver(() => {
+    this.#resizeObserver = new ResizeObserver(() => {
       this.#resize();
     });
-    resizeObserver.observe(this.container);
+    this.#resizeObserver.observe(this.container);
+  }
+
+  /**
+   * Libère l'observation du redimensionnement
+   */
+  dispose() {
+    this.#resizeObserver?.disconnect();
   }
 
   /**

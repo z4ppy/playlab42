@@ -40,14 +40,29 @@ export function installBrowserBoundary() {
   jest.spyOn(performance, 'now').mockImplementation(() => clock.now);
   globalThis.ResizeObserver = FakeResizeObserver;
   window.matchMedia = jest.fn(() => ({
-    addEventListener: jest.fn((type, listener) => mediaListeners.push({ type, listener })),
-    removeEventListener: jest.fn(),
+    addEventListener: jest.fn((type, listener, options) => {
+      const entry = { type, listener };
+      mediaListeners.push(entry);
+      options?.signal?.addEventListener('abort', () => mediaListeners.splice(mediaListeners.indexOf(entry), 1));
+    }),
+    removeEventListener: jest.fn((type, listener) => {
+      const index = mediaListeners.findIndex((entry) => entry.type === type && entry.listener === listener);
+      if (index !== -1) { mediaListeners.splice(index, 1); }
+    }),
   }));
+  const scheduled = new Map();
+  let lastFrameId = 0;
   window.requestAnimationFrame = jest.fn((callback) => {
-    frames.push(callback);
-    return frames.length;
+    const id = ++lastFrameId;
+    const pending = () => callback();
+    scheduled.set(id, pending);
+    frames.push(pending);
+    return id;
   });
-  window.cancelAnimationFrame = jest.fn();
+  window.cancelAnimationFrame = jest.fn((id) => {
+    const index = frames.indexOf(scheduled.get(id));
+    if (index !== -1) { frames.splice(index, 1); }
+  });
 
   return {
     clock,

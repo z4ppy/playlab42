@@ -53,153 +53,168 @@ class App {
   /** @type {boolean} */
   #isRunning = false;
 
+  /** @type {number|null} Frame d'animation planifiée */
+  #frameId = null;
+
+  /** Écouteurs globaux et boutons, retirés par dispose() */
+  #lifecycle = new AbortController();
+
+  /** @type {MutationObserver|null} */
+  #themeObserver = null;
+
+  /** @type {Array<() => void>} Nettoyages des panneaux déplaçables */
+  #cleanups = [];
+
+  /** @type {boolean} */
+  #disposed = false;
+
   /**
    * Initialise l'application
    * @returns {Promise<void>}
    */
   // eslint-disable-next-line require-await
   async init() {
-    // Récupérer les conteneurs DOM
+    const { canvasContainer, hudContainer } = this.#requireContainers();
+    canvasContainer.querySelector('.loading')?.remove();
+
+    this.sceneManager = new SceneManager(canvasContainer);
+    this.simulation = new Simulation(this.sceneManager.scene);
+    this.#createInitialObservers();
+
+    this.hud = new HUD(hudContainer, (observerId) => this.#changeReferenceFrame(observerId));
+    const panelContainers = this.#createPanels();
+    this.#makePanelsDraggable(hudContainer, panelContainers);
+
+    this.simulation.onUpdate((sim) => this.#onSimulationUpdate(sim));
+
+    this.#setupPlayButton();
+    this.controlPanel = createControlPanel(this.simulation, this.sceneManager, (playing) => {
+      this.#updatePlayButton(playing);
+    });
+    this.#setupKeyboard();
+    this.#setupThemeListener();
+
+    this.#updatePanels(this.simulation.getDisplayData());
+    console.log('🚀 Relativity Lab initialisé');
+  }
+
+  /**
+   * Récupère les conteneurs DOM obligatoires
+   * @returns {{canvasContainer: HTMLElement, hudContainer: HTMLElement}}
+   */
+  #requireContainers() {
     const canvasContainer = document.getElementById('canvas-container');
     const hudContainer = document.getElementById('hud');
 
     if (!canvasContainer || !hudContainer) {
       throw new Error('Conteneurs DOM non trouvés');
     }
+    return { canvasContainer, hudContainer };
+  }
 
-    // Supprimer le message de chargement
-    const loadingEl = canvasContainer.querySelector('.loading');
-    if (loadingEl) {
-      loadingEl.remove();
+  /**
+   * Change de référentiel depuis le HUD et centre la caméra sur l'observateur
+   * @param {string} observerId
+   */
+  #changeReferenceFrame(observerId) {
+    this.simulation.setReferenceFrame(observerId);
+    const observer = this.simulation.getObserver(observerId);
+    if (observer) {
+      this.sceneManager.setTarget(observer.position);
     }
+    console.log(`🔄 Référentiel changé vers: ${observerId}`);
+  }
 
-    // Créer le gestionnaire de scène
-    this.sceneManager = new SceneManager(canvasContainer);
+  /**
+   * Applique une impulsion du panneau moteur à l'observateur de référence
+   * @param {THREE.Vector3} direction
+   * @param {number} deltaMass
+   */
+  #applyMotorImpulse(direction, deltaMass) {
+    const reference = this.simulation.referenceObserver;
+    if (!reference) {return;}
 
-    // Créer la simulation
-    this.simulation = new Simulation(this.sceneManager.scene);
-
-    // Créer les observateurs initiaux
-    this.#createInitialObservers();
-
-    // Créer le HUD avec callback pour changement de référentiel
-    this.hud = new HUD(hudContainer, (observerId) => {
-      this.simulation.setReferenceFrame(observerId);
-      // Centrer la caméra sur le nouvel observateur
-      const observer = this.simulation.getObserver(observerId);
-      if (observer) {
-        this.sceneManager.setTarget(observer.position);
-      }
-      console.log(`🔄 Référentiel changé vers: ${observerId}`);
-    });
-
-    // Créer la vue cockpit (ObserverView)
-    const observerViewContainer = document.getElementById('observer-view');
-    if (observerViewContainer) {
-      this.observerView = new ObserverView(observerViewContainer);
+    const result = reference.applyThrust(direction, deltaMass);
+    if (result.success) {
+      console.log(`🚀 Impulsion: Δv=${(result.deltaV * 100).toFixed(3)}%c, masse=${result.newMass.toFixed(0)}kg`);
     }
+  }
 
-    // Créer le panneau moteur
-    const motorPanelContainer = document.getElementById('motor-panel');
-    if (motorPanelContainer) {
-      this.motorPanel = new MotorPanel(motorPanelContainer, (direction, deltaMass) => {
-        // Appliquer la poussée à l'observateur de référence
-        if (this.simulation.referenceObserver) {
-          const result = this.simulation.referenceObserver.applyThrust(direction, deltaMass);
-          if (result.success) {
-            console.log(`🚀 Impulsion: Δv=${(result.deltaV * 100).toFixed(3)}%c, masse=${result.newMass.toFixed(0)}kg`);
-          }
-        }
+  /**
+   * Crée les panneaux optionnels présents dans la page
+   * @returns {Array<[string, HTMLElement|null]>} Clé de position persistée et conteneur de chaque panneau
+   */
+  #createPanels() {
+    const observerView = document.getElementById('observer-view');
+    const motorPanel = document.getElementById('motor-panel');
+    const dopplerGraph = document.getElementById('doppler-graph');
+    const clockPanel = document.getElementById('clock-panel');
+
+    if (observerView) {this.observerView = new ObserverView(observerView);}
+    if (motorPanel) {
+      this.motorPanel = new MotorPanel(motorPanel, (direction, deltaMass) => {
+        this.#applyMotorImpulse(direction, deltaMass);
       });
     }
+    if (dopplerGraph) {this.dopplerGraph = new DopplerGraph(dopplerGraph);}
+    if (clockPanel) {this.clockPanel = new ClockPanel(clockPanel);}
 
-    // Créer le graphique Doppler
-    const dopplerGraphContainer = document.getElementById('doppler-graph');
-    if (dopplerGraphContainer) {
-      this.dopplerGraph = new DopplerGraph(dopplerGraphContainer);
-    }
+    return [
+      ['relativity-lab-clock-pos', clockPanel],
+      ['relativity-lab-observer-pos', observerView],
+      ['relativity-lab-doppler-pos', dopplerGraph],
+      ['relativity-lab-motor-pos', motorPanel],
+    ];
+  }
 
-    // Créer le panneau des horloges lumineuses
-    const clockPanelContainer = document.getElementById('clock-panel');
-    if (clockPanelContainer) {
-      this.clockPanel = new ClockPanel(clockPanelContainer);
-    }
-
-    // Rendre les panneaux déplaçables
-    makeDraggable(hudContainer, 'relativity-lab-hud-pos');
-    if (clockPanelContainer) {
-      makeDraggable(clockPanelContainer, 'relativity-lab-clock-pos');
-    }
-    if (observerViewContainer) {
-      makeDraggable(observerViewContainer, 'relativity-lab-observer-pos');
-    }
-    if (dopplerGraphContainer) {
-      makeDraggable(dopplerGraphContainer, 'relativity-lab-doppler-pos');
-    }
-    if (motorPanelContainer) {
-      makeDraggable(motorPanelContainer, 'relativity-lab-motor-pos');
-    }
-
-    // Mettre à jour le HUD, la vue cockpit, le panneau moteur, le graphique Doppler et les horloges à chaque frame
-    this.simulation.onUpdate((sim) => {
-      const displayData = sim.getDisplayData();
-      this.hud.update(displayData);
-      if (this.observerView) {
-        this.observerView.update(displayData, displayData.observers);
-      }
-      if (this.motorPanel) {
-        const refObserver = displayData.observers.find(o => o.id === displayData.referenceId);
-        if (refObserver) {
-          this.motorPanel.update(refObserver);
-        }
-      }
-      if (this.dopplerGraph) {
-        this.dopplerGraph.update(displayData, displayData.observers);
-      }
-      if (this.clockPanel) {
-        this.clockPanel.update(displayData);
-      }
-
-      // Faire suivre la caméra à l'observateur de référence
-      if (sim.referenceObserver) {
-        this.sceneManager.setTarget(sim.referenceObserver.position);
-      }
-    });
-
-    // Configurer les boutons Play/Reset
-    this.#setupPlayButton();
-
-    // Créer le panneau de contrôle
-    this.controlPanel = createControlPanel(this.simulation, this.sceneManager, (playing) => {
-      this.#updatePlayButton(playing);
-    });
-
-    // Configurer les événements clavier
-    this.#setupKeyboard();
-
-    // Écouter les changements de thème
-    this.#setupThemeListener();
-
-    // Mettre à jour le HUD, la vue cockpit, le panneau moteur et le graphique Doppler une première fois
-    const initialData = this.simulation.getDisplayData();
-    this.hud.update(initialData);
-    if (this.observerView) {
-      this.observerView.update(initialData, initialData.observers);
-    }
-    if (this.motorPanel) {
-      const refObserver = initialData.observers.find(o => o.id === initialData.referenceId);
-      if (refObserver) {
-        this.motorPanel.update(refObserver);
+  /**
+   * Rend déplaçables le HUD et les panneaux présents
+   * @param {HTMLElement} hudContainer
+   * @param {Array<[string, HTMLElement|null]>} panels
+   */
+  #makePanelsDraggable(hudContainer, panels) {
+    const draggables = [['relativity-lab-hud-pos', hudContainer], ...panels];
+    for (const [storageKey, element] of draggables) {
+      if (element) {
+        this.#cleanups.push(makeDraggable(element, storageKey));
       }
     }
-    if (this.dopplerGraph) {
-      this.dopplerGraph.update(initialData, initialData.observers);
-    }
-    if (this.clockPanel) {
-      this.clockPanel.update(initialData);
-    }
+  }
 
-    console.log('🚀 Relativity Lab initialisé');
+  /**
+   * Met à jour HUD, vue cockpit, moteur, graphique Doppler et horloges à partir des données d'affichage
+   * @param {object} displayData
+   */
+  #updatePanels(displayData) {
+    this.hud.update(displayData);
+    this.observerView?.update(displayData, displayData.observers);
+    this.#updateMotorPanel(displayData);
+    this.dopplerGraph?.update(displayData, displayData.observers);
+    this.clockPanel?.update(displayData);
+  }
+
+  /**
+   * Transmet l'observateur de référence au panneau moteur
+   * @param {object} displayData
+   */
+  #updateMotorPanel(displayData) {
+    if (!this.motorPanel) {return;}
+
+    const refObserver = displayData.observers.find(o => o.id === displayData.referenceId);
+    if (refObserver) {
+      this.motorPanel.update(refObserver);
+    }
+  }
+
+  /**
+   * Met à jour l'affichage à chaque frame et fait suivre la caméra à la référence
+   * @param {Simulation} sim
+   */
+  #onSimulationUpdate(sim) {
+    this.#updatePanels(sim.getDisplayData());
+    if (sim.referenceObserver) {
+      this.sceneManager.setTarget(sim.referenceObserver.position);
+    }
   }
 
   /**
@@ -252,22 +267,26 @@ class App {
    * Configure le gros bouton Play/Pause
    */
   #setupPlayButton() {
-    const playBtn = document.getElementById('play-button');
-    const resetBtn = document.getElementById('reset-button');
+    const { signal } = this.#lifecycle;
 
-    if (playBtn) {
-      playBtn.addEventListener('click', () => {
-        this.simulation.toggle();
-        this.#updatePlayButton(this.simulation.state === 'running');
-      });
-    }
+    document.getElementById('play-button')?.addEventListener('click', () => this.#togglePlayback(), { signal });
+    document.getElementById('reset-button')?.addEventListener('click', () => this.#resetSimulation(), { signal });
+  }
 
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        this.simulation.reset();
-        this.#updatePlayButton(false);
-      });
-    }
+  /**
+   * Bascule lecture/pause et synchronise le bouton
+   */
+  #togglePlayback() {
+    this.simulation.toggle();
+    this.#updatePlayButton(this.simulation.state === 'running');
+  }
+
+  /**
+   * Réinitialise la simulation et le bouton
+   */
+  #resetSimulation() {
+    this.simulation.reset();
+    this.#updatePlayButton(false);
   }
 
   /**
@@ -278,83 +297,83 @@ class App {
     const playBtn = document.getElementById('play-button');
     if (!playBtn) {return;}
 
-    const icon = playBtn.querySelector('.play-button-icon');
-    const text = playBtn.querySelector('.play-button-text');
     playBtn.setAttribute('aria-pressed', String(playing));
     playBtn.setAttribute('aria-label', playing ? 'Mettre en pause la simulation' : 'Lire la simulation');
+    playBtn.classList.toggle('play-button--running', playing);
 
-    if (playing) {
-      playBtn.classList.add('play-button--running');
-      if (icon) {icon.textContent = '⏸';}
-      if (text) {text.textContent = 'Pause';}
-    } else {
-      playBtn.classList.remove('play-button--running');
-      if (icon) {icon.textContent = '▶';}
-      if (text) {text.textContent = 'Play';}
-    }
+    const icon = playBtn.querySelector('.play-button-icon');
+    const text = playBtn.querySelector('.play-button-text');
+    if (icon) {icon.textContent = playing ? '⏸' : '▶';}
+    if (text) {text.textContent = playing ? 'Pause' : 'Play';}
   }
 
   /**
    * Configure les raccourcis clavier
    */
   #setupKeyboard() {
-    document.addEventListener('keydown', (e) => {
-      // Ignorer si on est dans un champ de saisie
-      if ((e.target instanceof Element && e.target.closest('input, textarea, select, button, [contenteditable="true"]')) || e.altKey || e.ctrlKey || e.metaKey) {
-        return;
-      }
+    document.addEventListener('keydown', (e) => this.#handleKeydown(e), { signal: this.#lifecycle.signal });
+  }
 
-      switch (e.code) {
-        case 'Space':
-          e.preventDefault();
-          this.simulation.toggle();
-          this.#updatePlayButton(this.simulation.state === 'running');
-          break;
+  /**
+   * Indique si un raccourci doit être ignoré (saisie, contrôle interactif ou modificateur)
+   * @param {KeyboardEvent} e
+   * @returns {boolean}
+   */
+  #isShortcutIgnored(e) {
+    const interactive = e.target instanceof Element
+      && e.target.closest('input, textarea, select, button, [contenteditable="true"]');
+    return Boolean(interactive) || e.altKey || e.ctrlKey || e.metaKey;
+  }
 
-        case 'KeyR':
-          if (!e.ctrlKey && !e.metaKey) {
-            this.simulation.reset();
-            this.#updatePlayButton(false);
-          }
-          break;
+  /**
+   * Exécute le raccourci correspondant à la touche
+   * @param {KeyboardEvent} e
+   */
+  #handleKeydown(e) {
+    if (this.#isShortcutIgnored(e)) {return;}
 
-        case 'Digit1':
-        case 'Digit2':
-        case 'Digit3':
-        case 'Digit4':
-        case 'Digit5': {
-          // Changer de référentiel avec les touches 1-5
-          const index = parseInt(e.code.replace('Digit', '')) - 1;
-          const frames = this.simulation.getAvailableFrames();
-          if (index < frames.length) {
-            this.simulation.setReferenceFrame(frames[index].id);
-          }
-          break;
-        }
+    if (/^Digit[1-5]$/.test(e.code)) {
+      this.#selectFrameByIndex(Number(e.code.slice(-1)) - 1);
+      return;
+    }
 
-        case 'KeyG':
-          // Basculer la grille
-          this.sceneManager.grid.visible = !this.sceneManager.grid.visible;
-          break;
+    switch (e.code) {
+      case 'Space':
+        e.preventDefault();
+        this.#togglePlayback();
+        break;
+      case 'KeyR':
+        this.#resetSimulation();
+        break;
+      case 'KeyG':
+        this.sceneManager.grid.visible = !this.sceneManager.grid.visible;
+        break;
+      case 'KeyA':
+        this.sceneManager.axes.visible = !this.sceneManager.axes.visible;
+        break;
+    }
+  }
 
-        case 'KeyA':
-          // Basculer les axes
-          this.sceneManager.axes.visible = !this.sceneManager.axes.visible;
-          break;
-      }
-    });
+  /**
+   * Change de référentiel avec les touches 1-5
+   * @param {number} index
+   */
+  #selectFrameByIndex(index) {
+    const frames = this.simulation.getAvailableFrames();
+    if (index < frames.length) {
+      this.simulation.setReferenceFrame(frames[index].id);
+    }
   }
 
   /**
    * Configure l'écoute des changements de thème
    */
   #setupThemeListener() {
-    // Observer les changements de l'attribut data-theme
-    const observer = new MutationObserver(() => {
+    this.#themeObserver = new MutationObserver(() => {
       this.sceneManager.updateTheme();
     });
 
-    observer.observe(document.documentElement, {
+    this.#themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['data-theme'],
     });
@@ -363,7 +382,7 @@ class App {
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     darkModeQuery.addEventListener('change', () => {
       this.sceneManager.updateTheme();
-    });
+    }, { signal: this.#lifecycle.signal });
   }
 
   /**
@@ -382,7 +401,7 @@ class App {
   #animate = () => {
     if (!this.#isRunning) {return;}
 
-    requestAnimationFrame(this.#animate);
+    this.#frameId = requestAnimationFrame(this.#animate);
 
     const currentTime = performance.now();
     const deltaTime = (currentTime - this.#lastTime) / 1000;
@@ -391,36 +410,67 @@ class App {
     // Limiter le delta time pour éviter les sauts
     const clampedDelta = Math.min(deltaTime, 0.1);
 
-    // Gérer la poussée continue du moteur
-    if (this.motorPanel && this.simulation.referenceObserver) {
-      const thrust = this.motorPanel.getContinuousThrust();
-      if (thrust) {
-        this.simulation.referenceObserver.applyThrust(thrust.direction, thrust.deltaMass);
-      }
-    }
-
-    // Mettre à jour la simulation
+    this.#applyContinuousThrust();
     this.simulation.update(clampedDelta);
-
-    // Rendre la scène
     this.sceneManager.render();
   };
 
   /**
-   * Arrête la boucle de rendu
+   * Applique la poussée continue du moteur à l'observateur de référence
    */
-  stop() {
-    this.#isRunning = false;
+  #applyContinuousThrust() {
+    const reference = this.simulation.referenceObserver;
+    const thrust = reference && this.motorPanel?.getContinuousThrust();
+    if (thrust) {
+      reference.applyThrust(thrust.direction, thrust.deltaMass);
+    }
   }
 
   /**
-   * Libère les ressources
+   * Arrête la boucle de rendu et annule la frame planifiée
+   */
+  stop() {
+    this.#isRunning = false;
+    if (this.#frameId !== null) {
+      cancelAnimationFrame(this.#frameId);
+      this.#frameId = null;
+    }
+  }
+
+  /**
+   * Libère les ressources ; peut être appelé même si init() a échoué
    */
   dispose() {
+    if (this.#disposed) {return;}
+    this.#disposed = true;
+
     this.stop();
-    this.simulation.dispose();
-    this.sceneManager.dispose();
-    this.controlPanel.destroy();
+    this.#releaseListeners();
+    this.#releaseResources();
+  }
+
+  /**
+   * Retire écouteurs globaux, observateur de thème et panneaux déplaçables
+   */
+  #releaseListeners() {
+    this.#lifecycle.abort();
+    this.#themeObserver?.disconnect();
+    for (const cleanup of this.#cleanups) {
+      cleanup();
+    }
+    this.#cleanups = [];
+    this.motorPanel?.dispose();
+    this.dopplerGraph?.dispose();
+    this.clockPanel?.dispose();
+  }
+
+  /**
+   * Libère simulation, scène et panneau de contrôle
+   */
+  #releaseResources() {
+    this.simulation?.dispose();
+    this.sceneManager?.dispose();
+    this.controlPanel?.destroy();
   }
 }
 
@@ -438,6 +488,7 @@ function initApp() {
     })
     .catch((error) => {
       console.error('Erreur d\'initialisation:', error);
+      app.dispose();
 
       // Afficher un message d'erreur à l'utilisateur
       const container = document.getElementById('canvas-container');

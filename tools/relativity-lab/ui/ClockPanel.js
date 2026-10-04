@@ -71,7 +71,7 @@ export class ClockPanel {
 
     // Redimensionner le canvas
     this.#resizeCanvas();
-    window.addEventListener('resize', () => this.#resizeCanvas());
+    window.addEventListener('resize', this.#onWindowResize);
 
     // Bouton fermer
     this.container.querySelector('.panel-close').addEventListener('click', () => {
@@ -83,6 +83,9 @@ export class ClockPanel {
       this.timeWindow = parseInt(e.target.value);
     });
   }
+
+  /** Référence stable pour pouvoir retirer l'écouteur à la libération. */
+  #onWindowResize = () => this.#resizeCanvas();
 
   #resizeCanvas() {
     const wrapper = this.container.querySelector('.oscillo-canvas-wrapper');
@@ -373,6 +376,6 @@ export class ClockPanel {
     if (this.animationId) {
       cancelAnimationFrame(this.animationId);
     }
-    window.removeEventListener('resize', this.#resizeCanvas);
+    window.removeEventListener('resize', this.#onWindowResize);
   }
 }

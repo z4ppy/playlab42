@@ -32,6 +32,9 @@ export class MotorPanel {
   /** @type {boolean} Poussée continue active */
   isBurning = false;
 
+  /** Écouteurs globaux (fenêtre, document) retirés par dispose() */
+  #lifecycle = new AbortController();
+
   /** @type {string} Direction de poussée continue ('forward' | 'backward' | null) */
   burnDirection = null;
 
@@ -206,16 +209,25 @@ export class MotorPanel {
       });
     });
 
+    const { signal } = this.#lifecycle;
     window.addEventListener('blur', () => {
       if (this.isBurning) {
         this.#stopBurn();
       }
-    });
+    }, { signal });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && this.isBurning) {
         this.#stopBurn();
       }
-    });
+    }, { signal });
+  }
+
+  /**
+   * Retire les écouteurs globaux et arrête une poussée en cours
+   */
+  dispose() {
+    this.#lifecycle.abort();
+    this.#stopBurn();
   }
 
   /**
