@@ -165,6 +165,10 @@ const expectedGroups = {
 function expectComplete(matrix) {
   for (const [key, entry] of Object.entries(matrix)) {
     expect(Object.keys(entry.tokens), key).toHaveLength(tokens.length + 1);
+    // Canvas et Three.js lisent ces valeurs via getPropertyValue : elles doivent etre des couleurs litterales.
+    for (const name of tokens) {
+      expect(entry.tokens[name], `${key} / ${name}`).toMatch(/^(#[0-9a-f]{3,8}|rgba?\([\d\s.,]+\))$/i);
+    }
     for (const [group, names] of Object.entries(expectedGroups)) {
       expect(Object.keys(entry[group]), `${key} / ${group}`).toEqual(names);
       for (const name of names) {
