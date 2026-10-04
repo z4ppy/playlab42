@@ -4,14 +4,14 @@
  * Le double de Tone enregistre, dans l'ordre, chaque construction, connexion,
  * réglage et libération demandés par le moteur. Il valide les appels et leurs
  * options, jamais le rendu sonore : aucune écoute humaine ni carte son ici.
- * Le corpus JSON voisin a été généré depuis le code d'avant extraction ;
+ * Le corpus JSON (__tests__/fixtures) a été généré depuis le code d'avant extraction ;
  * UPDATE_AUDIO_CORPUS=1 ne doit servir qu'à un changement de contrat voulu.
  */
 import { jest } from '@jest/globals';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { AudioEngine } from './AudioEngine.js';
 
-const CORPUS_PATH = new URL('./AudioEngine.tone-corpus.json', import.meta.url);
+const CORPUS_PATH = new URL('./__tests__/fixtures/tone-corpus.json', import.meta.url);
 
 /** Construit un Tone factice dont le journal est la seule sortie observable. */
 function createToneDouble() {
