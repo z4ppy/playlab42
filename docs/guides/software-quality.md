@@ -1136,8 +1136,26 @@ palette, du templating ou des changements de cascade sans bénéfice établi.
 Le budget absolu protège les acquis mais n'interdit pas individuellement chaque
 nouveau clone si un ancien disparaît. Ni zéro clone, ni perfection certifiée.
 
+### Validation locale intégrée
+
+Sur le head **461db11**, les **181 suites / 4 105 tests / 3 snapshots** passent.
+Les **70 sélecteurs / 101 fichiers appariés** satisfont leurs floors par fichier ;
+S/B/F/L **89,66/84,91/90,58/89,76 %**. Ce total n'est pas directement comparable
+à #152 : Blocker et les nouveaux helpers élargissent la collecte.
+Lint source/sécurité, Biome, les trois projets de types, les 37 validations
+OpenSpec strictes et l'audit npm passent.
+
+Deux vrais builds sans réseau, à `SOURCE_DATE_EPOCH=1791132448`, produisent le même
+manifeste : **1 070 fichiers**, intégrité puis corruption/refus/restauration
+vérifiés. Les **152 interactions Chromium**, dont les nouvelles références CSS,
+et les **9 smokes sur trois moteurs** passent contre le site monté en lecture seule.
+La suite Chromium prend environ 5,4 minutes dans ce runtime ; le job natif doit
+encore confirmer sa durée, installation et smoke inclus, dans sa limite de 15 minutes.
+Ces preuves locales sont datées, pas une certification d'un head ultérieur.
+
 La mesure locale ne prouve pas une livraison : la PR et sa dernière tête native
-doivent encore être vérifiées. Fusion, publication et archivage restent distincts.
+doivent encore être vérifiées et référencées dans la PR. Fusion, publication et
+archivage restent distincts.
 
 ## Maintenance des références et exceptions
 

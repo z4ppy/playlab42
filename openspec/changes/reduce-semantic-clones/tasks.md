@@ -13,7 +13,7 @@
 
 ## Integration et livraison proposee
 - [x] Verifier les clones residuels et les trois compteurs absolus.
-- [ ] Resserer budgets/floors mesures et aligner guides/parcours.
-- [ ] Valider gates, deux builds, archive/reprise et navigateurs.
+- [x] Resserer budgets/floors mesures et aligner guides/parcours.
+- [x] Valider gates, deux builds, archive/reprise et navigateurs.
 - [ ] Ouvrir la PR et verifier derniere tete native et artefacts.
 - [ ] Fusion, publication et archivage sur decision distincte, hors autorisation.
