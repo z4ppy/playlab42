@@ -1178,7 +1178,18 @@ doivent rester **exactement égales**. Les CSS courants sont restaurés après l
 capture, même rejetée. Les références calculées initiales restent immuables
 pour leurs formes et états ; la palette publique garde ses assertions de valeurs.
 Les tests du helper vérifient provenance, distinction d'une mutation réelle,
-restauration après rejet et refus d'un lien de style absent.
+restauration après rejet et refus d'un lien de style absent. Le style inline de
+la page est identifié par ses octets courants, pas par son rang dans `head` :
+les styles injectés par lil-gui restent actifs et à leur place.
+
+Au head **bafe510**, les **157 interactions Chromium** corrigées passent en
+environ **6,7 minutes avec deux workers**, puis les **9 smokes trois moteurs**.
+Les mêmes éléments, propriétés et états sont conservés ; les quatre cases
+thème/viewport du portail sont désormais réparties en quatre tests parallélisables.
+Deux nouvelles preuves couvrent le corpus et la restauration du helper.
+Les deux nouveaux builds offline sont identiques et vérifient encore **1 070
+fichiers**, sans publier de test ou de référence CSS. Aucun timeout de CI n'est
+relevé : la première mesure native corrigée doit confirmer le budget de 15 minutes.
 
 La dernière tête native corrigée doit encore être vérifiée et référencée dans
 la PR. Une preuve locale ou un job partiellement vert n'est pas une livraison.
