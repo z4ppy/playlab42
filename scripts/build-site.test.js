@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { buildSite, isPublicSitePath } from './build-site.js';
+import { inventorySite } from './lib/artifact-inventory.js';
 
 describe('Packaging du site public', () => {
   let root;
@@ -50,6 +51,53 @@ describe('Packaging du site public', () => {
     expect(existsSync(join(output, 'obsolete.html'))).toBe(false);
     expect(existsSync(join(root, 'index.html'))).toBe(true);
   });
+
+  test('conserver les octets publics, fichiers facultatifs et identité sur deux fabrications', () => {
+    for (const name of ['favicon.ico', 'favicon.svg', 'CNAME', 'CHANGELOG.md']) {put(name, `contenu ${name}`);}
+    const commit = 'AB'.repeat(20);
+    const output = buildSite({ root, commit });
+    const first = inventorySite(output);
+    expect(readFileSync(join(output, 'build-info.json'), 'utf8')).toBe(
+      `${JSON.stringify({ version: '0.2.0', commit }, null, 2)}\n`,
+    );
+    buildSite({ root, commit });
+    expect(inventorySite(output)).toEqual(first);
+    for (const name of ['favicon.ico', 'favicon.svg', 'CNAME', 'CHANGELOG.md']) {
+      expect(readFileSync(join(output, name), 'utf8')).toBe(`contenu ${name}`);
+      expect(isPublicSitePath(name)).toBe(true);
+    }
+    expect(isPublicSitePath('assets\\vendor\\tone.js')).toBe(true);
+    expect(isPublicSitePath('games\\x\\__snapshots__\\view.test.js.snap')).toBe(false);
+  });
+
+  test.each([null, false, 0, ''])('refuser une version %j avant remplacement du site', version => {
+    const output = buildSite({ root, commit: null });
+    const before = inventorySite(output);
+    put('package.json', JSON.stringify({ version }));
+    expect(() => buildSite({ root, commit: null })).toThrow('Version du projet absente.');
+    expect(inventorySite(output)).toEqual(before);
+  });
+
+  test('valider le SHA avant la version et les références d’images', () => {
+    const output = buildSite({ root, commit: null });
+    const before = inventorySite(output);
+    put('package.json', '{"version":null}');
+    put('data/bookmarks.json', '{}');
+    expect(() => buildSite({ root, commit: 'main' })).toThrow('Le commit du build doit être un SHA Git complet.');
+    expect(inventorySite(output)).toEqual(before);
+  });
+
+  test.each(['data/catalogue.json', 'data/bookmarks.json', 'docs/site/index.html'])(
+    'signaler exactement le prérequis absent %s',
+    name => {
+      const output = buildSite({ root, commit: null });
+      rmSync(join(root, name));
+      expect(() => buildSite({ root, commit: null })).toThrow(name === 'data/bookmarks.json'
+        ? /ENOENT/
+        : `Build préalable incomplet : ${name}`);
+      expect(existsSync(join(output, 'index.html'))).toBe(true);
+    },
+  );
 
   test('refuser un dossier site étranger ou un lien symbolique', () => {
     put('site/manual.txt', 'ne pas supprimer');

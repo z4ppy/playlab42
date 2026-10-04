@@ -3,8 +3,8 @@
 - [x] Valider strictement le change avant code.
 
 ## Tests avant extraction
-- [ ] Caractériser vendors, licences, bundles/copies et refus préalables.
-- [ ] Caractériser publication, identité, images et intégrité de l'archive.
+- [x] Caractériser vendors, licences, bundles/copies et refus préalables.
+- [x] Caractériser publication, identité, images et intégrité de l'archive.
 
 ## Refactoring et protections
 - [ ] Simplifier les quatre responsabilités sans changer leurs contrats.

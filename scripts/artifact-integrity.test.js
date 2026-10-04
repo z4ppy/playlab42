@@ -1,5 +1,6 @@
 import { mkdtempSync, writeFileSync, readFileSync, rmSync, symlinkSync, mkdirSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { inventorySite } from './lib/artifact-inventory.js';
@@ -25,6 +26,68 @@ test('vérifier tous les octets et une identité attendue', () => {
   expect(verifySite(root, commit)).toEqual({ version: '1.0', commit, checked: 3 });
   expect(verifySite(root, commit.toUpperCase()).checked).toBe(3);
   expect(() => verifySite(root, 'b'.repeat(40))).toThrow(/Commit différent/);
+});
+
+test('conserver stdout, stderr et codes du vrai CLI de vérification', () => {
+  const script = fileURLToPath(new URL('./verify-site.js', import.meta.url));
+  const run = sha => spawnSync(process.execPath, [script, root], {
+    env: { ...process.env, GITHUB_SHA: sha }, encoding: 'utf8', timeout: 5000,
+  });
+  const valid = run(commit);
+  expect(valid.error).toBeUndefined();
+  expect(valid.status).toBe(0);
+  expect(valid.stdout).toBe(`Artefact vérifié : 3 fichiers, commit ${commit}.\n`);
+  expect(valid.stderr).toBe('');
+  const invalid = run('b'.repeat(40));
+  expect(invalid.error).toBeUndefined();
+  expect(invalid.status).toBe(1);
+  expect(invalid.stdout).toBe('');
+  expect(invalid.stderr).toBe(
+    `Vérification du site échouée : Commit différent : attendu ${'b'.repeat(40)}, reçu ${commit}.\n`,
+  );
+});
+
+test.each([
+  ['format', { formatVersion: 2 }, {}],
+  ['liste', { files: {} }, {}],
+  ['liste vide', { files: [] }, {}],
+  ['version absente', {}, { version: '' }],
+  ['version non textuelle', {}, { version: 1 }],
+  ['versions distinctes', { version: '2.0' }, {}],
+  ['commits distincts', { commit: 'b'.repeat(40) }, {}],
+  ['commit absent', { commit: undefined }, { commit: undefined }],
+  ['commit malformé', { commit: 'main' }, { commit: 'main' }],
+  ['commit non textuel', { commit: 1 }, { commit: 1 }],
+])('conserver le refus d’identité %s avant contrôle du commit attendu', (_label, manifestFields, identityFields) => {
+  const manifest = JSON.parse(readFileSync(join(root, 'build-manifest.json'), 'utf8'));
+  const identity = JSON.parse(readFileSync(join(root, 'build-info.json'), 'utf8'));
+  writeFileSync(join(root, 'build-manifest.json'), JSON.stringify({ ...manifest, ...manifestFields }));
+  writeFileSync(join(root, 'build-info.json'), JSON.stringify({ ...identity, ...identityFields }));
+  expect(() => verifySite(root, 'invalid')).toThrow('Manifeste ou identité du build invalide.');
+});
+
+test('accepter une identité locale null sans SHA attendu et refuser un SHA invalide', () => {
+  writeFileSync(join(root, 'build-info.json'), JSON.stringify({ version: '1.0', commit: null }));
+  writeFileSync(join(root, 'build-manifest.json'), JSON.stringify({
+    formatVersion: 1, version: '1.0', commit: null, files: inventorySite(root),
+  }));
+  expect(verifySite(root)).toEqual({ version: '1.0', commit: null, checked: 3 });
+  expect(() => verifySite(root, commit)).toThrow(`Commit différent : attendu ${commit}, reçu null.`);
+  expect(() => verifySite(root, 'invalid')).toThrow('Commit différent : attendu invalid, reçu null.');
+});
+
+test('refuser un inventaire réordonné ou enrichi même avec les mêmes fichiers', () => {
+  const path = join(root, 'build-manifest.json');
+  const manifest = JSON.parse(readFileSync(path, 'utf8'));
+  for (const files of [
+    [...manifest.files].reverse(),
+    manifest.files.map(file => ({ ...file, additional: true })),
+  ]) {
+    writeFileSync(path, JSON.stringify({ ...manifest, files }));
+    expect(() => verifySite(root, commit)).toThrow(
+      'Intégrité du site invalide : fichiers modifiés, absents, supplémentaires ou inventaire non canonique.',
+    );
+  }
 });
 
 test('restaurer une vraie archive tar sans modifier le site original', () => {
