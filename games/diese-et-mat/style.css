@@ -132,7 +132,13 @@ html, body {
    Memo Popup
    ============================================================================ */
 
-.memo-overlay {
+/* Fond, popup et en-tête communs aux dialogues : chaque panneau garde ses
+   dimensions et ses particularités plus bas. */
+.memo-overlay,
+.piano-overlay,
+.metronome-overlay,
+.tuner-overlay,
+.synth-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -148,32 +154,52 @@ html, body {
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-.memo-overlay.visible {
+.memo-overlay.visible,
+.piano-overlay.visible,
+.metronome-overlay.visible,
+.tuner-overlay.visible,
+.synth-overlay.visible {
   opacity: 1;
   visibility: visible;
 }
 
-.memo-popup {
+.memo-popup,
+.metronome-popup,
+.tuner-popup,
+.synth-popup {
   background: var(--color-bg);
   border-radius: var(--radius-lg);
-  max-width: 90vw;
-  max-height: 85vh;
-  overflow: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transform: scale(0.9);
   transition: transform 0.2s ease;
 }
 
-.memo-overlay.visible .memo-popup {
+.memo-popup {
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: auto;
+}
+
+.memo-overlay.visible .memo-popup,
+.metronome-overlay.visible .metronome-popup,
+.tuner-overlay.visible .tuner-popup,
+.synth-overlay.visible .synth-popup {
   transform: scale(1);
 }
 
-.memo-header {
+.memo-header,
+.metronome-header,
+.tuner-header,
+.synth-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--space-md);
   border-bottom: 1px solid var(--color-border);
+}
+
+.memo-header,
+.synth-header {
   position: sticky;
   top: 0;
   background: var(--color-bg);
@@ -301,25 +327,8 @@ html, body {
    ============================================================================ */
 
 .piano-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
   align-items: flex-end;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
   padding-bottom: var(--space-lg);
-}
-
-.piano-overlay.visible {
-  opacity: 1;
-  visibility: visible;
 }
 
 .piano-popup {
@@ -1024,47 +1033,9 @@ html, body {
    Metronome Panel
    ============================================================================ */
 
-.metronome-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.metronome-overlay.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
 .metronome-popup {
-  background: var(--color-bg);
-  border-radius: var(--radius-lg);
   width: 90vw;
   max-width: 360px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transform: scale(0.9);
-  transition: transform 0.2s ease;
-}
-
-.metronome-overlay.visible .metronome-popup {
-  transform: scale(1);
-}
-
-.metronome-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .metronome-title {
@@ -1208,49 +1179,11 @@ html, body {
    Tuner Panel
    ============================================================================ */
 
-.tuner-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.tuner-overlay.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
 .tuner-popup {
-  background: var(--color-bg);
-  border-radius: var(--radius-lg);
   width: 90vw;
   max-width: 450px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transform: scale(0.9);
-  transition: transform 0.2s ease;
-}
-
-.tuner-overlay.visible .tuner-popup {
-  transform: scale(1);
-}
-
-.tuner-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .tuner-title {
@@ -1540,53 +1473,11 @@ html, body {
    Synth Panel
    ============================================================================ */
 
-.synth-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.synth-overlay.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
 .synth-popup {
-  background: var(--color-bg);
-  border-radius: var(--radius-lg);
   max-width: 450px;
   width: 90vw;
   max-height: 85vh;
   overflow: auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transform: scale(0.9);
-  transition: transform 0.2s ease;
-}
-
-.synth-overlay.visible .synth-popup {
-  transform: scale(1);
-}
-
-.synth-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
-  background: var(--color-bg);
-  z-index: 1;
 }
 
 .synth-title {
@@ -1672,64 +1563,8 @@ html, body {
   box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2);
 }
 
-/* Bouton de test */
-.synth-test-btn {
-  width: 100%;
-  margin-top: var(--space-md);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-accent);
-  color: var(--color-text-inverse);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-weight: bold;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.synth-test-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
-
-.synth-test-btn:active {
-  transform: translateY(0);
-}
-
-/* Boutons d'oscillateur */
-.synth-oscillators {
-  display: flex;
-  gap: var(--space-sm);
-  flex-wrap: wrap;
-}
-
-.synth-osc-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--color-bg);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  min-width: 70px;
-}
-
-.synth-osc-btn:hover {
-  border-color: var(--color-accent);
-  background: var(--color-bg-hover);
-}
-
-.synth-osc-btn.active {
-  border-color: var(--color-accent);
-  background: rgba(var(--color-accent-rgb), 0.1);
-}
-
-.synth-osc-icon {
-  font-size: 1.5rem;
-}
+/* Bouton de test, oscillateurs, curseurs et effets : les règles de ces
+   composants sont regroupées plus bas, avec la présentation en grille. */
 
 .synth-osc-btn span:last-child {
   font-size: var(--font-size-xs);
@@ -1741,81 +1576,8 @@ html, body {
   font-weight: bold;
 }
 
-/* Sliders ADSR et paramètres */
-.synth-adsr {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.synth-slider-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.synth-slider-row label {
-  min-width: 90px;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-
-.synth-slider-row input[type="range"] {
-  flex: 1;
-  height: 6px;
-  accent-color: var(--color-accent);
-  cursor: pointer;
-}
-
-.synth-slider-value {
-  min-width: 70px;
-  text-align: right;
-  font-size: var(--font-size-sm);
-  font-weight: bold;
-  color: var(--color-text);
-  font-family: var(--font-mono);
-}
-
-/* Section Effets */
-.synth-effects {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.synth-effect {
-  padding: var(--space-sm);
-  background: var(--color-bg);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-}
-
-.synth-effect-header {
-  margin-bottom: var(--space-sm);
-}
-
-.synth-checkbox {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-weight: bold;
-}
-
-.synth-checkbox input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--color-accent);
-  cursor: pointer;
-}
-
 .synth-checkbox input[type="checkbox"]:checked + span {
   color: var(--color-accent);
-}
-
-.synth-effect .synth-slider-row {
-  padding-left: var(--space-lg);
 }
 
 .synth-effect .synth-slider-row label {
@@ -1971,6 +1733,7 @@ html, body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-xs);
+  flex-wrap: wrap;
 }
 
 .synth-osc-btn {
@@ -1986,10 +1749,12 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  min-width: 70px;
 }
 
 .synth-osc-btn:hover {
   border-color: var(--color-accent);
+  background: var(--color-bg-hover);
 }
 
 .synth-osc-btn.active {
@@ -2016,17 +1781,21 @@ html, body {
 }
 
 .synth-slider-row label {
+  min-width: 90px;
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
 
 .synth-slider-row input[type="range"] {
+  flex: 1;
   width: 100%;
   height: 6px;
   -webkit-appearance: none;
   appearance: none;
   background: var(--color-border);
   border-radius: 3px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
 }
 
 .synth-slider-row input[type="range"]::-webkit-slider-thumb {
@@ -2054,10 +1823,12 @@ html, body {
 }
 
 .synth-slider-value {
+  min-width: 70px;
   font-size: var(--font-size-xs);
   color: var(--color-accent);
   font-weight: bold;
   text-align: right;
+  font-family: var(--font-mono);
 }
 
 .synth-effects {
@@ -2070,6 +1841,7 @@ html, body {
   padding: var(--space-sm);
   background: var(--color-bg-secondary);
   border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .synth-effect-header {
@@ -2081,6 +1853,7 @@ html, body {
   align-items: center;
   gap: var(--space-sm);
   cursor: pointer;
+  font-size: var(--font-size-sm);
   font-weight: bold;
 }
 
@@ -2092,6 +1865,7 @@ html, body {
 }
 
 .synth-effect .synth-slider-row {
+  padding-left: var(--space-lg);
   opacity: 0.5;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -2108,6 +1882,8 @@ html, body {
 }
 
 .synth-test-btn {
+  width: 100%;
+  margin-top: var(--space-md);
   padding: var(--space-sm) var(--space-lg);
   background: var(--color-accent);
   color: var(--color-text-inverse);
@@ -2115,10 +1891,12 @@ html, body {
   border-radius: var(--radius-md);
   cursor: pointer;
   font-size: var(--font-size-md);
+  font-weight: bold;
   transition: all 0.15s ease;
 }
 
 .synth-test-btn:hover {
+  filter: brightness(1.1);
   transform: scale(1.05);
   background: var(--color-accent-hover);
 }
