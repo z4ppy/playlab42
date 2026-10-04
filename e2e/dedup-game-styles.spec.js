@@ -230,7 +230,7 @@ async function captureStates(page, targets) {
   }, PROPERTIES);
   for (const selector of targets) {
     const locator = page.locator(selector).first();
-    if (!(await locator.count())) { continue; }
+    expect(await locator.count(), `Cible mesuree absente : ${selector}`).toBeGreaterThan(0);
     await settle(page);
     rows.push([`${selector} repos`, await read(locator)]);
     if (await locator.isEnabled() && await locator.isVisible()) {
@@ -262,6 +262,8 @@ function compare(name, rows) {
   const golden = readGolden();
   const expected = golden.scenarios[name];
   expect(expected, `Scenario absent du golden : ${name}`).toBeTruthy();
+  expect(Object.keys(expected).length, `Golden vide pour ${name}`).toBeGreaterThan(5);
+  expect(rows.length, `Mesures vides pour ${name}`).toBeGreaterThan(5);
   const decode = index => Object.fromEntries(golden.properties.map((property, position) => [property, golden.values[golden.styles[index][position]]]));
   const actual = Object.fromEntries(rows.map(([key, values]) => [key, Object.fromEntries(PROPERTIES.map((property, position) => [property, values[position]]))]));
   expect(Object.keys(actual), `Elements de ${name}`).toEqual(Object.keys(expected));
