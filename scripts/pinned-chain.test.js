@@ -101,7 +101,14 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
     }
     const browserUpload = workflows['ui-e2e.yml'].jobs.browser.steps
       .find(step => step.with?.name === 'ui-e2e-failure');
-    expect(browserUpload.uses).toBe('actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02');
+    expect(browserUpload.uses).toMatch(/^actions\/upload-artifact@[a-f0-9]{40}$/);
+    expect(browserUpload.if).toBe('failure()');
+    expect(browserUpload.with).toEqual({
+      name: 'ui-e2e-failure',
+      path: 'playwright-report/\ntest-results/\n',
+      'if-no-files-found': 'ignore',
+      'retention-days': 14,
+    });
   });
 
   test('les images de base portent un digest et Dependabot couvre les deux répertoires', () => {
