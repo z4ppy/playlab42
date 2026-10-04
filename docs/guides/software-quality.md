@@ -1071,7 +1071,8 @@ Cette livraison ne vaut pas autorisation d'archiver le change.
 
 ## Réduction sémantique des clones
 
-**Continuation autorisée dans `quality/semantic-deduplication`, PR #153 ouverte, non livrée.**
+**Continuation fusionnée via la PR #153, issue de `quality/semantic-deduplication` ;
+main `6ed1d3b13c45dfbb76c7c93850742cf6aba7697a`.**
 Le change `reduce-semantic-clones` part du main #152 livré, avec des scopes
 indépendants sur styles partagés, pages jeux, musique, outils et petits contrats JS.
 Un clone de tokens n'est pas automatiquement un contrat commun : la cascade CSS,
@@ -1155,7 +1156,7 @@ Ces preuves locales sont datées, pas une certification d'un head ultérieur.
 
 ### Première CI et portabilité des contrats de styles
 
-La [PR #153](https://github.com/z4ppy/playlab42/pull/153) est ouverte.
+La [PR #153](https://github.com/z4ppy/playlab42/pull/153) a été fusionnée.
 La première [CI 37227111602](https://github.com/z4ppy/playlab42/actions/runs/37227111602),
 head **5da95a7**, confirme le rapport **15/146/1 398**, les **70 sélecteurs /
 101 fichiers appariés** et les builds ; les sept fichiers qualité/Jest sont
@@ -1189,11 +1190,7 @@ thème/viewport du portail sont désormais réparties en quatre tests paralléli
 Deux nouvelles preuves couvrent le corpus et la restauration du helper.
 Les deux nouveaux builds offline sont identiques et vérifient encore **1 070
 fichiers**, sans publier de test ou de référence CSS. Aucun timeout de CI n'est
-relevé : la première mesure native corrigée doit confirmer le budget de 15 minutes.
-
-La dernière tête native corrigée doit encore être vérifiée et référencée dans
-la PR. Une preuve locale ou un job partiellement vert n'est pas une livraison.
-Fusion, publication et archivage restent distincts.
+relevé : la mesure native corrigée ci-dessous confirme le budget de 15 minutes.
 
 La deuxième CI **37230262226**, head **d921058**, valide les comparaisons exactes
 avec les CSS originales, mais révèle encore des attentes héritées du golden
@@ -1205,6 +1202,29 @@ tolérance dans le même DOM. Aucun champ n'est retiré de cette comparaison.
 Cette séparation remplace les listes heuristiques de propriétés dépendantes
 des polices. Les tokens publics du thème conservent en plus leurs valeurs
 initiales et leur format lisible par les renderers JS.
+
+### Livraison native corrigée
+
+La [CI 37231437359](https://github.com/z4ppy/playlab42/actions/runs/37231437359)
+et l'[audit 37231437351](https://github.com/z4ppy/playlab42/actions/runs/37231437351)
+réussissent au head **8195c4ece60157e2ceefab6fd0a9624d0ec8896c**.
+Le merge testé est **2d17df94b1d0d3496c38c7e89a4121f3527d2afd**, tentative 1.
+Les **deux fichiers qualité et cinq fichiers Jest** téléchargés sont vérifiés :
+provenance propre, scanners/paramètres/exclusions conservés, **15/146/1 398**,
+aucun hotspot au-dessus des limites et **70 sélecteurs / 101 fichiers**
+satisfaisant chacun leurs quatre floors. La couverture native S/B/F/L reste
+**89,63/84,88/90,54/89,73 %**.
+
+Les **181 suites / 4 105 tests / 3 snapshots**, **157 interactions Chromium**
+et **9 smokes trois moteurs** passent. Le job navigateur prend **7 min 15 s**,
+installation incluse, sous la limite inchangée de 15 minutes. Les builds
+vérifient **1 070 fichiers publics** et la reprise refuse la corruption avant
+restauration. Les contrôles Docker consultatifs ne sont pas exécutés sur cette PR.
+
+Ces preuves désignent cette tête précise. Toute tête documentaire suivante
+est revérifiée ; ses identifiants et artefacts sont référencés dans la PR sans
+boucle de commits de provenance. Fusion, publication et archivage restent
+distincts : la fusion externe de #153 est constatée, sans archivage automatique.
 
 ## Maintenance des références et exceptions
 
