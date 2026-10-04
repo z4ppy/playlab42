@@ -105,7 +105,7 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(slide).toContain('une couverture élevée ne prouve pas la qualité des assertions');
   });
 
-  it('distingue le lot tests-first livré des corrections du cœur en cours', () => {
+  it('distingue les lots livrés de la continuation mesurée en cours', () => {
     const quality = readFileSync(resolve(root, 'docs/guides/software-quality.md'), 'utf8');
     const factory = readFileSync(resolve(root, 'docs/guides/software-factory.md'), 'utf8');
     const delivered = quality.split('## Application tests-first')[1]
@@ -116,7 +116,11 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     const current = quality.split('## Corrections prioritaires du cœur')[1]
       .split('## Maintenance des références')[0];
     expect(current).toContain('quality/core-refactors');
-    expect(current).toContain('non intégrés à main');
+    expect(current).toContain('PR #148');
+    expect(current).toContain('ef0a2aa');
+    expect(current).toContain('37162681481');
+    expect(current).toContain('## Duplication et complexité');
+    expect(current).toContain('quality/duplication-complexity');
     expect(current).toContain('refactor-core-with-contracts');
     expect(current).toContain('sans migration des états JSON');
     expect(current).toContain('pas une certification');
@@ -132,6 +136,8 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     for (const document of [quality, readme]) {
       expect(document).toContain('PR #147');
       expect(document).toContain('quality/core-refactors');
+      expect(document).toContain('PR #148');
+      expect(document).toContain('quality:report');
     }
   });
 
