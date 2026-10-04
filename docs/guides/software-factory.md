@@ -151,7 +151,7 @@ ouvrir une PR et suivre les décisions humaines.
 
 ### CI et publication livrées
 
-Sur une PR, `ci.yml` exécute lint qualité et sécurité JS ciblée, rapport Code quality
+Sur une PR, `ci.yml` sélectionne les contrôles applicables : lint qualité et sécurité JS ciblée, rapport Code quality
 (duplication et complexité), Jest/coverage, types, audit npm requis, validation OpenSpec stricte,
 build et navigateur. Sur push `main`, `deploy.yml` appelle cette même CI dans
 son run et attend son succès avant publication. Un lancement manuel hors `main`
@@ -162,6 +162,57 @@ et le packaging public `site/`. L'archive `github-pages` est testée dans Chromi
 **sans reconstruction**, puis publiée telle quelle. La sortie publique exclut
 les dépendances npm, tests, caches et configurations d'agents. Les fichiers
 réservés au dépôt sont accessibles par les liens GitHub du lecteur documentaire.
+
+### CI sélective et rebases
+
+Le workflow reste déclenché sur chaque PR, avec les mêmes neuf noms de checks
+requis. Le job **Impact** classe le diff entre la base et le commit de merge
+effectivement testé ; un renommage examine les deux chemins. Aucun
+`paths-ignore` global ni `continue-on-error` ne transforme une analyse nécessaire
+en contrôle facultatif.
+
+| Changement | Parcours |
+|------------|----------|
+| Markdown connu dans `docs/`, `openspec/`, les skills, ou README/AGENTS/CLAUDE racine | Contrats documentaires ciblés, fabrication, guides navigateur et smokes multi-moteurs ; validation OpenSpec si concernée |
+| HTML, JS ou TS d'un jeu, outil ou slide | Tests complets et contrôles applicables ; les slides restent exécutables |
+| CSS local | Tests, rapport qualité et navigateur ; pas de vérification de types ou de scripts inchangés |
+| Code partagé, fabrication, dépendances ou configuration | Tous les contrôles |
+| Chemin inconnu, diff indisponible ou Markdown contenant du HTML | Parcours complet conservateur, avec motif explicite |
+
+La détection du HTML est volontairement conservatrice, y compris dans les
+exemples Markdown. Un README de jeu non classé explicitement reste dans le
+parcours complet. Les contrats documentaires sont listés dans
+`scripts/ci-plan.js` ; ils ne produisent pas de faux rapport de couverture complète.
+Les floors Jest et budgets qualité restent inchangés.
+
+Pour un rebase, le diff de PR reste souvent du code. La réduction des relances
+vient alors des **empreintes**, pas du seul classement par chemins. Une preuve
+originale d'un run CI réussi de la même PR peut être réutilisée si ses entrées
+Git, workflow, configuration, Node exact et image de runner sont identiques.
+L'ancien commit est récupéré et ses empreintes recalculées : ni un cache npm,
+ni le SHA de la branche, ni une empreinte simplement déclarée ne suffit.
+Les preuves réutilisées ne sont pas elles-mêmes réutilisables.
+
+Jest tient compte de toute la documentation, car des tests la lisent. Un changement
+documentaire peut donc imposer son exécution complète sur une PR de code.
+Pour Browser, la preuve réutilisée concerne les interactions applicatives :
+**la nouvelle archive, les guides et les smokes sont toujours contrôlés**.
+Le résumé distingue `execute`, `documentation`, `not-applicable` et `reused`,
+avec le run, la tentative et le commit d'origine. Les rapports détaillés d'une
+analyse réutilisée restent dans ce run, sans nouvelle provenance fictive.
+
+Les preuves `ci-plan` et `ci-evidence-RUN-TENTATIVE` sont conservées 30 jours.
+La recherche est bornée aux 30 derniers runs de la branche, dont trois candidats
+réussis au maximum. Une preuve absente, expirée, invalide ou inaccessible
+provoque une nouvelle exécution ; les erreurs d'accès sont signalées.
+Les forks sans preuve admissible exécutent les contrôles nécessaires.
+
+Build et l'agrégateur final refusent les amonts échoués, annulés, ignorés ou
+manquants. Sur `main` et en lancement manuel, la CI reste complète, sans
+réutilisation. Les audits npm, Trivy et Gitleaks, ainsi que l'audit quotidien,
+restent exécutés : les bases de vulnérabilités et l'historique ne sont pas des
+entrées figées. Les runs CI de PR devenus obsolètes sont annulables ; les
+publications ne le sont pas.
 
 ### Identité et contrôle après publication
 

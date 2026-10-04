@@ -134,12 +134,16 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
   });
 
   test('aucune élévation globale, seules publication et rapports ont des droits dédiés', () => {
-    for (const workflow of Object.values(workflows)) {
+    for (const [name, workflow] of Object.entries(workflows)) {
       expect(workflow.permissions).toEqual({ contents: 'read' });
-      for (const job of Object.values(workflow.jobs)) {
+      for (const [id, job] of Object.entries(workflow.jobs)) {
         if (job.permissions) {
           expect(job.permissions.contents).toBe('read');
-          expect(job.permissions).not.toHaveProperty('actions');
+          if ((name === 'ci.yml' && id === 'impact') || (name === 'deploy.yml' && id === 'validate')) {
+            expect(job.permissions.actions).toBe('read');
+          } else {
+            expect(job.permissions).not.toHaveProperty('actions');
+          }
         }
       }
     }
@@ -158,7 +162,8 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
     ]) {
       expect(job['continue-on-error']).toBeUndefined();
       const upload = job.steps.find(step => step.uses?.startsWith('actions/upload-artifact@'));
-      expect(upload.if).toBe('always()');
+      expect(upload.if).toBe(job === ci.jobs['security-lint']
+        ? "always() && steps.decision.outputs.mode == 'execute'" : 'always()');
       expect(upload.with['if-no-files-found']).toBe('error');
       expect(job.steps.every(step => !step['continue-on-error'])).toBe(true);
     }

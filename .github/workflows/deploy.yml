@@ -33,6 +33,9 @@ jobs:
 
   validate:
     needs: check-ref
+    permissions:
+      contents: read
+      actions: read
     uses: ./.github/workflows/ci.yml
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

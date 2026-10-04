@@ -14,9 +14,9 @@ const guard = build.steps[0];
 const statuses = ['success', 'failure', 'skipped', 'cancelled'];
 
 describe('Build requis agrège les gates de sécurité sans succès ignoré', () => {
-  test('Build attend exactement les trois gates, même après leur échec', () => {
+  test('Build attend le plan et les trois gates, même après leur échec', () => {
     expect(build.name).toBe('Build');
-    expect(build.needs).toEqual(['security-lint', 'trivy-scan', 'code-quality']);
+    expect(build.needs).toEqual(['impact', 'security-lint', 'trivy-scan', 'code-quality']);
     expect(build.if).toBe('always()');
     for (const success of [true, false]) {
       expect(runInNewContext(build.if, { always: () => true, success: () => success })).toBe(true);
@@ -24,6 +24,7 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
     expect(guard.shell).toBe('bash');
     expect(guard.if).toBeUndefined();
     expect(guard.env).toEqual({
+      IMPACT_RESULT: '${{ needs.impact.result }}',
       SECURITY_LINT_RESULT: '${{ needs.security-lint.result }}',
       TRIVY_SCAN_RESULT: '${{ needs.trivy-scan.result }}',
       CODE_QUALITY_RESULT: '${{ needs.code-quality.result }}',
@@ -31,10 +32,11 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
     expect(build['continue-on-error']).toBeUndefined();
     expect(build.steps.every(step => !step['continue-on-error'])).toBe(true);
     expect(build.steps.slice(1).every(step => step.if === undefined)).toBe(true);
-    expect(ci.jobs['security-lint'].needs).toBeUndefined();
+    expect(ci.jobs['security-lint'].needs).toBe('impact');
     expect(ci.jobs['trivy-scan'].needs).toBeUndefined();
-    for (const id of ['lint', 'test', 'typecheck', 'dependency-audit', 'openspec', 'code-quality']) {
-      expect(ci.jobs[id].needs).toBeUndefined();
+    expect(ci.jobs['dependency-audit'].needs).toBeUndefined();
+    for (const id of ['lint', 'test', 'typecheck', 'openspec', 'code-quality']) {
+      expect(ci.jobs[id].needs).toBe('impact');
     }
     expect(ci.jobs.browser.needs).toBe('build');
     const deploy = workflow('deploy');
@@ -47,7 +49,7 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
     'le vrai guard Bash reçoit lint=%s, trivy=%s et qualité=%s avant toute fabrication',
     (lint, scan, quality) => {
       const result = spawnSync('bash', ['-e', '-o', 'pipefail', '-c', `${guard.run}\nprintf 'BUILD_ALLOWED\\n'`], {
-        env: { ...process.env, SECURITY_LINT_RESULT: lint, TRIVY_SCAN_RESULT: scan, CODE_QUALITY_RESULT: quality },
+        env: { ...process.env, IMPACT_RESULT: 'success', SECURITY_LINT_RESULT: lint, TRIVY_SCAN_RESULT: scan, CODE_QUALITY_RESULT: quality },
         encoding: 'utf8',
       });
       const accepted = [lint, scan, quality].every(status => status === 'success');
@@ -62,7 +64,7 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
 
   test.each(['', 'unknown'])('un statut absent ou inconnu (%s) reste bloquant', status => {
     const result = spawnSync('bash', ['-e', '-c', guard.run], {
-      env: { ...process.env, SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: status, CODE_QUALITY_RESULT: 'success' },
+      env: { ...process.env, IMPACT_RESULT: 'success', SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: status, CODE_QUALITY_RESULT: 'success' },
       encoding: 'utf8',
     });
     expect(result.status).toBe(1);
@@ -71,11 +73,20 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
 
   test.each(['', 'unknown'])('un statut qualité absent ou inconnu (%s) reste bloquant', status => {
     const result = spawnSync('bash', ['-e', '-c', guard.run], {
-      env: { ...process.env, SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: 'success', CODE_QUALITY_RESULT: status },
+      env: { ...process.env, IMPACT_RESULT: 'success', SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: 'success', CODE_QUALITY_RESULT: status },
       encoding: 'utf8',
     });
     expect(result.status).toBe(1);
     expect(result.stdout).toContain('code-quality');
+  });
+
+  test.each(['failure', 'skipped', 'cancelled', '', 'unknown'])('le plan %s interdit toute fabrication', status => {
+    const result = spawnSync('bash', ['-e', '-c', guard.run], {
+      env: { ...process.env, IMPACT_RESULT: status, SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: 'success', CODE_QUALITY_RESULT: 'success' },
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain('impact');
   });
 });
 

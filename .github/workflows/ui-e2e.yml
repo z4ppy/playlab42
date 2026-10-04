@@ -7,6 +7,20 @@ on:
       prebuilt:
         type: boolean
         default: false
+      mode:
+        type: string
+        default: execute
+      runner:
+        type: string
+        default: ''
+      node-version:
+        type: string
+        default: '26'
+    outputs:
+      mode:
+        value: ${{ jobs.browser.outputs.mode }}
+      eligible:
+        value: ${{ jobs.browser.outputs.eligible }}
 
 permissions:
   contents: read
@@ -20,14 +34,27 @@ jobs:
     name: Chromium interactions
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      mode: ${{ steps.decision.outputs.mode }}
+      eligible: ${{ steps.decision.outputs.eligible }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '26'
+          node-version: ${{ inputs.node-version || '26' }}
           cache: npm
+      - name: Decision du controle
+        id: decision
+        env:
+          CI_MODE: ${{ inputs.mode || 'execute' }}
+          CI_RUNNER: ${{ inputs.runner }}
+        run: |
+          if [ -z "$CI_RUNNER" ]; then
+            export CI_RUNNER="$(node --input-type=module -e "import { currentRunner } from './scripts/ci-evidence.js'; console.log(JSON.stringify(currentRunner()));")"
+          fi
+          node scripts/ci-evidence.js start
       - name: Dependencies
         run: npm ci
       - name: Browsers and system dependencies
@@ -47,7 +74,13 @@ jobs:
         if: inputs.prebuilt
         run: npm run verify:site
       - name: Real browser suite
+        if: steps.decision.outputs.mode == 'execute'
         run: npm run test:e2e
+        env:
+          PLAYWRIGHT_PREBUILT: ${{ inputs.prebuilt && '1' || '0' }}
+      - name: Guides sur la nouvelle archive (suite applicative non applicable ou reutilisee)
+        if: steps.decision.outputs.mode == 'documentation' || steps.decision.outputs.mode == 'reused'
+        run: npm run test:e2e -- e2e/guides.spec.js
         env:
           PLAYWRIGHT_PREBUILT: ${{ inputs.prebuilt && '1' || '0' }}
       - name: Cross-engine smoke (Chromium, Firefox, WebKit)

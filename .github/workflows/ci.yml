@@ -14,7 +14,71 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  impact:
+    name: Impact
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      lint: ${{ steps.plan.outputs.lint }}
+      security-lint: ${{ steps.plan.outputs.security-lint }}
+      test: ${{ steps.plan.outputs.test }}
+      code-quality: ${{ steps.plan.outputs.code-quality }}
+      typecheck: ${{ steps.plan.outputs.typecheck }}
+      openspec: ${{ steps.plan.outputs.openspec }}
+      browser: ${{ steps.plan.outputs.browser }}
+      runner: ${{ steps.plan.outputs.runner }}
+      node-version: ${{ steps.node.outputs.node-version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        id: node
+        with:
+          node-version: '26'
+      - name: Selectionner les controles et verifier les preuves originales
+        id: plan
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        env:
+          CI_NODE_VERSION: ${{ steps.node.outputs.node-version }}
+        with:
+          script: |
+            const fs = require('fs');
+            const { planCi, controls } = await import(`${process.env.GITHUB_WORKSPACE}/scripts/ci-plan.js`);
+            const { reuseCi } = await import(`${process.env.GITHUB_WORKSPACE}/scripts/ci-reuse.js`);
+            const { renderPlan } = await import(`${process.env.GITHUB_WORKSPACE}/scripts/ci-evidence.js`);
+            const runner = {
+              node: process.env.CI_NODE_VERSION.replace(/^v/, ''),
+              image: `${process.env.ImageOS}-${process.env.ImageVersion}`,
+              arch: process.arch,
+            };
+            const plan = planCi({
+              eventName: context.eventName, event: context.payload,
+              root: process.env.GITHUB_WORKSPACE, commit: context.sha,
+              runner, repository: `${context.repo.owner}/${context.repo.repo}`, warn: core.warning,
+            });
+            await reuseCi(plan, {
+              github, root: process.env.GITHUB_WORKSPACE,
+              currentRunId: context.runId, warn: core.warning,
+            });
+            for (const id of controls) core.setOutput(id, plan.controls[id].mode);
+            core.setOutput('runner', JSON.stringify(runner));
+            fs.writeFileSync(`${process.env.RUNNER_TEMP}/ci-plan.json`, JSON.stringify(plan, null, 2));
+            await core.summary.addRaw(renderPlan(plan)).write();
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ci-plan
+          path: ${{ runner.temp }}/ci-plan.json
+          if-no-files-found: error
+          retention-days: 30
+
   trivy-scan:
     name: Trivy Security Scan
     uses: ./.github/workflows/trivy-scan.yml
@@ -23,17 +87,29 @@ jobs:
 
   security-lint:
     name: Security lint
+    needs: impact
     runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.decision.outputs.mode }}
+      eligible: ${{ steps.decision.outputs.eligible }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '26'
+          node-version: ${{ needs.impact.outputs.node-version }}
           cache: npm
+      - name: Decision du controle
+        id: decision
+        run: node scripts/ci-evidence.js start
+        env:
+          CI_MODE: ${{ needs.impact.outputs.security-lint }}
+          CI_RUNNER: ${{ needs.impact.outputs.runner }}
       - run: npm ci
+        if: steps.decision.outputs.mode == 'execute'
       - run: npm run lint:security -- --format json --output-file eslint-security-results.json
+        if: steps.decision.outputs.mode == 'execute'
       - name: Rapport de lint sécurité
-        if: always()
+        if: always() && steps.decision.outputs.mode == 'execute'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ci-eslint-security-results
@@ -56,7 +132,11 @@ jobs:
   # Job de linting
   lint:
     name: Lint
+    needs: impact
     runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.decision.outputs.mode }}
+      eligible: ${{ steps.decision.outputs.eligible }}
     steps:
       - name: Checkout du code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -64,19 +144,31 @@ jobs:
       - name: Configuration Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '26'
+          node-version: ${{ needs.impact.outputs.node-version }}
           cache: 'npm'
 
+      - name: Decision du controle
+        id: decision
+        run: node scripts/ci-evidence.js start
+        env:
+          CI_MODE: ${{ needs.impact.outputs.lint }}
+          CI_RUNNER: ${{ needs.impact.outputs.runner }}
       - name: Installation des dépendances
+        if: steps.decision.outputs.mode == 'execute'
         run: npm ci
 
       - name: Lint JS, scripts HTML et TypeScript
+        if: steps.decision.outputs.mode == 'execute'
         run: npm run lint
 
   # Job de tests avec coverage
   test:
     name: Tests
+    needs: impact
     runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.decision.outputs.mode }}
+      eligible: ${{ steps.decision.outputs.eligible }}
     steps:
       - name: Checkout du code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -84,18 +176,36 @@ jobs:
       - name: Configuration Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '26'
+          node-version: ${{ needs.impact.outputs.node-version }}
           cache: 'npm'
 
+      - name: Decision du controle
+        id: decision
+        run: node scripts/ci-evidence.js start
+        env:
+          CI_MODE: ${{ needs.impact.outputs.test }}
+          CI_RUNNER: ${{ needs.impact.outputs.runner }}
       - name: Installation des dépendances
+        if: steps.decision.outputs.mode == 'execute' || steps.decision.outputs.mode == 'documentation'
         run: npm ci
+      - name: Contrats documentaires sans faux rapport de couverture complete
+        if: steps.decision.outputs.mode == 'documentation'
+        run: |
+          node --input-type=module -e "
+            import { spawnSync } from 'node:child_process';
+            import { documentaryTests } from './scripts/ci-plan.js';
+            const result = spawnSync('npm', ['test', '--', '--runInBand', '--runTestsByPath', ...documentaryTests], { stdio: 'inherit' });
+            if (result.error) throw result.error;
+            process.exit(result.status ?? 1);
+          "
 
       - name: Tests avec coverage
         id: jest
+        if: steps.decision.outputs.mode == 'execute'
         run: npm run test:coverage
 
       - name: Résumé et provenance des preuves Jest
-        if: always()
+        if: always() && steps.decision.outputs.mode == 'execute'
         env:
           TEST_OUTCOME: ${{ steps.jest.outcome }}
         run: |
@@ -103,7 +213,7 @@ jobs:
           node scripts/coverage-report.js
 
       - name: Archiver les preuves Jest (même après échec)
-        if: always()
+        if: always() && steps.decision.outputs.mode == 'execute'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: jest-coverage-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -117,7 +227,7 @@ jobs:
           retention-days: 30
 
       - name: Upload coverage vers Codecov
-        if: always()
+        if: always() && steps.decision.outputs.mode == 'execute'
         continue-on-error: true
         uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7
         with:
@@ -132,18 +242,30 @@ jobs:
 
   code-quality:
     name: Code quality
+    needs: impact
     runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.decision.outputs.mode }}
+      eligible: ${{ steps.decision.outputs.eligible }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '26'
+          node-version: ${{ needs.impact.outputs.node-version }}
           cache: npm
+      - name: Decision du controle
+        id: decision
+        run: node scripts/ci-evidence.js start
+        env:
+          CI_MODE: ${{ needs.impact.outputs.code-quality }}
+          CI_RUNNER: ${{ needs.impact.outputs.runner }}
       - run: npm ci
+        if: steps.decision.outputs.mode == 'execute'
       - name: Mesurer duplication et complexité
+        if: steps.decision.outputs.mode == 'execute'
         run: npm run quality:report
       - name: Archiver le rapport de qualité
-        if: always()
+        if: always() && steps.decision.outputs.mode == 'execute'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: code-quality-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -156,7 +278,11 @@ jobs:
   # Job de vérification TypeScript
   typecheck:
     name: TypeScript
+    needs: impact
     runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.decision.outputs.mode }}
+      eligible: ${{ steps.decision.outputs.eligible }}
     steps:
       - name: Checkout du code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -164,26 +290,39 @@ jobs:
       - name: Configuration Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '26'
+          node-version: ${{ needs.impact.outputs.node-version }}
           cache: 'npm'
 
+      - name: Decision du controle
+        id: decision
+        run: node scripts/ci-evidence.js start
+        env:
+          CI_MODE: ${{ needs.impact.outputs.typecheck }}
+          CI_RUNNER: ${{ needs.impact.outputs.runner }}
       - name: Installation des dépendances
+        if: steps.decision.outputs.mode == 'execute'
         run: npm ci
 
       - name: Vérification des types
+        if: steps.decision.outputs.mode == 'execute'
         run: npm run typecheck
 
   # Job de build (vérifie que le build fonctionne)
   build:
     name: Build
-    needs: [security-lint, trivy-scan, code-quality]
+    needs: [impact, security-lint, trivy-scan, code-quality]
     # Un job ignoré satisfait la protection GitHub : échouer explicitement plutôt que sauter Build.
     if: always()
     runs-on: ubuntu-latest
+    outputs:
+      browser-mode: ${{ needs.impact.outputs.browser }}
+      runner: ${{ needs.impact.outputs.runner }}
+      node-version: ${{ needs.impact.outputs.node-version }}
     steps:
       - name: Exiger le succès des gates de sécurité et de qualité
         shell: bash
         env:
+          IMPACT_RESULT: ${{ needs.impact.result }}
           SECURITY_LINT_RESULT: ${{ needs.security-lint.result }}
           TRIVY_SCAN_RESULT: ${{ needs.trivy-scan.result }}
           CODE_QUALITY_RESULT: ${{ needs.code-quality.result }}
@@ -194,6 +333,7 @@ jobs:
               exit 1
             fi
           }
+          require_success impact "$IMPACT_RESULT"
           require_success security-lint "$SECURITY_LINT_RESULT"
           require_success trivy-scan "$TRIVY_SCAN_RESULT"
           require_success code-quality "$CODE_QUALITY_RESULT"
@@ -229,15 +369,27 @@ jobs:
 
   openspec:
     name: OpenSpec
+    needs: impact
     runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.decision.outputs.mode }}
+      eligible: ${{ steps.decision.outputs.eligible }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          node-version: '26'
+          node-version: ${{ needs.impact.outputs.node-version }}
           cache: npm
+      - name: Decision du controle
+        id: decision
+        run: node scripts/ci-evidence.js start
+        env:
+          CI_MODE: ${{ needs.impact.outputs.openspec }}
+          CI_RUNNER: ${{ needs.impact.outputs.runner }}
       - run: npm ci
+        if: steps.decision.outputs.mode == 'execute'
       - run: npm run openspec:validate
+        if: steps.decision.outputs.mode == 'execute'
         env:
           OPENSPEC_TELEMETRY: '0'
 
@@ -247,3 +399,33 @@ jobs:
     uses: ./.github/workflows/ui-e2e.yml
     with:
       prebuilt: true
+      mode: ${{ needs.build.outputs.browser-mode }}
+      runner: ${{ needs.build.outputs.runner }}
+      node-version: ${{ needs.build.outputs.node-version }}
+
+  evidence:
+    name: CI evidence
+    needs: [impact, trivy-scan, dependency-audit, security-lint, lint, test, code-quality, typecheck, openspec, build, browser]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '26'
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ci-plan
+          path: ${{ runner.temp }}
+      - name: Exiger tous les controles et consigner les preuves
+        run: node scripts/ci-evidence.js finish
+        env:
+          CI_PLAN_PATH: ${{ runner.temp }}/ci-plan.json
+          CI_EVIDENCE_PATH: ${{ runner.temp }}/ci-evidence.json
+          CI_JOB_RESULTS: ${{ toJSON(needs) }}
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ci-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-evidence.json
+          if-no-files-found: error
+          retention-days: 30
