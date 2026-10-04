@@ -22,6 +22,14 @@ réglages, dispose/remplacement, activation et paramètres de presets.
 Le navigateur utilise la distribution réelle ; l'audition humaine et les
 autorisations microphone restent distinctes.
 
+Le navigateur a confirmé que `MetalSynth.harmonicity` est un nombre avec
+accesseur, tandis que `frequency` expose `.value`. Le double initial masquait
+la mauvaise écriture `.harmonicity.value`. Corriger cette ligne par affectation
+directe et réaligner le double après tests rouges unitaires/navigateur ;
+API, événements, ordre et corpus de construction restent identiques.
+Les autres limites héritées de mute, filtre et réglages personnalisés ne sont
+pas corrigées implicitement.
+
 Contrôleurs : ordre show/hide et synchronisation des curseurs, états ignorés,
 menus conditionnels, commandes et idempotence. Une mutualisation garde les
 hooks propres à chaque panneau et ne change pas l'ordre des effets.

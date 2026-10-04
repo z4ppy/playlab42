@@ -121,6 +121,12 @@ export default {
     './games/diese-et-mat/src/AppKeyboard.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './tools/particle-life/src/Simulation.ts': { statements: 100, branches: 85, functions: 100, lines: 100 },
     './tools/particle-life/src/forces.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/{checkers,triomino}/ui/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/diese-et-mat/src/audio/AudioEngine.js': { statements: 93, branches: 84, functions: 95, lines: 94 },
+    './games/diese-et-mat/src/audio/{synth-factory,synth-parameters,effects-config}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/diese-et-mat/src/controllers/MenuController.js': { statements: 100, branches: 97, functions: 100, lines: 100 },
+    './games/diese-et-mat/src/controllers/SynthController.js': { statements: 96, branches: 86, functions: 96, lines: 98 },
+    './games/diese-et-mat/src/controllers/{panel-visibility,synth-slider-specs}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)

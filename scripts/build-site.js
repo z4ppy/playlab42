@@ -9,7 +9,7 @@ import { getRootDir } from './lib/build-utils.js';
 const DIRECTORIES = ['app', 'assets', 'lib', 'tools', 'games', 'parcours', 'data', 'docs', 'bookmarks', 'openspec'];
 const FILES = ['index.html', 'app.js', 'style.css', 'README.md', 'AGENTS.md', 'LICENSE'];
 const OPTIONAL_FILES = ['favicon.ico', 'favicon.svg', 'CNAME', 'CHANGELOG.md'];
-const EXCLUDED = new Set(['node_modules', '__tests__', '__mocks__', 'coverage', 'test-results', 'playwright-report', 'bookmarks-cache.json']);
+const EXCLUDED = new Set(['node_modules', '__tests__', '__mocks__', '__snapshots__', 'coverage', 'test-results', 'playwright-report', 'bookmarks-cache.json']);
 
 /** @param {string} path Chemin relatif au dépôt. @returns {boolean} Ressource publique. */
 export function isPublicSitePath(path) {

@@ -12,6 +12,9 @@ construction audio, réglages, curseurs et menu.
 - Séparer quelques responsabilités de présentation/audio, sans changer les
   moteurs, séquences RNG, états JSON, styles ou comportement des commandes.
 - Mutualiser seulement les duplications de panneaux réellement compatibles.
+- Corriger le setter live `MetalSynth.harmonicity` confirmé défectueux avec
+  Tone 15.1.22 et réaligner le double ; exception intentionnelle à la
+  conservation du comportement défaillant, avec tests rouges avant correction.
 - Collecter et protéger les nouvelles sources avec budgets ciblés, puis
   publier les mesures avant/après avec les outils déjà verrouillés.
 

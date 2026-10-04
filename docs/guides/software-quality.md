@@ -60,6 +60,10 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | Clavier App Diese & Mat ; forces Particle Life | 100 % | 100 % | 100 % |
 | Simulation Particle Life | 85 % | 100 % | 100 % |
 | Rapport Code quality | 75 % | 90 % | 90 % |
+| Huit helpers UI/audio/panneaux, dont les rendus Dames/Triomino, chaque fichier | 100 % | 100 % | 100 % |
+| AudioEngine | 84 % | 95 % | 94 % lignes / 93 % statements |
+| MenuController | 97 % | 100 % | 100 % |
+| SynthController | 86 % | 96 % | 98 % lignes / 96 % statements |
 
 Ces composants protègent déterminisme, portail, moteurs, outils et livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -766,14 +770,14 @@ confirme les mêmes compteurs de production, avec six fonctions JS/HTML > 20.
 Le change `simplify-rendering-and-audio` cible les six fonctions de production
 au-dessus de 20 du dernier rapport natif, après tests de comportement :
 
-| Responsabilité | Cyclomatique de référence sur main `72a8f5d` |
-|----------------|--------------------------------------------|
-| Rendu Dames | 24 |
-| AudioEngine : réglages | 23 |
-| SynthController : curseurs | 22 |
-| Rendu du plateau Triomino | 22 |
-| AudioEngine : création du synthétiseur | 21 |
-| MenuController : rendu | 21 |
+| Responsabilité | Cyclomatique main `72a8f5d` → extraction |
+|----------------|----------------------------------------|
+| Rendu Dames | 24 → 1 |
+| AudioEngine : réglages | 23 → 4 |
+| SynthController : curseurs | 22 → 5 |
+| Rendu du plateau Triomino | 22 → 1 |
+| AudioEngine : création du synthétiseur | 21 → 2 |
+| MenuController : rendu | 21 → 2 |
 
 Les extractions locales doivent préserver le DOM observable et ses callbacks,
 les options et connexions Tone, l'ordre des réglages et le cycle de vie audio.
@@ -788,7 +792,49 @@ musicaux existants donne seulement **25,03/17,37/18,92/25,61 %** S/B/F/L sur
 audio et contrôleurs ; AudioEngine est à **17,09/5,98/15,90/17,24 %** et
 SynthController à zéro. Ce nouveau périmètre interdit une comparaison directe
 du total avec celui de la PR #149. Les floors existants restent inchangés ;
-les nouveaux floors attendent la couverture réellement mesurée.
+six sélecteurs supplémentaires protègent les onze fichiers caractérisés.
+Les huit helpers ont réellement 100 % sur les quatre métriques ; les trois
+racines AudioEngine/Menu/Synth ont les floors mesurés de la table ci-dessus.
+
+Les **470 rendus Dames et 506 rendus Triomino** ont le même DOM avant/après
+sur le corpus caractérisé. Les snapshots du menu et le corpus ordonné Tone
+(constructeurs/options/connexions/réglages des quinze presets) restent inchangés.
+Ce corpus ne couvre pas automatiquement tous les appels live.
+Les snapshots Jest sont exclus de l'archive publique et le corpus Tone est
+rangé sous `__tests__/fixtures`, sans modification de ses données.
+Deux assertions de packaging reproduisaient la publication des snapshots ;
+leur exclusion corrige également le faux snapshot obsolète après build.
+
+Le vrai Tone 15.1.22 a confirmé un défaut masqué par le double initial :
+`MetalSynth.harmonicity` est un nombre avec accesseur, pas un Signal `.value`.
+Le setter live est corrigé par affectation directe, avec le double réaligné :
+deux tests unitaires et le navigateur échouaient avant correction
+(valeur attendue 9, restée 5,1). Ce correctif intentionnel conserve API et
+ordre, mais ne prétend pas préserver le défaut. Les limites préexistantes
+mute/recréation, filtre désactivé et validation partielle des réglages
+personnalisés restent caractérisées, sans correction implicite.
+
+Les helpers, AudioEngine, MenuController et les deux pages ont un budget
+ESLint **≤ 10**. SynthController conserve un ratchet de fichier **≤ 15** :
+ses deux méthodes héritées restent à 15 et 11, sans ignore. Un test analyse
+les vrais fichiers avec ESLint et impose **≤ 10 aux six responsabilités**
+ci-dessus, indépendamment de ce ratchet. Les fixtures CLI acceptent la borne
+et refusent sa première régression, y compris dans un vrai script HTML.
+
+La première mesure intégrée à paramètres constants donne **62 → 58 clones**,
+**693 → 610 lignes dupliquées**, **62 → 53 fonctions JS/HTML > 10**,
+**6 → 0 > 20** et toujours **0 TS cognitive > 15** en production.
+Le périmètre conserve tous les fichiers existants et ajoute huit helpers :
+189 → 197 sources sélectionnées, 178 → 186 scannées par jscpd.
+Les 150 clones pédagogiques sont conservés. Restent notamment les fonctions
+à 20 d'App et de fabrication des vendors, les contrôleurs et la fabrication
+entre 11 et 19, ainsi que des clones CSS/markup ; zéro > 20 n'est pas zéro dette.
+
+Validation locale intégrée : **138 suites / 3 054 tests**, lint qualité/sécurité,
+types, audit npm et **34 validations OpenSpec** réussis.
+Sur le périmètre Jest élargi, le total est **73,03/70,19/77,71/72,75 %** S/B/F/L :
+les modules voisins non caractérisés restent visibles, dont ExerciseController
+et les anciennes vues musicales à zéro. Aucun floor historique n'a baissé.
 
 Des doubles Tone peuvent vérifier contrats et ordre, pas l'audition ni un
 microphone physique. Les interactions d'un vrai navigateur et la validation

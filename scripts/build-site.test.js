@@ -28,6 +28,7 @@ describe('Packaging du site public', () => {
       'node_modules/pkg/index.js', '.github/workflows/ci.yml', '.claude/skills/link',
       'lib/a.test.js', 'tools/x/__tests__/a.js', 'tools/__mocks__/fake.js',
       'data/bookmarks-cache.json', 'docs/.secret', 'scripts/ci.js',
+      'games/x/__snapshots__/x.test.js.snap',
     ]) {put(name);}
     put('assets/vendor/tone.js');
     put('tools/x/dist/main.js');
@@ -37,7 +38,7 @@ describe('Packaging du site public', () => {
     for (const name of ['assets/vendor/tone.js', 'tools/x/dist/main.js', 'docs/site/index.html', 'AGENTS.md']) {
       expect(existsSync(join(output, name))).toBe(true);
     }
-    for (const name of ['node_modules', '.github', '.claude', 'scripts', 'lib/a.test.js', 'data/bookmarks-cache.json']) {
+    for (const name of ['node_modules', '.github', '.claude', 'scripts', 'lib/a.test.js', 'data/bookmarks-cache.json', 'games/x/__snapshots__/x.test.js.snap']) {
       expect(existsSync(join(output, name))).toBe(false);
     }
   });
@@ -74,7 +75,7 @@ describe('Packaging du site public', () => {
   test('partager la politique de publication avec le lecteur documentaire', () => {
     expect(isPublicSitePath('docs/site/guides/architecture.html')).toBe(true);
     expect(isPublicSitePath('lib/types/game-engine.ts')).toBe(true);
-    for (const name of ['../etc/passwd', 'Makefile', '.github/skills/a.md', 'app/a.test.js']) {
+    for (const name of ['../etc/passwd', 'Makefile', '.github/skills/a.md', 'app/a.test.js', 'games/x/__snapshots__/x.test.js.snap']) {
       expect(isPublicSitePath(name)).toBe(false);
     }
   });

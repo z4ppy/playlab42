@@ -96,10 +96,26 @@ export default [
       'scripts/lib/{build-report,manifest-validation}.js',
       'games/diese-et-mat/src/AppKeyboard.js',
       'games/diese-et-mat/src/engine/level-progress.js',
+      'games/checkers/index.html',
+      'games/checkers/ui/**/*.js',
+      'games/triomino/index.html',
+      'games/triomino/ui/**/*.js',
+      'games/diese-et-mat/src/audio/AudioEngine.js',
+      'games/diese-et-mat/src/audio/{synth-factory,synth-parameters,effects-config}.js',
+      'games/diese-et-mat/src/controllers/MenuController.js',
+      'games/diese-et-mat/src/controllers/{panel-visibility,synth-slider-specs}.js',
     ],
     ignores: ['**/*.test.js'],
     rules: {
       complexity: ['error', 10],
+    },
+  },
+
+  {
+    // Deux méthodes héritées restent à 15 et 11 ; les six cibles sont testées à 10.
+    files: ['games/diese-et-mat/src/controllers/SynthController.js'],
+    rules: {
+      complexity: ['error', 15],
     },
   },
 
