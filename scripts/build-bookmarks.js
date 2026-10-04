@@ -7,7 +7,7 @@
 import { existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { fetchOGMetadata, loadCache, saveCache } from './og-fetcher.js';
-import { printDiagnostics } from './lib/build-report.js';
+import { publishCatalogue } from './lib/build-report.js';
 import { loadOGSnapshot, validateOGSnapshot, editorialMetadata } from './lib/bookmark-metadata.js';
 import {
   getRootDir,
@@ -439,13 +439,9 @@ async function main() {
   };
 
   printCounts(catalogue);
-  if (!printDiagnostics(stats)) {
+  if (!publishCatalogue(OUTPUT_FILE, catalogue, stats)) {
     process.exit(1);
   }
-
-  writeJSONAtomicSync(OUTPUT_FILE, catalogue);
-  console.log(`\nCatalogue généré: ${OUTPUT_FILE}`);
-  console.log('\n✅ Build terminé avec succès');
 }
 
 main().catch(error => {

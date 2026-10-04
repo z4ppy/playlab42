@@ -6,8 +6,8 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';
-import { getRootDir, readJSONSync, writeJSONAtomicSync, getBuildTimestamp } from './lib/build-utils.js';
-import { printDiagnostics } from './lib/build-report.js';
+import { getRootDir, readJSONSync, getBuildTimestamp } from './lib/build-utils.js';
+import { publishCatalogue } from './lib/build-report.js';
 import {
   extractSlideIds,
   countSlides,
@@ -415,13 +415,9 @@ function main() {
   };
 
   printCounts(catalogue);
-  if (!printDiagnostics(stats)) {
+  if (!publishCatalogue(OUTPUT_FILE, catalogue, stats)) {
     process.exit(1);
   }
-
-  writeJSONAtomicSync(OUTPUT_FILE, catalogue);
-  console.log(`\nCatalogue généré: ${OUTPUT_FILE}`);
-  console.log('\n✅ Build terminé avec succès');
 }
 
 main();

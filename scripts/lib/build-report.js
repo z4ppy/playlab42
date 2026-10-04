@@ -2,6 +2,7 @@
  * Rapport final des builders Parcours et Bookmarks : avertissements puis erreurs,
  * sans couleur (format historique de ces deux builders).
  */
+import { writeJSONAtomicSync } from './build-utils.js';
 
 /**
  * Affiche les avertissements et les erreurs collectés.
@@ -19,5 +20,22 @@ export function printDiagnostics(stats) {
     stats.errors.forEach(e => console.log(`  ❌ ${e}`));
     return false;
   }
+  return true;
+}
+
+/**
+ * Publie après les diagnostics ; une erreur d'écriture est propagée, sans faux succès.
+ * @param {string} output - Destination du catalogue
+ * @param {object} catalogue - Données validées
+ * @param {{warnings: string[], errors: string[]}} stats - Diagnostics collectés
+ * @returns {boolean} false si les diagnostics interdisent la publication
+ */
+export function publishCatalogue(output, catalogue, stats) {
+  if (!printDiagnostics(stats)) {
+    return false;
+  }
+  writeJSONAtomicSync(output, catalogue);
+  console.log(`\nCatalogue généré: ${output}`);
+  console.log('\n✅ Build terminé avec succès');
   return true;
 }
