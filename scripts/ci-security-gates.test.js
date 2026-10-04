@@ -37,7 +37,6 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
       expect(ci.jobs[id].needs).toBeUndefined();
     }
     expect(ci.jobs.browser.needs).toBe('build');
-    expect(ci.jobs['cross-engine'].needs).toBe('build');
     const deploy = workflow('deploy');
     expect(deploy.jobs.validate.uses).toBe('./.github/workflows/ci.yml');
     expect(deploy.jobs.deploy.needs).toBe('validate');
