@@ -25,7 +25,7 @@ describe('budget versionné de production', () => {
       production: {
         cyclomatic: { maxPerFunction: 10 },
         cognitive: { maxPerFunction: 15 },
-        duplication: { maxClones: 58, maxDuplicatedLines: 610, maxDuplicatedTokens: 4474 },
+        duplication: { maxClones: 15, maxDuplicatedLines: 146, maxDuplicatedTokens: 1398 },
       },
       advisory: ['pedagogy', 'tests'],
     });
@@ -67,18 +67,18 @@ describe('évaluation exacte aux limites', () => {
   const production = (cyclomatic, cognitive, totals) => ({
     cyclomatic: cyclomatic.map((value, line) => ({ file: 'lib/a.js', line: line + 1, name: 'f', value })),
     cognitive: cognitive.map((value, line) => ({ file: 'lib/a.ts', line: line + 1, value })),
-    duplication: { totals: { clones: 58, duplicatedLines: 610, duplicatedTokens: 4474, lines: 47639, tokens: 248829, ...totals }, clones: [] },
+    duplication: { totals: { clones: 15, duplicatedLines: 146, duplicatedTokens: 1398, lines: 47639, tokens: 248829, ...totals }, clones: [] },
   });
 
-  test('accepte exactement 10 / 15 / 58 / 610 / 4474 et refuse la valeur suivante', () => {
+  test('accepte exactement 10 / 15 / 15 / 146 / 1398 et refuse la valeur suivante', () => {
     const budget = loadBudget();
     expect(evaluateBudget(production([10], [15], {}), budget)).toMatchObject({ status: 'passed', violations: [] });
     const cases = [
       ['cyclomatic', production([11, 10], [15], {})],
       ['cognitive', production([10], [16], {})],
-      ['duplication.clones', production([10], [15], { clones: 59 })],
-      ['duplication.duplicatedLines', production([10], [15], { duplicatedLines: 611 })],
-      ['duplication.duplicatedTokens', production([10], [15], { duplicatedTokens: 4475 })],
+      ['duplication.clones', production([10], [15], { clones: 16 })],
+      ['duplication.duplicatedLines', production([10], [15], { duplicatedLines: 147 })],
+      ['duplication.duplicatedTokens', production([10], [15], { duplicatedTokens: 1399 })],
     ];
     for (const [metric, data] of cases) {
       const result = evaluateBudget(data, budget);
@@ -94,11 +94,11 @@ describe('évaluation exacte aux limites', () => {
     ]);
     expect(result.violations[0]).toMatchObject({ actual: 2, limit: 10 });
     expect(result.violations[0].message).toContain('maximum mesuré 20');
-    expect(result.violations[2].message).toBe('clones de production : 60 > 58');
+    expect(result.violations[2].message).toBe('clones de production : 60 > 15');
   });
 
   test('un grand volume de code neuf ne dilue pas une dette absolue', () => {
-    const result = evaluateBudget(production([], [], { clones: 59, lines: 10000000, tokens: 100000000 }), loadBudget());
+    const result = evaluateBudget(production([], [], { clones: 16, lines: 10000000, tokens: 100000000 }), loadBudget());
     expect(result.violations.map(violation => violation.metric)).toEqual(['duplication.clones']);
   });
 

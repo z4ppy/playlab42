@@ -82,6 +82,7 @@ export default {
     'games/tetris/**/*.js',
     'games/go-9x9/**/*.js',
     'games/checkers/bots/**/*.js',
+    'games/tictactoe/bots/blocker.js',
     'games/dialog-accessibility.js',
     'tools/**/src/**/*.{js,ts}',
     'tools/relativity-lab/ui/**/*.js',
@@ -161,6 +162,10 @@ export default {
     './games/dialog-accessibility.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/diese-et-mat/src/controllers/tuner-pitch.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './scripts/quality-budget.js': { statements: 100, branches: 96, functions: 100, lines: 100 },
+    './games/diese-et-mat/src/controllers/{emitter-listeners,preset-select}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/diese-et-mat/src/core/init-once.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/tictactoe/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/tictactoe/bots/blocker.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)

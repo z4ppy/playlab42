@@ -67,6 +67,10 @@ const floors = {
   './games/dialog-accessibility.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
   './games/diese-et-mat/src/controllers/tuner-pitch.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
   './scripts/quality-budget.js': { statements: 100, branches: 96, functions: 100, lines: 100 },
+  './games/diese-et-mat/src/controllers/{emitter-listeners,preset-select}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './games/diese-et-mat/src/core/init-once.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './games/tictactoe/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './games/tictactoe/bots/blocker.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
 };
 const concreteSource = selector => selector
   .replace(/\{([^}]+)\}/g, (_, choices) => choices.split(',')[0])
@@ -102,6 +106,11 @@ describe('Ratchet de couverture mesuré par module', () => {
       'games/tetris/records.js',
       'games/go-9x9/bots/greedy.js',
       'games/checkers/bots/smart.js',
+      'games/tictactoe/bots/blocker.js',
+      'games/tictactoe/engine/winning-lines.js',
+      'games/diese-et-mat/src/core/init-once.js',
+      'games/diese-et-mat/src/controllers/emitter-listeners.js',
+      'games/diese-et-mat/src/controllers/preset-select.js',
       'games/dialog-accessibility.js',
       'tools/relativity-lab/src/main.js',
       'tools/relativity-lab/src/SceneManager.js',

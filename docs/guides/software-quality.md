@@ -1007,7 +1007,7 @@ explicitement la Promise, sans entrée de cache invalide.
 Le corpus de **139 scénarios du portail**, les appels de rendu Tetris et les
 trajectoires à seeds fixes des bots préservent le comportement caractérisé.
 
-`quality-budgets.json` fixe la production à **10 par fonction JS/HTML**,
+À la livraison de #152, `scripts/quality-budgets.json` fixait la production à **10 par fonction JS/HTML**,
 **15 en cognitif TS**, et au maximum **58 clones / 610 lignes / 4 474 tokens**.
 Le rapport v2 garde JSON/Markdown en cas de dépassement et échoue ; une configuration
 invalide ou un scanner incomplet ne produit pas de faux zéro. Le job Build déjà
@@ -1092,7 +1092,52 @@ remplacement sans faux succès. Le helper conserve **100/100/100/100 %** et
 les deux catalogues à epoch fixe restent identiques octet par octet.
 La mesure bornée du parent passe de **56/584/4 360** à **55/570/4 307**
 clones/lignes/tokens, sans changer les scanners ou leurs paramètres.
-Ce résultat partiel n'est pas encore une preuve des six scopes intégrés.
+Ce résultat partiel est distinct de la mesure consolidée ci-dessous.
+
+### Mesure consolidée
+
+Les six scopes sont intégrés avec leurs tests de caractérisation antérieurs au
+refactoring. Sur les mêmes outils, paramètres et exclusions que le main livré :
+
+| Compteur absolu de production | Main #152 | Intégration locale | Budget resserré |
+|------------------------------|-----------|-------------------|-----------------|
+| Clones | 56 | 15 | 15 |
+| Lignes dupliquées | 584 | 146 | 146 |
+| Tokens dupliqués | 4 360 | 1 398 | 1 398 |
+
+Le rapport sélectionne **210 sources** et en scanne **199 pour la duplication** :
+ces deux périmètres ne sont pas interchangeables. Aucune fonction JS/HTML ne
+dépasse 10 ; la limite cognitive TS reste 15. Les vrais CLI et tests aux bornes
+refusent le compteur suivant, sans relâcher la collecte ou les scanners.
+
+Le socle CSS des quatre jeux est partagé dans `games/game-page.css`, chargé avant
+leurs règles propres. Les styles partagés, musicaux et outils regroupent seulement
+des déclarations compatibles avec leur cascade. Les références de styles calculés
+sont capturées avant refactoring ; thèmes explicites et système, états interactifs,
+responsive et absence de JavaScript sont couverts selon les pages concernées.
+Les tokens publics du thème gardent des valeurs utilisables par les renderers JS,
+pas seulement des expressions CSS visuellement correctes.
+
+Les petits contrats communs sont l'initialisation asynchrone unique, les presets
+et abonnements musicaux, l'intervalle relatif d'une gamme, les paliers d'indices,
+les lignes gagnantes du morpion et l'énumération ordonnée des pièces aux Dames.
+Les lignes gagnantes partagées sont figées ; leur lecture publique renvoie une
+copie pour ne pas permettre la corruption du moteur. La collecte Jest inclut
+explicitement le bot Blocker. Les quatre nouveaux sélecteurs couvrent cinq modules
+avec un floor **100/100/100/100 %**, sans réduire les 66 sélecteurs hérités.
+
+Les **15 clones résiduels sont CSS ou HTML**, pas des duplications JS ignorées :
+deux palettes claires conditionnelles, du boilerplate de pages standalone,
+des fragments musicaux aux contrats voisins mais distincts, et deux fragments
+entre feuilles de style locales/partagées. Un fragment de bouton de 52 tokens
+apparaît entre `game-page.css` et l'accordeur ; il n'est pas masqué en réordonnant
+les déclarations. Mutualiser tous ces fragments imposerait une abstraction de
+palette, du templating ou des changements de cascade sans bénéfice établi.
+Le budget absolu protège les acquis mais n'interdit pas individuellement chaque
+nouveau clone si un ancien disparaît. Ni zéro clone, ni perfection certifiée.
+
+La mesure locale ne prouve pas une livraison : la PR et sa dernière tête native
+doivent encore être vérifiées. Fusion, publication et archivage restent distincts.
 
 ## Maintenance des références et exceptions
 

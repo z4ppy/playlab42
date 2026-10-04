@@ -3,7 +3,7 @@
   "production": {
     "cyclomatic": { "maxPerFunction": 10 },
     "cognitive": { "maxPerFunction": 15 },
-    "duplication": { "maxClones": 58, "maxDuplicatedLines": 610, "maxDuplicatedTokens": 4474 }
+    "duplication": { "maxClones": 15, "maxDuplicatedLines": 146, "maxDuplicatedTokens": 1398 }
   },
   "advisory": ["pedagogy", "tests"]
 }

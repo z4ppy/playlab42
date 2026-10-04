@@ -185,6 +185,15 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(current).toContain('non livrée');
     expect(current).toContain('cascade CSS');
     expect(current).toContain('minimum de tokens/lignes');
+    const budget = JSON.parse(readFileSync(resolve(root, 'scripts/quality-budgets.json'), 'utf8'));
+    const { maxClones, maxDuplicatedLines, maxDuplicatedTokens } = budget.production.duplication;
+    expect(current).toContain(`| Clones | 56 | ${maxClones} | ${maxClones} |`);
+    expect(current).toContain(`| Lignes dupliquées | 584 | ${maxDuplicatedLines} | ${maxDuplicatedLines} |`);
+    const tokens = maxDuplicatedTokens.toLocaleString('fr-FR').replace(/\s/g, ' ');
+    expect(current).toContain(`| Tokens dupliqués | 4 360 | ${tokens} | ${tokens} |`);
+    expect(current).toContain('210 sources');
+    expect(current).toContain('199 pour la duplication');
+    expect(current).toContain('15 clones résiduels sont CSS ou HTML');
   });
 
   describe.each(ids)('Slide %s', id => {
