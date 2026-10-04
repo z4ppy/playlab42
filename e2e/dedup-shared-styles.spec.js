@@ -1,8 +1,8 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { test, expect } from './fixtures.js';
+import { withOriginalStyles } from './original-styles.js';
 
 const fixtureUrl = new URL('./fixtures/dedup-shared-styles.json', import.meta.url);
-const capture = process.env.DEDUP_SHARED_STYLES_CAPTURE === '1';
 const epicId = 'hello-playlab42';
 
 const properties = [
@@ -58,7 +58,7 @@ async function setTheme(page, { attribute, scheme }) {
   }, attribute);
 }
 
-async function readStyles(page, selectors, pseudo = null) {
+async function readCurrent(page, selectors, pseudo = null) {
   const result = {};
   for (const [name, selector] of Object.entries(selectors)) {
     // Une transition en cours donne des valeurs intermediaires : attendre deux lectures identiques.
@@ -79,7 +79,7 @@ async function readStyles(page, selectors, pseudo = null) {
   return result;
 }
 
-function readTokens(page) {
+function readTokensCurrent(page) {
   return page.evaluate(names => {
     const style = getComputedStyle(document.documentElement);
     return {
@@ -89,64 +89,83 @@ function readTokens(page) {
   }, tokens);
 }
 
-async function hoverStyles(page, selectors) {
-  const result = {};
+// Meme DOM, meme etat d'interaction : lecture sous les CSS refactorees puis sous celles du main de depart.
+async function both(page, read) {
+  return { current: await read(), original: await withOriginalStyles(page, read) };
+}
+
+function readStyles(page, selectors, pseudo = null) {
+  return both(page, () => readCurrent(page, selectors, pseudo));
+}
+
+function readTokens(page) {
+  return both(page, () => readTokensCurrent(page));
+}
+
+async function perElement(page, selectors, interact, cleanup) {
+  const result = { current: {}, original: {} };
   for (const [name, selector] of Object.entries(selectors)) {
-    await page.locator(selector).hover();
-    result[name] = (await readStyles(page, { [name]: selector }))[name];
+    await interact(page.locator(selector));
+    const pair = await readStyles(page, { [name]: selector });
+    result.current[name] = pair.current[name];
+    result.original[name] = pair.original[name];
   }
-  await page.mouse.move(0, 0);
+  await cleanup();
   return result;
 }
 
-async function focusStyles(page, selectors) {
-  const result = {};
-  for (const [name, selector] of Object.entries(selectors)) {
-    await page.locator(selector).focus();
-    result[name] = (await readStyles(page, { [name]: selector }))[name];
-  }
-  await page.locator(':focus').evaluate(element => element.blur());
-  return result;
+function hoverStyles(page, selectors) {
+  return perElement(page, selectors, locator => locator.hover(), () => page.mouse.move(0, 0));
 }
 
-async function collect(page) {
+function focusStyles(page, selectors) {
+  return perElement(page, selectors, locator => locator.focus(),
+    () => page.locator(':focus').evaluate(element => element.blur()));
+}
+
+const viewports = { desktop: { width: 1280, height: 900 }, mobile: { width: 390, height: 844 } };
+const motions = { 'mouvement normal': 'no-preference', 'mouvement reduit': 'reduce' };
+
+async function collect(page, viewportName, reduced) {
   const matrix = {};
-  const viewports = { desktop: { width: 1280, height: 900 }, mobile: { width: 390, height: 844 } };
-  for (const [viewportName, viewport] of Object.entries(viewports)) {
-    for (const [reduced, motion] of [['mouvement normal', 'no-preference'], ['mouvement reduit', 'reduce']]) {
-      await page.setViewportSize(viewport);
-      await page.emulateMedia({ reducedMotion: motion });
-      for (const [themeName, theme] of Object.entries(themes)) {
-        const key = `${viewportName} / ${reduced} / ${themeName}`;
-        await page.goto('/');
-        await expect(page.locator('#btn-settings')).toBeVisible();
-        await setTheme(page, theme);
-        const entry = { tokens: await readTokens(page), home: await readStyles(page, homeTargets) };
-        entry.placeholder = await readStyles(page, { searchInput: '.search-bar input' }, '::placeholder');
-        entry.homeHover = await hoverStyles(page, {
-          settings: '#btn-settings', searchInput: '.search-bar input',
-        });
-        entry.homeFocus = await focusStyles(page, {
-          settings: '#btn-settings', searchInput: '.search-bar input',
-        });
-        await page.locator('#btn-settings').click();
-        await expect(page.locator('#btn-close-settings')).toBeVisible();
-        entry.settingsHover = await hoverStyles(page, { closeSettings: '#btn-close-settings' });
-        entry.settingsFocus = await focusStyles(page, {
-          closeSettings: '#btn-close-settings', pseudoInput: '#input-pseudo',
-        });
-        await page.goto(`/#/parcours/${epicId}/04-creer-outil`);
-        await expect(page.locator('.pv-menu-item').first()).toBeAttached();
-        await setTheme(page, theme);
-        await page.locator('.parcours-viewer').evaluate(element => element.classList.add('menu-open'));
-        entry.viewer = await readStyles(page, viewerTargets);
-        entry.viewerHover = await hoverStyles(page, viewerTargets);
-        entry.viewerFocus = await focusStyles(page, viewerTargets);
-        matrix[key] = entry;
-      }
-    }
+  await page.setViewportSize(viewports[viewportName]);
+  await page.emulateMedia({ reducedMotion: motions[reduced] });
+  for (const [themeName, theme] of Object.entries(themes)) {
+    const key = `${viewportName} / ${reduced} / ${themeName}`;
+    await page.goto('/');
+    await expect(page.locator('#btn-settings')).toBeVisible();
+    await setTheme(page, theme);
+    const entry = { tokens: await readTokens(page), home: await readStyles(page, homeTargets) };
+    entry.placeholder = await readStyles(page, { searchInput: '.search-bar input' }, '::placeholder');
+    entry.homeHover = await hoverStyles(page, {
+      settings: '#btn-settings', searchInput: '.search-bar input',
+    });
+    entry.homeFocus = await focusStyles(page, {
+      settings: '#btn-settings', searchInput: '.search-bar input',
+    });
+    await page.locator('#btn-settings').click();
+    await expect(page.locator('#btn-close-settings')).toBeVisible();
+    entry.settingsHover = await hoverStyles(page, { closeSettings: '#btn-close-settings' });
+    entry.settingsFocus = await focusStyles(page, {
+      closeSettings: '#btn-close-settings', pseudoInput: '#input-pseudo',
+    });
+    await page.goto(`/#/parcours/${epicId}/04-creer-outil`);
+    await expect(page.locator('.pv-menu-item').first()).toBeAttached();
+    await setTheme(page, theme);
+    await page.locator('.parcours-viewer').evaluate(element => element.classList.add('menu-open'));
+    entry.viewer = await readStyles(page, viewerTargets);
+    entry.viewerHover = await hoverStyles(page, viewerTargets);
+    entry.viewerFocus = await focusStyles(page, viewerTargets);
+    matrix[key] = entry;
   }
-  return matrix;
+  return {
+    current: Object.fromEntries(Object.entries(matrix).map(([key, entry]) => [key, side(entry, 'current')])),
+    original: Object.fromEntries(Object.entries(matrix).map(([key, entry]) => [key, side(entry, 'original')])),
+  };
+}
+
+function side(entry, name) {
+  return Object.fromEntries(Object.entries(entry).map(([group, pair]) => [group, pair[name]]));
 }
 
 const expectedGroups = {
@@ -179,18 +198,28 @@ function expectComplete(matrix) {
   }
 }
 
-test('styles partages : declarations calculees stables entre themes, viewports, focus et mouvement reduit', async ({ page }) => {
-  test.setTimeout(240_000);
-  const matrix = await collect(page);
-  if (capture) {
-    writeFileSync(fixtureUrl, `${JSON.stringify(matrix, null, 2)}\n`);
-    return;
+// Les dimensions dependent des polices de l'OS : elles sont comparees seulement a la capture originale du meme navigateur.
+function withoutWidth(matrix) {
+  return JSON.parse(JSON.stringify(matrix, (name, value) => (name === 'width' ? undefined : value)));
+}
+
+for (const viewportName of Object.keys(viewports)) {
+  for (const reduced of Object.keys(motions)) {
+    test(`styles partages ${viewportName} / ${reduced} : identiques aux CSS originaux, themes, focus et survol`, async ({ page }) => {
+      test.setTimeout(240_000);
+      const { current, original } = await collect(page, viewportName, reduced);
+      const golden = JSON.parse(readFileSync(fixtureUrl, 'utf8'));
+      const prefix = `${viewportName} / ${reduced} / `;
+      const keys = Object.keys(golden).filter(key => key.startsWith(prefix));
+      expect(keys).toHaveLength(Object.keys(themes).length);
+      expectComplete(Object.fromEntries(keys.map(key => [key, golden[key]])));
+      expectComplete(original);
+      expectComplete(current);
+      expect(Object.keys(current)).toEqual(keys);
+      for (const key of keys) {
+        expect(current[key], key).toEqual(original[key]);
+        expect(withoutWidth(current[key]), key).toEqual(withoutWidth(golden[key]));
+      }
+    });
   }
-  const expected = JSON.parse(readFileSync(fixtureUrl, 'utf8'));
-  expectComplete(expected);
-  expectComplete(matrix);
-  expect(Object.keys(matrix)).toEqual(Object.keys(expected));
-  for (const key of Object.keys(expected)) {
-    expect(matrix[key], key).toEqual(expected[key]);
-  }
-});
+}
