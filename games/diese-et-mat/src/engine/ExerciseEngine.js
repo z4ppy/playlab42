@@ -23,6 +23,9 @@ const SESSION_STATES = {
   FINISHED: 'finished',
 };
 
+/** Texte normalisé d'une réponse, ou null si ce n'est pas une chaîne (ex. skip = -1). */
+const normalizeTextAnswer = (answer) => (typeof answer === 'string' ? answer.toLowerCase().trim() : null);
+
 // ============================================================================
 // Classe ExerciseEngine
 // ============================================================================
@@ -280,7 +283,8 @@ export class ExerciseEngine extends EventEmitter {
     }
 
     // Normaliser la réponse
-    const normalized = answer.toLowerCase().trim();
+    const normalized = normalizeTextAnswer(answer);
+    if (normalized === null) {return false;}
     const frenchName = pitch.toFrench().slice(0, -1).toLowerCase();
     const englishName = pitch.toEnglish().slice(0, -1).toLowerCase();
 
@@ -299,7 +303,8 @@ export class ExerciseEngine extends EventEmitter {
       return answer === interval.toSemitones();
     }
 
-    const normalized = answer.toLowerCase().trim();
+    const normalized = normalizeTextAnswer(answer);
+    if (normalized === null) {return false;}
     const abbrev = interval.toAbbrev().toLowerCase();
     const french = interval.toFrench().toLowerCase();
 
@@ -313,8 +318,7 @@ export class ExerciseEngine extends EventEmitter {
   _validateChordAnswer(answer) {
     const expectedType = this.currentQuestion.expectedType;
 
-    const normalized = answer.toLowerCase().trim();
-    return normalized === expectedType;
+    return normalizeTextAnswer(answer) === expectedType;
   }
 
   /**

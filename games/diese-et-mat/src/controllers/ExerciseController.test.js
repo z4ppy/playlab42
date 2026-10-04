@@ -115,6 +115,15 @@ describe('ExerciseController', () => {
       expect(events[0][1].answer).toBe(-1);
     });
 
+    test.each(['chord-major-minor', 'interval-basic'])('skip en mode %s est une erreur sans exception', async (id) => {
+      await controller.start(id);
+      events.length = 0;
+      let result;
+      expect(() => { result = controller.skip(); }).not.toThrow();
+      expect(result).toMatchObject({ valid: true, correct: false, points: 0 });
+      expect(events[0][1].answer).toBe(-1);
+    });
+
     test('nextQuestion fait avancer l’index et émet question-changed', () => {
       controller.submitAnswer(0);
       events.length = 0;

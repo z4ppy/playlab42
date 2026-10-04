@@ -89,4 +89,11 @@ describe('App - régressions', () => {
     await jest.advanceTimersByTimeAsync(2000);
     expect(app.synthManager.playNote.mock.calls.length).toBeLessThanOrEqual(1);
   });
+
+  test('passer une question d’accord est comptée comme une erreur', async () => {
+    await app.startExercise('chord-major-minor');
+    expect(() => app.submitAnswer(-1)).not.toThrow();
+    expect(app.engine.getProgress().stats.totalCount).toBe(1);
+    expect(app.engine.getProgress().stats.correctCount).toBe(0);
+  });
 });
