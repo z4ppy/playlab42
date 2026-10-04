@@ -13,6 +13,6 @@
 
 ## Livraison proposée
 - [x] Aligner guides/parcours et états réellement constatés.
-- [ ] Valider tous les gates, builds hors réseau, intégrité/reprise et navigateur.
-- [ ] Ouvrir la PR et contrôler dernière tête native et artefacts.
+- [x] Valider tous les gates, builds hors réseau, intégrité/reprise et navigateur.
+- [x] Ouvrir la PR et contrôler dernière tête native et artefacts.
 - [ ] Fusion, publication et archivage sur décision distincte, hors autorisation.

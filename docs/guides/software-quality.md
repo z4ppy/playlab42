@@ -918,6 +918,28 @@ Les trois sources ciblées mesurent respectivement **96,26/86,95/90/96,03 %**,
 **94,44/94,44/100/93,54 %** et **72,72/78,12/100/72,72 %**.
 Ces preuves locales ne remplacent pas les checks natifs de la tête proposée.
 
+Deux builds de production `npm run build` hors réseau, avec snapshot OG
+versionné, SHA complète `1e4c8a1cbce92535acbc026868556d576c97766a` et epoch
+`1791119849`, donnent des manifestes identiques sur **1 051 fichiers**.
+Intégrité, corruption refusée/restauration et **77 scénarios Chromium**
+passent sur cette archive montée en lecture seule.
+
+La [PR #151](https://github.com/z4ppy/playlab42/pull/151) reste ouverte,
+sans fusion ni publication. Sa première
+[CI native 37207217083](https://github.com/z4ppy/playlab42/actions/runs/37207217083)
+et son [audit 37207217132](https://github.com/z4ppy/playlab42/actions/runs/37207217132)
+réussissent au head `1e4c8a1`, avec merge SHA testée
+`0f04bb9992919c5b9c4be0ed29d53f4459541d12` : mêmes 138 suites / 3 093 tests
+et 77 interactions. Les deux fichiers Code quality et les cinq preuves Jest
+sont téléchargés ; provenance/run/tentative, compteurs et 37 sélecteurs de
+floors sont vérifiés, sans changer les outils, paramètres ou exclusions.
+La couverture native S/B/F/L est **73,38/70,60/77,99/73,07 %** ;
+l'assemblage mesure **94,44/92,59/100/93,54 %**, légèrement différent
+de la collecte locale, toujours au-dessus du floor hérité.
+Hadolint est ignoré sur PR, pas exécuté ni certifié.
+Les checks et preuves de la dernière tête sont référencés en commentaire
+de PR, sans confondre cette première validation avec les commits suivants.
+
 ## Maintenance des références et exceptions
 
 Les workflows utilisent des SHAs complets avec commentaire de version ; les
