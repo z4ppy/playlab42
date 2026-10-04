@@ -74,6 +74,40 @@ const A4_FREQUENCY = 440;
  */
 const A4_MIDI = 69;
 
+/** Notation française (Do♯4, Ré4, Solb5, etc.) */
+const FRENCH_NOTATION = /^(Do|Ré|Re|Mi|Fa|Sol|La|Si)(♯|♭|#|b)?(\d)$/i;
+
+/** Notation anglaise (C#4, Db5, etc.) */
+const ENGLISH_NOTATION = /^([A-Ga-g])(##?|bb?|n)?(\d)$/;
+
+const FRENCH_ACCIDENTALS = { '♯': 'sharp', '#': 'sharp', '♭': 'flat', b: 'flat' };
+
+const ENGLISH_ACCIDENTALS = {
+  '#': 'sharp',
+  '##': 'double-sharp',
+  b: 'flat',
+  bb: 'double-flat',
+  n: 'natural',
+};
+
+function parseFrenchNotation([, noteName, accidental, octave]) {
+  const pitchClass = FRENCH_NAMES.findIndex(
+    (n) => n.toLowerCase() === noteName.toLowerCase().replace('re', 'ré'),
+  );
+  if (pitchClass === -1) {
+    throw new Error(`Note invalide: ${noteName}`);
+  }
+  return new Pitch(pitchClass, parseInt(octave), FRENCH_ACCIDENTALS[accidental] ?? null);
+}
+
+function parseEnglishNotation([, noteName, accidental, octave]) {
+  const pitchClass = ENGLISH_NAMES.indexOf(noteName.toUpperCase());
+  if (pitchClass === -1) {
+    throw new Error(`Note invalide: ${noteName}`);
+  }
+  return new Pitch(pitchClass, parseInt(octave), ENGLISH_ACCIDENTALS[accidental] ?? null);
+}
+
 // ============================================================================
 // Classe Pitch
 // ============================================================================
@@ -326,49 +360,14 @@ export class Pitch {
   static fromString(str) {
     const normalized = str.trim();
 
-    // Regex pour notation française (Do♯4, Ré4, Solb5, etc.)
-    const frenchMatch = normalized.match(
-      /^(Do|Ré|Re|Mi|Fa|Sol|La|Si)(♯|♭|#|b)?(\d)$/i,
-    );
+    const frenchMatch = normalized.match(FRENCH_NOTATION);
     if (frenchMatch) {
-      const [, noteName, accidental, octave] = frenchMatch;
-      const pitchClass = FRENCH_NAMES.findIndex(
-        (n) => n.toLowerCase() === noteName.toLowerCase().replace('re', 'ré'),
-      );
-
-      // Handle "Re" without accent
-      const finalPitchClass =
-        pitchClass === -1 && noteName.toLowerCase() === 're' ? 1 : pitchClass;
-
-      if (finalPitchClass === -1) {
-        throw new Error(`Note invalide: ${noteName}`);
-      }
-
-      let acc = null;
-      if (accidental === '♯' || accidental === '#') {acc = 'sharp';}
-      if (accidental === '♭' || accidental === 'b') {acc = 'flat';}
-
-      return new Pitch(finalPitchClass, parseInt(octave), acc);
+      return parseFrenchNotation(frenchMatch);
     }
 
-    // Regex pour notation anglaise (C#4, Db5, etc.)
-    const englishMatch = normalized.match(/^([A-Ga-g])(##?|bb?|n)?(\d)$/);
+    const englishMatch = normalized.match(ENGLISH_NOTATION);
     if (englishMatch) {
-      const [, noteName, accidental, octave] = englishMatch;
-      const pitchClass = ENGLISH_NAMES.indexOf(noteName.toUpperCase());
-
-      if (pitchClass === -1) {
-        throw new Error(`Note invalide: ${noteName}`);
-      }
-
-      let acc = null;
-      if (accidental === '#') {acc = 'sharp';}
-      if (accidental === '##') {acc = 'double-sharp';}
-      if (accidental === 'b') {acc = 'flat';}
-      if (accidental === 'bb') {acc = 'double-flat';}
-      if (accidental === 'n') {acc = 'natural';}
-
-      return new Pitch(pitchClass, parseInt(octave), acc);
+      return parseEnglishNotation(englishMatch);
     }
 
     throw new Error(`Format de note invalide: ${str}`);

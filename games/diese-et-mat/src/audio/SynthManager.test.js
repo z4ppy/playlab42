@@ -2,6 +2,9 @@
 import { jest } from '@jest/globals';
 import { SynthManager } from './SynthManager.js';
 
+// jsdom n'expose pas structuredClone, présent dans les navigateurs ciblés
+global.structuredClone ??= value => JSON.parse(JSON.stringify(value));
+
 function setup() {
   let ready;
   const engine = {

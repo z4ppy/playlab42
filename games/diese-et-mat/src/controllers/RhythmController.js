@@ -245,23 +245,34 @@ export class RhythmController extends EventEmitter {
     if (startBtn) {startBtn.style.display = 'none';}
     document.getElementById('rhythm-tap-zone')?.focus();
 
-    // Initialiser l'audio et le métronome
+    if (!(await this._prepareAudio(state))) {return;}
+
+    // Compte à rebours
+    this._countdown(3, state);
+  }
+
+  /**
+   * Initialise l'audio et le métronome ; une panne audio passe en mode silencieux.
+   * @private
+   *
+   * @param {Object} state - État de l'exercice qui a demandé le démarrage
+   * @returns {Promise<boolean>} false si l'exercice a été arrêté entre-temps
+   */
+  async _prepareAudio(state) {
     try {
       await this._ensureAudioReady();
-      if (this._state !== state) {return;}
+      if (this._state !== state) {return false;}
 
       const metronome = this._getMetronome();
       if (metronome) {
-        metronome.setTempo(this._state.tempo);
-        metronome.setTimeSignature(this._state.beatsPerMeasure, 4);
+        metronome.setTempo(state.tempo);
+        metronome.setTimeSignature(state.beatsPerMeasure, 4);
       }
     } catch {
-      if (this._state !== state) {return;}
+      if (this._state !== state) {return false;}
       console.warn('Audio non disponible, mode silencieux');
     }
-
-    // Compte à rebours
-    if (this._state === state) {this._countdown(3, state);}
+    return this._state === state;
   }
 
   /**

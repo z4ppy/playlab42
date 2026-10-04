@@ -545,14 +545,14 @@ export class SynthManager extends EventEmitter {
         const parsed = JSON.parse(stored);
         // Valider la structure
         if (typeof parsed === 'object' && parsed !== null && parsed.envelope && parsed.effects) {
-          return { ...DEFAULT_CONFIG, ...parsed };
+          return { ...structuredClone(DEFAULT_CONFIG), ...parsed };
         }
       }
     } catch (error) {
       console.warn('Erreur lors du chargement de la config synthé:', error);
     }
 
-    return { ...DEFAULT_CONFIG };
+    return structuredClone(DEFAULT_CONFIG);
   }
 
   /**
@@ -592,7 +592,7 @@ export class SynthManager extends EventEmitter {
    * Réinitialise la configuration aux valeurs par défaut.
    */
   resetConfig() {
-    this._config = { ...DEFAULT_CONFIG };
+    this._config = structuredClone(DEFAULT_CONFIG);
     if (this._audioReady && this._audioEngine) {
       this._audioEngine.applySettings(this._config);
     }

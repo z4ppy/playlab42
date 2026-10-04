@@ -56,6 +56,14 @@ const VEXFLOW_NOTATION = {
  */
 const TICKS_PER_QUARTER = 1024;
 
+/** Deux tuplets sont égaux s'ils sont tous deux absents ou ont le même ratio. */
+function tupletsEqual(first, second) {
+  if (first === null || second === null) {
+    return first === second;
+  }
+  return first.ratio?.[0] === second.ratio?.[0] && first.ratio?.[1] === second.ratio?.[1];
+}
+
 // ============================================================================
 // Classe Duration
 // ============================================================================
@@ -219,18 +227,10 @@ export class Duration {
    * @returns {boolean}
    */
   equals(other) {
-    // Comparaison explicite des tuplets
-    const tupletEquals =
-      (this.tuplet === null && other.tuplet === null) ||
-      (this.tuplet !== null &&
-        other.tuplet !== null &&
-        this.tuplet.ratio?.[0] === other.tuplet.ratio?.[0] &&
-        this.tuplet.ratio?.[1] === other.tuplet.ratio?.[1]);
-
     return (
       this.base === other.base &&
       this.dots === other.dots &&
-      tupletEquals
+      tupletsEqual(this.tuplet, other.tuplet)
     );
   }
 

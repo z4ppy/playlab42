@@ -12,6 +12,37 @@ import { AudioEngine } from '../audio/AudioEngine.js';
 import { hidePanel, isPanelVisible, showPanel } from './panel-visibility.js';
 import { SYNTH_EFFECT_SLIDERS, SYNTH_PARAM_SLIDERS } from './synth-slider-specs.js';
 
+const toHz = (v) => `${Math.round(v)} Hz`;
+const toPercent = (v) => `${Math.round(v)}%`;
+const toTenths = (v) => v.toFixed(1);
+
+/** Valeur de configuration ; une valeur absente ou nulle retombe sur le défaut. */
+function configValue(config, param, fallback) {
+  return config?.[param] || fallback;
+}
+
+const METAL_SLIDERS = [
+  { id: 'metal-frequency', param: 'frequency', min: 50, max: 2000, fallback: 400, toDisplay: toHz },
+  { id: 'metal-harmonicity', param: 'harmonicity', min: 0.5, max: 20, step: 0.1, fallback: 5.1, toDisplay: toTenths },
+  { id: 'metal-modulation-index', param: 'modulationIndex', min: 1, max: 100, fallback: 32, toDisplay: (v) => Math.round(v).toString() },
+  { id: 'metal-resonance', param: 'resonance', min: 100, max: 10000, fallback: 4000, toDisplay: toHz },
+  { id: 'metal-octaves', param: 'octaves', min: 0.5, max: 4, step: 0.1, fallback: 1.5, toDisplay: toTenths },
+];
+
+/** Contrôles d'effets : `scale` convertit la valeur du modèle en valeur de slider. */
+const EFFECT_CONTROLS = [
+  ['reverb', [
+    { id: 'reverb-amount', param: 'amount', min: 0, max: 100, fallback: 0.3, scale: 100, toDisplay: toPercent },
+  ]],
+  ['delay', [
+    { id: 'delay-time', param: 'time', min: 10, max: 1000, fallback: 0.2, scale: 1000, toDisplay: (v) => `${Math.round(v)}ms` },
+    { id: 'delay-feedback', param: 'feedback', min: 0, max: 90, fallback: 0.3, scale: 100, toDisplay: toPercent },
+  ]],
+  ['filter', [
+    { id: 'filter-frequency', param: 'frequency', min: 100, max: 10000, fallback: 2000, scale: 1, toDisplay: toHz },
+  ]],
+];
+
 // ============================================================================
 // Classe SynthController
 // ============================================================================
@@ -450,49 +481,18 @@ export class SynthController extends EventEmitter {
    * @private
    */
   _setupMetalSliders() {
-    const config = this.synthManager.config;
+    const config = this.synthManager.config.metal;
 
-    this._setupSlider('metal-frequency', {
-      min: 50,
-      max: 2000,
-      value: config.metal?.frequency || 400,
-      toDisplay: (v) => `${Math.round(v)} Hz`,
-      onChange: (v) => this.synthManager.setSynthParam('metal', 'frequency', v),
-    });
-
-    this._setupSlider('metal-harmonicity', {
-      min: 0.5,
-      max: 20,
-      step: 0.1,
-      value: config.metal?.harmonicity || 5.1,
-      toDisplay: (v) => v.toFixed(1),
-      onChange: (v) => this.synthManager.setSynthParam('metal', 'harmonicity', v),
-    });
-
-    this._setupSlider('metal-modulation-index', {
-      min: 1,
-      max: 100,
-      value: config.metal?.modulationIndex || 32,
-      toDisplay: (v) => Math.round(v).toString(),
-      onChange: (v) => this.synthManager.setSynthParam('metal', 'modulationIndex', v),
-    });
-
-    this._setupSlider('metal-resonance', {
-      min: 100,
-      max: 10000,
-      value: config.metal?.resonance || 4000,
-      toDisplay: (v) => `${Math.round(v)} Hz`,
-      onChange: (v) => this.synthManager.setSynthParam('metal', 'resonance', v),
-    });
-
-    this._setupSlider('metal-octaves', {
-      min: 0.5,
-      max: 4,
-      step: 0.1,
-      value: config.metal?.octaves || 1.5,
-      toDisplay: (v) => v.toFixed(1),
-      onChange: (v) => this.synthManager.setSynthParam('metal', 'octaves', v),
-    });
+    for (const spec of METAL_SLIDERS) {
+      this._setupSlider(spec.id, {
+        min: spec.min,
+        max: spec.max,
+        step: spec.step,
+        value: configValue(config, spec.param, spec.fallback),
+        toDisplay: spec.toDisplay,
+        onChange: (v) => this.synthManager.setSynthParam('metal', spec.param, v),
+      });
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -536,58 +536,20 @@ export class SynthController extends EventEmitter {
   _setupEffectsControls() {
     const effects = this.synthManager.effects;
 
-    // Reverb
-    this._setupEffectControl('reverb', {
-      enabled: effects.reverb?.enabled || false,
-      params: [
-        {
-          id: 'reverb-amount',
-          min: 0,
-          max: 100,
-          value: (effects.reverb?.amount || 0.3) * 100,
-          toDisplay: (v) => `${Math.round(v)}%`,
-          onChange: (v) => this.synthManager.setEffect('reverb', { amount: v / 100 }),
-        },
-      ],
-    });
-
-    // Delay
-    this._setupEffectControl('delay', {
-      enabled: effects.delay?.enabled || false,
-      params: [
-        {
-          id: 'delay-time',
-          min: 10,
-          max: 1000,
-          value: (effects.delay?.time || 0.2) * 1000,
-          toDisplay: (v) => `${Math.round(v)}ms`,
-          onChange: (v) => this.synthManager.setEffect('delay', { time: v / 1000 }),
-        },
-        {
-          id: 'delay-feedback',
-          min: 0,
-          max: 90,
-          value: (effects.delay?.feedback || 0.3) * 100,
-          toDisplay: (v) => `${Math.round(v)}%`,
-          onChange: (v) => this.synthManager.setEffect('delay', { feedback: v / 100 }),
-        },
-      ],
-    });
-
-    // Filter
-    this._setupEffectControl('filter', {
-      enabled: effects.filter?.enabled || false,
-      params: [
-        {
-          id: 'filter-frequency',
-          min: 100,
-          max: 10000,
-          value: effects.filter?.frequency || 2000,
-          toDisplay: (v) => `${Math.round(v)} Hz`,
-          onChange: (v) => this.synthManager.setEffect('filter', { frequency: v }),
-        },
-      ],
-    });
+    for (const [effectName, paramSpecs] of EFFECT_CONTROLS) {
+      const config = effects[effectName];
+      this._setupEffectControl(effectName, {
+        enabled: Boolean(config?.enabled),
+        params: paramSpecs.map((spec) => ({
+          id: spec.id,
+          min: spec.min,
+          max: spec.max,
+          value: configValue(config, spec.param, spec.fallback) * spec.scale,
+          toDisplay: spec.toDisplay,
+          onChange: (v) => this.synthManager.setEffect(effectName, { [spec.param]: v / spec.scale }),
+        })),
+      });
+    }
   }
 
   /**
