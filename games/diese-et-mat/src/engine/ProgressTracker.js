@@ -222,6 +222,10 @@ export class ProgressTracker {
   /**
    * Retourne le niveau global
    *
+   * Un XP global NaN ou absent est lu comme 0 ; Infinity ou un type non numérique
+   * (progression corrompue) lève une erreur explicite au lieu d'un repli silencieux.
+   *
+   * @throws {TypeError|RangeError} Si l'XP global est invalide
    * @returns {{ level: number, currentXP: number, requiredXP: number, progress: number }}
    */
   getLevel() {

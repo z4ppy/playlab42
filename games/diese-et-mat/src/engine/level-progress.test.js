@@ -87,4 +87,34 @@ describe('Niveaux d’XP', () => {
     tracker.progress.globalXP = 0;
     expect(tracker.getLevel().level).toBe(1);
   });
+
+  describe('XP invalide', () => {
+    test.each([NaN, Infinity, -Infinity])('rejette %p avec une RangeError contextualisée', (xp) => {
+      expect(() => calculateLevelProgress(xp)).toThrow(RangeError);
+      expect(() => ScoreCalculator.calculateLevel(xp)).toThrow(`XP invalide : un nombre fini est attendu, reçu ${xp}`);
+    });
+
+    test.each([['5', 'string'], [null, 'object'], [undefined, 'undefined'], [{}, 'object'], [10n, 'bigint']])(
+      'rejette %p avec une TypeError',
+      (xp, type) => {
+        expect(() => ScoreCalculator.calculateLevel(xp)).toThrow(TypeError);
+        expect(() => calculateLevelProgress(xp)).toThrow(`reçu ${type}`);
+      },
+    );
+
+    test('les valeurs négatives et fractionnaires restent valides et inchangées', () => {
+      expect(calculateLevelProgress(-0.5)).toEqual({ level: 1, currentXP: -0.5, requiredXP: 100, progress: -0 });
+      expect(calculateLevelProgress(Number.MAX_SAFE_INTEGER).level).toBeGreaterThan(1);
+    });
+
+    test('le tracker échoue explicitement pour Infinity ou un XP non numérique, sans repli silencieux', () => {
+      expect(() => trackerAvecXP(Infinity).getLevel()).toThrow(RangeError);
+      expect(() => trackerAvecXP('12').getLevel()).toThrow(TypeError);
+      expect(() => trackerAvecXP(-Infinity).getLevel()).toThrow(RangeError);
+    });
+
+    test('checkAchievements, seul appelant, propage l’erreur de niveau invalide', () => {
+      expect(() => trackerAvecXP(Infinity).checkAchievements({})).toThrow(RangeError);
+    });
+  });
 });

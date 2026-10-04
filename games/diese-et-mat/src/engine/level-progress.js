@@ -14,20 +14,37 @@ function xpRequiredForNextLevel(level) {
 }
 
 /**
+ * @param {unknown} xp - Valeur à valider
+ * @throws {TypeError|RangeError}
+ */
+function assertFiniteXP(xp) {
+  if (typeof xp !== 'number') {
+    throw new TypeError(`XP invalide : un nombre est attendu, reçu ${typeof xp}`);
+  }
+  if (!Number.isFinite(xp)) {
+    throw new RangeError(`XP invalide : un nombre fini est attendu, reçu ${xp}`);
+  }
+}
+
+/**
  * Calcule le niveau depuis l'XP total.
- * Une XP négative reste au niveau 1 avec une progression négative.
- * Les appelants doivent fournir une XP finie (NaN et Infinity ne terminent pas).
+ * Contrat d'entrée : l'XP doit être un nombre fini. Une XP négative ou
+ * fractionnaire reste valide (niveau 1 avec progression négative, ou arrondie).
+ * NaN et ±Infinity sont rejetés explicitement : l'ancienne boucle ne terminait
+ * jamais pour NaN et +Infinity, et -Infinity produisait un résultat non fini.
  *
  * @param {number} xp - XP total
+ * @throws {TypeError} Si l'XP n'est pas de type nombre
+ * @throws {RangeError} Si l'XP n'est pas finie (NaN, Infinity, -Infinity)
  * @returns {{ level: number, currentXP: number, requiredXP: number, progress: number }}
  */
 export function calculateLevelProgress(xp) {
+  assertFiniteXP(xp);
   let level = 1;
   let usedXP = 0;
   let requiredXP = xpRequiredForNextLevel(level);
 
-  // Forme négative conservée : NaN et Infinity ne terminent jamais, comme avant la mutualisation.
-  while (!(usedXP + requiredXP > xp)) {
+  while (usedXP + requiredXP <= xp) {
     usedXP += requiredXP;
     level++;
     requiredXP = xpRequiredForNextLevel(level);
