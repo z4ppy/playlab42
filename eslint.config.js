@@ -86,60 +86,17 @@ export default [
 
   {
     files: [
-      'scripts/og-fetcher.js',
-      'scripts/lib/build-utils.js',
-      'scripts/code-quality-report.js',
-      'scripts/check-deployment.js',
-      'scripts/parcours-utils.js',
-      'scripts/build-{catalogue,parcours,bookmarks,typescript}.js',
-      'scripts/{build-runtime-vendors,build-site,verify-site}.js',
-      'scripts/{build-guides,scaffold,coverage-report}.js',
-      'scripts/lib/bookmark-metadata.js',
-      'scripts/lib/deployment-*.js',
-      'scripts/lib/{build-report,manifest-validation}.js',
-      'games/diese-et-mat/src/AppKeyboard.js',
-      'games/diese-et-mat/src/engine/level-progress.js',
-      'games/checkers/index.html',
-      'games/checkers/ui/**/*.js',
-      'games/triomino/index.html',
-      'games/triomino/ui/**/*.js',
-      'games/diese-et-mat/src/audio/AudioEngine.js',
-      'games/diese-et-mat/src/audio/{synth-factory,synth-parameters,effects-config}.js',
-      'games/diese-et-mat/src/controllers/MenuController.js',
-      'games/diese-et-mat/src/controllers/{panel-visibility,synth-slider-specs}.js',
+      '*.{js,cjs}',
+      'app/**/*.{js,html}',
+      'lib/**/*.{js,html}',
+      'games/**/*.{js,html}',
+      'tools/**/*.{js,html}',
+      'scripts/**/*.js',
     ],
-    ignores: ['**/*.test.js'],
-    rules: {
-      complexity: ['error', 10],
-    },
-  },
-
-  {
-    // Deux méthodes héritées restent à 15 et 11 ; les six cibles sont testées à 10.
-    files: ['games/diese-et-mat/src/controllers/SynthController.js'],
-    rules: {
-      complexity: ['error', 15],
-    },
-  },
-
-  {
-    files: [
-      'games/checkers/engine.js',
-      'games/go-9x9/engine.js',
-      'games/tetris/engine.js',
-      'games/tetris/engine/**/*.js',
-      'app/keyboard-commands.js',
-      'app/game-messages.js',
-      'app/game-loader.js',
-      'lib/parcours-viewer.js',
-      'lib/parcours/ParcoursUI.js',
-      'lib/parcours/{events,keyboard,loading,slide-messages}.js',
-      'lib/local-data.js',
-      'lib/local-data/**/*.js',
-      'games/diese-et-mat/src/engine/ExerciseEngine.js',
-      'games/diese-et-mat/src/engine/ProgressTracker.js',
+    ignores: [
+      '**/*.test.js', '**/*.spec.js', '**/__tests__/**',
+      '**/__mocks__/**', '**/tests/**',
     ],
-    ignores: ['**/*.test.js'],
     rules: {
       complexity: ['error', 10],
     },

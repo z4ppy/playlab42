@@ -51,9 +51,32 @@ test.each([
   ['games/diese-et-mat/src/audio/synth-parameters.js', 10],
   ['games/diese-et-mat/src/audio/effects-config.js', 10],
   ['games/diese-et-mat/src/controllers/MenuController.js', 10],
-  ['games/diese-et-mat/src/controllers/SynthController.js', 15],
+  ['games/diese-et-mat/src/controllers/SynthController.js', 10],
   ['games/diese-et-mat/src/controllers/panel-visibility.js', 10],
   ['games/diese-et-mat/src/controllers/synth-slider-specs.js', 10],
+  ['games/diese-et-mat/src/App.js', 10],
+  ['games/diese-et-mat/src/app-exercise-markup.js', 10],
+  ['games/diese-et-mat/src/controllers/ExerciseController.js', 10],
+  ['games/diese-et-mat/src/controllers/TunerController.js', 10],
+  ['games/diese-et-mat/src/controllers/tuner-pitch.js', 10],
+  ['app/parcours.js', 10],
+  ['app/bookmarks.js', 10],
+  ['app/catalogue.js', 10],
+  ['app/tabs.js', 10],
+  ['lib/catalogue-ui.js', 10],
+  ['lib/dom.js', 10],
+  ['lib/gamekit.js', 10],
+  ['games/tetris/controller.js', 10],
+  ['games/tetris/renderer.js', 10],
+  ['games/tetris/records.js', 10],
+  ['games/go-9x9/index.html', 10],
+  ['games/go-9x9/bots/greedy.js', 10],
+  ['games/checkers/bots/smart.js', 10],
+  ['games/dialog-accessibility.js', 10],
+  ['tools/relativity-lab/src/main.js', 10],
+  ['tools/relativity-lab/src/SceneManager.js', 10],
+  ['tools/relativity-lab/ui/DopplerGraph.js', 10],
+  ['scripts/quality-budget.js', 10],
 ])(
   'le vrai gate complexité cible %s à %i sans ignorer son entrée',
   (filename, limit) => {
@@ -68,12 +91,13 @@ test.each([
     const valid = lint('export function valid(value) { return value; }\n');
     expect(valid.status).toBe(0);
     expect(JSON.parse(valid.stdout)[0].messages).toEqual([]);
-    const branchesFor = count => Array.from({ length: count }, (_, index) => `  if (value === ${index}) {return ${index};}`).join('\n');
-    const boundary = lint(`export function boundary(value) {\n${branchesFor(limit - 1)}\n  return -1;\n}\n`);
+    const indent = filename.startsWith('games/go-9x9/') && filename.endsWith('.html') ? '    ' : '  ';
+    const branchesFor = count => Array.from({ length: count }, (_, index) => `${indent}if (value === ${index}) {return ${index};}`).join('\n');
+    const boundary = lint(`export function boundary(value) {\n${branchesFor(limit - 1)}\n${indent}return -1;\n}\n`);
     expect(boundary.status).toBe(0);
     expect(JSON.parse(boundary.stdout)[0].messages).toEqual([]);
     const branches = branchesFor(limit);
-    const invalid = lint(`export function excessive(value) {\n${branches}\n  return -1;\n}\n`);
+    const invalid = lint(`export function excessive(value) {\n${branches}\n${indent}return -1;\n}\n`);
     expect(invalid.status).toBe(1);
     expect(JSON.parse(invalid.stdout)[0].messages).toEqual(expect.arrayContaining([
       expect.objectContaining({ ruleId: 'complexity', severity: 2, message: expect.stringContaining(`Maximum allowed is ${limit}`) }),
