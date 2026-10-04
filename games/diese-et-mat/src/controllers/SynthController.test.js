@@ -227,3 +227,109 @@ describe('SynthController : presets et panneau', () => {
     expect(manager.listenerCount('config-changed')).toBe(0);
   });
 });
+
+describe('SynthController : callbacks des curseurs et commandes', () => {
+  const input = (id, value) => {
+    const slider = document.getElementById(`synth-${id}`);
+    slider.value = String(value);
+    slider.dispatchEvent(new Event('input'));
+  };
+
+  test('chaque curseur de paramètre envoie la valeur convertie au gestionnaire', () => {
+    const { manager } = open(FULL);
+    input('decay', 500);
+    input('sustain', 40);
+    input('release', 2000);
+    expect(manager.setEnvelope.mock.calls).toEqual([[{ decay: 0.5 }], [{ sustain: 0.4 }], [{ release: 2 }]]);
+
+    input('fm-harmonicity', 4);
+    input('fm-modulation-index', 12);
+    input('pluck-attack-noise', 20);
+    input('pluck-dampening', 2000);
+    input('pluck-resonance', 95);
+    input('pluck-release', 1000);
+    input('membrane-pitch-decay', 100);
+    input('membrane-octaves', 4);
+    input('metal-frequency', 500);
+    input('metal-harmonicity', 6);
+    input('metal-modulation-index', 20);
+    input('metal-resonance', 3000);
+    input('metal-octaves', 2);
+    expect(manager.setSynthParam.mock.calls).toEqual([
+      ['fm', 'harmonicity', 4], ['fm', 'modulationIndex', 12],
+      ['pluck', 'attackNoise', 2], ['pluck', 'dampening', 2000], ['pluck', 'resonance', 0.95], ['pluck', 'release', 1],
+      ['membrane', 'pitchDecay', 0.1], ['membrane', 'octaves', 4],
+      ['metal', 'frequency', 500], ['metal', 'harmonicity', 6], ['metal', 'modulationIndex', 20],
+      ['metal', 'resonance', 3000], ['metal', 'octaves', 2],
+    ]);
+  });
+
+  test('les curseurs d’effets et de volume appellent le gestionnaire et leurs cases', () => {
+    const { manager } = open(FULL);
+    input('reverb-amount', 50);
+    input('delay-time', 400);
+    input('delay-feedback', 60);
+    input('filter-frequency', 1500);
+    input('volume', -20);
+    expect(manager.setEffect.mock.calls).toEqual([
+      ['reverb', { amount: 0.5 }], ['delay', { time: 0.4 }], ['delay', { feedback: 0.6 }], ['filter', { frequency: 1500 }],
+    ]);
+    expect(manager.setVolume).toHaveBeenCalledWith(-20);
+    expect(label('volume')).toBe('-20 dB');
+    const reverb = document.getElementById('synth-reverb-enabled');
+    expect(reverb.checked).toBe(true);
+    reverb.checked = false;
+    reverb.dispatchEvent(new Event('change'));
+    expect(manager.toggleEffect).toHaveBeenCalledWith('reverb', false);
+  });
+
+  test('effect-changed et envelope-changed mettent à jour l’interface', () => {
+    const { manager } = open(FULL);
+    manager.emit('effect-changed', { effectName: 'filter', config: { enabled: false, frequency: 500 } });
+    expect(document.getElementById('synth-filter-enabled').checked).toBe(false);
+    expect(label('filter-frequency')).toBe('500 Hz');
+    manager.emit('effect-changed', { effectName: 'inconnu', config: { enabled: true } });
+    manager.emit('envelope-changed', { envelope: { attack: 0.2, decay: 0.1, sustain: 0.1, release: 0.5 } });
+    expect(label('attack')).toBe('200ms');
+    manager.emit('oscillator-changed', { oscillator: 'sine' });
+    expect(document.querySelector('[data-osc="sine"]').classList.contains('active')).toBe(true);
+  });
+
+  test('le select de type applique le type seulement si l’audio est prêt', () => {
+    const { manager } = open(FULL, 'mono');
+    manager.audioEngine = { setSynthType: jest.fn() };
+    const select = document.getElementById('synth-type-select');
+    select.value = 'fm';
+    select.dispatchEvent(new Event('change'));
+    expect(manager.audioEngine.setSynthType).not.toHaveBeenCalled();
+    expect(select.value).toBe('mono');
+    select.value = 'fm';
+    manager.isAudioReady = true;
+    select.dispatchEvent(new Event('change'));
+    expect(manager.audioEngine.setSynthType).toHaveBeenCalledWith('fm');
+  });
+
+  test('le bouton de test joue C4 puis se réactive, ou signale l’échec', async () => {
+    document.body.innerHTML = '';
+    const { manager } = open(FULL);
+    document.body.insertAdjacentHTML('beforeend', '<button id="synth-test-btn"></button>');
+    const second = new SynthController({ overlay: document.getElementById('overlay') }, { synthManager: manager });
+    second.show();
+    const button = document.getElementById('synth-test-btn');
+    manager.playNote = jest.fn().mockResolvedValue(undefined);
+    button.click();
+    expect(button.disabled).toBe(true);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(manager.playNote).toHaveBeenCalledWith('C4', '8n');
+    expect(button.disabled).toBe(false);
+
+    const logged = jest.spyOn(console, 'error').mockImplementation(() => {});
+    manager.playNote = jest.fn().mockRejectedValue(new Error('x'));
+    button.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(button.title).toBe('Audio indisponible : réessayez');
+    expect(button.disabled).toBe(false);
+    logged.mockRestore();
+  });
+});
