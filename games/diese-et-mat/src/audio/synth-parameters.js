@@ -32,7 +32,8 @@ const LIVE_PARAMETER_SETTERS = {
   },
   metal: {
     frequency: (synth, value) => { synth.frequency.value = value; },
-    harmonicity: (synth, value) => { synth.harmonicity.value = value; },
+    // Tone 15 : harmonicity est un nombre simple (accesseur), pas un Param.
+    harmonicity: (synth, value) => { synth.harmonicity = value; },
   },
 };
 
