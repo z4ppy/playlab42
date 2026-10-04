@@ -122,10 +122,9 @@ test('AudioEngine réel sur Tone 15 : graphe, réglages, remplacement, notes et 
   expect(result.applied.feedback).toBeCloseTo(0.2, 5);
   expect(result.applied.filterFrequency).toBeCloseTo(900, 3);
   expect(result.applied.settings).toBe('square');
-  // Limite héritée : harmonicity est un nombre dans Tone 15, l'écriture `.value` échoue et
-  // est ignorée ; la valeur mémorisée ne s'applique qu'à la prochaine création du synthé.
+  // Correction voulue : harmonicity est un nombre simple dans Tone 15 et s'applique en direct.
   expect(result.metal.stored).toBe(9);
-  expect(result.metal.harmonicity).not.toBe(9);
+  expect(result.metal.harmonicity).toBe(9);
   expect(result.metal.frequency).toBeCloseTo(321, 3);
   expect(result.pluckDampening).toBeCloseTo(1234, 3);
   expect(result.membraneOctaves).toBeCloseTo(3, 5);

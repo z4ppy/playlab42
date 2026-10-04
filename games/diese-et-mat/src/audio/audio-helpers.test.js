@@ -21,7 +21,8 @@ describe('synth-parameters : fusion des paramètres par type', () => {
 
 describe('synth-parameters : réglage temps réel', () => {
   test('FM passe par set, pluck et membrane par propriétés, metal par signaux', () => {
-    const synth = { set: jest.fn(), frequency: { value: 0 }, harmonicity: { value: 0 } };
+    // Forme réelle de MetalSynth dans Tone 15 : frequency est un Param, harmonicity un nombre simple.
+    const synth = { set: jest.fn(), frequency: { value: 0 }, harmonicity: 5.1 };
     applyLiveSynthParam(synth, 'fm', 'modulationIndex', 6);
     expect(synth.set).toHaveBeenCalledWith({ modulationIndex: 6 });
     applyLiveSynthParam(synth, 'pluck', 'dampening', 2000);
@@ -29,7 +30,7 @@ describe('synth-parameters : réglage temps réel', () => {
     expect(synth).toMatchObject({ dampening: 2000, octaves: 3 });
     applyLiveSynthParam(synth, 'metal', 'frequency', 250);
     applyLiveSynthParam(synth, 'metal', 'harmonicity', 7);
-    expect([synth.frequency.value, synth.harmonicity.value]).toEqual([250, 7]);
+    expect([synth.frequency.value, synth.harmonicity]).toEqual([250, 7]);
   });
 
   test('un paramètre ou un type sans réglage direct, même hérité de Object, est ignoré', () => {

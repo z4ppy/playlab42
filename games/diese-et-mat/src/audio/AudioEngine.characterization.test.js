@@ -87,7 +87,8 @@ function createToneDouble() {
     MembraneSynth: define('MembraneSynth', {
       params: ['volume'], properties: ['pitchDecay', 'octaves'], methods: triggers,
     }),
-    MetalSynth: define('MetalSynth', { params: ['volume', 'frequency', 'harmonicity'], methods: triggers }),
+    // Tone 15 : frequency est un Param (.value) ; harmonicity est un nombre simple.
+    MetalSynth: define('MetalSynth', { params: ['volume', 'frequency'], properties: ['harmonicity'], methods: triggers }),
     NoiseSynth: define('NoiseSynth', { params: ['volume'], methods: triggers }),
   };
   // Les paramètres d'un nœud sont des objets { value } : on les nomme pour le journal.
@@ -461,7 +462,7 @@ describe('AudioEngine : réglages et presets', () => {
     ['membrane', 'percKick', 'pitchDecay', 0.2, ['MembraneSynth#1.pitchDecay = 0.2']],
     ['membrane', 'percKick', 'octaves', 4, ['MembraneSynth#1.octaves = 4']],
     ['metal', 'percHihat', 'frequency', 321, ['MetalSynth#1.frequency.value = 321']],
-    ['metal', 'percHihat', 'harmonicity', 9, ['MetalSynth#1.harmonicity.value = 9']],
+    ['metal', 'percHihat', 'harmonicity', 9, ['MetalSynth#1.harmonicity = 9']],
     ['metal', 'percHihat', 'resonance', 100, []],
     ['fm', 'bell', 'modulationIndex', 8, ['PolySynth#2.set {"modulationIndex":8}']],
   ])('paramètre %s/%s en direct : %s=%s', (type, preset, param, value, expected) => {
