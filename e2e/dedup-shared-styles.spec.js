@@ -149,6 +149,32 @@ async function collect(page) {
   return matrix;
 }
 
+const expectedGroups = {
+  home: Object.keys(homeTargets),
+  placeholder: ['searchInput'],
+  homeHover: ['settings', 'searchInput'],
+  homeFocus: ['settings', 'searchInput'],
+  settingsHover: ['closeSettings'],
+  settingsFocus: ['closeSettings', 'pseudoInput'],
+  viewer: Object.keys(viewerTargets),
+  viewerHover: Object.keys(viewerTargets),
+  viewerFocus: Object.keys(viewerTargets),
+};
+
+// Interdit un dictionnaire vide ou un selecteur manque : chaque etat mesure existe et porte toutes les proprietes.
+function expectComplete(matrix) {
+  for (const [key, entry] of Object.entries(matrix)) {
+    expect(Object.keys(entry.tokens), key).toHaveLength(tokens.length + 1);
+    for (const [group, names] of Object.entries(expectedGroups)) {
+      expect(Object.keys(entry[group]), `${key} / ${group}`).toEqual(names);
+      for (const name of names) {
+        expect(Object.keys(entry[group][name]), `${key} / ${group} / ${name}`).toEqual(properties);
+        expect(entry[group][name]['border-top-style'], `${key} / ${group} / ${name}`).not.toBe('');
+      }
+    }
+  }
+}
+
 test('styles partages : declarations calculees stables entre themes, viewports, focus et mouvement reduit', async ({ page }) => {
   test.setTimeout(240_000);
   const matrix = await collect(page);
@@ -157,6 +183,8 @@ test('styles partages : declarations calculees stables entre themes, viewports, 
     return;
   }
   const expected = JSON.parse(readFileSync(fixtureUrl, 'utf8'));
+  expectComplete(expected);
+  expectComplete(matrix);
   expect(Object.keys(matrix)).toEqual(Object.keys(expected));
   for (const key of Object.keys(expected)) {
     expect(matrix[key], key).toEqual(expected[key]);
