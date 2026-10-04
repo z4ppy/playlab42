@@ -3,7 +3,7 @@
  *
  * Corpus différentiel du portail : rend les vrais modules sur le vrai index.html
  * pour une grille d'états, puis compare le DOM obtenu à une sortie de référence
- * figée avant refactorisation (app/__fixtures__/portal-corpus.golden.json).
+ * figée avant refactorisation (app/__tests__/fixtures/portal-corpus.golden.json).
  *
  * Régénération volontaire : PORTAL_CORPUS_WRITE=1 (à ne faire qu'après revue du diff).
  */
@@ -12,7 +12,7 @@ import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 document.body.innerHTML = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
-const goldenUrl = new URL('./__fixtures__/portal-corpus.golden.json', import.meta.url);
+const goldenUrl = new URL('./__tests__/fixtures/portal-corpus.golden.json', import.meta.url);
 
 const { state, setState } = await import('./state.js');
 const { el } = await import('./dom-cache.js');
@@ -483,7 +483,7 @@ describe('corpus différentiel du portail', () => {
 
   it('couvre exactement les scénarios de référence', () => {
     if (process.env.PORTAL_CORPUS_WRITE) {
-      mkdirSync(new URL('./__fixtures__/', import.meta.url), { recursive: true });
+      mkdirSync(new URL('./__tests__/fixtures/', import.meta.url), { recursive: true });
       writeFileSync(goldenUrl, `${JSON.stringify(produced, null, 1)}\n`);
       return;
     }
