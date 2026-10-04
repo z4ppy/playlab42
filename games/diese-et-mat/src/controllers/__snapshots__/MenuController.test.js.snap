@@ -1,0 +1,175 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MenuController : rendu conserve exactement le balisage initial 1`] = `
+"
+      <div class="menu-container">
+        <h2 class="menu-title">Choisissez un exercice</h2>
+
+        <!-- Barre de filtres -->
+        <div class="filters-bar">
+          <div class="filter-group">
+            <label class="filter-label">Catégorie</label>
+            <div class="filter-buttons" data-filter="category" role="group" aria-label="Catégorie">
+              <button class="filter-btn active" data-value="all" aria-pressed="true">Tous</button>
+              <button class="filter-btn " data-value="notes" aria-pressed="false">🎼 Notes</button>
+              <button class="filter-btn " data-value="intervals" aria-pressed="false">↕️ Intervalles</button>
+              <button class="filter-btn " data-value="chords" aria-pressed="false">🎹 Accords</button>
+              <button class="filter-btn " data-value="rhythm" aria-pressed="false">🥁 Rythme</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Difficulté</label>
+            <div class="filter-buttons" data-filter="difficulty" role="group" aria-label="Difficulté">
+              <button class="filter-btn active" data-value="all" aria-pressed="true">Tous</button>
+              <button class="filter-btn " data-value="1" aria-pressed="false" aria-label="Difficulté 1">★☆☆</button>
+              <button class="filter-btn " data-value="2" aria-pressed="false" aria-label="Difficulté 2">★★☆</button>
+              <button class="filter-btn " data-value="3" aria-pressed="false" aria-label="Difficulté 3">★★★</button>
+            </div>
+          </div>
+
+          <div class="filter-group filter-toggle">
+            <label class="toggle-label">
+              <input type="checkbox" data-filter="showLocked" checked="">
+              <span>Afficher verrouillés</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Compteur de résultats -->
+        <div class="filter-results">
+          4 exercices trouvés
+        </div>
+
+        <!-- Grille d'exercices -->
+        <div class="exercises-grid">
+          
+      <button type="button" class="exercise-card " data-exercise-id="n1">
+        <span class="exercise-card-category">
+          <span class="category-icon">🎼</span>
+          <span class="category-name">Notes</span>
+        </span>
+        <span class="exercise-card-content">
+          <span class="exercise-card-info">
+            <span class="exercise-card-title">
+              Notes 1
+            </span>
+            <span class="exercise-card-description">Lire des notes</span>
+          </span>
+          <span class="exercise-card-meta">
+            <span class="exercise-card-stars" role="img" aria-label="Difficulté 1 sur 5">★☆☆☆☆</span>
+            <span class="exercise-card-progress">46%</span>
+          </span>
+        </span>
+      </button>
+    
+      <button type="button" class="exercise-card locked" data-exercise-id="i2" disabled="">
+        <span class="exercise-card-category">
+          <span class="category-icon">↕️</span>
+          <span class="category-name">Intervalles</span>
+        </span>
+        <span class="exercise-card-content">
+          <span class="exercise-card-info">
+            <span class="exercise-card-title">
+              🔒 Intervalles 2
+            </span>
+            <span class="exercise-card-description">Intervalles</span>
+          </span>
+          <span class="exercise-card-meta">
+            <span class="exercise-card-stars" role="img" aria-label="Difficulté 2 sur 5">★★☆☆☆</span>
+            
+          </span>
+        </span>
+      </button>
+    
+      <button type="button" class="exercise-card " data-exercise-id="c3">
+        <span class="exercise-card-category">
+          <span class="category-icon"></span>
+          <span class="category-name"></span>
+        </span>
+        <span class="exercise-card-content">
+          <span class="exercise-card-info">
+            <span class="exercise-card-title">
+              Accords 3
+            </span>
+            <span class="exercise-card-description">Accords</span>
+          </span>
+          <span class="exercise-card-meta">
+            <span class="exercise-card-stars" role="img" aria-label="Difficulté 3 sur 5">★★★☆☆</span>
+            
+          </span>
+        </span>
+      </button>
+    
+      <button type="button" class="exercise-card locked" data-exercise-id="r1" disabled="">
+        <span class="exercise-card-category">
+          <span class="category-icon">🥁</span>
+          <span class="category-name">Rythme</span>
+        </span>
+        <span class="exercise-card-content">
+          <span class="exercise-card-info">
+            <span class="exercise-card-title">
+              🔒 Rythme 1
+            </span>
+            <span class="exercise-card-description">Rythmes</span>
+          </span>
+          <span class="exercise-card-meta">
+            <span class="exercise-card-stars" role="img" aria-label="Difficulté 1 sur 5">★☆☆☆☆</span>
+            
+          </span>
+        </span>
+      </button>
+    
+        </div>
+      </div>
+    "
+`;
+
+exports[`MenuController : rendu conserve le balisage filtré, sans résultat et avec filtres actifs 1`] = `
+"
+      <div class="menu-container">
+        <h2 class="menu-title">Choisissez un exercice</h2>
+
+        <!-- Barre de filtres -->
+        <div class="filters-bar">
+          <div class="filter-group">
+            <label class="filter-label">Catégorie</label>
+            <div class="filter-buttons" data-filter="category" role="group" aria-label="Catégorie">
+              <button class="filter-btn " data-value="all" aria-pressed="false">Tous</button>
+              <button class="filter-btn " data-value="notes" aria-pressed="false">🎼 Notes</button>
+              <button class="filter-btn active" data-value="intervals" aria-pressed="true">↕️ Intervalles</button>
+              <button class="filter-btn " data-value="chords" aria-pressed="false">🎹 Accords</button>
+              <button class="filter-btn " data-value="rhythm" aria-pressed="false">🥁 Rythme</button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Difficulté</label>
+            <div class="filter-buttons" data-filter="difficulty" role="group" aria-label="Difficulté">
+              <button class="filter-btn " data-value="all" aria-pressed="false">Tous</button>
+              <button class="filter-btn " data-value="1" aria-pressed="false" aria-label="Difficulté 1">★☆☆</button>
+              <button class="filter-btn active" data-value="2" aria-pressed="true" aria-label="Difficulté 2">★★☆</button>
+              <button class="filter-btn " data-value="3" aria-pressed="false" aria-label="Difficulté 3">★★★</button>
+            </div>
+          </div>
+
+          <div class="filter-group filter-toggle">
+            <label class="toggle-label">
+              <input type="checkbox" data-filter="showLocked">
+              <span>Afficher verrouillés</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Compteur de résultats -->
+        <div class="filter-results">
+          0 exercice trouvé
+        </div>
+
+        <!-- Grille d'exercices -->
+        <div class="exercises-grid">
+          <div class="no-results">Aucun exercice ne correspond aux filtres sélectionnés.</div>
+        </div>
+      </div>
+    "
+`;
