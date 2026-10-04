@@ -68,8 +68,12 @@ gate ignoré. Le [plan qualité suivant](../../../docs/guides/software-quality.m
 dans `quality/tests-first` est maintenant livrée via la PR #147, au commit `611a29b` :
 caractériser avant refactoring, mesurer puis verrouiller les acquis.
 La [suite cœur](../../../docs/guides/software-quality.md#corrections-prioritaires-du-cœur)
-dans `quality/core-refactors` n'est pas encore livrée ; elle protège les contrats
+dans `quality/core-refactors` est livrée via la PR #148 (`ef0a2aa`) ; elle protège les contrats
 moteurs puis clarifie les responsabilités, sans migrer tous les états JSON.
+La continuation `quality/duplication-complexity` ajoute `quality:report` :
+duplication locale jscpd, cyclomatique JS/HTML et cognitif TS, dans des scopes
+production/tests/pédagogie séparés. Ce rapport n'existait pas dans la CI des
+lots précédents ; la branche en cours le publie sans seuil global artificiel.
 Les neuf checks GitHub requis ne sont pas les dix ressources HTTP
 du smoke, qui incluent désormais le manifeste.
 Aucun run cron réussi, rollback de production ou archivage OpenSpec n'est

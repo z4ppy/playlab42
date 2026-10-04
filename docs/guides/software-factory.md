@@ -58,9 +58,12 @@ et l'[audit 37153902484](https://github.com/z4ppy/playlab42/actions/runs/3715390
 ont réussi. Le plan #146 est fermé comme remplacé ; les preuves de la
 dernière tête et de la livraison sont détaillées dans le guide qualité.
 
-La suite `quality/core-refactors` traite les corrections du cœur par priorité :
+La suite `quality/core-refactors` a livré les corrections du cœur par priorité :
 contrats moteurs et déterminisme, puis refactorings et mutualisations ciblées.
-Ces nouveaux travaux ne sont pas encore intégrés à main ni publiés.
+La PR #148 est intégrée à main `ef0a2aa` et publiée
+([run 37162681481](https://github.com/z4ppy/playlab42/actions/runs/37162681481)).
+La continuation `quality/duplication-complexity` est préparée, non livrée :
+refactorings mesurés et rapport explicite de duplication/complexité.
 
 ## Carte de l'usine
 
@@ -127,7 +130,8 @@ ouvrir une PR et suivre les décisions humaines.
 
 ### CI et publication livrées
 
-Sur une PR, `ci.yml` exécute lint qualité et sécurité JS ciblée, Jest/coverage, types, audit npm requis, validation OpenSpec stricte,
+Sur une PR, `ci.yml` exécute lint qualité et sécurité JS ciblée, rapport Code quality
+(duplication et complexité), Jest/coverage, types, audit npm requis, validation OpenSpec stricte,
 build et navigateur. Sur push `main`, `deploy.yml` appelle cette même CI dans
 son run et attend son succès avant publication. Un lancement manuel hors `main`
 échoue explicitement.
