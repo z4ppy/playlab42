@@ -1,15 +1,18 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { test as playlabTest, expect, activate } from './fixtures.js';
 import { test as baseTest } from '@playwright/test';
+import { withOriginalStyles } from './original-styles.js';
 
 /*
  * Caracterisation des styles calcules des quatre pages de jeu qui partagent des
- * regles CSS. Le golden est produit avant refactoring, puis rejoue apres : seules
- * les declarations effectives comptent, pas l'emplacement des regles.
- * Regeneration volontaire : UPDATE_DEDUP_GAME_STYLES=1 (mode serie, un seul worker).
+ * regles CSS. Chaque mesure est prise deux fois sur le meme DOM, dans le meme
+ * navigateur : avec les CSS refactorees puis avec les CSS d'origine (withOriginalStyles).
+ * Les deux doivent etre strictement egales, dimensions comprises. Le golden, immuable
+ * et capture sous un autre OS, ne fige que les elements, etats, proprietes et valeurs
+ * independantes des metriques de police : les dimensions dependent de l'OS.
  */
 const GOLDEN_URL = new URL('./fixtures/dedup-game-styles.golden.json', import.meta.url);
-const UPDATE = process.env.UPDATE_DEDUP_GAME_STYLES === '1';
+const OS_DEPENDENT = new Set(['width', 'height', 'grid-template-columns']);
 
 const PROPERTIES = [
   'display', 'position', 'z-index', 'visibility', 'box-sizing',
@@ -176,7 +179,6 @@ const GAMES = {
 };
 
 const readGolden = () => JSON.parse(readFileSync(GOLDEN_URL, 'utf8'));
-const collected = {};
 
 async function settle(page) {
   await page.evaluate(() => Promise.all(document.getAnimations().map(animation => animation.finished.catch(() => null))));
@@ -218,36 +220,38 @@ function sweep(page, probes) {
   }, { properties: PROPERTIES, markup: probes });
 }
 
-function record(name, rows) {
-  collected[name] = rows;
-}
-
 async function captureStates(page, targets) {
-  const rows = [];
+  const current = [];
+  const original = [];
   const read = locator => locator.evaluate((element, properties) => {
     const computed = getComputedStyle(element);
     return properties.map(property => computed.getPropertyValue(property));
   }, PROPERTIES);
+  // Les deux lectures se suivent a chaque etat : l'historique clavier/souris (:focus-visible) est le meme.
+  const record = async (label, locator) => {
+    current.push([label, await read(locator)]);
+    original.push([label, await withOriginalStyles(page, () => read(locator))]);
+  };
   for (const selector of targets) {
     const locator = page.locator(selector).first();
     expect(await locator.count(), `Cible mesuree absente : ${selector}`).toBeGreaterThan(0);
     await settle(page);
-    rows.push([`${selector} repos`, await read(locator)]);
+    await record(`${selector} repos`, locator);
     if (await locator.isEnabled() && await locator.isVisible()) {
       await locator.focus();
       await settle(page);
-      rows.push([`${selector} focus`, await read(locator)]);
+      await record(`${selector} focus`, locator);
       await locator.evaluate(element => element.blur());
     }
     if (await locator.isVisible()) {
       const nativeControl = await locator.evaluate(element => ['SELECT', 'INPUT'].includes(element.tagName));
       await locator.hover();
       await settle(page);
-      rows.push([`${selector} survol`, await read(locator)]);
+      await record(`${selector} survol`, locator);
       if (!nativeControl) {
         await page.mouse.down();
         await settle(page);
-        rows.push([`${selector} actif`, await read(locator)]);
+        await record(`${selector} actif`, locator);
         await page.mouse.move(0, 0);
         await page.mouse.up();
       }
@@ -255,61 +259,60 @@ async function captureStates(page, targets) {
       await settle(page);
     }
   }
-  return rows;
+  return { current, original };
 }
 
-function compare(name, rows) {
-  const golden = readGolden();
-  const expected = golden.scenarios[name];
-  expect(expected, `Scenario absent du golden : ${name}`).toBeTruthy();
-  expect(Object.keys(expected).length, `Golden vide pour ${name}`).toBeGreaterThan(5);
-  expect(rows.length, `Mesures vides pour ${name}`).toBeGreaterThan(5);
-  const decode = index => Object.fromEntries(golden.properties.map((property, position) => [property, golden.values[golden.styles[index][position]]]));
-  const actual = Object.fromEntries(rows.map(([key, values]) => [key, Object.fromEntries(PROPERTIES.map((property, position) => [property, values[position]]))]));
-  expect(Object.keys(actual), `Elements de ${name}`).toEqual(Object.keys(expected));
+function toObjects(rows) {
+  return Object.fromEntries(rows.map(([key, values]) => [key, Object.fromEntries(PROPERTIES.map((property, position) => [property, values[position]]))]));
+}
+
+function diffRows(reference, actual, properties, label) {
+  expect(Object.keys(actual), `Elements ${label}`).toEqual(Object.keys(reference));
   const differences = [];
-  for (const [key, index] of Object.entries(expected)) {
-    const wanted = decode(index);
-    for (const property of PROPERTIES) {
+  for (const [key, wanted] of Object.entries(reference)) {
+    for (const property of properties) {
       if (wanted[property] !== actual[key][property]) {
         differences.push(`${key} { ${property}: ${actual[key][property]} } attendu ${wanted[property]}`);
       }
     }
   }
-  expect(differences.slice(0, 20), `Styles calcules de ${name} (${differences.length} ecarts)`).toEqual([]);
+  return differences;
 }
 
-function check(name, rows) {
-  if (UPDATE) { record(name, rows); } else { compare(name, rows); }
+function check(name, current, original) {
+  const golden = readGolden();
+  const expected = golden.scenarios[name];
+  expect(expected, `Scenario absent du golden : ${name}`).toBeTruthy();
+  expect(Object.keys(expected).length, `Golden vide pour ${name}`).toBeGreaterThan(5);
+  expect(current.length, `Mesures vides pour ${name}`).toBeGreaterThan(5);
+  expect(original.length, `Mesures d'origine vides pour ${name}`).toBeGreaterThan(5);
+  const actual = toObjects(current);
+  const before = toObjects(original);
+  const decoded = Object.fromEntries(Object.entries(expected).map(([key, index]) => [key, Object.fromEntries(golden.properties.map((property, position) => [property, golden.values[golden.styles[index][position]]]))]));
+  const sameAsOriginal = diffRows(before, actual, PROPERTIES, `de ${name} (CSS d'origine)`);
+  expect(sameAsOriginal.slice(0, 20), `Styles calcules de ${name} contre les CSS d'origine (${sameAsOriginal.length} ecarts)`).toEqual([]);
+  const stable = PROPERTIES.filter(property => !OS_DEPENDENT.has(property));
+  const sameAsGolden = diffRows(decoded, actual, stable, `de ${name} (golden)`);
+  expect(sameAsGolden.slice(0, 20), `Styles calcules de ${name} contre le golden (${sameAsGolden.length} ecarts)`).toEqual([]);
 }
 
-function serialize() {
-  const styles = [];
-  const values = [];
-  const valueIndex = new Map();
-  const lookup = new Map();
-  const scenarios = {};
-  const encode = value => {
-    if (!valueIndex.has(value)) { valueIndex.set(value, values.length); values.push(value); }
-    return valueIndex.get(value);
-  };
-  for (const [name, rows] of Object.entries(collected).sort(([a], [b]) => a.localeCompare(b))) {
-    scenarios[name] = {};
-    for (const [key, rowValues] of rows) {
-      const signature = JSON.stringify(rowValues);
-      if (!lookup.has(signature)) { lookup.set(signature, styles.length); styles.push(rowValues.map(encode)); }
-      scenarios[name][key] = lookup.get(signature);
-    }
-  }
-  return `${JSON.stringify({ properties: PROPERTIES, values, styles, scenarios }, null, 0).replace(/\],\[/g, '],\n[')}\n`;
+// Meme DOM, meme etat : la lecture d'origine suit immediatement la lecture courante.
+async function measure(page, name, capture) {
+  const current = await capture();
+  const original = await withOriginalStyles(page, capture);
+  check(name, current, original);
+}
+
+async function measureWithStates(page, name, targets) {
+  const current = await sweep(page, '');
+  const original = await withOriginalStyles(page, () => sweep(page, ''));
+  const states = await captureStates(page, targets);
+  check(name, [...current, ...states.current], [...original, ...states.original]);
 }
 
 playlabTest.describe('Styles calcules des pages de jeu', () => {
-  playlabTest.describe.configure({ mode: 'serial' });
-  playlabTest.afterAll(() => {
-    if (UPDATE) { writeFileSync(GOLDEN_URL, serialize()); }
-  });
-
+  // Chaque etat est lu deux fois (CSS refactorees puis d'origine) avec des interactions reelles.
+  playlabTest.setTimeout(90_000);
   for (const [game, config] of Object.entries(GAMES)) {
     for (const [scheme, viewport] of INITIAL_MATRIX) {
       playlabTest(`${game} : etat initial, ${scheme}, ${viewport}`, async ({ page }) => {
@@ -318,7 +321,7 @@ playlabTest.describe('Styles calcules des pages de jeu', () => {
         await expect(page.locator(config.ready).first()).toBeVisible();
         await applyScheme(page, scheme);
         await settle(page);
-        check(`${game}/initial/${scheme}/${viewport}`, await sweep(page, config.probes));
+        await measure(page, `${game}/initial/${scheme}/${viewport}`, () => sweep(page, config.probes));
       });
     }
 
@@ -327,7 +330,7 @@ playlabTest.describe('Styles calcules des pages de jeu', () => {
       await page.goto(config.path);
       await expect(page.locator(config.ready).first()).toBeVisible();
       await settle(page);
-      check(`${game}/initial/reduced-motion/desktop`, await sweep(page, config.probes));
+      await measure(page, `${game}/initial/reduced-motion/desktop`, () => sweep(page, config.probes));
     });
 
     for (const [scheme, viewport] of [['system-dark', 'desktop'], ['theme-light', 'mobile']]) {
@@ -336,7 +339,8 @@ playlabTest.describe('Styles calcules des pages de jeu', () => {
         await page.goto(config.path);
         await expect(page.locator(config.ready).first()).toBeVisible();
         await applyScheme(page, scheme);
-        check(`${game}/etats/${scheme}/${viewport}`, await captureStates(page, config.targets));
+        const states = await captureStates(page, config.targets);
+        check(`${game}/etats/${scheme}/${viewport}`, states.current, states.original);
       });
 
       playlabTest(`${game} : partie en cours, ${scheme}, ${viewport}`, async ({ page }) => {
@@ -347,16 +351,12 @@ playlabTest.describe('Styles calcules des pages de jeu', () => {
         await config.play(page);
         await page.mouse.move(0, 0);
         await settle(page);
-        const rows = await sweep(page, '');
-        rows.push(...await captureStates(page, config.playTargets));
-        check(`${game}/partie/${scheme}/${viewport}`, rows);
+        await measureWithStates(page, `${game}/partie/${scheme}/${viewport}`, config.playTargets);
         if (config.finale) {
           await config.finale(page);
           await page.mouse.move(0, 0);
           await settle(page);
-          const finale = await sweep(page, '');
-          finale.push(...await captureStates(page, config.finaleTargets));
-          check(`${game}/finale/${scheme}/${viewport}`, finale);
+          await measureWithStates(page, `${game}/finale/${scheme}/${viewport}`, config.finaleTargets);
         }
       });
     }
@@ -417,11 +417,7 @@ playlabTest.describe('Socle CSS des pages de jeu', () => {
 });
 
 baseTest.describe('Styles calcules sans JavaScript', () => {
-  baseTest.describe.configure({ mode: 'serial' });
   baseTest.use({ javaScriptEnabled: false, serviceWorkers: 'block' });
-  baseTest.afterAll(() => {
-    if (UPDATE) { writeFileSync(GOLDEN_URL, serialize()); }
-  });
 
   for (const [game, config] of Object.entries(GAMES)) {
     for (const [scheme, viewport] of [['system-dark', 'desktop'], ['system-light', 'mobile']]) {
@@ -430,7 +426,7 @@ baseTest.describe('Styles calcules sans JavaScript', () => {
         await page.emulateMedia({ colorScheme: SCHEMES[scheme].colorScheme });
         await page.goto(config.path);
         await expect(page.locator('h1').first()).toBeVisible();
-        check(`${game}/sans-js/${scheme}/${viewport}`, await sweep(page, ''));
+        await measure(page, `${game}/sans-js/${scheme}/${viewport}`, () => sweep(page, ''));
       });
     }
   }
