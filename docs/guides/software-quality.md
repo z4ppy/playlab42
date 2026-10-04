@@ -739,6 +739,17 @@ La revue indépendante n'a trouvé aucune régression qualifiée ; le cas des
 sources ignorées par ESLint a ensuite reçu un refus explicite et une fixture
 réelle. Les résultats natifs de la dernière tête seront consignés en PR.
 
+Première preuve native de la [PR #149](https://github.com/z4ppy/playlab42/pull/149),
+head `365af23` : [CI 37164388196](https://github.com/z4ppy/playlab42/actions/runs/37164388196)
+et [audit 37164388203](https://github.com/z4ppy/playlab42/actions/runs/37164388203)
+réussis. **Code quality** est exécuté et son artefact de deux fichiers
+téléchargé : compteurs de production 62 clones / 693 lignes / 62 fonctions
+JS/HTML > 10, aucune fonction TS cognitive > 15 ; outils et scopes contrôlés.
+Sa provenance référence la merge SHA `39f0720b1bf7c123c64463c234e61bebba9d969f`,
+run/tentative `37164388196` / `1`, checkout propre, distinct du head de PR.
+Chaque nouvelle tête exige sa propre validation ; la dernière preuve est
+consignée en commentaire, sans confondre PR verte et livraison.
+
 ## Maintenance des références et exceptions
 
 Les workflows utilisent des SHAs complets avec commentaire de version ; les

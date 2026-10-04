@@ -14,5 +14,5 @@
 - [x] Vérifier mesures avant/après à configuration constante et budgets ciblés.
 - [x] Aligner guides et limites avec les résultats.
 - [x] Valider tests, lint/types, builds, navigateur et rapport local.
-- [ ] Vérifier la dernière tête native et les artefacts de la PR.
+- [x] Vérifier la dernière tête native et les artefacts de la PR #149 (preuves datées en commentaire).
 - [ ] Constater la livraison et décider l'archivage, hors autorisation actuelle.
