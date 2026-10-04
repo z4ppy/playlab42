@@ -145,15 +145,21 @@ header h1 {
   transform: translateY(0);
 }
 
-.btn-settings {
+.btn-settings,
+.btn-back,
+.btn-fullscreen,
+.btn-sound {
   color: var(--color-text);
   background: none;
   border: none;
   font-size: var(--font-size-lg);
   cursor: pointer;
   padding: var(--space-sm);
-  border-radius: var(--radius-full);
   transition: background var(--transition-normal);
+}
+
+.btn-settings {
+  border-radius: var(--radius-full);
 }
 
 .btn-settings:hover {
@@ -271,8 +277,8 @@ main {
   min-width: 0;
 }
 
-.search-bar input {
-  width: 100%;
+.search-bar input,
+.setting input[type="text"] {
   padding: 0.75rem var(--space-md);
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
@@ -280,6 +286,10 @@ main {
   color: var(--color-text);
   font-size: var(--font-size-md);
   transition: border-color var(--transition-normal), background-color var(--transition-normal);
+}
+
+.search-bar input {
+  width: 100%;
 }
 
 .search-bar input::placeholder {
@@ -521,14 +531,7 @@ main {
 .btn-back,
 .btn-fullscreen,
 .btn-sound {
-  color: var(--color-text);
-  background: none;
-  border: none;
-  font-size: var(--font-size-lg);
-  cursor: pointer;
-  padding: var(--space-sm);
   border-radius: var(--radius-sm);
-  transition: background var(--transition-normal);
 }
 
 .btn-back:hover,
@@ -612,16 +615,6 @@ main {
 .setting-label {
   font-weight: 500;
   color: var(--color-text-muted);
-}
-
-.setting input[type="text"] {
-  padding: 0.75rem var(--space-md);
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  font-size: var(--font-size-md);
-  transition: border-color var(--transition-normal), background-color var(--transition-normal);
 }
 
 .setting input:focus {

@@ -50,8 +50,11 @@ async function setTheme(page, { attribute, scheme }) {
   await page.emulateMedia({ colorScheme: scheme });
   await page.evaluate(value => {
     const root = document.documentElement;
-    if (value === null) root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', value);
+    if (value === null) {
+      root.removeAttribute('data-theme');
+    } else {
+      root.setAttribute('data-theme', value);
+    }
   }, attribute);
 }
 
@@ -66,7 +69,9 @@ async function readStyles(page, selectors, pseudo = null) {
         return Object.fromEntries(properties.map(property => [property, style.getPropertyValue(property)]));
       }, { properties, pseudo });
       result[name] = current;
-      if (previous && JSON.stringify(previous) === JSON.stringify(current)) break;
+      if (previous && JSON.stringify(previous) === JSON.stringify(current)) {
+        break;
+      }
       previous = current;
       await page.waitForTimeout(80);
     }
@@ -74,7 +79,7 @@ async function readStyles(page, selectors, pseudo = null) {
   return result;
 }
 
-async function readTokens(page) {
+function readTokens(page) {
   return page.evaluate(names => {
     const style = getComputedStyle(document.documentElement);
     return {

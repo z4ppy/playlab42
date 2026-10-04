@@ -116,7 +116,12 @@
   --color-syntax-key: #1565c0;
 }
 
-/* === Respect des préférences système === */
+/* === Respect des préférences système ===
+ * Duplication volontaire de la palette claire : sans data-theme (sans JS), la
+ * préférence système ne peut s'exprimer que dans cette media query, et un
+ * sélecteur groupé ne peut pas porter à la fois [data-theme="light"] inconditionnel
+ * et :root:not([data-theme]) conditionnel. Garder les deux blocs synchronisés
+ * (vérifié par e2e/dedup-shared-styles.spec.js). */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
     color-scheme: light;

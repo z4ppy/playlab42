@@ -139,7 +139,8 @@
   display: none;
 }
 
-.pv-menu-toggle {
+.pv-menu-toggle,
+.pv-menu-item {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -149,11 +150,14 @@
   background: none;
   border: none;
   border-radius: var(--radius-sm);
-  color: var(--color-text);
   font-size: var(--font-size-sm);
-  font-weight: 600;
   cursor: pointer;
   text-align: left;
+}
+
+.pv-menu-toggle {
+  color: var(--color-text);
+  font-weight: 600;
 }
 
 .pv-menu-toggle:hover {
@@ -166,19 +170,7 @@
 }
 
 .pv-menu-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  width: 100%;
-  min-height: 44px;
-  padding: .75rem .5rem;
-  background: none;
-  border: none;
-  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  text-align: left;
 }
 
 .pv-menu-item:hover {
