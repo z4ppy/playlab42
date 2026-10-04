@@ -57,6 +57,9 @@ test('le rapport CI utilise le lockfile, une provenance et un artefact sans éch
   expect(job.steps.some(step => step['continue-on-error'])).toBe(false);
   const archive = job.steps.find(step => step.with?.name?.startsWith('code-quality-'));
   expect(archive.with.name).toContain('${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}');
+  expect(archive.if).toBe('always()');
+  expect(archive['continue-on-error']).toBeUndefined();
+  expect(job.steps.indexOf(archive)).toBeGreaterThan(job.steps.findIndex(step => step.run === 'npm run quality:report'));
   expect(archive.with['if-no-files-found']).toBe('error');
   expect(archive.with.path).toContain('code-quality.json');
   expect(archive.with.path).toContain('code-quality.md');
