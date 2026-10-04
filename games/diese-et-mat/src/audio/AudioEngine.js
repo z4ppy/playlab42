@@ -9,6 +9,9 @@
  */
 
 import { EventEmitter } from '../utils/EventEmitter.js';
+import { applyEffectsConfigToNodes, copyEffectsConfig } from './effects-config.js';
+import { buildSynthNodes } from './synth-factory.js';
+import { SYNTH_PARAMETER_PROPERTIES, applyLiveSynthParam, mergeSynthParameters } from './synth-parameters.js';
 
 // ============================================================================
 // Constantes
@@ -398,115 +401,30 @@ export class AudioEngine extends EventEmitter {
    * @private
    */
   _createSynth() {
-    const Tone = this.Tone;
     const preset = SYNTH_PRESETS[this.currentPreset] || SYNTH_PRESETS.piano;
 
-    // Relâcher et disposer l'ancien synth si existant
-    if (this.synth) {
-      if (this.synth.releaseAll) {
-        this.synth.releaseAll();
-      }
-      this.synth.dispose();
-    }
-
-    // Disposer la distortion si existante
-    if (this.distortion) {
-      this.distortion.dispose();
-      this.distortion = null;
-    }
-
-    // Disposer le noiseFilter si existant
-    if (this.noiseFilter) {
-      this.noiseFilter.dispose();
-      this.noiseFilter = null;
-    }
-
-    // Créer le synthétiseur selon le type (utilise les paramètres de l'instance)
-    switch (this.synthType) {
-      case 'pluck':
-        // PluckSynth pour les guitares (Karplus-Strong)
-        this.synth = new Tone.PluckSynth({
-          attackNoise: this.pluckParams.attackNoise,
-          dampening: this.pluckParams.dampening,
-          resonance: this.pluckParams.resonance,
-          release: this.pluckParams.release,
-        });
-        // Ajouter distortion pour guitare électrique
-        if (preset.effects?.distortion) {
-          this.distortion = new Tone.Distortion(preset.effects.distortion);
-        }
-        break;
-
-      case 'fm':
-        // FMSynth pour piano électrique et cloches
-        this.synth = new Tone.PolySynth(Tone.FMSynth, {
-          harmonicity: this.fmParams.harmonicity,
-          modulationIndex: this.fmParams.modulationIndex,
-          oscillator: { type: 'sine' },
-          envelope: this.envelope,
-          modulation: { type: 'sine' },
-          // modulationEnvelope avec decay court pour l'attaque caractéristique Rhodes
-          modulationEnvelope: preset.fmModEnv || { attack: 0.002, decay: 0.3, sustain: 0, release: 0.3 },
-        });
-        break;
-
-      case 'membrane':
-        // MembraneSynth pour percussions à peau (kick, tom, wood block)
-        this.synth = new Tone.MembraneSynth({
-          pitchDecay: this.membraneParams.pitchDecay,
-          octaves: this.membraneParams.octaves,
-          oscillator: { type: 'sine' },
-          envelope: this.envelope,
-        });
-        break;
-
-      case 'metal':
-        // MetalSynth pour percussions métalliques (hi-hat, cymbale)
-        this.synth = new Tone.MetalSynth({
-          frequency: this.metalParams.frequency,
-          harmonicity: this.metalParams.harmonicity,
-          modulationIndex: this.metalParams.modulationIndex,
-          resonance: this.metalParams.resonance,
-          octaves: this.metalParams.octaves,
-          envelope: this.envelope,
-        });
-        break;
-
-      case 'noise':
-        // NoiseSynth pour snare/caisse claire
-        this.synth = new Tone.NoiseSynth({
-          noise: { type: preset.noise?.type || 'white' },
-          envelope: this.envelope,
-        });
-        // Filtre passe-haut pour le snare
-        if (preset.noise?.filterFreq) {
-          this.noiseFilter = new Tone.Filter({
-            frequency: preset.noise.filterFreq,
-            type: 'highpass',
-          });
-        }
-        break;
-
-      case 'poly':
-      default:
-        // PolySynth standard
-        this.synth = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: this.oscillatorType },
-          envelope: { ...this.envelope },
-        });
-
-        // Ajouter distortion si spécifié
-        if (preset.effects?.distortion) {
-          this.distortion = new Tone.Distortion(preset.effects.distortion);
-        }
-        break;
-    }
+    this._disposePreviousSynth();
+    buildSynthNodes(this.Tone, this, preset, this);
 
     // Appliquer le volume
     this.synth.volume.value = this.volume;
 
     // Connecter à la chaîne d'effets
     this._connectSynthToEffects();
+  }
+
+  /** Relâche et libère l'ancien synthé puis ses nœuds annexes (distortion, filtre de bruit). */
+  _disposePreviousSynth() {
+    if (this.synth) {
+      this.synth.releaseAll?.();
+      this.synth.dispose();
+    }
+    for (const key of ['distortion', 'noiseFilter']) {
+      if (this[key]) {
+        this[key].dispose();
+        this[key] = null;
+      }
+    }
   }
 
   /**
@@ -587,18 +505,7 @@ export class AudioEngine extends EventEmitter {
     }
 
     // Copier les paramètres spécifiques selon le type
-    if (preset.fm) {
-      this.fmParams = { ...this.fmParams, ...preset.fm };
-    }
-    if (preset.pluck) {
-      this.pluckParams = { ...this.pluckParams, ...preset.pluck };
-    }
-    if (preset.membrane) {
-      this.membraneParams = { ...this.membraneParams, ...preset.membrane };
-    }
-    if (preset.metal) {
-      this.metalParams = { ...this.metalParams, ...preset.metal };
-    }
+    mergeSynthParameters(this, preset);
 
     // Recréer le synthétiseur si déjà démarré
     if (this.started) {
@@ -699,30 +606,13 @@ export class AudioEngine extends EventEmitter {
    */
   setSynthParam(synthType, param, value) {
     // Mettre à jour les paramètres stockés
-    switch (synthType) {
-      case 'fm':
-        if (param in this.fmParams) {
-          this.fmParams[param] = value;
-        }
-        break;
-      case 'pluck':
-        if (param in this.pluckParams) {
-          this.pluckParams[param] = value;
-        }
-        break;
-      case 'membrane':
-        if (param in this.membraneParams) {
-          this.membraneParams[param] = value;
-        }
-        break;
-      case 'metal':
-        if (param in this.metalParams) {
-          this.metalParams[param] = value;
-        }
-        break;
-      default:
-        console.warn('Type de synthèse inconnu:', synthType);
-        return;
+    if (!Object.hasOwn(SYNTH_PARAMETER_PROPERTIES, synthType)) {
+      console.warn('Type de synthèse inconnu:', synthType);
+      return;
+    }
+    const stored = this[SYNTH_PARAMETER_PROPERTIES[synthType]];
+    if (param in stored) {
+      stored[param] = value;
     }
 
     this.currentPreset = 'custom';
@@ -743,38 +633,7 @@ export class AudioEngine extends EventEmitter {
     if (!this.synth) {return;}
 
     try {
-      switch (this.synthType) {
-        case 'fm':
-          if (param === 'harmonicity') {
-            this.synth.set({ harmonicity: value });
-          } else if (param === 'modulationIndex') {
-            this.synth.set({ modulationIndex: value });
-          }
-          break;
-        case 'pluck':
-          if (param === 'dampening') {
-            this.synth.dampening = value;
-          } else if (param === 'resonance') {
-            this.synth.resonance = value;
-          } else if (param === 'attackNoise') {
-            this.synth.attackNoise = value;
-          }
-          break;
-        case 'membrane':
-          if (param === 'pitchDecay') {
-            this.synth.pitchDecay = value;
-          } else if (param === 'octaves') {
-            this.synth.octaves = value;
-          }
-          break;
-        case 'metal':
-          if (param === 'frequency') {
-            this.synth.frequency.value = value;
-          } else if (param === 'harmonicity') {
-            this.synth.harmonicity.value = value;
-          }
-          break;
-      }
+      applyLiveSynthParam(this.synth, this.synthType, param, value);
     } catch (e) {
       // Certains paramètres peuvent ne pas être modifiables en temps réel
       console.debug('Paramètre non modifiable en temps réel:', param, e);
@@ -888,49 +747,9 @@ export class AudioEngine extends EventEmitter {
       return;
     }
 
-    // Appliquer le preset ou les paramètres individuels
-    if (settings.preset && settings.preset !== 'custom' && SYNTH_PRESETS[settings.preset]) {
-      this.setPreset(settings.preset);
-    } else {
-      // Configuration personnalisée
-      if (settings.synthType) {
-        this.synthType = settings.synthType;
-      }
-      if (settings.oscillator) {
-        this.oscillatorType = settings.oscillator;
-      }
-      if (settings.envelope) {
-        this.envelope = { ...settings.envelope };
-      }
-      this.currentPreset = 'custom';
-    }
-
-    // Appliquer les paramètres spécifiques par type
-    if (settings.fm) {
-      this.fmParams = { ...this.fmParams, ...settings.fm };
-    }
-    if (settings.pluck) {
-      this.pluckParams = { ...this.pluckParams, ...settings.pluck };
-    }
-    if (settings.membrane) {
-      this.membraneParams = { ...this.membraneParams, ...settings.membrane };
-    }
-    if (settings.metal) {
-      this.metalParams = { ...this.metalParams, ...settings.metal };
-    }
-
-    // Appliquer les effets (config)
-    if (settings.effects) {
-      if (settings.effects.reverb) {
-        this.effectsConfig.reverb = { ...settings.effects.reverb };
-      }
-      if (settings.effects.delay) {
-        this.effectsConfig.delay = { ...settings.effects.delay };
-      }
-      if (settings.effects.filter) {
-        this.effectsConfig.filter = { ...settings.effects.filter };
-      }
-    }
+    this._applyVoiceSettings(settings);
+    mergeSynthParameters(this, settings);
+    copyEffectsConfig(this.effectsConfig, settings.effects);
 
     // Appliquer le volume
     if (typeof settings.volume === 'number') {
@@ -940,22 +759,26 @@ export class AudioEngine extends EventEmitter {
     // Recréer le synth si déjà démarré
     if (this.started) {
       this._createSynth();
-
-      // Appliquer les effets aux objets Tone.js
-      if (this.effects.reverb) {
-        const r = this.effectsConfig.reverb;
-        this.effects.reverb.wet.value = r.enabled ? r.amount : 0;
-      }
-      if (this.effects.delay) {
-        const d = this.effectsConfig.delay;
-        this.effects.delay.wet.value = d.enabled ? 0.5 : 0;
-        this.effects.delay.delayTime.value = d.time;
-        this.effects.delay.feedback.value = d.feedback;
-      }
-      if (this.effects.filter) {
-        this.effects.filter.frequency.value = this.effectsConfig.filter.frequency;
-      }
+      applyEffectsConfigToNodes(this.effects, this.effectsConfig);
     }
+  }
+
+  /** Applique le preset sauvegardé ou, à défaut, la voix personnalisée. */
+  _applyVoiceSettings(settings) {
+    if (settings.preset && settings.preset !== 'custom' && SYNTH_PRESETS[settings.preset]) {
+      this.setPreset(settings.preset);
+      return;
+    }
+    if (settings.synthType) {
+      this.synthType = settings.synthType;
+    }
+    if (settings.oscillator) {
+      this.oscillatorType = settings.oscillator;
+    }
+    if (settings.envelope) {
+      this.envelope = { ...settings.envelope };
+    }
+    this.currentPreset = 'custom';
   }
 
   // --------------------------------------------------------------------------
