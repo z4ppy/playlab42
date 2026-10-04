@@ -4,7 +4,7 @@
  * Le panneau est un overlay dont la classe `visible` pilote l'affichage.
  * Chaque contrôleur garde ses propres hooks d'arrêt dans `hide()`.
  *
- * @module controllers/panelVisibility
+ * @module controllers/panel-visibility
  */
 
 const VISIBLE_CLASS = 'visible';

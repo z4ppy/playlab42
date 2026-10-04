@@ -9,8 +9,8 @@
 
 import { EventEmitter } from '../utils/EventEmitter.js';
 import { AudioEngine } from '../audio/AudioEngine.js';
-import { hidePanel, isPanelVisible, showPanel } from './panelVisibility.js';
-import { SYNTH_EFFECT_SLIDERS, SYNTH_PARAM_SLIDERS } from './synthSliderSpecs.js';
+import { hidePanel, isPanelVisible, showPanel } from './panel-visibility.js';
+import { SYNTH_EFFECT_SLIDERS, SYNTH_PARAM_SLIDERS } from './synth-slider-specs.js';
 
 // ============================================================================
 // Classe SynthController
@@ -772,7 +772,7 @@ export class SynthController extends EventEmitter {
    * @private
    *
    * @param {Object} values - Section de configuration
-   * @param {Array} [specs] - Curseurs décrits dans synthSliderSpecs
+   * @param {Array} [specs] - Curseurs décrits dans synth-slider-specs
    */
   _updateSliderSpecs(values, specs = []) {
     for (const { id, key, fallback, scale, toDisplay } of specs) {

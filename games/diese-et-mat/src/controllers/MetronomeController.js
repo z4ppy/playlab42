@@ -7,7 +7,7 @@
  */
 
 import EventEmitter from '../utils/EventEmitter.js';
-import { hidePanel, isPanelVisible, showPanel } from './panelVisibility.js';
+import { hidePanel, isPanelVisible, showPanel } from './panel-visibility.js';
 import { Metronome } from '../audio/Metronome.js';
 
 // ============================================================================

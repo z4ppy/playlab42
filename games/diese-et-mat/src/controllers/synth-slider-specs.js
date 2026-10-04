@@ -5,7 +5,7 @@
  * (appliquée aussi aux valeurs fausses 0/null), son échelle d'affichage
  * et son format.
  *
- * @module controllers/synthSliderSpecs
+ * @module controllers/synth-slider-specs
  */
 
 const fixed = (digits) => (v) => v.toFixed(digits);
