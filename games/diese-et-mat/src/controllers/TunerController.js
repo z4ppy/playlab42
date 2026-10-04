@@ -85,6 +85,9 @@ export class TunerController extends EventEmitter {
     /** @type {MediaStream|null} Stream audio du micro */
     this._stream = null;
 
+    /** @type {Object|null} Jeton de la demande de démarrage en cours */
+    this._startRequest = null;
+
     /** @type {AudioContext|null} Contexte audio */
     this._audioContext = null;
 
@@ -173,37 +176,22 @@ export class TunerController extends EventEmitter {
    * Démarre l'accordeur.
    */
   async start() {
+    // Jeton : un stop() ou un nouveau start() pendant l'attente annule cette demande
+    const request = {};
+    this._startRequest = request;
     try {
       // Demander l'accès au micro
-      this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      // Créer le contexte audio
-      this._audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      this._analyser = this._audioContext.createAnalyser();
-      this._analyser.fftSize = 4096;
-
-      const source = this._audioContext.createMediaStreamSource(this._stream);
-      source.connect(this._analyser);
-
-      this._active = true;
-      this._buffer = new Float32Array(this._analyser.fftSize);
-
-      // Réinitialiser les historiques
-      this._frequencyHistory = [];
-      this._noteHistory = [];
-      this._lastNoteName = null;
-
-      // Initialiser le graphe
-      this._initGraph();
-
-      // Mettre à jour l'UI
-      this._updateUI(true);
-
-      // Démarrer l'analyse
-      this._loop();
-
-      this.emit('started');
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (this._startRequest !== request) {
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+      this._stream = stream;
+      this._openAnalyser(stream);
+      this._beginListening();
     } catch (error) {
+      if (this._startRequest !== request) {return;}
+      this._releaseAudioResources();
       console.error('Erreur accès micro:', error);
       this._updateStatus('Accès micro refusé', true);
       this.emit('error', error);
@@ -211,22 +199,62 @@ export class TunerController extends EventEmitter {
   }
 
   /**
-   * Arrête l'accordeur.
+   * Crée le contexte audio et l'analyseur branchés sur le micro.
+   * @param {MediaStream} stream - Flux du micro
+   * @private
    */
-  stop() {
+  _openAnalyser(stream) {
+    this._audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    this._analyser = this._audioContext.createAnalyser();
+    this._analyser.fftSize = 4096;
+
+    const source = this._audioContext.createMediaStreamSource(stream);
+    source.connect(this._analyser);
+  }
+
+  /**
+   * Passe en écoute : état, UI, boucle d'analyse.
+   * @private
+   */
+  _beginListening() {
+    this._active = true;
+    this._buffer = new Float32Array(this._analyser.fftSize);
+
+    // Réinitialiser les historiques
+    this._frequencyHistory = [];
+    this._noteHistory = [];
+    this._lastNoteName = null;
+
+    this._initGraph();
+    this._updateUI(true);
+    this._loop();
+    this.emit('started');
+  }
+
+  /**
+   * Libère le flux du micro et le contexte audio.
+   * @private
+   */
+  _releaseAudioResources() {
     this._active = false;
 
-    // Arrêter le stream
     if (this._stream) {
       this._stream.getTracks().forEach(track => track.stop());
       this._stream = null;
     }
 
-    // Fermer le contexte audio
     if (this._audioContext) {
       this._audioContext.close();
       this._audioContext = null;
     }
+  }
+
+  /**
+   * Arrête l'accordeur.
+   */
+  stop() {
+    this._startRequest = null;
+    this._releaseAudioResources();
 
     // Réinitialiser les historiques
     this._frequencyHistory = [];
