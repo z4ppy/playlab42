@@ -1,6 +1,6 @@
-import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { test, expect, activate } from './fixtures.js';
+import { withOriginalStyles } from './original-styles.js';
 
 /*
  * Caractérisation des styles calculés de Diese & Mat avant/après la
@@ -17,10 +17,17 @@ import { test, expect, activate } from './fixtures.js';
  *    clavier...), plus le balisage exact de l'historique de l'accordeur.
  * Le balisage inerte (fixture) ne couvre que les sélecteurs que le JavaScript
  * n'émet plus aujourd'hui (onglets de type, sections typées, préréglages).
+ *
+ * Deux contrats :
+ *  - chaque mesure est lue sur le même DOM avec les CSS actuelles puis avec les CSS
+ *    d'origine (withOriginalStyles) : toutes les propriétés, géométrie comprise,
+ *    doivent être identiques, sans dépendre des polices de l'OS ;
+ *  - le golden initial, immuable, fixe les éléments, états et propriétés attendus
+ *    ainsi que les valeurs indépendantes de l'OS (couleurs, jetons, espacements) ;
+ *    les dimensions résolues y dépendent des métriques de police et en sont exclues.
  */
 
 const GOLDEN = new URL('./fixtures/dedup-music-styles-golden.json', import.meta.url);
-const CAPTURE = process.env.DEDUP_MUSIC_STYLES_CAPTURE === '1';
 const GAME = '/games/diese-et-mat/index.html';
 
 const PROPERTIES = [
@@ -47,6 +54,13 @@ const PROPERTIES = [
   'animation-name', 'animation-duration', 'animation-iteration-count',
   'content',
 ];
+
+// Valeurs résolues en pixels à partir de la mise en page : propres à l'OS et à ses polices.
+const LAYOUT_DEPENDENT = new Set([
+  'width', 'height', 'top', 'right', 'bottom', 'left', 'grid-template-columns', 'transform',
+  'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+  'min-width', 'max-width', 'min-height', 'max-height', 'flex-basis',
+]);
 
 // Pseudo-éléments portés par la feuille : [sélecteur de l'hôte, pseudo].
 const PSEUDOS = [
@@ -111,8 +125,17 @@ const settle = page => page.evaluate(async () => {
   }));
 });
 
+// Mesures lues avec les CSS d'origine sur le même DOM, alimentées par snapshot().
+let originals = null;
+
 // Retourne {clé -> propriétés} pour la racine et ses descendants (premier élément par clé).
-function snapshot(page, rootSelector, label, maxDepth = Infinity) {
+async function snapshot(page, rootSelector, label, maxDepth = Infinity) {
+  const current = await readSnapshot(page, rootSelector, label, maxDepth);
+  Object.assign(originals, await withOriginalStyles(page, () => readSnapshot(page, rootSelector, label, maxDepth)));
+  return current;
+}
+
+function readSnapshot(page, rootSelector, label, maxDepth) {
   return page.evaluate(({ rootSelector: root, label: prefix, properties, pseudos, depthLimit }) => {
     const result = {};
     const read = (element, pseudo) => {
@@ -232,6 +255,7 @@ async function closePanel(page, name) {
 
 async function capture(page, scenario) {
   const out = {};
+  originals = {};
   const add = part => Object.assign(out, part);
   await loadGame(page, scenario);
 
@@ -394,31 +418,14 @@ async function capture(page, scenario) {
   return out;
 }
 
-// Les valeurs sont dédupliquées en profils pour garder une fixture relisible.
-function toGolden(captured) {
-  const profiles = {};
-  const scenarios = {};
-  for (const [name, entries] of Object.entries(captured)) {
-    scenarios[name] = {};
-    for (const [key, values] of Object.entries(entries)) {
-      const id = createHash('sha1').update(JSON.stringify(values)).digest('hex').slice(0, 10);
-      profiles[id] = values;
-      scenarios[name][key] = id;
-    }
-  }
-  return { properties: PROPERTIES, profiles, scenarios };
-}
-
-function diffAgainst(golden, name, entries) {
-  const expected = golden.scenarios[name];
+function diffEntries(expectedProperties, expected, entries, comparable) {
   const differences = [];
   for (const key of new Set([...Object.keys(expected), ...Object.keys(entries)])) {
     if (!(key in entries)) { differences.push(`${key} : élément disparu`); continue; }
     if (!(key in expected)) { differences.push(`${key} : élément nouveau`); continue; }
-    const before = golden.profiles[expected[key]];
-    PROPERTIES.forEach((property, index) => {
-      if (before[index] !== entries[key][index]) {
-        differences.push(`${key} ${property} : ${before[index]} -> ${entries[key][index]}`);
+    expectedProperties.forEach((property, index) => {
+      if (comparable(property) && expected[key][index] !== entries[key][index]) {
+        differences.push(`${key} ${property} : ${expected[key][index]} -> ${entries[key][index]}`);
       }
     });
   }
@@ -426,25 +433,21 @@ function diffAgainst(golden, name, entries) {
 }
 
 test.describe('Diese & Mat : styles calculés conservés par la consolidation CSS', () => {
-  const captured = {};
-
-  test.afterAll(() => {
-    if (!CAPTURE) { return; }
-    expect(Object.keys(captured).sort()).toEqual(SCENARIOS.map(({ name }) => name).sort());
-    writeFileSync(GOLDEN, `${JSON.stringify(toGolden(captured))}\n`);
-  });
-
   for (const scenario of SCENARIOS) {
     test(`${scenario.name} : composants, panneaux, états et exercices`, async ({ page }) => {
-      test.setTimeout(120_000);
+      test.setTimeout(180_000);
       const entries = await capture(page, scenario);
+      const original = originals;
       expect(Object.keys(entries).length).toBeGreaterThan(400);
-      if (CAPTURE) {
-        captured[scenario.name] = entries;
-        return;
-      }
+
+      // Mêmes éléments, mêmes propriétés : CSS d'origine contre CSS actuelles, métriques identiques.
+      expect(diffEntries(PROPERTIES, original, entries, () => true)).toEqual([]);
+
       const golden = JSON.parse(readFileSync(GOLDEN, 'utf8'));
-      expect(diffAgainst(golden, scenario.name, entries)).toEqual([]);
+      const expected = Object.fromEntries(Object.entries(golden.scenarios[scenario.name])
+        .map(([key, id]) => [key, golden.profiles[id]]));
+      expect(golden.properties).toEqual(PROPERTIES);
+      expect(diffEntries(PROPERTIES, expected, entries, property => !LAYOUT_DEPENDENT.has(property))).toEqual([]);
     });
   }
 });
