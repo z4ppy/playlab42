@@ -5,6 +5,38 @@ import { randomUUID } from 'node:crypto';
 import { buildGuides, escapeHtml, headingSlug, renderGuide, resolveGuideLink } from './build-guides.js';
 
 describe('Lecteur statique des guides', () => {
+  test.each([
+    ['  https://example.test/a?b=1#c  ', 'https://example.test/a?b=1#c', false],
+    ['mailto:team@example.test', 'mailto:team@example.test', false],
+    ['tel:+33123456789', 'tel:+33123456789', false],
+    ['ftp://example.test/a', '#', false],
+    ['//example.test/a', '#', false],
+    ['', '', false],
+    ['#section', '#section', false],
+    ['?mode=1#section', '?mode=1#section', false],
+    ['../known.md?mode=1#section', '../known.html?mode=1#section', false],
+    ['../missing.md#section', '../../missing.md#section', true],
+    ['../image.png?size=2', '../../image.png?size=2', false],
+    ['../../scripts/a%20b.js?raw=1#code', 'https://github.com/z4ppy/playlab42/blob/main/scripts/a%20b.js?raw=1#code', true],
+    ['../../../outside.md', '../../../../outside.md', true],
+  ])('caractériser la résolution de %s avant extraction', (href, expected, sourceLink) => {
+    expect(resolveGuideLink(href, '/repo/docs/guides/a.md', '/repo/docs/site/guides/a.html',
+      new Map([['/repo/docs/known.md', '/repo/docs/site/known.html']]))).toEqual({
+      href: expected, source: sourceLink,
+    });
+  });
+
+  test('préserver la résolution hors dossier docs et la priorité du lien source réservé', () => {
+    expect(resolveGuideLink('b.md#part', '/repo/a.md', '/repo/site/a.html',
+      new Map([['/repo/b.md', '/repo/site/b.html']]))).toEqual({ href: 'b.html#part', source: false });
+    expect(resolveGuideLink('../../scripts/a.js', '/repo/docs/guides/a.md',
+      '/repo/docs/site/guides/a.html', new Map([['/repo/scripts/a.js', '/repo/docs/site/a.html']]))).toEqual({
+      href: 'https://github.com/z4ppy/playlab42/blob/main/scripts/a.js', source: true,
+    });
+    expect(() => resolveGuideLink('../bad%zz.md', '/repo/docs/a.md', '/repo/docs/site/a.html',
+      new Map())).toThrow(URIError);
+  });
+
   test('échapper les métadonnées et les URL, sans autoriser des schémas exécutables', () => {
     expect(escapeHtml('A < B & "C"')).toBe('A &lt; B &amp; &quot;C&quot;');
     const context = { source: '/repo/docs/a.md', output: '/repo/docs/site/a.html', pages: new Map() };

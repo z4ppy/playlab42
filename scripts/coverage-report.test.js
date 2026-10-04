@@ -84,6 +84,27 @@ describe('rapport de preuves Jest', () => {
     }
   });
 
+  test('préserver la priorité des refus avant extraction des entrées', () => {
+    const input = fixture();
+    input.summary.total = null;
+    input.finalCoverage[path.join(root, sources[0])].s[0] = -1;
+    expect(() => buildReport(input)).toThrow('total : objet attendu');
+    const second = fixture();
+    second.finalCoverage[path.join(root, 'scripts/extra.js')] = {};
+    second.summary.total.lines.covered = 1000;
+    expect(() => buildReport(second)).toThrow('coverage-final.json : fichiers incohérents');
+  });
+
+  test('ne pas normaliser une source hors racine ni ignorer son erreur de chemin', () => {
+    const input = fixture();
+    const file = path.join(root, 'scripts/example.js');
+    input.summary['relative.js'] = input.summary[file];
+    input.finalCoverage['relative.js'] = { ...input.finalCoverage[file], path: 'relative.js' };
+    delete input.summary[file];
+    delete input.finalCoverage[file];
+    expect(() => buildReport(input)).toThrow('relative.js : source hors racine');
+  });
+
   test.each([
     [77, 78, 'app/events.js', '98.71% (77/78)'],
     [2521, 3452, 'Total instrumenté', '73.13% (2535/3466)'],

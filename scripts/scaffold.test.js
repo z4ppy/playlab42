@@ -96,6 +96,33 @@ describe('Générateur de contributions', () => {
     expect(parseArgs(['game', 'a'.repeat(64), '--title', 'a'.repeat(120)]).id).toHaveLength(64);
   });
 
+  test.each([
+    [['unknown', '../invalid', '--title', ''], 'Type invalide : choisir game, tool ou epic.'],
+    [['tool', '../invalid', '--title', ''], 'Identifiant invalide :'],
+    [['tool', 'valid', '--title', null], 'Titre invalide :'],
+    [['tool', 'valid', '--title', '\u0000'], 'Titre invalide :'],
+  ])('préserver la priorité et le message des arguments invalides : %j', (args, message) => {
+    expect(() => scaffold(args, { root, templates: join(root, 'absent') })).toThrow(message);
+    expect(readdirSync(root)).toEqual([]);
+  });
+
+  test('refuser un gabarit vide ou inattendu avant de préparer la destination', () => {
+    const templates = join(root, 'gabarits');
+    mkdirSync(join(templates, 'tool'), { recursive: true });
+    const args = ['tool', 'test', '--title', 'Titre'];
+    expect(() => scaffold(args, { root, templates })).toThrow('Gabarit vide :');
+    expect(existsSync(join(root, 'tools'))).toBe(false);
+    writeFileSync(join(templates, 'tool', 'unexpected.txt'), 'ne pas publier');
+    expect(() => scaffold(args, { root, templates })).toThrow('Gabarit inattendu : unexpected.txt.');
+    expect(existsSync(join(root, 'tools'))).toBe(false);
+  });
+
+  test('refuser un parent non répertoire sans modifier ses octets', () => {
+    writeFileSync(join(root, 'tools'), 'fichier existant');
+    expect(() => scaffold(['tool', 'test', '--title', 'Titre'], { root })).toThrow('Destination non sûre :');
+    expect(readFileSync(join(root, 'tools'), 'utf8')).toBe('fichier existant');
+  });
+
   test('ne remplace jamais une contribution existante, même vide', () => {
     const args = ['tool', 'existant', '--title', 'Titre'];
     const destination = scaffold(args, { root });

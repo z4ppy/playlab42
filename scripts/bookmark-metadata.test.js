@@ -8,6 +8,36 @@ test('accepter les métadonnées éditoriales sans imposer la TTL du cache techn
   expect(validateOGSnapshot({ version: 1, entries })).toBe(entries);
 });
 
+test('préserver toutes les valeurs éditoriales autorisées sans copie ni mutation', () => {
+  const entries = Object.freeze({
+    'http://example.test': Object.freeze({
+      ogTitle: '', ogDescription: 'Description', ogImage: '/image.png',
+      ogImageOriginal: '/original.png', ogSiteName: 'Site', favicon: '/icon.svg',
+      fetchedAt: 'date éditoriale', fromVersionedImage: false,
+    }),
+  });
+  expect(validateOGSnapshot(Object.freeze({ version: 1, entries }))).toBe(entries);
+});
+
+test.each(['ogTitle', 'ogDescription', 'ogImage', 'ogImageOriginal', 'ogSiteName', 'favicon', 'fetchedAt'])(
+  'refuser exactement le champ texte %s avant extraction', key => {
+    expect(() => validateOGSnapshot({ version: 1, entries: {
+      'https://example.test': { [key]: false },
+    } })).toThrow(`Champ du snapshot OG invalide : https://example.test, ${key}`);
+  },
+);
+
+test('conserver la priorité de validation structure, URL, entrée puis champ', () => {
+  expect(() => validateOGSnapshot({ version: 2, entries: { invalid: null } }))
+    .toThrow('Snapshot OG invalide : version 1 et entries objet requis.');
+  expect(() => validateOGSnapshot({ version: 1, entries: { 'file:///private': { unknown: true } } }))
+    .toThrow('Entrée du snapshot OG invalide : file:///private');
+  expect(() => validateOGSnapshot({ version: 1, entries: { invalid: null } }))
+    .toThrow(expect.objectContaining({ name: 'TypeError', code: 'ERR_INVALID_URL' }));
+  expect(() => validateOGSnapshot({ version: 1, entries: { 'https://example.test': 1 } }))
+    .toThrow('Entrée du snapshot OG invalide : https://example.test');
+});
+
 test('lire le vrai fichier source et contextualiser sa corruption ou absence', () => {
   const root = mkdtempSync(join(process.cwd(), '.playlab-snapshot-'));
   const path = join(root, 'snapshot.json');
