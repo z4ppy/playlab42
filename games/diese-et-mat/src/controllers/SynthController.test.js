@@ -2,6 +2,7 @@
 import { jest } from '@jest/globals';
 import { EventEmitter } from '../utils/EventEmitter.js';
 import { SynthController } from './SynthController.js';
+import { AudioEngine } from '../audio/AudioEngine.js';
 
 const SLIDERS = [
   'attack', 'decay', 'sustain', 'release',
@@ -331,5 +332,51 @@ describe('SynthController : callbacks des curseurs et commandes', () => {
     expect(button.title).toBe('Audio indisponible : réessayez');
     expect(button.disabled).toBe(false);
     logged.mockRestore();
+  });
+});
+
+describe('SynthController : construction du select des presets', () => {
+  const options = () => [...document.querySelectorAll('#synth-preset-select optgroup')].map((group) => [
+    group.label,
+    [...group.querySelectorAll('option')].map((option) => [option.value, option.textContent, option.selected]),
+  ]);
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('quatre groupes ordonnés, libellés sans icône et preset courant sélectionné', () => {
+    open({ ...FULL, preset: 'bell' });
+    const presets = AudioEngine.getPresets();
+    expect(options().map(([label]) => label)).toEqual(['Claviers', 'Guitares', 'Synthés', 'Percussions']);
+    expect(options().map(([, group]) => group.map(([value]) => value))).toEqual([
+      ['piano', 'electricPiano', 'organ'],
+      ['guitarClassic', 'guitarFolk', 'guitarElectric'],
+      ['synthLead', 'retro8bit', 'bell'],
+      ['percKick', 'percSnare', 'percTom', 'percWood', 'percHihat', 'percCymbal'],
+    ]);
+    for (const [, group] of options()) {
+      for (const [value, text, selected] of group) {
+        expect(text).toBe(presets[value].name);
+        expect(selected).toBe(value === 'bell');
+      }
+    }
+    expect(document.getElementById('synth-preset-select').value).toBe('bell');
+  });
+
+  test('un preset absent du catalogue est ignoré mais son groupe reste présent', () => {
+    jest.spyOn(AudioEngine, 'getPresets').mockReturnValue({ piano: { name: 'Piano' }, retro8bit: { name: 'Rétro' } });
+    open({ ...FULL, preset: 'retro8bit' });
+    expect(options()).toEqual([
+      ['Claviers', [['piano', 'Piano', false]]],
+      ['Guitares', []],
+      ['Synthés', [['retro8bit', 'Rétro', true]]],
+      ['Percussions', []],
+    ]);
+  });
+
+  test('sans preset courant, aucune option n\'est sélectionnée', () => {
+    open({ ...FULL, preset: undefined });
+    expect(options().flatMap(([, group]) => group).filter(([, , selected]) => selected)).toEqual([]);
   });
 });

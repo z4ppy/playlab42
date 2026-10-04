@@ -2,6 +2,7 @@
 import { jest } from '@jest/globals';
 import { PianoController } from './PianoController.js';
 import { SynthManager } from '../audio/SynthManager.js';
+import { AudioEngine } from '../audio/AudioEngine.js';
 
 global.structuredClone ??= value => JSON.parse(JSON.stringify(value));
 
@@ -275,5 +276,70 @@ describe('PianoController : caractérisation du clavier et des contrôles', () =
     expect(select.value).not.toBe('bell');
     expect(piano._cleanupHandlers).toEqual([]);
     expect(piano._initialized).toBe(false);
+  });
+});
+
+describe('PianoController : construction du select des instruments', () => {
+  let engine;
+  let synth;
+  let piano;
+
+  const groups = () => [...document.querySelectorAll('#piano-instrument-select optgroup')].map((group) => [
+    group.label,
+    [...group.querySelectorAll('option')].map((option) => [option.value, option.textContent, option.selected]),
+  ]);
+
+  beforeEach(() => {
+    localStorage.clear();
+    engine = createEngine();
+    synth = new SynthManager({ audioEngine: engine });
+  });
+  afterEach(() => {
+    piano.dispose();
+    synth.dispose();
+    jest.restoreAllMocks();
+  });
+
+  const open = () => {
+    piano = new PianoController(buildDom(), { synthManager: synth });
+    piano.show();
+  };
+
+  test('quatre groupes ordonnés, libellés avec icône et preset courant sélectionné', () => {
+    synth.setPreset('bell');
+    open();
+    const presets = AudioEngine.getPresets();
+    expect(groups().map(([label, group]) => [label, group.map(([value]) => value)])).toEqual([
+      ['Claviers', ['piano', 'electricPiano', 'organ']],
+      ['Guitares', ['guitarClassic', 'guitarFolk', 'guitarElectric']],
+      ['Synthés', ['synthLead', 'retro8bit', 'bell']],
+      ['Percussions', ['percKick', 'percSnare', 'percTom', 'percWood', 'percHihat', 'percCymbal']],
+    ]);
+    for (const [, group] of groups()) {
+      for (const [value, text, selected] of group) {
+        expect(text.endsWith(` ${presets[value].name}`)).toBe(true);
+        expect(text.length).toBeGreaterThan(presets[value].name.length + 1);
+        expect(selected).toBe(value === 'bell');
+      }
+    }
+  });
+
+  test('un preset absent du catalogue est ignoré mais son groupe reste présent', () => {
+    jest.spyOn(AudioEngine, 'getPresets').mockReturnValue({ piano: { name: 'Piano' }, retro8bit: { name: 'Rétro' } });
+    open();
+    expect(groups().map(([label, group]) => [label, group.map(([value, , selected]) => [value, selected])])).toEqual([
+      ['Claviers', [['piano', true]]],
+      ['Guitares', []],
+      ['Synthés', [['retro8bit', false]]],
+      ['Percussions', []],
+    ]);
+    expect(groups()[2][1][0][1]).toMatch(/ Rétro$/);
+  });
+
+  test('un preset courant vide retombe sur le piano', () => {
+    jest.spyOn(synth, 'preset', 'get').mockReturnValue('');
+    open();
+    expect(groups().flatMap(([, group]) => group).filter(([, , selected]) => selected).map(([value]) => value))
+      .toEqual(['piano']);
   });
 });
