@@ -234,6 +234,7 @@
     import { initTheme } from '../../lib/theme.js';
     import GameKit from '../../lib/gamekit.js';
     import { createBoardNavigation } from '../board-navigation.js';
+    import { renderCheckersBoard } from './ui/board-view.js';
 
     // Initialiser le thème (dark/light)
     initTheme();
@@ -364,60 +365,12 @@
     // Rendu du plateau
     function render() {
       navigation.beforeRender();
-      boardEl.innerHTML = '';
-
-      for (let row = 0; row < 10; row++) {
-        for (let col = 0; col < 10; col++) {
-          const square = document.createElement('button');
-          square.type = 'button';
-          square.className = 'square';
-          square.dataset.row = row;
-          square.dataset.col = col;
-
-          // Damier : cases noires si (row + col) est impair
-          if ((row + col) % 2 === 1) {
-            square.classList.add('dark');
-          } else {
-            square.classList.add('light');
-          }
-
-          // Pièce
-          const piece = state.board[row][col];
-          if (piece) {
-            const pieceEl = document.createElement('div');
-            pieceEl.className = `piece ${piece.player === 0 ? 'white' : 'black'}`;
-            if (piece.type === 'king') {
-              pieceEl.classList.add('king');
-            }
-            square.appendChild(pieceEl);
-          }
-
-          // Cases sélectionnées et coups possibles
-          if (selectedSquare && selectedSquare.row === row && selectedSquare.col === col) {
-            square.classList.add('selected');
-          }
-
-          if (possibleMoves.some(m => m.to.row === row && m.to.col === col)) {
-            square.classList.add('possible-move');
-          }
-
-          const selected = selectedSquare?.row === row && selectedSquare?.col === col;
-          const legalTarget = square.classList.contains('possible-move');
-          const playerName = piece?.player === 0 ? 'blanc' : 'noir';
-          const description = piece
-            ? `${piece.type === 'king' ? 'dame' : 'pion'} ${playerName}${piece.player === state.currentPlayer ? ', joueur actif' : ''}`
-            : 'vide';
-          square.setAttribute('aria-label', `Ligne ${row + 1}, colonne ${col + 1}, ${description}${legalTarget ? ', destination autorisée' : ''}`);
-          square.setAttribute('aria-pressed', String(selected));
-          square.setAttribute('aria-disabled', String(state.status !== 'playing'
-            || playerTypes[state.currentPlayer] !== 'human'
-            || (!legalTarget && (!piece || piece.player !== state.currentPlayer))));
-
-          square.addEventListener('click', () => handleSquareClick(row, col));
-          boardEl.appendChild(square);
-        }
-      }
-
+      renderCheckersBoard(boardEl, {
+        state,
+        selected: selectedSquare,
+        moves: possibleMoves,
+        humanTurn: playerTypes[state.currentPlayer] === 'human',
+      }, handleSquareClick);
       updateStatus();
       navigation.afterRender();
     }

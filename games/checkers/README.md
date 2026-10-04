@@ -132,6 +132,14 @@ et le format JSON ne changent pas. Les actions sans type `move` ou sans
 extrémités sont refusées explicitement. Les trajets de capture et les règles
 géométriques existants restent inchangés.
 
+## Rendu du damier
+
+`index.html` garde l'état, les bots et les actions ; `ui/board-view.js` dessine
+le damier à partir de l'état du moteur, de la sélection et des coups légaux
+fournis par la page. Il ne recalcule aucune règle. `board-render.test.js`
+exécute le script réel de la page puis le rendu extrait contre les mêmes
+empreintes DOM de référence.
+
 ## 📚 Références
 
 - [Spec OpenSpec](../../openspec/changes/add-checkers-game/)

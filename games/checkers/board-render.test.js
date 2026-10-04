@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CheckersEngine } from './engine.js';
 import { createBoardNavigation } from '../board-navigation.js';
+import { renderCheckersBoard } from './ui/board-view.js';
 
 const FIXTURE = fileURLToPath(new URL('./fixtures/render-corpus.json', import.meta.url));
 const PAGE = readFileSync(fileURLToPath(new URL('./index.html', import.meta.url)), 'utf8');
@@ -18,6 +19,7 @@ const modules = {
   '../../lib/theme.js': { initTheme: () => {} },
   '../../lib/gamekit.js': { default: gameKit },
   '../board-navigation.js': { createBoardNavigation },
+  './ui/board-view.js': { renderCheckersBoard },
 };
 
 function importedModules(extra = {}) {
@@ -229,5 +231,101 @@ describe('Rendu du damier de la page Dames', () => {
     expect(document.getElementById('status').style.color).toBe('var(--color-success, green)');
     expect(gameKit.saveScore).toHaveBeenCalledWith(1);
     expect(document.querySelectorAll('[aria-disabled="false"]')).toHaveLength(0);
+  });
+});
+
+describe('Rendu public du damier extrait', () => {
+  const engine = new CheckersEngine();
+  const initial = engine.init({ seed: 1, playerIds: ['player1', 'player2'] });
+  const baseView = { state: initial, selected: null, moves: [], humanTurn: true };
+  let boardEl;
+  let navigation;
+
+  beforeEach(() => {
+    document.body.innerHTML = PAGE.match(/<body>([\s\S]*?)<script type="module">/)[1];
+    boardEl = document.getElementById('board');
+    navigation = createBoardNavigation(boardEl, 10);
+  });
+
+  const draw = (view, onSquareClick = () => {}) => {
+    navigation.beforeRender();
+    renderCheckersBoard(boardEl, view, onSquareClick);
+    navigation.afterRender();
+  };
+
+  test('reproduit exactement les empreintes de la page d’origine sur les parties de référence', () => {
+    const fixture = readFixture();
+    const driver = {
+      select: (state, chosen, moves) => {
+        draw({ state, selected: chosen.from, moves, humanTurn: true });
+        return sha(boardEl.outerHTML);
+      },
+      move: (state) => {
+        draw({ state, selected: null, moves: [], humanTurn: true });
+        return sha(boardEl.outerHTML);
+      },
+    };
+    for (const seed of WALK_SEEDS) {
+      expect(walkGame(seed, driver).snapshots).toEqual(fixture[seed].board);
+    }
+  });
+
+  test('construit chaque case dans l’ordre avec classes, étiquettes et états accessibles', () => {
+    draw(baseView);
+    const squares = [...boardEl.children];
+    expect(squares).toHaveLength(100);
+    expect(squares.map((s) => s.tagName)).toEqual(Array(100).fill('BUTTON'));
+    expect(squares[11].dataset).toMatchObject({ row: '1', col: '1' });
+    expect(squares[11].className).toBe('square light');
+    expect(squares[10].className).toBe('square dark');
+    expect(squares[10].getAttribute('aria-label')).toBe('Ligne 2, colonne 1, pion blanc, joueur actif');
+    expect(squares[61].getAttribute('aria-label')).toBe('Ligne 7, colonne 2, pion noir');
+    expect(squares[40].getAttribute('aria-label')).toBe('Ligne 5, colonne 1, vide');
+    expect(squares[61].getAttribute('aria-disabled')).toBe('true');
+    expect(squares[40].getAttribute('aria-disabled')).toBe('true');
+    expect(squares[10].getAttribute('aria-disabled')).toBe('false');
+  });
+
+  test('marque dame, sélection et destinations avec les coups fournis sans les recalculer', () => {
+    const state = JSON.parse(JSON.stringify(initial));
+    state.board[4][1] = { type: 'king', player: 1 };
+    const moves = [{ to: { row: 4, col: 1 } }, { to: { row: 5, col: 3 } }];
+    draw({ state, selected: { row: 3, col: 0 }, moves, humanTurn: true });
+    const at = (row, col) => boardEl.children[row * 10 + col];
+    expect(at(4, 1).firstElementChild.className).toBe('piece black king');
+    expect(at(4, 1).className).toBe('square dark possible-move');
+    expect(at(4, 1).getAttribute('aria-label')).toBe('Ligne 5, colonne 2, dame noir, destination autorisée');
+    expect(at(4, 1).getAttribute('aria-disabled')).toBe('false');
+    expect(at(5, 3).className).toBe('square light possible-move');
+    expect(at(3, 0).className).toBe('square dark selected');
+    expect(at(3, 0).getAttribute('aria-pressed')).toBe('true');
+    expect(boardEl.querySelectorAll('.selected, .possible-move')).toHaveLength(3);
+  });
+
+  test('désactive toutes les cases hors de la partie en cours ou du tour humain', () => {
+    draw({ ...baseView, humanTurn: false });
+    expect(boardEl.querySelectorAll('[aria-disabled="false"]')).toHaveLength(0);
+    draw({ ...baseView, state: { ...initial, status: 'won' } });
+    expect(boardEl.querySelectorAll('[aria-disabled="false"]')).toHaveLength(0);
+    draw(baseView);
+    expect(boardEl.querySelectorAll('[aria-disabled="false"]').length).toBeGreaterThan(0);
+  });
+
+  test('délègue chaque clic à la réaction avec ses coordonnées et remplace l’ancien contenu', () => {
+    const onSquareClick = jest.fn();
+    draw(baseView, onSquareClick);
+    draw(baseView, onSquareClick);
+    expect(boardEl.children).toHaveLength(100);
+    boardEl.children[34].click();
+    expect(onSquareClick).toHaveBeenCalledTimes(1);
+    expect(onSquareClick).toHaveBeenCalledWith(3, 4);
+  });
+
+  test('restaure le focus sur la case active après un nouveau rendu', () => {
+    draw(baseView);
+    boardEl.children[22].focus();
+    draw(baseView);
+    expect(document.activeElement).toBe(boardEl.children[22]);
+    expect(boardEl.querySelectorAll('[tabindex="0"]')).toHaveLength(1);
   });
 });
