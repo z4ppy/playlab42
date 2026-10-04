@@ -213,150 +213,208 @@ export class DopplerGraph {
    */
   #draw(me, _referenceId) {
     const ctx = this.ctx;
-    const w = this.width;
-    const h = this.height;
-
-    // Effacer
-    ctx.clearRect(0, 0, w, h);
-
-    // Fond
+    ctx.clearRect(0, 0, this.width, this.height);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(0, 0, w, h);
+    ctx.fillRect(0, 0, this.width, this.height);
 
     const receptionHistory = me.receptionHistory || [];
     if (receptionHistory.length === 0) {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-      ctx.font = '12px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('En attente de réceptions...', w / 2, h / 2);
+      this.#drawWaitingMessage();
       return;
     }
 
-    // Calculer la plage de temps
-    const currentTau = me.properTime;
-    const tauMin = Math.max(0, currentTau - this.timeWindow);
-    const tauMax = currentTau;
+    const layout = this.#computeLayout(me.properTime);
+    if (layout.sources.length === 0) {return;}
 
-    // Marges
+    this.#drawSourceRows(layout);
+    this.#drawTimeAxis(layout);
+    this.#drawReceptions(layout, receptionHistory);
+    this.#drawNowLine(layout);
+  }
+
+  /**
+   * Affiche le message affiché tant qu'aucune réception n'a eu lieu
+   */
+  #drawWaitingMessage() {
+    const ctx = this.ctx;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('En attente de réceptions...', this.width / 2, this.height / 2);
+  }
+
+  /**
+   * Calcule marges, plage de temps et hauteur des lignes de sources
+   * @param {number} currentTau - Temps propre de l'observateur de référence
+   * @returns {object} Géométrie du graphique
+   */
+  #computeLayout(currentTau) {
     const marginLeft = 60;
     const marginRight = 10;
     const marginTop = 10;
     const marginBottom = 25;
-    const graphW = w - marginLeft - marginRight;
-    const graphH = h - marginTop - marginBottom;
-
-    // Obtenir les sources uniques
+    const graphW = this.width - marginLeft - marginRight;
+    const graphH = this.height - marginTop - marginBottom;
     const sources = [...this.sourceInfo.keys()];
-    if (sources.length === 0) {return;}
+    const tauMin = Math.max(0, currentTau - this.timeWindow);
 
-    const rowHeight = graphH / sources.length;
+    return {
+      w: this.width,
+      h: this.height,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
+      graphW,
+      sources,
+      rowHeight: graphH / sources.length,
+      tauMin,
+      tauMax: currentTau,
+      timeRange: currentTau - tauMin,
+    };
+  }
 
-    // Dessiner les noms des sources à gauche
+  /**
+   * Dessine le fond et le nom de chaque source à gauche
+   * @param {object} layout
+   */
+  #drawSourceRows({ sources, marginLeft, marginTop, graphW, rowHeight }) {
+    const ctx = this.ctx;
     ctx.font = '11px sans-serif';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
 
-    for (let i = 0; i < sources.length; i++) {
-      const sourceId = sources[i];
+    sources.forEach((sourceId, i) => {
       const info = this.sourceInfo.get(sourceId);
       const y = marginTop + i * rowHeight + rowHeight / 2;
 
-      // Ligne de fond pour cette source
       ctx.fillStyle = i % 2 === 0 ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.1)';
       ctx.fillRect(marginLeft, marginTop + i * rowHeight, graphW, rowHeight);
 
-      // Nom
       ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
       ctx.fillText(info?.name || sourceId, marginLeft - 5, y);
-    }
+    });
+  }
 
-    // Dessiner l'axe du temps
+  /**
+   * Dessine l'axe du temps et ses graduations
+   * @param {object} layout
+   */
+  #drawTimeAxis({ w, h, marginLeft, marginRight, marginBottom, graphW, tauMin, timeRange }) {
+    const ctx = this.ctx;
+    const axisY = h - marginBottom;
+
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(marginLeft, h - marginBottom);
-    ctx.lineTo(w - marginRight, h - marginBottom);
+    ctx.moveTo(marginLeft, axisY);
+    ctx.lineTo(w - marginRight, axisY);
     ctx.stroke();
 
-    // Graduation du temps
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
 
-    const timeRange = tauMax - tauMin;
     const numTicks = 5;
     for (let i = 0; i <= numTicks; i++) {
       const tau = tauMin + (timeRange * i) / numTicks;
       const x = marginLeft + (graphW * i) / numTicks;
 
       ctx.beginPath();
-      ctx.moveTo(x, h - marginBottom);
-      ctx.lineTo(x, h - marginBottom + 3);
+      ctx.moveTo(x, axisY);
+      ctx.lineTo(x, axisY + 3);
       ctx.stroke();
 
-      ctx.fillText(this.#formatTime(tau), x, h - marginBottom + 5);
+      ctx.fillText(this.#formatTime(tau), x, axisY + 5);
     }
+  }
 
-    // Dessiner les réceptions
+  /**
+   * Dessine les réceptions comprises dans la fenêtre de temps
+   * @param {object} layout
+   * @param {object[]} receptionHistory
+   */
+  #drawReceptions(layout, receptionHistory) {
+    const { sources, marginLeft, marginTop, graphW, rowHeight, tauMin, tauMax, timeRange } = layout;
+
     for (const event of receptionHistory) {
-      // Vérifier si dans la fenêtre de temps
       if (event.tau < tauMin || event.tau > tauMax) {continue;}
 
-      // Trouver l'index de la source
       const sourceIndex = sources.indexOf(event.sourceId);
       if (sourceIndex === -1) {continue;}
 
-      // Position
       const x = marginLeft + ((event.tau - tauMin) / timeRange) * graphW;
       const y = marginTop + sourceIndex * rowHeight + rowHeight / 2;
-
-      // Couleur Doppler
       const color = dopplerToColor(event.dopplerFactor);
 
       if (event.aggregated) {
-        // Événement agrégé : dessiner une barre
-        const barWidth = Math.max(2, (event.bucketSize / timeRange) * graphW);
-        const barHeight = Math.min(rowHeight - 4, event.tickNumber * 2);
-
-        ctx.fillStyle = color;
-        ctx.globalAlpha = 0.7;
-        ctx.fillRect(x - barWidth / 2, y - barHeight / 2, barWidth, barHeight);
-        ctx.globalAlpha = 1;
-
-        // Bordure
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x - barWidth / 2, y - barHeight / 2, barWidth, barHeight);
+        this.#drawAggregatedReception(event, { x, y, color, rowHeight, timeRange, graphW });
       } else {
-        // Événement simple : dessiner un point
-        // Décalage vertical selon le type d'horloge
-        const yOffset = event.clockType === 'H' ? -4 : 4;
-
-        ctx.beginPath();
-        ctx.arc(x, y + yOffset, 4, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-
-        // Contour selon le type d'horloge
-        ctx.strokeStyle = event.clockType === 'H' ? 'rgba(255, 107, 107, 0.8)' : 'rgba(74, 222, 128, 0.8)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+        this.#drawSingleReception(event, x, y, color);
       }
     }
+  }
 
-    // Ligne "maintenant"
+  /**
+   * Dessine un événement agrégé sous forme de barre
+   * @param {object} event
+   * @param {{x: number, y: number, color: string, rowHeight: number, timeRange: number, graphW: number}} geometry
+   */
+  #drawAggregatedReception(event, { x, y, color, rowHeight, timeRange, graphW }) {
+    const ctx = this.ctx;
+    const barWidth = Math.max(2, (event.bucketSize / timeRange) * graphW);
+    const barHeight = Math.min(rowHeight - 4, event.tickNumber * 2);
+
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.7;
+    ctx.fillRect(x - barWidth / 2, y - barHeight / 2, barWidth, barHeight);
+    ctx.globalAlpha = 1;
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x - barWidth / 2, y - barHeight / 2, barWidth, barHeight);
+  }
+
+  /**
+   * Dessine un événement simple sous forme de point décalé selon l'horloge
+   * @param {object} event
+   * @param {number} x
+   * @param {number} y
+   * @param {string} color
+   */
+  #drawSingleReception(event, x, y, color) {
+    const ctx = this.ctx;
+    const isHorizontalClock = event.clockType === 'H';
+    const yOffset = isHorizontalClock ? -4 : 4;
+
+    ctx.beginPath();
+    ctx.arc(x, y + yOffset, 4, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    ctx.strokeStyle = isHorizontalClock ? 'rgba(255, 107, 107, 0.8)' : 'rgba(74, 222, 128, 0.8)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  /**
+   * Dessine la ligne et le label « maintenant »
+   * @param {object} layout
+   */
+  #drawNowLine({ h, marginLeft, marginTop, marginBottom, graphW }) {
+    const ctx = this.ctx;
+    const nowX = marginLeft + graphW;
+
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
     ctx.lineWidth = 1;
     ctx.setLineDash([3, 3]);
     ctx.beginPath();
-    const nowX = marginLeft + graphW;
     ctx.moveTo(nowX, marginTop);
     ctx.lineTo(nowX, h - marginBottom);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Label "maintenant"
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.font = '9px sans-serif';
     ctx.textAlign = 'right';
