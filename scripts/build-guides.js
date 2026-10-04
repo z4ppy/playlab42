@@ -38,6 +38,15 @@ function hrefBetween(from, to) {
   return relative(from, to).split(sep).map(segment => encodeURIComponent(segment)).join('/') || './';
 }
 
+function specialGuideLink(value) {
+  if (/^[a-z][a-z\d+.-]*:/i.test(value)) {
+    return { href: /^(https?:|mailto:|tel:)/i.test(value) ? value : '#', source: false };
+  }
+  if (value.startsWith('//')) { return { href: '#', source: false }; }
+  if (!value || value.startsWith('#') || value.startsWith('?')) { return { href: value, source: false }; }
+  return null;
+}
+
 /**
  * Préserve fragments et requêtes ; une cible Markdown non rendue reste explicitement source.
  * @param {string} href URL Markdown.
@@ -47,11 +56,8 @@ function hrefBetween(from, to) {
  */
 export function resolveGuideLink(href, source, output, pages) {
   const value = href.trim();
-  if (/^[a-z][a-z\d+.-]*:/i.test(value)) {
-    return { href: /^(https?:|mailto:|tel:)/i.test(value) ? value : '#', source: false };
-  }
-  if (value.startsWith('//')) { return { href: '#', source: false }; }
-  if (!value || value.startsWith('#') || value.startsWith('?')) { return { href: value, source: false }; }
+  const special = specialGuideLink(value);
+  if (special) { return special; }
   const [, pathname, suffix = ''] = value.match(/^([^?#]*)(.*)$/);
   const decoded = decodeURIComponent(pathname);
   const target = resolve(dirname(source), decoded);

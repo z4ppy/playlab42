@@ -6,6 +6,17 @@ const TEXT_FIELDS = new Set([
   'ogSiteName', 'favicon', 'fetchedAt',
 ]);
 
+function validateSnapshotEntry(url, meta) {
+  if (!['http:', 'https:'].includes(new URL(url).protocol) || !meta || typeof meta !== 'object' || Array.isArray(meta)) {
+    throw new Error(`Entrée du snapshot OG invalide : ${url}`);
+  }
+  for (const [key, value] of Object.entries(meta)) {
+    if (TEXT_FIELDS.has(key) ? typeof value !== 'string' : key !== 'fromVersionedImage' || typeof value !== 'boolean') {
+      throw new Error(`Champ du snapshot OG invalide : ${url}, ${key}`);
+    }
+  }
+}
+
 /**
  * Valide le snapshot éditorial, distinct du cache technique temporaire.
  * @param {object} snapshot - Snapshot versionné
@@ -16,16 +27,25 @@ export function validateOGSnapshot(snapshot) {
     throw new Error('Snapshot OG invalide : version 1 et entries objet requis.');
   }
   for (const [url, meta] of Object.entries(snapshot.entries)) {
-    if (!['http:', 'https:'].includes(new URL(url).protocol) || !meta || typeof meta !== 'object' || Array.isArray(meta)) {
-      throw new Error(`Entrée du snapshot OG invalide : ${url}`);
-    }
-    for (const [key, value] of Object.entries(meta)) {
-      if (TEXT_FIELDS.has(key) ? typeof value !== 'string' : key !== 'fromVersionedImage' || typeof value !== 'boolean') {
-        throw new Error(`Champ du snapshot OG invalide : ${url}, ${key}`);
-      }
-    }
+    validateSnapshotEntry(url, meta);
   }
   return snapshot.entries;
+}
+
+function replaceCachedImage(meta, url) {
+  if (meta.ogImageOriginal) {
+    const remote = new URL(decodeHTMLEntities(meta.ogImageOriginal), url);
+    if (!['http:', 'https:'].includes(remote.protocol) || remote.username || remote.password) {
+      throw new Error('Image éditoriale distante invalide : HTTP(S) sans identifiants requis.');
+    }
+    meta.ogImage = remote.href;
+    delete meta.fromVersionedImage;
+    return meta;
+  }
+  console.warn(`Image OG du cache technique non retenue dans le snapshot : ${url}`);
+  delete meta.ogImage;
+  delete meta.fromVersionedImage;
+  return meta;
 }
 
 /**
@@ -58,17 +78,5 @@ export function editorialMetadata(result, url, previous = {}) {
     return meta;
   }
   if (!meta.ogImage?.startsWith('data/bookmarks-images/')) {return meta;}
-  if (meta.ogImageOriginal) {
-    const remote = new URL(decodeHTMLEntities(meta.ogImageOriginal), url);
-    if (!['http:', 'https:'].includes(remote.protocol) || remote.username || remote.password) {
-      throw new Error('Image éditoriale distante invalide : HTTP(S) sans identifiants requis.');
-    }
-    meta.ogImage = remote.href;
-    delete meta.fromVersionedImage;
-    return meta;
-  }
-  console.warn(`Image OG du cache technique non retenue dans le snapshot : ${url}`);
-  delete meta.ogImage;
-  delete meta.fromVersionedImage;
-  return meta;
+  return replaceCachedImage(meta, url);
 }

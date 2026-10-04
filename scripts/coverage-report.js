@@ -99,12 +99,7 @@ function row(label, data) {
   return `| ${escapeMarkdown(label)} | ${values.join(' | ')} |`;
 }
 
-/** Valide les deux JSON Jest et construit le résumé sans moyenne de pourcentages. */
-export function buildReport({ summary, finalCoverage, provenance, root }) {
-  validateProvenance(provenance);
-  object(summary, 'coverage-summary.json');
-  object(finalCoverage, 'coverage-final.json');
-  object(summary.total, 'total');
+function coverageEntries(summary, finalCoverage, root) {
   const entries = [];
   for (const [file, data] of Object.entries(summary)) {
     if (file === 'total') {
@@ -120,6 +115,16 @@ export function buildReport({ summary, finalCoverage, provenance, root }) {
     entries.push({ file: relative.split(path.sep).join('/'), data });
   }
   requireCondition(Object.keys(finalCoverage).length === entries.length, 'coverage-final.json : fichiers incohérents');
+  return entries;
+}
+
+/** Valide les deux JSON Jest et construit le résumé sans moyenne de pourcentages. */
+export function buildReport({ summary, finalCoverage, provenance, root }) {
+  validateProvenance(provenance);
+  object(summary, 'coverage-summary.json');
+  object(finalCoverage, 'coverage-final.json');
+  object(summary.total, 'total');
+  const entries = coverageEntries(summary, finalCoverage, root);
   const total = aggregate(entries.map(entry => entry.data));
   for (const measure of measures) {
     validateMetric(summary.total[measure], `total/${measure}`);

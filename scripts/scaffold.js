@@ -12,6 +12,16 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DESTINATIONS = { game: ['games'], tool: ['tools'], epic: ['parcours', 'epics'] };
 export const USAGE = 'node scripts/scaffold.js <game|tool|epic> <id-kebab-case> --title "Titre"';
 
+function assertContributionMetadata(id, title) {
+  if (!isValidId(id) || !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id) || id.length > 64) {
+    throw new Error('Identifiant invalide : 1 à 64 caractères, lettre initiale, minuscules, chiffres et tirets simples.');
+  }
+  if (typeof title !== 'string' || !title.trim() || title !== title.trim()
+    || title.length > 120 || /\p{Cc}/u.test(title)) {
+    throw new Error('Titre invalide : 1 à 120 caractères, sans contrôle ni espaces aux extrémités.');
+  }
+}
+
 /**
  * Valide la ligne de commande, sans accès au disque.
  * @param {string[]} args Arguments sans le nom de l'exécutable.
@@ -25,13 +35,7 @@ export function parseArgs(args) {
   if (!Object.hasOwn(DESTINATIONS, type)) {
     throw new Error('Type invalide : choisir game, tool ou epic.');
   }
-  if (!isValidId(id) || !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(id) || id.length > 64) {
-    throw new Error('Identifiant invalide : 1 à 64 caractères, lettre initiale, minuscules, chiffres et tirets simples.');
-  }
-  if (typeof title !== 'string' || !title.trim() || title !== title.trim()
-    || title.length > 120 || /\p{Cc}/u.test(title)) {
-    throw new Error('Titre invalide : 1 à 120 caractères, sans contrôle ni espaces aux extrémités.');
-  }
+  assertContributionMetadata(id, title);
   return { type, id, title };
 }
 
@@ -98,6 +102,18 @@ function renderAssets(directory, options, prefix = '') {
   return assets;
 }
 
+function scaffoldParent(root, type) {
+  let parent = realpathSync(root);
+  for (const segment of DESTINATIONS[type]) {
+    parent = join(parent, segment);
+    const stat = inspect(parent);
+    if (stat && (!stat.isDirectory() || stat.isSymbolicLink())) {
+      throw new Error(`Destination non sûre : ${parent}. Utiliser un dossier réel, sans lien symbolique.`);
+    }
+  }
+  return parent;
+}
+
 /**
  * Crée une contribution ; la racine optionnelle sert aux tests isolés.
  * Refuse les liens symboliques dans toute la destination et réserve le dossier
@@ -110,15 +126,7 @@ export function scaffold(args, { root = ROOT, templates = join(ROOT, 'templates'
   const config = parseArgs(args);
   const assets = renderAssets(join(templates, config.type), config);
   if (!assets.length) { throw new Error('Gabarit vide : ajouter les fichiers .tpl avant de générer.'); }
-  const rootPath = realpathSync(root);
-  let parent = rootPath;
-  for (const segment of DESTINATIONS[config.type]) {
-    parent = join(parent, segment);
-    const stat = inspect(parent);
-    if (stat && (!stat.isDirectory() || stat.isSymbolicLink())) {
-      throw new Error(`Destination non sûre : ${parent}. Utiliser un dossier réel, sans lien symbolique.`);
-    }
-  }
+  const parent = scaffoldParent(root, config.type);
   const destination = join(parent, config.id);
   const collisions = [destination];
   if (config.type === 'tool') {
