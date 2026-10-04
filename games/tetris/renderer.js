@@ -110,6 +110,51 @@ function preview(context, type, top, height) {
   }
 }
 
+/**
+ * @param {CanvasRenderingContext2D} context - Contexte du terrain.
+ * @param {object} state - État fourni par le moteur.
+ */
+function drawField(context, state) {
+  context.fillStyle = '#0a1220';
+  context.fillRect(0, 0, 300, 600);
+  drawGrid(context);
+  state.board.forEach((row, y) => row.forEach((type, x) => {
+    if (type) { drawBlock(context, x * 30, y * 30, 30, type); }
+  }));
+  if (state.active && !state.gameOver) { drawActive(context, state); }
+}
+
+/** @param {CanvasRenderingContext2D} context - Contexte du terrain. */
+function drawGrid(context) {
+  context.strokeStyle = '#1c2a3c';
+  context.lineWidth = .6;
+  for (let x = 0; x <= 10; x++) {
+    context.beginPath();
+    context.moveTo(x * 30, 0);
+    context.lineTo(x * 30, 600);
+    context.stroke();
+  }
+  for (let y = 0; y <= 20; y++) {
+    context.beginPath();
+    context.moveTo(0, y * 30);
+    context.lineTo(300, y * 30);
+    context.stroke();
+  }
+}
+
+/**
+ * @param {CanvasRenderingContext2D} context - Contexte du terrain.
+ * @param {object} state - État avec pièce active.
+ */
+function drawActive(context, state) {
+  for (const cell of getCells(getGhostPiece(state))) {
+    if (cell.y >= 0) { drawBlock(context, cell.x * 30, cell.y * 30, 30, state.active.type, true); }
+  }
+  for (const cell of getCells(state.active)) {
+    if (cell.y >= 0) { drawBlock(context, cell.x * 30, cell.y * 30, 30, state.active.type); }
+  }
+}
+
 /** Rendu sans effets de bord sur l'état du moteur. */
 export class TetrisRenderer {
   /**
@@ -126,33 +171,7 @@ export class TetrisRenderer {
   draw(state) {
     const { board, hold, next } = this.canvases;
     const context = prepare(board, 300, 600);
-    context.fillStyle = '#0a1220';
-    context.fillRect(0, 0, 300, 600);
-    context.strokeStyle = '#1c2a3c';
-    context.lineWidth = .6;
-    for (let x = 0; x <= 10; x++) {
-      context.beginPath();
-      context.moveTo(x * 30, 0);
-      context.lineTo(x * 30, 600);
-      context.stroke();
-    }
-    for (let y = 0; y <= 20; y++) {
-      context.beginPath();
-      context.moveTo(0, y * 30);
-      context.lineTo(300, y * 30);
-      context.stroke();
-    }
-    state.board.forEach((row, y) => row.forEach((type, x) => {
-      if (type) { drawBlock(context, x * 30, y * 30, 30, type); }
-    }));
-    if (state.active && !state.gameOver) {
-      for (const cell of getCells(getGhostPiece(state))) {
-        if (cell.y >= 0) { drawBlock(context, cell.x * 30, cell.y * 30, 30, state.active.type, true); }
-      }
-      for (const cell of getCells(state.active)) {
-        if (cell.y >= 0) { drawBlock(context, cell.x * 30, cell.y * 30, 30, state.active.type); }
-      }
-    }
+    drawField(context, state);
     const holdContext = prepare(hold, 160, 88);
     holdContext.globalAlpha = state.canHold ? 1 : .4;
     preview(holdContext, state.hold, 0, 88);

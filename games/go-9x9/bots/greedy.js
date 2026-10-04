@@ -54,16 +54,35 @@ function collectGroups(board) {
  */
 function isEye(board, point, color) {
   if (board[point] || !NEIGHBORS[point].every((p) => board[p] === color)) { return false; }
+  return countHostileDiagonals(board, point, color) <= (NEIGHBORS[point].length === 4 ? 1 : 0);
+}
+
+/**
+ * @param {number[]} board Plateau aplati.
+ * @param {number} point Intersection centrale.
+ * @param {number} color Couleur du joueur.
+ * @returns {number} Diagonales sur le plateau qui ne sont pas de cette couleur.
+ */
+function countHostileDiagonals(board, point, color) {
   const x = point % SIZE;
   const y = Math.floor(point / SIZE);
   let hostileDiagonals = 0;
   for (const dx of [-1, 1]) {
     for (const dy of [-1, 1]) {
-      if (x + dx < 0 || x + dx >= SIZE || y + dy < 0 || y + dy >= SIZE) { continue; }
+      if (!onBoard(x + dx, y + dy)) { continue; }
       if (board[(y + dy) * SIZE + x + dx] !== color) { hostileDiagonals++; }
     }
   }
-  return hostileDiagonals <= (NEIGHBORS[point].length === 4 ? 1 : 0);
+  return hostileDiagonals;
+}
+
+/**
+ * @param {number} x Colonne.
+ * @param {number} y Ligne.
+ * @returns {boolean} Vrai si la coordonnée est sur le plateau.
+ */
+function onBoard(x, y) {
+  return x >= 0 && x < SIZE && y >= 0 && y < SIZE;
 }
 
 /**
@@ -104,13 +123,42 @@ function evaluate(state) {
     return 20 * (state.scores.black - state.scores.white);
   }
   const board = state.board.flat();
-  let score = -20 * state.komi;
+  const score = addGroups(-20 * state.komi, board);
+  return addTerritory(score, board);
+}
+
+/**
+ * @param {number} liberties Nombre de libertés.
+ * @returns {number} Pénalité d'un groupe en danger.
+ */
+function dangerPenalty(liberties) {
+  if (liberties === 1) { return 15; }
+  return liberties === 2 ? 5 : 0;
+}
+
+/**
+ * @param {number} initial Score courant (l'ordre des additions est conservé).
+ * @param {number[]} board Plateau aplati.
+ * @returns {number} Score avec la valeur des groupes.
+ */
+function addGroups(initial, board) {
+  let score = initial;
   for (const group of collectGroups(board)) {
     const sign = group.color === 1 ? 1 : -1;
     const liberties = group.liberties.size;
-    const danger = liberties === 1 ? 15 : liberties === 2 ? 5 : 0;
+    const danger = dangerPenalty(liberties);
     score += sign * (group.stones.length * (20 - danger) + 0.5 * Math.min(liberties, 6));
   }
+  return score;
+}
+
+/**
+ * @param {number} initial Score courant (l'ordre des additions est conservé).
+ * @param {number[]} board Plateau aplati.
+ * @returns {number} Score avec territoire et yeux.
+ */
+function addTerritory(initial, board) {
+  let score = initial;
   const black = distances(board, 1);
   const white = distances(board, 2);
   for (let p = 0; p < 81; p++) {
@@ -180,14 +228,7 @@ export class GreedyBot {
     let bestScore = -Infinity;
     const best = [];
     for (const candidate of candidates.slice(0, ROOT_WIDTH)) {
-      let value = candidate.value;
-      if (!candidate.next.gameOver) {
-        const replies = this.candidates(candidate.next,
-          this.engine.getValidActions(candidate.next, candidate.next.currentPlayerId));
-        // Meilleure réponse adverse = pire pour nous. La composante immédiate
-        // départage les lignes de valeur tactique voisine.
-        if (replies.length) { value = -0.85 * replies[0].value + 0.15 * value; }
-      }
+      const value = this.searchValue(candidate);
       if (value > bestScore + 1e-6) {
         bestScore = value;
         best.length = 0;
@@ -197,6 +238,20 @@ export class GreedyBot {
       }
     }
     return rng.pick(best);
+  }
+
+  /**
+   * Meilleure réponse adverse = pire pour nous. La composante immédiate
+   * départage les lignes de valeur tactique voisine.
+   * @param {{action: object, next: object, value: number}} candidate Coup racine.
+   * @returns {number} Valeur après la meilleure réponse.
+   */
+  searchValue(candidate) {
+    if (candidate.next.gameOver) { return candidate.value; }
+    const replies = this.candidates(candidate.next,
+      this.engine.getValidActions(candidate.next, candidate.next.currentPlayerId));
+    if (!replies.length) { return candidate.value; }
+    return -0.85 * replies[0].value + 0.15 * candidate.value;
   }
 }
 

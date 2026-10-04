@@ -11,6 +11,19 @@ export function isRecordData(data) {
       (Number.isFinite(data[mode]) && data[mode] >= 0));
 }
 
+/**
+ * @param {object} state - Partie terminée.
+ * @param {number} value - Score ou temps de la partie.
+ * @param {number|null} previous - Record précédent du mode.
+ * @returns {boolean} Vrai si la partie bat le record (Sprint exige 40 lignes).
+ */
+function isImprovement(state, value, previous) {
+  const sprint = state.mode === 'sprint';
+  if (sprint && state.lines < 40) { return false; }
+  if (previous === null) { return true; }
+  return sprint ? value < previous : value > previous;
+}
+
 /** Records indépendants des scores génériques, particulièrement pour Sprint. */
 export class TetrisRecords {
   /**
@@ -35,11 +48,8 @@ export class TetrisRecords {
    * @returns {boolean} Nouveau record personnel.
    */
   finish(state) {
-    const completedSprint = state.mode === 'sprint' && state.lines >= 40;
     const value = state.mode === 'sprint' ? state.elapsed : state.score;
-    const previous = this.data[state.mode];
-    const better = (state.mode !== 'sprint' || completedSprint) &&
-      (previous === null || (state.mode === 'sprint' ? value < previous : value > previous));
+    const better = isImprovement(state, value, this.data[state.mode]);
     if (better) {
       this.data[state.mode] = value;
       if (!this.kit.saveProgress(this.data)) {

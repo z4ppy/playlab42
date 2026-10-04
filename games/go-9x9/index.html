@@ -303,6 +303,7 @@
         import { GreedyBot } from './bots/greedy.js';
         import { createBoardNavigation } from '../board-navigation.js';
         import { createHumanControls } from './human-controls.js';
+        import { renderCell, scoreTexts, statusText } from './board-render.js';
 
         const boardEl = $('#board');
         const navigation = createBoardNavigation(boardEl, 9);
@@ -410,51 +411,17 @@
             btnResign.disabled = currentHuman === null;
 
             boardEl.querySelectorAll('.cell').forEach((cell) => {
-                const x = Number(cell.dataset.x);
-                const y = Number(cell.dataset.y);
-                const value = state.board[y][x];
-                const description = value === 1 ? 'pierre noire' : value === 2 ? 'pierre blanche' : 'vide';
-                cell.setAttribute('aria-label', `Ligne ${y + 1}, colonne ${x + 1}, ${description}`);
-                cell.setAttribute('aria-disabled', String(currentHuman === null || value !== 0));
-                cell.innerHTML = '';
-                cell.classList.remove('last-move');
-                if (value === 1 || value === 2) {
-                    const stone = document.createElement('div');
-                    stone.className = `stone ${value === 1 ? 'black' : 'white'}`;
-                    cell.appendChild(stone);
-                }
-                if (state.lastMove && state.lastMove.type === 'place' && state.lastMove.x === x && state.lastMove.y === y) {
-                    cell.classList.add('last-move');
-                    cell.setAttribute('aria-label', `${cell.getAttribute('aria-label')}, dernier coup`);
-                }
+                renderCell(cell, state, currentHuman !== null, document);
             });
 
             const captures = state.captures || {};
             capturesBlackEl.textContent = captures[humanId] ?? 0;
             capturesWhiteEl.textContent = captures[opponentId] ?? 0;
 
-            if (state.scores) {
-                scoreBlackEl.textContent = state.scores.black.toFixed(1);
-                scoreWhiteEl.textContent = state.scores.white.toFixed(1);
-            } else {
-                scoreBlackEl.textContent = '-';
-                scoreWhiteEl.textContent = '-';
-            }
-
-            if (state.gameOver) {
-                if (state.winners === null) {
-                    statusEl.textContent = 'Partie terminée : égalité';
-                } else if (state.winners.includes(humanId)) {
-                    statusEl.textContent = 'Victoire Noir';
-                } else if (state.winners.includes(opponentId)) {
-                    statusEl.textContent = 'Victoire Blanc';
-                } else {
-                    statusEl.textContent = 'Partie terminée';
-                }
-            } else {
-                const playerName = state.currentPlayerId === humanId ? 'Noir' : 'Blanc';
-                statusEl.textContent = bot ? (currentHuman ? 'À vous (Noir)' : 'Le bot joue (Blanc)') : `Au tour du joueur ${playerName}`;
-            }
+            const scores = scoreTexts(state);
+            scoreBlackEl.textContent = scores.black;
+            scoreWhiteEl.textContent = scores.white;
+            statusEl.textContent = statusText(state, { humanId, opponentId, bot, currentHuman });
         }
 
         on(btnStart, 'click', startGame);

@@ -52,6 +52,19 @@ export function observeDialog(overlay, { openClass, onClose }) {
     }
     opened = visible;
   };
+  const trapTab = (event) => {
+    const items = focusable();
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (!items.length) { event.preventDefault(); return; }
+    if (!overlay.contains(document.activeElement) || (event.shiftKey && document.activeElement === first)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
   const keydown = (event) => {
     if (!overlay.classList.contains(openClass)) {return;}
     if (event.key === 'Escape') {
@@ -59,17 +72,7 @@ export function observeDialog(overlay, { openClass, onClose }) {
       event.stopPropagation();
       onClose();
     } else if (event.key === 'Tab') {
-      const items = focusable();
-      const first = items[0];
-      const last = items[items.length - 1];
-      if (!items.length) { event.preventDefault(); return; }
-      if (!overlay.contains(document.activeElement) || (event.shiftKey && document.activeElement === first)) {
-        event.preventDefault();
-        (event.shiftKey ? last : first).focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      trapTab(event);
     }
   };
   const observer = new MutationObserver(sync);

@@ -74,34 +74,65 @@ export class SmartBot {
     }
 
     if (maximizing) {
-      let maxScore = -Infinity;
-      for (const action of validActions) {
-        try {
-          const newState = this.#engine.applyAction(state, action, playerId);
-          const score = this.#minimax(newState, depth - 1, false, alpha, beta, player);
-          maxScore = Math.max(maxScore, score);
-          alpha = Math.max(alpha, score);
-          if (beta <= alpha) {break;} // Alpha-beta pruning
-        } catch {
-          // Ignorer les actions invalides
-        }
-      }
-      return maxScore;
-    } else {
-      let minScore = Infinity;
-      for (const action of validActions) {
-        try {
-          const newState = this.#engine.applyAction(state, action, playerId);
-          const score = this.#minimax(newState, depth - 1, true, alpha, beta, player);
-          minScore = Math.min(minScore, score);
-          beta = Math.min(beta, score);
-          if (beta <= alpha) {break;} // Alpha-beta pruning
-        } catch {
-          // Ignorer les actions invalides
-        }
-      }
-      return minScore;
+      return this.#maximize(state, validActions, playerId, depth, alpha, beta, player);
     }
+    return this.#minimize(state, validActions, playerId, depth, alpha, beta, player);
+  }
+
+  /**
+   * Tour du joueur maximisant, avec élagage alpha-bêta.
+   * @param {object} state - État courant
+   * @param {object[]} validActions - Actions légales
+   * @param {string} playerId - Joueur au trait
+   * @param {number} depth - Profondeur restante
+   * @param {number} alpha - Valeur alpha
+   * @param {number} beta - Valeur beta
+   * @param {number} player - Joueur d'origine
+   * @returns {number} Meilleur score
+   * @private
+   */
+  #maximize(state, validActions, playerId, depth, alpha, beta, player) {
+    let maxScore = -Infinity;
+    for (const action of validActions) {
+      try {
+        const newState = this.#engine.applyAction(state, action, playerId);
+        const score = this.#minimax(newState, depth - 1, false, alpha, beta, player);
+        maxScore = Math.max(maxScore, score);
+        alpha = Math.max(alpha, score);
+        if (beta <= alpha) {break;} // Alpha-beta pruning
+      } catch {
+        // Ignorer les actions invalides
+      }
+    }
+    return maxScore;
+  }
+
+  /**
+   * Tour de l'adversaire minimisant, avec élagage alpha-bêta.
+   * @param {object} state - État courant
+   * @param {object[]} validActions - Actions légales
+   * @param {string} playerId - Joueur au trait
+   * @param {number} depth - Profondeur restante
+   * @param {number} alpha - Valeur alpha
+   * @param {number} beta - Valeur beta
+   * @param {number} player - Joueur d'origine
+   * @returns {number} Pire score
+   * @private
+   */
+  #minimize(state, validActions, playerId, depth, alpha, beta, player) {
+    let minScore = Infinity;
+    for (const action of validActions) {
+      try {
+        const newState = this.#engine.applyAction(state, action, playerId);
+        const score = this.#minimax(newState, depth - 1, true, alpha, beta, player);
+        minScore = Math.min(minScore, score);
+        beta = Math.min(beta, score);
+        if (beta <= alpha) {break;} // Alpha-beta pruning
+      } catch {
+        // Ignorer les actions invalides
+      }
+    }
+    return minScore;
   }
 
   /**

@@ -22,6 +22,20 @@ function text(element, value) {
 }
 
 /**
+ * @param {object} state - État du moteur.
+ * @returns {{maximum: number, value: number, goal: string}} Progression du mode.
+ */
+function progressFor(state) {
+  if (state.mode === 'sprint') {
+    return { maximum: 40, value: Math.min(40, state.lines), goal: `${Math.max(0, 40 - state.lines)} lignes à compléter` };
+  }
+  if (state.mode === 'ultra') {
+    return { maximum: 120000, value: Math.min(120000, state.elapsed), goal: '120 secondes. Chaque point compte.' };
+  }
+  return { maximum: 10, value: state.lines % 10, goal: `${10 - state.lines % 10} lignes avant le niveau suivant` };
+}
+
+/**
  * Contrôleur navigateur ; les horloges, entrées et effets restent hors du moteur.
  * Les dépendances injectables permettent de tester le vrai parcours DOM avec Jest.
  */
@@ -211,20 +225,26 @@ export class TetrisController {
    */
   keyDown(event) {
     if (event.ctrlKey || event.metaKey || event.altKey) { return; }
-    if (['KeyP', 'Escape'].includes(event.code) && this.started &&
-      !event.target.closest?.('input, select, textarea')) {
-      event.preventDefault();
-      if (!event.repeat) {
-        if (this.running) { this.pause(); } else { this.resume(); }
-      }
-      return;
-    }
+    if (this.handlePauseKey(event)) { return; }
     if (event.target.closest?.('input, select, textarea, button, a, summary') ||
       !this.running) { return; }
     const action = KEY_ACTIONS[event.code];
-    if (!action || !this.running) { return; }
+    if (!action) { return; }
     event.preventDefault();
     if (!event.repeat) { this.press(`key:${event.code}`, action); }
+  }
+
+  /**
+   * @param {KeyboardEvent} event - Entrée clavier.
+   * @returns {boolean} Vrai si la touche de pause a été consommée.
+   */
+  handlePauseKey(event) {
+    if (!['KeyP', 'Escape'].includes(event.code) || !this.started ||
+      event.target.closest?.('input, select, textarea')) { return false; }
+    event.preventDefault();
+    if (event.repeat) { return true; }
+    if (this.running) { this.pause(); } else { this.resume(); }
+    return true;
   }
 
   /**
@@ -255,23 +275,36 @@ export class TetrisController {
     if (!this.engine.isValidAction(this.state, action, 'human')) { return; }
     const previous = this.state;
     this.state = this.engine.applyAction(previous, action, 'human');
-    if (type !== 'tick') {
-      const changed = JSON.stringify(previous.active) !== JSON.stringify(this.state.active);
-      if (type === 'hardDrop') { this.audio.play('drop'); }
-      else if (type === 'hold') { this.audio.play('hold'); }
-      else if (changed) { this.audio.play(type.startsWith('rotate') ? 'rotate' : 'move'); }
-    }
+    if (type !== 'tick') { this.playMoveSound(type, previous); }
     if (this.state.piecesPlaced !== previous.piecesPlaced && this.state.lastClear?.points > 0) {
-      const clear = this.state.lastClear;
-      text(this.elements.announcement, `${formatClearLabel(clear.label)} · +${clear.points} points${this.state.combo > 0 ? ` · Combo ${this.state.combo}` : ''}`);
-      this.audio.play('clear');
-      const effect = this.elements['clear-effect'];
-      effect.classList.remove('flash');
-      void effect.offsetWidth;
-      effect.classList.add('flash');
+      this.announceClear();
     }
     if (this.state.gameOver) { this.finish(); }
     if (type !== 'tick') { this.render(); }
+  }
+
+  /**
+   * @param {string} type - Action du joueur.
+   * @param {object} previous - État avant l'action.
+   */
+  playMoveSound(type, previous) {
+    if (type === 'hardDrop') { this.audio.play('drop'); return; }
+    if (type === 'hold') { this.audio.play('hold'); return; }
+    if (JSON.stringify(previous.active) !== JSON.stringify(this.state.active)) {
+      this.audio.play(type.startsWith('rotate') ? 'rotate' : 'move');
+    }
+  }
+
+  /** Annonce la dernière ligne effacée et relance l'effet visuel. */
+  announceClear() {
+    const clear = this.state.lastClear;
+    const combo = this.state.combo > 0 ? ` · Combo ${this.state.combo}` : '';
+    text(this.elements.announcement, `${formatClearLabel(clear.label)} · +${clear.points} points${combo}`);
+    this.audio.play('clear');
+    const effect = this.elements['clear-effect'];
+    effect.classList.remove('flash');
+    void effect.offsetWidth;
+    effect.classList.add('flash');
   }
 
   /** Affiche le bilan et enregistre les records une seule fois. */
@@ -337,6 +370,13 @@ export class TetrisController {
     text(this.elements['record-mode'], `${MODE_NAMES[mode]}${mode === 'sprint' ? ' · meilleur temps' : ' · meilleur score'}`);
   }
 
+  /** @returns {string} Libellé de l'état de partie. */
+  playStateLabel() {
+    if (this.state.gameOver) { return 'TERMINÉ'; }
+    if (this.running) { return 'DANS LE FLOW'; }
+    return this.started ? 'EN PAUSE' : 'PRÊT À JOUER';
+  }
+
   /** Met à jour le tableau de bord sans annoncer chaque tick aux lecteurs d'écran. */
   render() {
     const state = this.state;
@@ -347,17 +387,14 @@ export class TetrisController {
     text(e.level, String(state.level).padStart(2, '0'));
     text(e.time, formatTime(state.mode === 'ultra' ? 120000 - state.elapsed : state.elapsed));
     text(e['mode-label'], MODE_NAMES[state.mode].toUpperCase());
-    text(e['play-state'], state.gameOver ? 'TERMINÉ' : this.running ? 'DANS LE FLOW' : this.started ? 'EN PAUSE' : 'PRÊT À JOUER');
+    text(e['play-state'], this.playStateLabel());
     text(e['hold-status'], state.canHold ? 'Une seconde chance.' : 'Disponible après la pose.');
     const selected = this.document.querySelector('input[name="mode"]:checked').value;
     this.showRecord(e.overlay.hidden ? state.mode : selected);
-    const maximum = state.mode === 'sprint' ? 40 : state.mode === 'ultra' ? 120000 : 10;
-    const value = state.mode === 'sprint' ? Math.min(40, state.lines) : state.mode === 'ultra' ? Math.min(120000, state.elapsed) : state.lines % 10;
+    const { maximum, value, goal } = progressFor(state);
     e.progress.setAttribute('aria-valuemax', String(maximum));
     e.progress.setAttribute('aria-valuenow', String(value));
     e['progress-fill'].style.width = `${value / maximum * 100}%`;
-    const goal = state.mode === 'sprint' ? `${Math.max(0, 40 - state.lines)} lignes à compléter` :
-      state.mode === 'ultra' ? '120 secondes. Chaque point compte.' : `${10 - state.lines % 10} lignes avant le niveau suivant`;
     text(e.goal, goal);
     e.progress.setAttribute('aria-valuetext', goal);
     for (const button of this.document.querySelectorAll('[data-action]')) {
