@@ -342,4 +342,15 @@ describe('PianoController : construction du select des instruments', () => {
     expect(groups().flatMap(([, group]) => group).filter(([, , selected]) => selected).map(([value]) => value))
       .toEqual(['piano']);
   });
+
+  test('deux abonnements au gestionnaire, tous deux retirés à la destruction sans toucher les autres', () => {
+    open();
+    const foreign = jest.fn();
+    synth.on('effect-changed', foreign);
+    expect(['preset-changed', 'effect-changed'].map((event) => synth.listenerCount(event))).toEqual([1, 2]);
+    piano.dispose();
+    expect(['preset-changed', 'effect-changed'].map((event) => synth.listenerCount(event))).toEqual([0, 1]);
+    synth.emit('effect-changed', {});
+    expect(foreign).toHaveBeenCalledTimes(1);
+  });
 });

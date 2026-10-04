@@ -380,3 +380,18 @@ describe('SynthController : construction du select des presets', () => {
     expect(options().flatMap(([, group]) => group).filter(([, , selected]) => selected)).toEqual([]);
   });
 });
+
+describe('SynthController : abonnements au gestionnaire', () => {
+  const EVENTS = ['preset-changed', 'oscillator-changed', 'envelope-changed', 'effect-changed', 'config-changed'];
+
+  test('un abonnement par événement, tous retirés à la destruction sans toucher les autres', () => {
+    const { controller, manager } = open(FULL);
+    const foreign = jest.fn();
+    manager.on('preset-changed', foreign);
+    expect(EVENTS.map((event) => manager.listenerCount(event))).toEqual([2, 1, 1, 1, 1]);
+    controller.dispose();
+    expect(EVENTS.map((event) => manager.listenerCount(event))).toEqual([1, 0, 0, 0, 0]);
+    manager.emit('preset-changed', { preset: 'organ' });
+    expect(foreign).toHaveBeenCalledTimes(1);
+  });
+});
