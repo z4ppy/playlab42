@@ -10,6 +10,7 @@ const prebuilt = process.env.PLAYWRIGHT_PREBUILT === '1';
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: '**/cross-engine-smoke.spec.js',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,

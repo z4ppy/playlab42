@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 import { jest } from '@jest/globals';
 import { readFileSync } from 'node:fs';
+import { deserialize, serialize } from 'node:v8';
 import { App } from './App.js';
 import GameKit from '../../../lib/gamekit.js';
 
@@ -10,6 +11,8 @@ import GameKit from '../../../lib/gamekit.js';
  * confirmation et le moteur audio (via SynthManager) sont remplacés.
  */
 const EXERCISES = JSON.parse(readFileSync(new URL('../data/exercises.json', import.meta.url), 'utf8'));
+// jsdom ne fournit pas encore structuredClone, contrairement aux navigateurs cibles.
+globalThis.structuredClone = value => deserialize(serialize(value));
 
 const VIEW_IDS = ['menu-view', 'exercise-view', 'progress-view', 'settings-view'];
 const BUTTON_IDS = [

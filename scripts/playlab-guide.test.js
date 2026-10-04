@@ -160,6 +160,18 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     }
   });
 
+  it('explique budgets bloquants et smoke multi-moteurs sans certification globale', () => {
+    const quality = readFileSync(resolve(root, 'docs/guides/software-quality.md'), 'utf8');
+    const slide = readFileSync(resolve(epicDir, 'slides/10-qualite-ci/index.html'), 'utf8');
+    expect(quality).toContain('quality-budgets.json');
+    expect(quality).toContain('typecheck:js-contracts');
+    expect(quality).toContain('Ces preuves locales ne sont pas une fusion');
+    expect(slide).toContain('CI : dix contrôles complémentaires');
+    expect(slide).toContain('dépassement bloquant pour Build');
+    expect(slide).toContain('La suite complète reste Chromium');
+    expect(slide).toContain('neuf noms de checks requis restent inchangés');
+  });
+
   describe.each(ids)('Slide %s', id => {
     const path = resolve(epicDir, 'slides', id, 'index.html');
 

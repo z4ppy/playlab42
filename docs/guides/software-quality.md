@@ -12,16 +12,17 @@ Ce guide est la référence commune aux contributeurs et aux skills ; la
 | ESLint JS et scripts HTML | Erreurs et warnings bloquants ; eslint-plugin-html 8.2.1, pas d'eval, `Function` dynamique ni URL JavaScript | Pas de lint du markup ; attributs événementiels refusés par un test de politique |
 | Biome TypeScript | Version 2.5.15, preset recommandé, syntaxe et règles `.ts`, warnings bloquants | Pas d'analyse utilisant le compilateur TS ni de couverture des plugins de sécurité ESLint |
 | ESLint Security | Plugins 4.2.0 / 4.1.5 verrouillés, configuration flat, gate JS et scripts HTML ciblé | Propriétés DOM et heuristiques consultatives ; pas de règles ESLint sécurité sur TS |
-| TypeScript | Sources TS strictes et signatures réelles des six moteurs | Les corps JS ne sont pas tous analysés ; la transpilation ne vérifie pas les types |
+| TypeScript | Sources TS strictes, signatures réelles des six moteurs et corps JS de trois modules SDK ciblés | Pas de vérification de tous les corps JS ; la transpilation ne vérifie pas les types |
 | Jest | Tests avec seuils ciblés ci-dessous | Couverture de lignes, pas qualité des assertions |
-| Playwright | Interactions, clavier, thèmes et ressources du site préparé | Socle Chromium, pas tous les navigateurs |
+| Playwright | Suite Chromium et smoke ciblé Chromium/Firefox/WebKit du site préparé | Pas de certification multi-navigateur de tous les jeux, audio ou 3D |
+| Code quality | Cyclomatique production ≤10, cognitif TS ≤15, budgets absolus de duplication ; dépassement bloquant | Tests/pédagogie consultatifs ; un compteur ne prouve pas l'absence de tout nouveau clone |
 | npm audit | Seuil modéré bloquant, dépendances de fabrication incluses | CVE connues au moment de l'exécution ; panne du registre = échec |
 | Trivy | Outil 0.75.0 vérifié ; scan partagé CI/audit, vulnérabilités/secrets HIGH et CRITICAL bloquants, dépendances de développement incluses | Base évolutive ; pas un gate complet de configuration Docker |
 | OpenSpec | Structure stricte des exigences et changes | Ne vérifie pas le comportement du code |
 
 La CI réutilisée avant publication exige lint qualité JS/HTML/TS et sécurité JS/HTML, tests, types,
 audit npm, Trivy, OpenSpec, navigateur et build. Build exige le succès de
-Security lint et du scan Trivy partagé. Le workflow d'audit complémentaire
+Security lint, du scan Trivy partagé et de Code quality. Le workflow d'audit complémentaire
 reste séparé et conserve certains diagnostics consultatifs. Le
 rapport de sécurité affiche les états réels des jobs : une analyse annulée,
 ignorée ou sans résultat exploitable ne devient pas « aucun problème ».
@@ -66,6 +67,19 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | SynthController | 86 % | 96 % | 98 % lignes / 96 % statements |
 | Runtime vendors | 85 % | 90 % | 95 % |
 | Vérification d'archive | 75 % | 100 % | 70 % |
+| Guides ; scaffold ; métadonnées OG | 80 % ; 90 % ; 100 % | 96 % ; 100 % ; 100 % | 94 % ; 90 % ; 100 % |
+| App musicale | 95 % | 95 % | 98 % lignes / 97 % statements |
+| Helpers `app-*.js` ; ExerciseController ; Metronome | 100 % | 100 % | 100 % |
+| SynthManager | 95 % | 100 % | 100 % lignes / 98 % statements |
+| Metronome/Piano/RhythmController, chaque fichier | 89 % | 96 % | 98 % lignes / 97 % statements |
+| TunerController ; helper de détection | 95 % ; 100 % | 100 % | 100 % lignes / 99 % statements ; 100 % |
+| Pitch ; Duration | 90 % ; 94 % | 100 % | 95 % ; 98 % |
+| Relativity main ; SceneManager ; DopplerGraph | 94 % ; 100 % ; 95 % | 100 % | 100 % lignes / 98 % ; 100 % ; 99 % statements |
+| Catalogue/bookmarks/tabs, chaque fichier ; parcours | 95 % ; 94 % | 100 % | 100 % ; 100 % lignes / 98 % statements |
+| Catalogue UI ; DOM ; GameKit | 100 % ; 98 % ; 100 % | 100 % | 100 % |
+| Tetris controller ; renderer | 96 % ; 93 % | 92 % ; 100 % | 99 % lignes / 97 % statements ; 100 % |
+| Records Tetris ; plateau Go ; bots Go/Dames ; dialogue accessible | 100 % | 100 % | 100 % |
+| Validateur des budgets | 96 % | 100 % | 100 % |
 
 Ces composants protègent déterminisme, portail, moteurs, outils et livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -972,8 +986,56 @@ gardent des empreintes identiques avant l'actualisation documentaire.
 Les six hotspots et tous leurs helpers respectent le budget 10 réel.
 Les floors ajoutés sont guides **94/80/96/94 %**, scaffold **90/90/100/90 %**
 et métadonnées OG **100/100/100/100 %** S/B/F/L, après mesure ; les floors
-historiques ne baissent pas. Cette preuve bornée n'est pas une validation
-intégrée des scopes encore en cours.
+historiques ne baissent pas.
+
+### Résultat applicatif et prévention
+
+Les sept scopes sont intégrés après caractérisation, avec une revue indépendante
+des changements d'exécution. App, ses contrôleurs et helpers sont effectivement
+collectés, tout comme les commandes/rendus/bots et les panneaux Relativity :
+les nouvelles sources ne sont ni exclues ni présentées comme couvertes par les E2E.
+Les nouveaux floors de la table sont mesurés par fichier ; les vrais CLI refusent
+une régression pour chaque sélecteur. Le changement de périmètre empêche de
+comparer directement le pourcentage global à celui de la PR #151.
+
+Les corrections concernent notamment les timers d'exercices après sortie/dispose,
+le skip d'accord et les réponses non textuelles, l'isolation des réglages du synthé,
+les ressources du microphone après annulation/échec et les RAF/listeners/panneaux
+Relativity après arrêt ou destruction. La garde des clones audio vérifie leur
+identité DOM, y compris dans un autre contexte ; un clone invalide rejette
+explicitement la Promise, sans entrée de cache invalide.
+Le corpus de **139 scénarios du portail**, les appels de rendu Tetris et les
+trajectoires à seeds fixes des bots préservent le comportement caractérisé.
+
+`quality-budgets.json` fixe la production à **10 par fonction JS/HTML**,
+**15 en cognitif TS**, et au maximum **58 clones / 610 lignes / 4 474 tokens**.
+Le rapport v2 garde JSON/Markdown en cas de dépassement et échoue ; une configuration
+invalide ou un scanner incomplet ne produit pas de faux zéro. Le job Build déjà
+requis refuse aussi un Code quality annulé, ignoré ou échoué. Ces totaux absolus
+n'interdisent pas individuellement chaque nouveau clone si un ancien est retiré.
+Les anciens rapports qualifiés de consultatifs ci-dessus sont des jalons historiques,
+pas la politique de cette continuation.
+
+`typecheck:js-contracts` vérifie réellement les corps de `lib/assets.js`,
+`lib/seeded-random.js` et `lib/local-data/contracts.js` en `checkJs` strict ;
+des mutations de corps sont rejetées par le compilateur, sans migration TS générale.
+Le smoke de trois contrats (navigation/jeu au clavier, thème/pseudonyme persistant,
+erreur JSON annoncée et récupération) est exécuté sur les **trois moteurs** dans
+le même check Browser requis. Sa découverte reste séparée de la suite Chromium,
+sans changement des neuf noms de checks GitHub requis.
+
+La mesure locale intégrée réduit **49 à 0 fonctions de production JS/HTML >10**
+et **58 à 56 clones**, **610 à 584 lignes**, **4 474 à 4 360 tokens**,
+avec les mêmes outils, paramètres et exclusions. Les helpers portent les sources
+de production sélectionnées à **205**, contre 197 dans la baseline.
+Ces preuves locales ne sont pas une fusion ou une publication constatée.
+
+La suite conserve des limites explicites : bootstrap musical à zéro Jest,
+panneaux Relativity partiellement caractérisés, heuristiques consultatives non
+triées intégralement, et pas de validation complète audio/3D/performance sur
+Firefox/WebKit. Le détecteur d'accordeur à très basse fréquence demande un contrat
+de plage exploitable avant modification de l'algorithme. Ce lot ne certifie donc
+ni une base « parfaite », ni un taux global de 100 %, ni zéro duplication.
 
 ## Maintenance des références et exceptions
 

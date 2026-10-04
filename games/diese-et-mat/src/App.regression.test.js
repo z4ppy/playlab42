@@ -1,11 +1,14 @@
 /** @jest-environment jsdom */
 import { jest } from '@jest/globals';
 import { readFileSync } from 'node:fs';
+import { deserialize, serialize } from 'node:v8';
 import { App } from './App.js';
 import GameKit from '../../../lib/gamekit.js';
 
 /** Régressions des défauts corrigés lors de la simplification de App. */
 const EXERCISES = JSON.parse(readFileSync(new URL('../data/exercises.json', import.meta.url), 'utf8'));
+// jsdom ne fournit pas encore structuredClone, contrairement aux navigateurs cibles.
+globalThis.structuredClone = value => deserialize(serialize(value));
 const IDS = ['menu-view', 'exercise-view', 'progress-view', 'settings-view'];
 
 describe('App - régressions', () => {

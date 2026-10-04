@@ -187,6 +187,19 @@ describe('mesure intégrée avec les vrais scanners', () => {
     expect(markdown).toContain('N/A (aucun TS)');
   }, 30000);
 
+  test('la provenance CI valide conserve run, tentative et résumé natif', async () => {
+    process.env.GITHUB_SHA = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: directory, encoding: 'utf8' }).trim();
+    process.env.GITHUB_RUN_ID = '123';
+    process.env.GITHUB_RUN_ATTEMPT = '2';
+    process.env.GITHUB_STEP_SUMMARY = path.join(directory, 'coverage/summary.md');
+    const report = await generateQualityReport(directory, undefined, measureOnly);
+    expect(report.provenance).toEqual({
+      sha: process.env.GITHUB_SHA, runId: '123', runAttempt: '2', workingTree: 'clean',
+    });
+    expect(readFileSync(process.env.GITHUB_STEP_SUMMARY, 'utf8'))
+      .toBe(readFileSync(path.join(directory, 'coverage/code-quality/code-quality.md'), 'utf8'));
+  }, 30000);
+
   test('refuse une provenance CI ne correspondant pas au checkout', async () => {
     process.env.GITHUB_SHA = 'a'.repeat(40);
     process.env.GITHUB_RUN_ID = '123';

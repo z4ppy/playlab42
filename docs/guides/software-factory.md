@@ -78,7 +78,10 @@ et [audit 37209560905](https://github.com/z4ppy/playlab42/actions/runs/372095609
 réussis, 49 fonctions > 10 et 58 clones.
 `quality/application-contracts` poursuit ensuite les contrats d'orchestration
 et protections applicatives en scopes parallèles ; cette continuation n'est
-pas encore livrée et ne promet pas une base « parfaite ».
+pas encore livrée et ne promet pas une base « parfaite ». Elle ajoute des budgets
+de production bloquants pour Build et un smoke Chromium/Firefox/WebKit dans le
+check Browser existant ; les détails et limites restent dans le
+[bilan applicatif](software-quality.md#contrats-et-qualité-applicative).
 
 ## Carte de l'usine
 

@@ -8,6 +8,7 @@ export default defineConfig({
   ...base,
   testDir: './e2e',
   testMatch: 'cross-engine-smoke.spec.js',
+  testIgnore: [],
   outputDir: 'test-results/cross-engine',
   reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report/cross-engine' }]],
   projects: engines.map(name => ({

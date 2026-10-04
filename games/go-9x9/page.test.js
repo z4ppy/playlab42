@@ -16,9 +16,21 @@ const GREEDY_REPLY = [
 
 /** Charge les vrais modules importés par la page, sauf ceux explicitement remplacés. */
 async function loadModules(overrides) {
+  const loaders = {
+    '../../lib/theme.js': () => import('../../lib/theme.js'),
+    '../../lib/dom.js': () => import('../../lib/dom.js'),
+    '../../lib/seeded-random.js': () => import('../../lib/seeded-random.js'),
+    './engine.js': () => import('./engine.js'),
+    './bots/random.js': () => import('./bots/random.js'),
+    './bots/greedy.js': () => import('./bots/greedy.js'),
+    '../board-navigation.js': () => import('../board-navigation.js'),
+    './human-controls.js': () => import('./human-controls.js'),
+    './board-render.js': () => import('./board-render.js'),
+  };
   const modules = {};
   for (const [, , specifier] of SCRIPT.matchAll(IMPORT)) {
-    modules[specifier] = overrides[specifier] ?? await import(fileURLToPath(new URL(specifier, import.meta.url)));
+    if (!loaders[specifier]) { throw new Error(`Import de page non pris en charge : ${specifier}`); }
+    modules[specifier] = overrides[specifier] ?? await loaders[specifier]();
   }
   return modules;
 }

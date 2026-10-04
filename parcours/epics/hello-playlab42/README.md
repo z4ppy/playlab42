@@ -83,6 +83,9 @@ a livré la simplification de fabrication/vérification via la PR #151
 orchestrations et renforce les protections applicatives en scopes parallèles ;
 elle n'est pas encore livrée. « Parfait » n'est pas un critère de sortie :
 préférer des contrats, mesures et limites explicitement vérifiables.
+Cette continuation rend les budgets de production bloquants pour Build et ajoute
+un smoke Chromium/Firefox/WebKit au check Browser existant, sans prétendre certifier
+tous les jeux sur tous les navigateurs.
 Les neuf checks GitHub requis ne sont pas les dix ressources HTTP
 du smoke, qui incluent désormais le manifeste.
 Aucun run cron réussi, rollback de production ou archivage OpenSpec n'est
