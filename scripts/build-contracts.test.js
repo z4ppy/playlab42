@@ -335,6 +335,27 @@ function typescriptFixture() {
   write('app/ignore.ts', 'export const ignored: number = 5;');
 }
 
+describe.each(['bookmarks', 'parcours'])('%s : refus de publication', builder => {
+  test('une erreur de remplacement reste visible sans annoncer de succès ni perdre la destination', () => {
+    if (builder === 'bookmarks') {
+      bookmarkFixture();
+    } else {
+      write('parcours/index.json', {});
+    }
+    const output = `data/${builder}.json`;
+    rmSync(join(root, output));
+    write(`${output}/previous.txt`, previous);
+
+    const result = run(builder);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain('--- Rapport ---');
+    expect(result.stdout).not.toMatch(/Catalogue généré|terminé avec succès/);
+    expect(result.stderr).toMatch(/EISDIR|ENOTDIR|EEXIST/);
+    expect(result.stderr).toContain(`<ROOT>/${output}`);
+    expect(read(`${output}/previous.txt`)).toBe(previous);
+  });
+});
+
 describe('typescript : sortie publique et mode d’échec', () => {
   test('transpile les quatre racines vers les mêmes chemins et résume le build', () => {
     typescriptFixture();
