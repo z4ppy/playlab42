@@ -5,7 +5,7 @@
  * distingue le comptage des pierres et l'exploration des régions vides.
  *
  * @typedef {{type: 'place', x: number, y: number} | {type: 'pass' | 'resign'}} GoAction
- * @typedef {{seed: number, playerIds: [string, string]}} GoConfig
+ * @typedef {{seed: number, playerIds: [string, string], manualScoring?: boolean}} GoConfig
  * @typedef {Object} GoState
  * @property {number} boardSize
  * @property {number[][]} board
@@ -21,6 +21,9 @@
  * @property {number[][] | null} previousBoard
  * @property {GoAction | null} lastMove
  * @property {{black: number, white: number} | null} scores
+ * @property {boolean} [manualScoring] Revue manuelle activée explicitement.
+ * @property {boolean} [scoring] Revue en cours, sans vainqueur ni score final.
+ * @property {number[]} [deadStones] Indices y * 9 + x des groupes marqués morts.
  */
 
 const EMPTY = 0;
@@ -127,6 +130,7 @@ function cloneState(state) {
     board: cloneBoard(state.board),
     captures: { ...state.captures },
     previousBoard: state.previousBoard ? cloneBoard(state.previousBoard) : null,
+    ...(state.manualScoring ? { deadStones: [...state.deadStones] } : {}),
   };
 }
 
@@ -151,6 +155,7 @@ export class Go9x9Engine {
       previousBoard: null,
       lastMove: null,
       scores: null,
+      ...(config.manualScoring ? { manualScoring: true, scoring: false, deadStones: [] } : {}),
     };
   }
 
@@ -174,7 +179,7 @@ export class Go9x9Engine {
       newState.passesInARow += 1;
       newState.currentPlayerId = this.#nextPlayer(state);
       if (newState.passesInARow >= 2) {
-        this.#finalizeScore(newState);
+        this.#endByPass(newState);
       }
       return newState;
     }
@@ -206,7 +211,7 @@ export class Go9x9Engine {
    * @returns {boolean}
    */
   isValidAction(state, action, playerId) {
-    if (state.gameOver || state.currentPlayerId !== playerId) {return false;}
+    if (!this.#isPlayingTurn(state, playerId)) {return false;}
     if (!action || typeof action !== 'object' || Array.isArray(action)) {return false;}
     if (action.type === 'pass' || action.type === 'resign') {return true;}
 
@@ -220,7 +225,7 @@ export class Go9x9Engine {
 
   /** @param {GoState} state @param {string} playerId @returns {GoAction[]} */
   getValidActions(state, playerId) {
-    if (state.gameOver || state.currentPlayerId !== playerId) {return [];}
+    if (!this.#isPlayingTurn(state, playerId)) {return [];}
 
     const actions = [];
     const color = this.#colorForPlayer(state, playerId);
@@ -264,6 +269,77 @@ export class Go9x9Engine {
       [state.playerIds[0]]: state.scores.black,
       [state.playerIds[1]]: state.scores.white,
     } : null;
+  }
+
+  /**
+   * Bascule un groupe connexe entier sans retirer les pierres du plateau joué.
+   * @param {GoState} state Revue en cours.
+   * @param {number} x Colonne d'une pierre, entier entre 0 et 8.
+   * @param {number} y Ligne d'une pierre, entier entre 0 et 8.
+   * @returns {GoState} Nouvelle revue, entrée inchangée.
+   * @throws {Error} Hors revue ou intersection vide/invalide.
+   */
+  toggleDeadGroup(state, x, y) {
+    this.#requireScoring(state);
+    if (!Number.isInteger(x) || !Number.isInteger(y) || !inBounds(x, y) || state.board[y][x] === EMPTY) {
+      throw new Error('Choisissez une pierre du plateau');
+    }
+    const next = cloneState(state);
+    const marked = new Set(state.deadStones);
+    const unmark = marked.has(y * BOARD_SIZE + x);
+    for (const [gx, gy] of this.#collectGroup(state.board, x, y).positions) {
+      const point = gy * BOARD_SIZE + gx;
+      if (unmark) { marked.delete(point); }
+      else { marked.add(point); }
+    }
+    next.deadStones = [...marked].sort((a, b) => a - b);
+    return next;
+  }
+
+  /**
+   * Confirme le score chinois sur une copie sans les groupes marqués morts.
+   * @param {GoState} state Revue en cours.
+   * @returns {GoState} État terminé, plateau joué et captures conservés.
+   * @throws {Error} Si le comptage n'est pas en cours.
+   */
+  confirmScore(state) {
+    this.#requireScoring(state);
+    const next = cloneState(state);
+    const scoringBoard = cloneBoard(state.board);
+    for (const point of state.deadStones) {
+      scoringBoard[Math.floor(point / BOARD_SIZE)][point % BOARD_SIZE] = EMPTY;
+    }
+    this.#finalizeScore(next, scoringBoard);
+    next.scoring = false;
+    return next;
+  }
+
+  /**
+   * Reprend au joueur suivant les deux passes, sans perte du plateau ou captures.
+   * @param {GoState} state Revue en cours.
+   * @returns {GoState} Partie jouable avec passes et marquages réinitialisés.
+   * @throws {Error} Si le comptage n'est pas en cours.
+   */
+  resumePlay(state) {
+    this.#requireScoring(state);
+    const next = cloneState(state);
+    next.scoring = false;
+    next.deadStones = [];
+    next.passesInARow = 0;
+    return next;
+  }
+
+  #requireScoring(state) {
+    if (!state.scoring || state.gameOver) { throw new Error('Le comptage n’est pas en cours'); }
+  }
+
+  #isPlayingTurn(state, playerId) {
+    return !state.gameOver && !state.scoring && state.currentPlayerId === playerId;
+  }
+
+  #endByPass(state) {
+    if (state.manualScoring) { state.scoring = true; }
+    else { this.#finalizeScore(state); }
   }
 
   #colorForPlayer(state, playerId) {
@@ -334,9 +410,9 @@ export class Go9x9Engine {
     return { positions, liberties };
   }
 
-  #finalizeScore(state) {
-    const stones = countStones(state.board);
-    const territory = floodTerritory(state.board);
+  #finalizeScore(state, board = state.board) {
+    const stones = countStones(board);
+    const territory = floodTerritory(board);
 
     const blackScore = stones.black + territory.black;
     const whiteScore = stones.white + territory.white + state.komi;

@@ -74,4 +74,16 @@ describe('Commandes humaines de Go', () => {
     expect(onInvalid).toHaveBeenCalledWith(action);
     expect(controls.getPlayerId()).toBe('white');
   });
+
+  test('la revue reste contrôlée par l’humain même si le joueur suivant est le bot', () => {
+    hasBot = true;
+    state = engine.init({ seed: 42, playerIds: ['black', 'white'], manualScoring: true });
+    state = engine.applyAction(state, { type: 'place', x: 4, y: 4 }, 'black');
+    state = engine.applyAction(state, { type: 'pass' }, 'white');
+    state = engine.applyAction(state, { type: 'pass' }, 'black');
+    expect(controls.getPlayerId()).toBe('white');
+    expect(controls.play({ type: 'pass' })).toBe(false);
+    expect(onInvalid).toHaveBeenCalledWith({ type: 'pass' });
+    expect(state.scoring).toBe(true);
+  });
 });

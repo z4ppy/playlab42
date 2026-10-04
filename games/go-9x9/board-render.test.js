@@ -85,4 +85,44 @@ describe('board-render', () => {
     expect(scoreTexts({})).toEqual({ black: '-', white: '-' });
     expect(scoreTexts({ scores: { black: 44, white: 37.5 } })).toEqual({ black: '44.0', white: '37.5' });
   });
+
+  it('annonce la revue avant le score, même contre un bot', () => {
+    expect(statusText({ scoring: true, gameOver: false }, {
+      humanId: 'black', opponentId: 'white', bot: {}, currentHuman: 'white',
+    })).toContain('Comptage');
+  });
+
+  it('rend les groupes vivants et morts activables, mais pas les intersections vides', () => {
+    const state = makeState({ manualScoring: true, scoring: true, deadStones: [11] });
+    const black = makeCell(2, 1);
+    const white = makeCell(4, 3);
+    const empty = makeCell(0, 0);
+    empty.setAttribute('aria-pressed', 'true');
+    renderCell(black, state, true, document);
+    renderCell(white, state, true, document);
+    renderCell(empty, state, true, document);
+    expect(black.querySelector('.stone.dead')).not.toBeNull();
+    expect(black.getAttribute('aria-pressed')).toBe('true');
+    expect(black.getAttribute('aria-disabled')).toBe('false');
+    expect(black.getAttribute('aria-label')).toContain('groupe mort, activer pour inverser');
+    expect(white.getAttribute('aria-pressed')).toBe('false');
+    expect(white.getAttribute('aria-label')).toContain('groupe vivant');
+    expect(empty.getAttribute('aria-disabled')).toBe('true');
+    expect(empty.hasAttribute('aria-pressed')).toBe(false);
+    renderCell(white, state, false, document);
+    expect(white.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('conserve le marquage final sans proposer de l’inverser après confirmation', () => {
+    const cell = makeCell(2, 1);
+    cell.setAttribute('aria-pressed', 'true');
+    renderCell(cell, makeState({ manualScoring: true, scoring: false, deadStones: [11] }), false, document);
+    expect(cell.querySelector('.stone.dead')).not.toBeNull();
+    expect(cell.getAttribute('aria-label')).toContain('groupe mort, retiré du score');
+    expect(cell.getAttribute('aria-disabled')).toBe('true');
+    expect(cell.hasAttribute('aria-pressed')).toBe(false);
+    renderCell(cell, makeState({ manualScoring: true, scoring: false, deadStones: [] }), true, document);
+    expect(cell.querySelector('.stone.dead')).toBeNull();
+    expect(cell.getAttribute('aria-label')).toBe('Ligne 2, colonne 3, pierre noire');
+  });
 });

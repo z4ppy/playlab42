@@ -179,6 +179,28 @@ const GAMES = {
 
 const readGolden = () => JSON.parse(readFileSync(GOLDEN_URL, 'utf8'));
 
+// Correction UX intentionnelle : seul le fond des interstices du morpion évolue.
+function withGameReference(page, capture) {
+  return withOriginalStyles(page, async () => {
+    if (!new URL(page.url()).pathname.endsWith('/games/tictactoe/index.html')) {
+      return capture();
+    }
+    const correction = await page.evaluateHandle(() => {
+      const style = document.createElement('style');
+      style.textContent = '.board { background: var(--color-text-muted); }';
+      document.head.append(style);
+      return style;
+    });
+    try {
+      await settle(page);
+      return await capture();
+    } finally {
+      await correction.evaluate(element => element.remove());
+      await correction.dispose();
+    }
+  });
+}
+
 async function settle(page) {
   await page.evaluate(() => Promise.all(document.getAnimations().map(animation => animation.finished.catch(() => null))));
 }
@@ -229,7 +251,7 @@ async function captureStates(page, targets) {
   // Les deux lectures se suivent a chaque etat : l'historique clavier/souris (:focus-visible) est le meme.
   const record = async (label, locator) => {
     current.push([label, await read(locator)]);
-    original.push([label, await withOriginalStyles(page, () => read(locator))]);
+    original.push([label, await withGameReference(page, () => read(locator))]);
   };
   for (const selector of targets) {
     const locator = page.locator(selector).first();
@@ -296,13 +318,13 @@ function check(name, current, original) {
 // Meme DOM, meme etat : la lecture d'origine suit immediatement la lecture courante.
 async function measure(page, name, capture) {
   const current = await capture();
-  const original = await withOriginalStyles(page, capture);
+  const original = await withGameReference(page, capture);
   check(name, current, original);
 }
 
 async function measureWithStates(page, name, targets) {
   const current = await sweep(page, '');
-  const original = await withOriginalStyles(page, () => sweep(page, ''));
+  const original = await withGameReference(page, () => sweep(page, ''));
   const states = await captureStates(page, targets);
   check(name, [...current, ...states.current], [...original, ...states.original]);
 }

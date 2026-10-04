@@ -46,6 +46,25 @@ export function renderCell(cell, state, interactive, doc) {
     cell.classList.add('last-move');
     cell.setAttribute('aria-label', `${label}, dernier coup`);
   }
+  if (state.manualScoring) {
+    renderGroupReview(cell, state, x, y, value, interactive, label);
+  }
+}
+
+function renderGroupReview(cell, state, x, y, value, interactive, label) {
+  const dead = state.deadStones.includes(y * 9 + x);
+  const stone = cell.querySelector('.stone');
+  if (stone) { stone.classList.toggle('dead', dead); }
+  cell.removeAttribute('aria-pressed');
+  if (state.scoring) {
+    cell.setAttribute('aria-disabled', String(!interactive || value === 0));
+    if (stone) {
+      cell.setAttribute('aria-pressed', String(dead));
+      cell.setAttribute('aria-label', `${label}, groupe ${dead ? 'mort' : 'vivant'}, activer pour inverser`);
+    }
+  } else if (dead) {
+    cell.setAttribute('aria-label', `${label}, groupe mort, retiré du score`);
+  }
 }
 
 /**
@@ -67,6 +86,9 @@ export function endStatus(state, humanId, opponentId) {
  */
 export function statusText(state, { humanId, opponentId, bot, currentHuman }) {
   if (state.gameOver) { return endStatus(state, humanId, opponentId); }
+  if (state.scoring) {
+    return 'Comptage : activez les groupes morts, puis confirmez le score. En cas de désaccord, reprenez la partie.';
+  }
   if (bot) { return currentHuman ? 'À vous (Noir)' : 'Le bot joue (Blanc)'; }
   return `Au tour du joueur ${state.currentPlayerId === humanId ? 'Noir' : 'Blanc'}`;
 }

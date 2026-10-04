@@ -14,6 +14,7 @@ export function createHumanControls({ engine, getState, setState, hasBot, humanI
   const getPlayerId = () => {
     const state = getState();
     if (!state || state.gameOver) {return null;}
+    if (state.scoring) {return state.currentPlayerId;}
     return !hasBot() || state.currentPlayerId === humanId ? state.currentPlayerId : null;
   };
   return {
