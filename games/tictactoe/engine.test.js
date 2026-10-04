@@ -407,6 +407,12 @@ describe('TicTacToeEngine', () => {
       expect(engine.getWinningLine(['X', 'O', 'O', 'X', 'X', 'X', 'X', 'O', 'O'])).toEqual([3, 4, 5]);
     });
 
+    it('retourne une copie : modifier la ligne n\'altère pas les lignes du moteur', () => {
+      const board = ['X', 'X', 'X', null, 'O', 'O', null, null, null];
+      engine.getWinningLine(board).push(99);
+      expect(engine.getWinningLine(board)).toEqual([0, 1, 2]);
+    });
+
     it('ne modifie pas la grille inspectée', () => {
       const board = Object.freeze(['X', 'X', 'X', null, 'O', 'O', null, null, null]);
       expect(engine.getWinningLine(board)).toEqual([0, 1, 2]);

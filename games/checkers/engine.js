@@ -215,21 +215,9 @@ export class CheckersEngine {
     const allMoves = [];
     const allCaptures = [];
 
-    // Trouver toutes les pièces du joueur
-    for (let row = 0; row < 10; row++) {
-      for (let col = 0; col < 10; col++) {
-        const piece = state.board[row][col];
-        if (piece && piece.player === playerIndex) {
-          const from = { row, col };
-
-          // Obtenir les mouvements possibles
-          const moves = this.#getPossibleMoves(state, from);
-          const captures = this.#getPossibleCaptures(state, from);
-
-          allMoves.push(...moves);
-          allCaptures.push(...captures);
-        }
-      }
+    for (const from of this.#getPlayerPositions(state, playerIndex)) {
+      allMoves.push(...this.#getPossibleMoves(state, from));
+      allCaptures.push(...this.#getPossibleCaptures(state, from));
     }
 
     // Prise obligatoire et majoritaire, sans priorité entre pions et dames.
@@ -269,6 +257,20 @@ export class CheckersEngine {
   getCurrentPlayer(state) { return this.isGameOver(state) ? null : state.playerIds[state.currentPlayer]; }
 
   /**
+   * Positions des pièces d'un joueur, en ordre ligne puis colonne
+   * @param {CheckersState} state
+   * @param {number} player
+   * @returns {Position[]}
+   */
+  #getPlayerPositions(state, player) {
+    const positions = [];
+    state.board.forEach((cells, row) => cells.forEach((piece, col) => {
+      if (piece && piece.player === player) {positions.push({ row, col });}
+    }));
+    return positions;
+  }
+
+  /**
    * Vérifie et met à jour l'état de fin de partie
    * @param {CheckersState} state
    * @private
@@ -276,19 +278,8 @@ export class CheckersEngine {
   #checkGameEnd(state) {
     const opponent = state.currentPlayer;
 
-    // Compter les pièces de l'adversaire
-    let opponentPieces = 0;
-    for (let row = 0; row < 10; row++) {
-      for (let col = 0; col < 10; col++) {
-        const piece = state.board[row][col];
-        if (piece && piece.player === opponent) {
-          opponentPieces++;
-        }
-      }
-    }
-
     // Victoire par élimination
-    if (opponentPieces === 0) {
+    if (this.#getPlayerPositions(state, opponent).length === 0) {
       state.status = 'won';
       state.winner = opponent === 0 ? 1 : 0;
       return;

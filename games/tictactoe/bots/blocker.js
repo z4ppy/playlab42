@@ -3,12 +3,7 @@
  * @see openspec/specs/bot/spec.md
  */
 
-// Lignes gagnantes
-const LINES = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8],
-  [0, 3, 6], [1, 4, 7], [2, 5, 8],
-  [0, 4, 8], [2, 4, 6],
-];
+import { WINNING_LINES } from '../engine/winning-lines.js';
 
 export class BlockerBot {
   name = 'Blocker';
@@ -71,7 +66,7 @@ export class BlockerBot {
    * @returns {object|null}
    */
   #findWinningMove(board, symbol, validActions) {
-    for (const line of LINES) {
+    for (const line of WINNING_LINES) {
       const cells = line.map((i) => board[i]);
       const symbolCount = cells.filter((c) => c === symbol).length;
       const emptyCount = cells.filter((c) => c === null).length;
