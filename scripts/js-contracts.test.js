@@ -63,11 +63,12 @@ describe('checkJs strict sur les corps des modules JavaScript sélectionnés', (
 
   test.each([
     ['lib/seeded-random.js', 'this.int(0, array.length - 1)', "this.int('0', array.length - 1)", 'TS2345'],
-    ['lib/seeded-random.js', '@param {number} seed - Nombre', '@param {string} seed - Nombre', 'TS2363'],
+    ['lib/seeded-random.js', '@param {number} seed - Nombre', '@param {string} seed - Nombre', 'TS2362'],
     ['lib/seeded-random.js', '@returns {number}\n   */\n  random()', '@returns {string}\n   */\n  random()', 'TS2322'],
     ['lib/local-data/contracts.js', '@param {string} key - Clé de stockage.', '@param {number} key - Clé de stockage.', 'TS2345'],
-    ['lib/local-data/contracts.js', 'this.code = code;', 'this.code = code.length;', 'TS2339'],
-    ['lib/assets.js', 'this.#basePath = new URL(`games/${gameName}/`, siteURL);', 'this.#basePath = gameName;', 'TS2322'],
+    ['lib/local-data/contracts.js', '.test(id)', '.test(id.length)', 'TS2345'],
+    ['lib/assets.js', 'onProgress(completed / total)', "onProgress('terminé')", 'TS2345'],
+    ['lib/assets.js', 'this.#images.set(fullPath, img);', 'this.#images.set(fullPath, fullPath);', 'TS2345'],
     ['lib/assets.js', 'return this.#images.get(fullPath);', 'return this.#audio.get(fullPath);', 'TS2322'],
   ])('refuse une invalidation du corps de %s (%#)', (filename, search, replacement, code) => {
     mutate(filename, search, replacement);

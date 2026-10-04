@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ESLint } from 'eslint';
 import { sourceIgnores } from './lint-source-policy.js';
+import { QualityBudgetError, evaluateBudget, loadBudget, parseBudget } from './quality-budget.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 const scopes = ['production', 'pedagogy', 'tests'];
@@ -138,6 +139,18 @@ function cell(value) {
   return String(value).replace(/[|`<>&\r\n]/g, character => `&#${character.charCodeAt(0)};`);
 }
 
+function renderBudget(budget) {
+  const { cyclomatic, cognitive, duplication } = budget.limits;
+  const lines = [
+    '', '## Budgets de production', '',
+    `Version ${budget.formatVersion} : cyclomatique ≤ ${cyclomatic.maxPerFunction} par fonction, cognitif TS ≤ ${cognitive.maxPerFunction} par fonction, `
+      + `duplication absolue ≤ ${duplication.maxClones} clones / ${duplication.maxDuplicatedLines} lignes / ${duplication.maxDuplicatedTokens} tokens. `
+      + `Scopes consultatifs, sans budget : ${budget.advisory.join(', ')}.`,
+    '', `Statut : ${budget.status === 'passed' ? 'respecté' : 'DÉPASSÉ'}.`,
+  ];
+  return [...lines, ...budget.violations.map(violation => `- ${cell(violation.message)}`)];
+}
+
 export function renderQualityReport(report) {
   const lines = [
     '# Rapport de qualité du code',
@@ -155,6 +168,7 @@ export function renderQualityReport(report) {
     const cognitive = data.cognitiveSources ? data.cognitive.filter(fn => fn.value > 15).length : 'N/A (aucun TS)';
     lines.push(`| ${scope} | ${data.files.length} / ${totals.sources} | ${totals.clones} | ${totals.duplicatedLines} / ${totals.lines} | ${data.cyclomatic.filter(fn => fn.value > 10).length} / ${data.cyclomatic.filter(fn => fn.value > 20).length} | ${cognitive} |`);
   }
+  lines.push(...renderBudget(report.budget));
   lines.push('', '## Hotspots de production (cyclomatique JS/HTML)', '', '| Source | Ligne | Fonction | Complexité |', '|---|---|---|---|');
   for (const fn of report.scopes.production.cyclomatic.filter(fn => fn.value > 10).slice(0, 20)) {
     lines.push(`| ${cell(fn.file)} | ${fn.line} | ${cell(fn.name)} | ${fn.value} |`);
@@ -173,44 +187,69 @@ export function renderQualityReport(report) {
     'jscpd peut ne pas scanner une source trop courte pour les paramètres : le nombre scanné reste distinct du nombre sélectionné.',
     'Biome signale le cognitif TS >1, pas sa complexité cyclomatique ni toutes les fonctions.',
     'Les pourcentages de duplication ne remplacent pas les compteurs ni la revue des clones. Tests/pédagogie restent visibles séparément.',
-    'Ce rapport mesure sans seuil global ; les budgets ciblés du lint et les seuils Jest restent bloquants.',
+    'Seule la production est budgétée, en comptes absolus : un total de clones ou de lignes ne garantit pas qu\'aucun nouveau clone n\'apparaisse (un clone supprimé peut en masquer un ajouté) et un ratio ne sert jamais de seuil.',
+    'Les budgets ciblés du lint et les seuils Jest restent bloquants.',
     'Une erreur de scanner ou un rapport incomplet échoue. Aucun score de certification ni couverture déduite.', '');
   return lines.join('\n');
 }
 
-export async function generateQualityReport(directory = root, output = path.join(directory, 'coverage/code-quality')) {
+function toolVersions(directory) {
+  const versions = {};
+  for (const name of ['eslint', '@biomejs/biome', 'jscpd']) {
+    versions[name] = JSON.parse(readFileSync(path.join(directory, 'node_modules', name, 'package.json'), 'utf8')).version;
+  }
+  return versions;
+}
+
+async function measureScopes(files, directory, temporary) {
+  const cyclomatic = await scanCyclomatic(files, directory);
+  const cognitive = scanCognitive(files, directory, temporary);
+  const data = {};
+  for (const scope of scopes) {
+    const members = files.filter(file => sourceScope(file) === scope);
+    requireCondition(members.length > 0, `Scope sans sources : ${scope}`);
+    const folder = path.join(temporary, scope);
+    mkdirSync(folder);
+    data[scope] = {
+      files: members, duplication: scanDuplication(members, directory, folder),
+      cyclomatic: cyclomatic.filter(fn => sourceScope(fn.file) === scope),
+      cognitiveSources: members.filter(file => file.endsWith('.ts')).length,
+      cognitive: cognitive.filter(fn => sourceScope(fn.file) === scope),
+    };
+  }
+  return data;
+}
+
+function writeArtifacts(report, output) {
+  const markdown = renderQualityReport(report);
+  writeFileSync(path.join(output, 'code-quality.json'), `${JSON.stringify(report, null, 2)}\n`);
+  writeFileSync(path.join(output, 'code-quality.md'), markdown);
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
+  }
+}
+
+/**
+ * Mesure les sources suivies, écrit le rapport puis applique le budget de production.
+ * Un dépassement échoue avec QualityBudgetError, rapport écrit conservé pour le diagnostic.
+ */
+export async function generateQualityReport(directory = root, output = path.join(directory, 'coverage/code-quality'), { budget } = {}) {
   const files = selectSources(execFileSync('git', ['ls-files', '-z'], { cwd: directory, encoding: 'utf8' }).split('\0').filter(Boolean));
   mkdirSync(output, { recursive: true });
   for (const filename of ['code-quality.json', 'code-quality.md']) {
     rmSync(path.join(output, filename), { force: true });
   }
+  const limits = budget ? parseBudget(budget) : loadBudget();
   const temporary = mkdtempSync(path.join(output, '.scanners-'));
   try {
-    const versions = {};
-    for (const name of ['eslint', '@biomejs/biome', 'jscpd']) {
-      versions[name] = JSON.parse(readFileSync(path.join(directory, 'node_modules', name, 'package.json'), 'utf8')).version;
-    }
-    const cyclomatic = await scanCyclomatic(files, directory);
-    const cognitive = scanCognitive(files, directory, temporary);
-    const data = {};
-    for (const scope of scopes) {
-      const members = files.filter(file => sourceScope(file) === scope);
-      requireCondition(members.length > 0, `Scope sans sources : ${scope}`);
-      const folder = path.join(temporary, scope);
-      mkdirSync(folder);
-      data[scope] = {
-        files: members, duplication: scanDuplication(members, directory, folder),
-        cyclomatic: cyclomatic.filter(fn => sourceScope(fn.file) === scope),
-        cognitiveSources: members.filter(file => file.endsWith('.ts')).length,
-        cognitive: cognitive.filter(fn => sourceScope(fn.file) === scope),
-      };
-    }
-    const report = { formatVersion: 1, provenance: provenance(directory), tools: versions, parameters, excludes: sourceIgnores, scopes: data };
-    const markdown = renderQualityReport(report);
-    writeFileSync(path.join(output, 'code-quality.json'), `${JSON.stringify(report, null, 2)}\n`);
-    writeFileSync(path.join(output, 'code-quality.md'), markdown);
-    if (process.env.GITHUB_STEP_SUMMARY) {
-      appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
+    const data = await measureScopes(files, directory, temporary);
+    const report = {
+      formatVersion: 2, provenance: provenance(directory), tools: toolVersions(directory), parameters, excludes: sourceIgnores,
+      budget: evaluateBudget(data.production, limits), scopes: data,
+    };
+    writeArtifacts(report, output);
+    if (report.budget.violations.length) {
+      throw new QualityBudgetError(report.budget.violations, report);
     }
     return report;
   } finally {

@@ -1,0 +1,21 @@
+{
+  // Vérifie les corps des modules JavaScript listés dans « files » (pas des
+  // déclarations) ; le reste de l'application n'est pas analysé par cette passe.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "types": []
+  },
+  "files": [
+    "lib/assets.js",
+    "lib/seeded-random.js",
+    "lib/local-data/contracts.js"
+  ],
+  "include": [],
+  "exclude": []
+}
