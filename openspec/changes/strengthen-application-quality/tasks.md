@@ -14,6 +14,6 @@
 ## Integration et livraison proposee
 - [x] Collecter les sources caracterisees et verrouiller les floors mesures.
 - [x] Aligner guides/parcours et comparer le rapport et ses limites.
-- [ ] Valider les gates complets, deux builds, archive/reprise et navigateur.
+- [x] Valider les gates complets, deux builds, archive/reprise et navigateur.
 - [ ] Ouvrir la PR et verifier derniere tete native et artefacts.
 - [ ] Fusion, publication et archivage sur decision distincte, hors autorisation.

@@ -123,7 +123,11 @@ describe('vrai CLI sur dépôt fixture', () => {
       write('scripts/quality-budgets.json', typeof budget === 'string' ? budget : JSON.stringify(budget));
     }
     const output = path.join(directory, 'coverage', name);
-    const result = spawnSync(process.execPath, ['scripts/code-quality-report.js', output], { cwd: directory, encoding: 'utf8', timeout: 120000 });
+    const env = { ...process.env };
+    for (const key of ['GITHUB_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'GITHUB_STEP_SUMMARY']) {
+      delete env[key];
+    }
+    const result = spawnSync(process.execPath, ['scripts/code-quality-report.js', output], { cwd: directory, env, encoding: 'utf8', timeout: 120000 });
     const jsonFile = path.join(output, 'code-quality.json');
     return { ...result, output, report: existsSync(jsonFile) ? JSON.parse(readFileSync(jsonFile, 'utf8')) : null };
   }
@@ -159,6 +163,28 @@ describe('vrai CLI sur dépôt fixture', () => {
   afterAll(() => {
     rmSync(directory, { recursive: true, force: true });
   });
+
+  test('la fixture isole la provenance et le résumé du véritable job GitHub', () => {
+    const keys = ['GITHUB_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'GITHUB_STEP_SUMMARY'];
+    const environment = { ...process.env };
+    const summary = path.join(directory, 'coverage', 'host-summary.md');
+    write('coverage/host-summary.md', 'Résumé du job parent\n');
+    try {
+      process.env.GITHUB_SHA = 'b'.repeat(40);
+      process.env.GITHUB_RUN_ID = '123';
+      process.env.GITHUB_RUN_ATTEMPT = '1';
+      process.env.GITHUB_STEP_SUMMARY = summary;
+      const measured = cli(permissive, 'isolated');
+      expect({ status: measured.status, stderr: measured.stderr }).toEqual({ status: 0, stderr: '' });
+      expect(measured.report.provenance).toMatchObject({ runId: null, runAttempt: null });
+      expect(measured.report.provenance.sha).not.toBe(process.env.GITHUB_SHA);
+      expect(readFileSync(summary, 'utf8')).toBe('Résumé du job parent\n');
+    } finally {
+      for (const key of keys) {
+        if (environment[key] === undefined) { delete process.env[key]; } else { process.env[key] = environment[key]; }
+      }
+    }
+  }, 30000);
 
   test('accepte exactement les valeurs mesurées et reste consultatif hors production', () => {
     const measured = cli(permissive, 'measure');
