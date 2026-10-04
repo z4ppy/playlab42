@@ -11,14 +11,10 @@ import { el } from './dom-cache.js';
 import { getEpicProgress } from './storage.js';
 import { cloneTemplate } from '../lib/dom.js';
 import { ParcoursViewer } from '../lib/parcours-viewer.js';
-import { matchesQuery, renderTagFilters, setDiscoveryCount, setDiscoveryMessage } from '../lib/catalogue-ui.js';
+import {
+  appendThumbnailImage, matchesQuery, renderTagFilters, setDiscoveryCount, setDiscoveryMessage,
+} from '../lib/catalogue-ui.js';
 
-// Dimensions intrinsèques des vignettes : standard de fait du dépôt 380x180
-// (ratio 19/9, cf. --thumb-ratio dans style.css). Posées en attributs width/
-// height sur les <img> pour réserver la place avant chargement (anti-CLS) ;
-// le rendu final reste piloté par le CSS (width/height 100% + object-fit).
-const THUMB_WIDTH = 380;
-const THUMB_HEIGHT = 180;
 let returnFocus = null;
 let returnFocusEpicId = null;
 let cardSequence = 0;
@@ -38,6 +34,94 @@ export async function loadParcoursCatalogue() {
 }
 
 /**
+ * Catégorie d'un epic : sa première entrée de hiérarchie, ou « autres ».
+ * @param {Object} epic - Données de l'epic
+ * @returns {string} Identifiant de catégorie
+ */
+function epicCategory(epic) {
+  return epic.hierarchy?.[0] || 'autres';
+}
+
+/**
+ * Nombre d'étapes distinctes déjà visitées d'un epic.
+ * @param {string} epicId - ID de l'epic
+ * @returns {number} Étapes visitées
+ */
+function visitedStepCount(epicId) {
+  return new Set(getEpicProgress(epicId).visited || []).size;
+}
+
+/**
+ * Place la vignette de l'epic : image si fournie, sinon emoji.
+ * @param {HTMLElement} thumb - Conteneur de la vignette
+ * @param {Object} epic - Données de l'epic
+ */
+function renderEpicThumbnail(thumb, epic) {
+  const defaultIcon = epic.icon || '📚';
+  if (epic.thumbnail) {
+    appendThumbnailImage(thumb, { src: epic.thumbnail, alt: '', fallback: defaultIcon });
+  } else {
+    thumb.textContent = defaultIcon;
+  }
+}
+
+/**
+ * Résume le contenu d'un epic : chapitres éventuels et étapes.
+ * @param {Object} epic - Données de l'epic
+ * @returns {string} Libellé du nombre de chapitres et d'étapes
+ */
+function epicSlidesSummary(epic) {
+  const chapterCount = epic.structure?.filter(item => item.type === 'section').length || 0;
+  return chapterCount > 0
+    ? `${chapterCount} chapitre${chapterCount > 1 ? 's' : ''} · ${epic.slideCount} étapes`
+    : `${epic.slideCount} étape${epic.slideCount > 1 ? 's' : ''}`;
+}
+
+/**
+ * Ajoute au plus trois étiquettes à la carte.
+ * @param {HTMLElement} container - Conteneur des étiquettes
+ * @param {string[]} [tags] - Étiquettes de l'epic
+ */
+function appendEpicTags(container, tags) {
+  for (const tag of (tags || []).slice(0, 3)) {
+    const tagEl = document.createElement('span');
+    tagEl.className = 'epic-tag';
+    tagEl.textContent = tag;
+    container.appendChild(tagEl);
+  }
+}
+
+/**
+ * Libellé d'action selon la progression.
+ * @param {number} percent - Pourcentage parcouru
+ * @returns {string} Invitation à commencer, continuer ou relire
+ */
+function progressLabelText(percent) {
+  if (percent >= 100) { return 'Terminé · Relire'; }
+  return percent > 0 ? `Continuer · ${percent} % parcouru` : 'Commencer le parcours';
+}
+
+/**
+ * Affiche la progression : barre, libellé et état de la carte.
+ * @param {HTMLElement} card - Carte de l'epic
+ * @param {Object} epic - Données de l'epic
+ */
+function renderEpicProgress(card, epic) {
+  const progressBar = card.querySelector('.epic-progress-bar');
+  const progressLabel = card.querySelector('.epic-progress-label');
+  const percent = epic.slideCount > 0
+    ? Math.min(100, Math.round((visitedStepCount(epic.id) / epic.slideCount) * 100)) : 0;
+  progressBar.style.width = `${percent}%`;
+  progressBar.parentElement.setAttribute('aria-hidden', 'true');
+  progressLabel.textContent = progressLabelText(percent);
+  if (percent >= 100) {
+    card.classList.add('completed');
+  } else if (percent > 0) {
+    card.classList.add('in-progress');
+  }
+}
+
+/**
  * Crée un élément carte Epic
  * @param {Object} epic - Données de l'epic
  * @returns {DocumentFragment} Fragment DOM
@@ -45,83 +129,51 @@ export async function loadParcoursCatalogue() {
 export function createEpicCardElement(epic) {
   const fragment = cloneTemplate('epic-card-template');
   const card = fragment.querySelector('.epic-card');
-  const thumb = fragment.querySelector('.epic-thumb');
   const title = fragment.querySelector('.epic-title');
-  const desc = fragment.querySelector('.epic-description');
-  const duration = fragment.querySelector('.epic-duration');
-  const slides = fragment.querySelector('.epic-slides');
-  const tagsContainer = fragment.querySelector('.epic-tags');
-  const progressBar = fragment.querySelector('.epic-progress-bar');
   const progressLabel = fragment.querySelector('.epic-progress-label');
 
-  // Data attributes
   card.dataset.epicId = epic.id;
   card.dataset.path = epic.path;
   card.href = `#/parcours/${epic.id}`;
+  renderEpicThumbnail(fragment.querySelector('.epic-thumb'), epic);
 
-  // Thumbnail
-  const defaultIcon = epic.icon || '📚';
-  if (epic.thumbnail) {
-    const img = document.createElement('img');
-    img.src = epic.thumbnail;
-    img.alt = '';
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.width = THUMB_WIDTH;
-    img.height = THUMB_HEIGHT;
-    img.onerror = () => {
-      // Repli : l'emoji remplace l'image cassée dans le conteneur
-      thumb.textContent = defaultIcon;
-    };
-    thumb.appendChild(img);
-  } else {
-    thumb.textContent = defaultIcon;
-  }
-
-  // Info
   title.textContent = epic.title;
   const instance = ++cardSequence;
   title.id = `epic-title-${instance}`;
   progressLabel.id = `epic-progress-${instance}`;
   card.setAttribute('aria-labelledby', title.id);
   card.setAttribute('aria-describedby', progressLabel.id);
-  desc.textContent = epic.description;
+  fragment.querySelector('.epic-description').textContent = epic.description;
 
-  // Meta
   if (epic.duration) {
-    duration.textContent = epic.duration;
+    fragment.querySelector('.epic-duration').textContent = epic.duration;
   }
-  const chapterCount = epic.structure?.filter(item => item.type === 'section').length || 0;
-  slides.textContent = chapterCount > 0
-    ? `${chapterCount} chapitre${chapterCount > 1 ? 's' : ''} · ${epic.slideCount} étapes`
-    : `${epic.slideCount} étape${epic.slideCount > 1 ? 's' : ''}`;
-
-  // Tags
-  if (epic.tags?.length) {
-    for (const tag of epic.tags.slice(0, 3)) {
-      const tagEl = document.createElement('span');
-      tagEl.className = 'epic-tag';
-      tagEl.textContent = tag;
-      tagsContainer.appendChild(tagEl);
-    }
-  }
-
-  // Progress
-  const progress = getEpicProgress(epic.id);
-  const visitedCount = new Set(progress.visited || []).size;
-  const progressPercent = epic.slideCount > 0 ? Math.min(100, Math.round((visitedCount / epic.slideCount) * 100)) : 0;
-  progressBar.style.width = `${progressPercent}%`;
-  progressBar.parentElement.setAttribute('aria-hidden', 'true');
-  progressLabel.textContent = progressPercent >= 100 ? 'Terminé · Relire' :
-    (progressPercent > 0 ? `Continuer · ${progressPercent} % parcouru` : 'Commencer le parcours');
-
-  if (progressPercent >= 100) {
-    card.classList.add('completed');
-  } else if (progressPercent > 0) {
-    card.classList.add('in-progress');
-  }
+  fragment.querySelector('.epic-slides').textContent = epicSlidesSummary(epic);
+  appendEpicTags(fragment.querySelector('.epic-tags'), epic.tags);
+  renderEpicProgress(card, epic);
 
   return fragment;
+}
+
+/**
+ * Nom d'auteur recherchable, que l'auteur soit un texte ou un objet.
+ * @param {Object} epic - Données de l'epic
+ * @returns {string|undefined} Nom de l'auteur
+ */
+function epicAuthorName(epic) {
+  return typeof epic.author === 'object' ? epic.author?.name : epic.author;
+}
+
+/**
+ * Indique si un epic respecte la catégorie, le tag et la recherche actifs.
+ * @param {Object} epic - Données de l'epic
+ * @param {string} search - Recherche normalisée par trim
+ * @returns {boolean} Vrai si l'epic est visible
+ */
+function matchesParcoursSelection(epic, search) {
+  if (state.parcoursCategory && epicCategory(epic) !== state.parcoursCategory) { return false; }
+  if (state.activeFilter && !epic.tags?.includes(state.activeFilter)) { return false; }
+  return matchesQuery(search, epic.title, epic.description, epic.tags?.join(' '), epicAuthorName(epic));
 }
 
 /**
@@ -131,19 +183,53 @@ export function createEpicCardElement(epic) {
  */
 function filterEpics(epics) {
   const search = el.search.value.trim();
-  return epics.filter(epic => {
-    // Filtre par catégorie
-    if (state.parcoursCategory && (epic.hierarchy?.[0] || 'autres') !== state.parcoursCategory) {
-      return false;
+  return epics.filter(epic => matchesParcoursSelection(epic, search));
+}
+
+/**
+ * Ordre d'affichage d'une catégorie : PlayLab42 d'abord, « autres » en dernier.
+ * @param {string} catId - Identifiant de catégorie
+ * @param {Object} [taxCat] - Entrée de taxonomie
+ * @returns {number} Rang de tri
+ */
+function categoryRank(catId, taxCat) {
+  if (catId === 'playlab42') { return 0; }
+  return catId === 'autres' ? 99 : (taxCat?.order || 50);
+}
+
+/**
+ * Compare deux catégories selon leur rang (playlab42 en premier, autres en dernier).
+ * @param {{id: string, order: number}} a - Catégorie
+ * @param {{id: string, order: number}} b - Catégorie
+ * @returns {number} Résultat de tri
+ */
+function compareCategories(a, b) {
+  if (a.id === 'playlab42') { return -1; }
+  if (b.id === 'playlab42') { return 1; }
+  if (a.id === 'autres') { return 1; }
+  if (b.id === 'autres') { return -1; }
+  return (a.order || 0) - (b.order || 0);
+}
+
+/**
+ * Construit les catégories à partir des epics réels, avec libellé et icône de la taxonomie.
+ * @param {Object[]} epics - Epics du catalogue
+ * @param {Object} [taxonomy] - Taxonomie éventuelle
+ * @returns {Object[]} Catégories triées avec leur effectif
+ */
+function buildParcoursCategories(epics, taxonomy) {
+  const categories = {};
+  for (const epic of epics) {
+    const id = epicCategory(epic);
+    if (!categories[id]) {
+      const taxCat = taxonomy?.hierarchy?.find(h => h.id === id);
+      categories[id] = {
+        id, label: taxCat?.label || id, icon: taxCat?.icon || '📁', order: categoryRank(id, taxCat), count: 0,
+      };
     }
-    // Filtre par tag
-    if (state.activeFilter && !epic.tags?.includes(state.activeFilter)) {
-      return false;
-    }
-    // Filtre par recherche
-    return matchesQuery(search, epic.title, epic.description, epic.tags?.join(' '),
-      typeof epic.author === 'object' ? epic.author?.name : epic.author);
-  });
+    categories[id].count++;
+  }
+  return Object.values(categories).sort(compareCategories);
 }
 
 /**
@@ -151,36 +237,8 @@ function filterEpics(epics) {
  */
 function renderParcoursCategoryFilters() {
   if (!state.parcoursCatalogue) { return; }
-
   const { epics, taxonomy } = state.parcoursCatalogue;
-
-  // Construire les catégories à partir des epics réels
-  const categoriesWithCount = {};
-  for (const epic of epics) {
-    const catId = epic.hierarchy?.[0] || 'autres';
-    if (!categoriesWithCount[catId]) {
-      const taxCat = taxonomy?.hierarchy?.find(h => h.id === catId);
-      categoriesWithCount[catId] = {
-        id: catId,
-        label: taxCat?.label || catId,
-        icon: taxCat?.icon || '📁',
-        order: catId === 'playlab42' ? 0 : (catId === 'autres' ? 99 : (taxCat?.order || 50)),
-        count: 0,
-      };
-    }
-    categoriesWithCount[catId].count++;
-  }
-
-  // Boutons par catégorie (ordre: playlab42 en premier, autres en dernier)
-  const sortedCategories = Object.values(categoriesWithCount).sort((a, b) => {
-    if (a.id === 'playlab42') { return -1; }
-    if (b.id === 'playlab42') { return 1; }
-    if (a.id === 'autres') { return 1; }
-    if (b.id === 'autres') { return -1; }
-    return (a.order || 0) - (b.order || 0);
-  });
-
-  renderTagFilters(el.parcoursCategoryFilters, sortedCategories,
+  renderTagFilters(el.parcoursCategoryFilters, buildParcoursCategories(epics, taxonomy),
     state.parcoursCategory, { attribute: 'category', allLabel: 'Tous les parcours' });
 }
 
@@ -206,6 +264,92 @@ function createCategorySectionElement(category, epicsInCategory) {
 }
 
 /**
+ * Affiche l'indisponibilité du catalogue et vide les listes.
+ */
+function renderParcoursUnavailable() {
+  el.emptyParcours.textContent = 'Impossible de charger les parcours. Rechargez la page pour réessayer.';
+  el.emptyParcours.setAttribute('role', 'alert');
+  el.emptyParcours.classList.add('visible');
+  el.parcoursCategoriesExpanded.textContent = '';
+  el.cardsParcours.textContent = '';
+  renderTagFilters(el.parcoursCategoryFilters, [], null, { attribute: 'category', allLabel: 'Tous les parcours' });
+  setDiscoveryMessage('Parcours indisponibles');
+}
+
+/**
+ * Met à jour le message vide selon que le catalogue est vide ou filtré.
+ * @param {number} total - Epics du catalogue
+ * @param {number} visible - Epics après filtrage
+ */
+function updateParcoursEmptyState(total, visible) {
+  el.emptyParcours.removeAttribute('role');
+  el.emptyParcours.textContent = total
+    ? 'Aucun parcours ne correspond à cette sélection.' : 'Aucun parcours disponible pour le moment.';
+  el.emptyParcours.classList.toggle('visible', visible === 0);
+}
+
+/**
+ * Indique si une recherche, une catégorie ou un tag restreint l'affichage.
+ * @returns {boolean} Vrai si l'accueil par collections est remplacé par la liste filtrée
+ */
+function hasParcoursSelection() {
+  return Boolean(el.search.value.trim() || state.parcoursCategory || state.activeFilter);
+}
+
+/**
+ * Indique si l'epic est commencé sans être terminé.
+ * @param {Object} epic - Données de l'epic
+ * @returns {boolean} Vrai si une lecture est en cours
+ */
+function isEpicInProgress(epic) {
+  const visited = visitedStepCount(epic.id);
+  return visited > 0 && visited < epic.slideCount;
+}
+
+/**
+ * Affiche la liste à plat des résultats filtrés.
+ * @param {Object[]} epics - Epics visibles
+ */
+function renderParcoursResults(epics) {
+  el.parcoursCategoriesExpanded.style.display = 'none';
+  el.parcoursList.style.display = 'block';
+  for (const epic of epics) {
+    el.cardsParcours.appendChild(createEpicCardElement(epic));
+  }
+}
+
+/**
+ * Affiche l'accueil : lectures en cours puis autres parcours, sans doublon.
+ * @param {Object[]} epics - Epics visibles
+ */
+function renderParcoursCollections(epics) {
+  el.parcoursList.style.display = 'none';
+  el.parcoursCategoriesExpanded.style.display = 'block';
+  const continuing = epics.filter(isEpicInProgress);
+  const continuingIds = new Set(continuing.map(epic => epic.id));
+  const available = epics.filter(epic => !continuingIds.has(epic.id));
+  if (continuing.length) {
+    el.parcoursCategoriesExpanded.appendChild(
+      createCategorySectionElement({ id: 'continue', label: 'Continuer votre lecture' }, continuing),
+    );
+  }
+  if (available.length) {
+    el.parcoursCategoriesExpanded.appendChild(createCategorySectionElement({
+      id: 'explore', label: continuing.length ? 'Découvrir les parcours' : 'Tous les parcours',
+    }, available));
+  }
+}
+
+/**
+ * Rend le focus à la carte qui l'avait avant un rendu.
+ * @param {string} epicId - ID de l'epic focalisé
+ */
+function restoreEpicCardFocus(epicId) {
+  [...el.viewCatalogue.querySelectorAll('.epic-card')]
+    .find(card => card.dataset.epicId === epicId)?.focus({ preventScroll: true });
+}
+
+/**
  * Rend la page d'accueil Parcours
  *
  * La collection de reprise précède le catalogue, sans dupliquer les cartes.
@@ -213,66 +357,26 @@ function createCategorySectionElement(category, epicsInCategory) {
 export function renderParcours() {
   if (state.activeTab !== 'parcours') { return; }
   if (!state.parcoursCatalogue) {
-    el.emptyParcours.textContent = 'Impossible de charger les parcours. Rechargez la page pour réessayer.';
-    el.emptyParcours.setAttribute('role', 'alert');
-    el.emptyParcours.classList.add('visible');
-    el.parcoursCategoriesExpanded.textContent = '';
-    el.cardsParcours.textContent = '';
-    renderTagFilters(el.parcoursCategoryFilters, [], null, { attribute: 'category', allLabel: 'Tous les parcours' });
-    setDiscoveryMessage('Parcours indisponibles');
+    renderParcoursUnavailable();
     return;
   }
 
   const { epics } = state.parcoursCatalogue;
   const focusedEpicId = document.activeElement?.closest('.epic-card')?.dataset.epicId;
 
-  // Reset
   el.parcoursCategoriesExpanded.textContent = '';
   el.cardsParcours.textContent = '';
-
   renderParcoursCategoryFilters();
 
   const filteredEpics = filterEpics(epics);
   setDiscoveryCount(filteredEpics.length, 'parcours');
-  el.emptyParcours.removeAttribute('role');
-  el.emptyParcours.textContent = epics.length
-    ? 'Aucun parcours ne correspond à cette sélection.' : 'Aucun parcours disponible pour le moment.';
-  el.emptyParcours.classList.toggle('visible', filteredEpics.length === 0);
-  const hasSearch = Boolean(el.search.value.trim() || state.parcoursCategory || state.activeFilter);
-
-  if (hasSearch) {
-    // Masquer accueil, afficher liste
-    el.parcoursCategoriesExpanded.style.display = 'none';
-    el.parcoursList.style.display = 'block';
-
-    for (const epic of filteredEpics) {
-      el.cardsParcours.appendChild(createEpicCardElement(epic));
-    }
+  updateParcoursEmptyState(epics.length, filteredEpics.length);
+  if (hasParcoursSelection()) {
+    renderParcoursResults(filteredEpics);
   } else {
-    el.parcoursList.style.display = 'none';
-    el.parcoursCategoriesExpanded.style.display = 'block';
-    const continuing = filteredEpics.filter(epic => {
-      const progress = getEpicProgress(epic.id);
-      const visited = new Set(progress.visited || []).size;
-      return visited > 0 && visited < epic.slideCount;
-    });
-    const continuingIds = new Set(continuing.map(epic => epic.id));
-    const available = filteredEpics.filter(epic => !continuingIds.has(epic.id));
-    if (continuing.length) {
-      el.parcoursCategoriesExpanded.appendChild(
-        createCategorySectionElement({ id: 'continue', label: 'Continuer votre lecture' }, continuing),
-      );
-    }
-    if (available.length) {
-      el.parcoursCategoriesExpanded.appendChild(createCategorySectionElement({
-        id: 'explore', label: continuing.length ? 'Découvrir les parcours' : 'Tous les parcours',
-      }, available));
-    }
+    renderParcoursCollections(filteredEpics);
   }
-  if (focusedEpicId) {
-    [...el.viewCatalogue.querySelectorAll('.epic-card')]
-      .find(card => card.dataset.epicId === focusedEpicId)?.focus({ preventScroll: true });
-  }
+  if (focusedEpicId) { restoreEpicCardFocus(focusedEpicId); }
 }
 
 /**

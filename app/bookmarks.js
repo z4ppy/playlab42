@@ -107,56 +107,100 @@ export function hideBookmarkPreview() {
 }
 
 /**
- * Affiche les catégories et toutes les ressources correspondantes.
+ * Rend les filtres de tags du catalogue (aucun tag si le catalogue est absent).
+ * @param {Object|null} catalogue - Catalogue chargé
  */
-export function renderBookmarks() {
-  hideBookmarkPreview();
-  el.bookmarkTree.textContent = '';
-  const catalogue = state.bookmarksCatalogue;
+function renderBookmarkFilters(catalogue) {
   renderTagFilters(
     el.bookmarkFilters,
     (catalogue?.tags || []).map(tag => ({ ...tag, label: tag.label || tag.id })),
     state.bookmarkTagFilter,
     { allLabel: 'Tous les liens' },
   );
+}
 
-  let totalVisible = 0;
+/**
+ * Crée le lien de navigation d'une catégorie ; le fragment reste natif mais le titre reçoit le focus.
+ * @param {Object} category - Catégorie du catalogue
+ * @param {string} id - Identifiant de la section
+ * @param {HTMLDetailsElement} disclosure - Menu de navigation à replier au clic
+ * @returns {HTMLAnchorElement} Lien prêt à insérer
+ */
+function createBookmarkNavigationLink(category, id, disclosure) {
+  const link = create('a', { href: `#${id}-title`, class: 'bookmark-navigation-link' }, [category.label]);
+  link.addEventListener('click', () => {
+    // Le fragment reste natif ; le titre devient aussi la destination clavier.
+    disclosure.open = false;
+    document.getElementById(`${id}-title`)?.focus({ preventScroll: true });
+  });
+  return link;
+}
+
+/**
+ * Construit la navigation et les sections des catégories qui contiennent des ressources visibles.
+ * @param {Object[]} categories - Catégories du catalogue
+ * @returns {{disclosure: HTMLElement, sections: DocumentFragment, totalVisible: number}} Rendu et total
+ */
+function buildBookmarkSections(categories) {
   const navigation = create('nav', { class: 'bookmark-navigation', 'aria-label': 'Catégories de liens' });
-  const categoryOptions = create('details', { class: 'bookmark-navigation-disclosure' }, [
+  const disclosure = create('details', { class: 'bookmark-navigation-disclosure' }, [
     create('summary', {}, ['Aller à une catégorie']), navigation,
   ]);
   const sections = document.createDocumentFragment();
-  for (const [index, category] of (catalogue?.categories || []).entries()) {
+  let totalVisible = 0;
+  for (const [index, category] of categories.entries()) {
     const bookmarks = filterBookmarks(category);
     if (!bookmarks.length) { continue; }
     const id = `bookmark-category-${category.id || index}`;
-    const link = create('a', { href: `#${id}-title`, class: 'bookmark-navigation-link' }, [category.label]);
-    link.addEventListener('click', () => {
-      // Le fragment reste natif ; le titre devient aussi la destination clavier.
-      categoryOptions.open = false;
-      document.getElementById(`${id}-title`)?.focus({ preventScroll: true });
-    });
-    navigation.appendChild(link);
+    navigation.appendChild(createBookmarkNavigationLink(category, id, disclosure));
     sections.appendChild(createBookmarkCategoryElement(category, bookmarks, id));
     totalVisible += bookmarks.length;
   }
-  if (totalVisible) {
-    el.bookmarkTree.append(categoryOptions, sections);
-  }
+  return { disclosure, sections, totalVisible };
+}
 
-  const totalAvailable = (catalogue?.categories || []).reduce((sum, category) => sum + category.bookmarks.length, 0);
-  el.emptyBookmarks.textContent = !catalogue
-    ? 'Les liens sont momentanément indisponibles. Réessayez en rechargeant la page.'
-    : !totalAvailable
-      ? 'Aucun lien disponible pour le moment.'
-      : 'Aucun lien ne correspond à cette sélection. Modifiez la recherche ou réinitialisez les filtres.';
+/**
+ * Choisit le message affiché quand aucune ressource n'est visible.
+ * @param {Object|null} catalogue - Catalogue chargé
+ * @returns {string} Message vide adapté à la cause
+ */
+function bookmarksEmptyMessage(catalogue) {
+  if (!catalogue) { return 'Les liens sont momentanément indisponibles. Réessayez en rechargeant la page.'; }
+  const totalAvailable = catalogue.categories.reduce((sum, category) => sum + category.bookmarks.length, 0);
+  return totalAvailable
+    ? 'Aucun lien ne correspond à cette sélection. Modifiez la recherche ou réinitialisez les filtres.'
+    : 'Aucun lien disponible pour le moment.';
+}
+
+/**
+ * Met à jour le message vide ; l'indisponibilité est annoncée comme une alerte.
+ * @param {Object|null} catalogue - Catalogue chargé
+ * @param {number} totalVisible - Nombre de ressources affichées
+ */
+function updateBookmarksEmptyState(catalogue, totalVisible) {
+  el.emptyBookmarks.textContent = bookmarksEmptyMessage(catalogue);
   el.emptyBookmarks.classList.toggle('visible', totalVisible === 0);
   if (catalogue) { el.emptyBookmarks.removeAttribute('role'); }
   else { el.emptyBookmarks.setAttribute('role', 'alert'); }
-  if (state.activeTab === 'bookmarks') {
-    if (catalogue) { setDiscoveryCount(totalVisible, 'liens'); }
-    else { setDiscoveryMessage('Liens indisponibles'); }
+}
+
+/**
+ * Affiche les catégories et toutes les ressources correspondantes.
+ */
+export function renderBookmarks() {
+  hideBookmarkPreview();
+  el.bookmarkTree.textContent = '';
+  const catalogue = state.bookmarksCatalogue;
+  renderBookmarkFilters(catalogue);
+
+  const { disclosure, sections, totalVisible } = buildBookmarkSections(catalogue?.categories || []);
+  if (totalVisible) {
+    el.bookmarkTree.append(disclosure, sections);
   }
+  updateBookmarksEmptyState(catalogue, totalVisible);
+  if (state.activeTab !== 'bookmarks') { return; }
+  if (catalogue) { setDiscoveryCount(totalVisible, 'liens'); }
+  else { setDiscoveryMessage('Liens indisponibles'); }
 }
 
 /**

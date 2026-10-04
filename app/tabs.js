@@ -25,13 +25,28 @@ export function registerRenderCallbacks(callbacks) {
   renderBookmarksCallback = callbacks.renderBookmarks;
 }
 
+const TAB_NAMES = ['tools', 'games', 'parcours', 'bookmarks'];
+
+/**
+ * Lance le rendu de l'onglet ; outils et jeux partagent le rendu du catalogue.
+ * @param {string} tab - Onglet devenu actif
+ */
+function renderActiveTab(tab) {
+  if (tab === 'parcours' && renderParcoursCallback) {
+    renderParcoursCallback();
+  } else if (tab === 'bookmarks' && renderBookmarksCallback) {
+    renderBookmarksCallback();
+  } else if (renderCatalogueCallback) {
+    renderCatalogueCallback();
+  }
+}
+
 /**
  * Change l'onglet actif
  * @param {string} tab - Onglet cible ('tools', 'games', 'parcours', 'bookmarks')
  */
 export function switchTab(tab) {
-  if (tab !== 'tools' && tab !== 'games' && tab !== 'parcours' && tab !== 'bookmarks') { return; }
-  if (state.activeTab === tab) { return; }
+  if (!TAB_NAMES.includes(tab) || state.activeTab === tab) { return; }
 
   setState({
     activeTab: tab,
@@ -42,15 +57,7 @@ export function switchTab(tab) {
 
   savePreferences();
   updateTabUI();
-
-  // Rendu de l'onglet actif
-  if (tab === 'parcours' && renderParcoursCallback) {
-    renderParcoursCallback();
-  } else if (tab === 'bookmarks' && renderBookmarksCallback) {
-    renderBookmarksCallback();
-  } else if (renderCatalogueCallback) {
-    renderCatalogueCallback();
-  }
+  renderActiveTab(tab);
 }
 
 /**

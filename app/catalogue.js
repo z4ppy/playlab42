@@ -8,16 +8,11 @@
 import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
 import { cloneTemplate } from '../lib/dom.js';
-import { matchesQuery, renderTagFilters, setDiscoveryCount, setDiscoveryMessage } from '../lib/catalogue-ui.js';
+import {
+  appendThumbnailImage, matchesQuery, renderTagFilters, setDiscoveryCount, setDiscoveryMessage,
+} from '../lib/catalogue-ui.js';
 
 let catalogueError = null;
-
-// Dimensions intrinsèques des vignettes : standard de fait du dépôt 380x180
-// (ratio 19/9, cf. --thumb-ratio dans style.css). Posées en attributs width/
-// height sur les <img> pour réserver la place avant chargement (anti-CLS) ;
-// le rendu final reste piloté par le CSS (width/height 100% + object-fit).
-const THUMB_WIDTH = 380;
-const THUMB_HEIGHT = 180;
 
 /**
  * Charge le catalogue depuis le serveur
@@ -106,18 +101,7 @@ export function createCardElement(item, type) {
     ? item.path.replace('index.html', 'thumb.png')
     : item.path.replace('.html', '-thumb.png');
 
-  const img = document.createElement('img');
-  img.src = thumbSrc;
-  img.alt = item.name;
-  img.loading = 'lazy';
-  img.decoding = 'async';
-  img.width = THUMB_WIDTH;
-  img.height = THUMB_HEIGHT;
-  img.onerror = () => {
-    // Repli : l'emoji remplace l'image cassée dans le conteneur
-    thumb.textContent = item.icon || defaultIcon;
-  };
-  thumb.appendChild(img);
+  appendThumbnailImage(thumb, { src: thumbSrc, alt: item.name, fallback: item.icon || defaultIcon });
 
   // Info
   title.textContent = (item.icon ? `${item.icon} ` : '') + item.name;
@@ -159,6 +143,36 @@ export function filterItems(items) {
 }
 
 /**
+ * Rend la liste des outils et son message vide.
+ */
+function renderToolsSection() {
+  const filteredTools = filterItems(state.catalogue.tools);
+  el.cardsTools.textContent = '';
+  for (const tool of filteredTools) {
+    el.cardsTools.appendChild(createCardElement(tool, 'tool'));
+  }
+  el.emptyTools.textContent = state.catalogue.tools.length
+    ? 'Aucun outil ne correspond à cette sélection.' : 'Aucun outil disponible pour le moment.';
+  el.emptyTools.classList.toggle('visible', filteredTools.length === 0);
+  setDiscoveryCount(filteredTools.length, 'outils');
+}
+
+/**
+ * Rend la liste des jeux et son message vide.
+ */
+function renderGamesSection() {
+  const filteredGames = filterItems(state.catalogue.games);
+  el.cardsGames.textContent = '';
+  for (const game of filteredGames) {
+    el.cardsGames.appendChild(createCardElement(game, 'game'));
+  }
+  el.emptyGames.textContent = state.catalogue.games.length
+    ? 'Aucun jeu ne correspond à cette sélection.' : 'Aucun jeu disponible pour le moment.';
+  el.emptyGames.classList.toggle('visible', filteredGames.length === 0);
+  setDiscoveryCount(filteredGames.length, 'jeux');
+}
+
+/**
  * Rend le catalogue (onglet actif uniquement)
  */
 export function renderCatalogue() {
@@ -169,28 +183,6 @@ export function renderCatalogue() {
   }
 
   renderFilters();
-
-  if (state.activeTab === 'tools') {
-    const filteredTools = filterItems(state.catalogue.tools);
-    el.cardsTools.textContent = '';
-    for (const tool of filteredTools) {
-      el.cardsTools.appendChild(createCardElement(tool, 'tool'));
-    }
-    el.emptyTools.textContent = state.catalogue.tools.length
-      ? 'Aucun outil ne correspond à cette sélection.' : 'Aucun outil disponible pour le moment.';
-    el.emptyTools.classList.toggle('visible', filteredTools.length === 0);
-    setDiscoveryCount(filteredTools.length, 'outils');
-  }
-
-  if (state.activeTab === 'games') {
-    const filteredGames = filterItems(state.catalogue.games);
-    el.cardsGames.textContent = '';
-    for (const game of filteredGames) {
-      el.cardsGames.appendChild(createCardElement(game, 'game'));
-    }
-    el.emptyGames.textContent = state.catalogue.games.length
-      ? 'Aucun jeu ne correspond à cette sélection.' : 'Aucun jeu disponible pour le moment.';
-    el.emptyGames.classList.toggle('visible', filteredGames.length === 0);
-    setDiscoveryCount(filteredGames.length, 'jeux');
-  }
+  if (state.activeTab === 'tools') { renderToolsSection(); }
+  if (state.activeTab === 'games') { renderGamesSection(); }
 }
