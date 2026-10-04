@@ -729,6 +729,16 @@ Restent notamment AudioEngine/contrôleurs musicaux, rendus Dames/Triomino,
 helpers de fabrication et animations pédagogiques : les prioriser après
 caractérisation, pas imposer universellement un 10 avec des ignores.
 
+Validation locale au commit `b41eaab` : **131 suites / 2 883 tests**,
+lint qualité/sécurité, types, audit npm et **33 validations OpenSpec** verts.
+Deux builds Docker hors réseau produisent le même manifeste à
+`SOURCE_DATE_EPOCH=1791071014`. Les **1 033 fichiers** sont vérifiés,
+la reprise tar refuse une corruption puis restaure l'archive ; les
+**70 scénarios Chromium** passent sur ce site préparé et revérifié.
+La revue indépendante n'a trouvé aucune régression qualifiée ; le cas des
+sources ignorées par ESLint a ensuite reçu un refus explicite et une fixture
+réelle. Les résultats natifs de la dernière tête seront consignés en PR.
+
 ## Maintenance des références et exceptions
 
 Les workflows utilisent des SHAs complets avec commentaire de version ; les

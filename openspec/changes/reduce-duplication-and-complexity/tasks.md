@@ -13,5 +13,6 @@
 ## Intégration
 - [x] Vérifier mesures avant/après à configuration constante et budgets ciblés.
 - [x] Aligner guides et limites avec les résultats.
-- [ ] Valider tests, lint/types, builds, navigateur et rapport natif de la PR.
+- [x] Valider tests, lint/types, builds, navigateur et rapport local.
+- [ ] Vérifier la dernière tête native et les artefacts de la PR.
 - [ ] Constater la livraison et décider l'archivage, hors autorisation actuelle.
