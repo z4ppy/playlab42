@@ -175,16 +175,17 @@ jobs:
   # Job de build (vérifie que le build fonctionne)
   build:
     name: Build
-    needs: [security-lint, trivy-scan]
+    needs: [security-lint, trivy-scan, code-quality]
     # Un job ignoré satisfait la protection GitHub : échouer explicitement plutôt que sauter Build.
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Exiger le succès des gates de sécurité
+      - name: Exiger le succès des gates de sécurité et de qualité
         shell: bash
         env:
           SECURITY_LINT_RESULT: ${{ needs.security-lint.result }}
           TRIVY_SCAN_RESULT: ${{ needs.trivy-scan.result }}
+          CODE_QUALITY_RESULT: ${{ needs.code-quality.result }}
         run: |
           require_success() {
             if [ "$2" != "success" ]; then
@@ -194,6 +195,7 @@ jobs:
           }
           require_success security-lint "$SECURITY_LINT_RESULT"
           require_success trivy-scan "$TRIVY_SCAN_RESULT"
+          require_success code-quality "$CODE_QUALITY_RESULT"
 
       - name: Checkout du code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

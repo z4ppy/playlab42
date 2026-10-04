@@ -14,9 +14,9 @@ const guard = build.steps[0];
 const statuses = ['success', 'failure', 'skipped', 'cancelled'];
 
 describe('Build requis agrège les gates de sécurité sans succès ignoré', () => {
-  test('Build attend exactement les deux gates, même après leur échec', () => {
+  test('Build attend exactement les trois gates, même après leur échec', () => {
     expect(build.name).toBe('Build');
-    expect(build.needs).toEqual(['security-lint', 'trivy-scan']);
+    expect(build.needs).toEqual(['security-lint', 'trivy-scan', 'code-quality']);
     expect(build.if).toBe('always()');
     for (const success of [true, false]) {
       expect(runInNewContext(build.if, { always: () => true, success: () => success })).toBe(true);
@@ -26,46 +26,57 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
     expect(guard.env).toEqual({
       SECURITY_LINT_RESULT: '${{ needs.security-lint.result }}',
       TRIVY_SCAN_RESULT: '${{ needs.trivy-scan.result }}',
+      CODE_QUALITY_RESULT: '${{ needs.code-quality.result }}',
     });
     expect(build['continue-on-error']).toBeUndefined();
     expect(build.steps.every(step => !step['continue-on-error'])).toBe(true);
     expect(build.steps.slice(1).every(step => step.if === undefined)).toBe(true);
     expect(ci.jobs['security-lint'].needs).toBeUndefined();
     expect(ci.jobs['trivy-scan'].needs).toBeUndefined();
-    for (const id of ['lint', 'test', 'typecheck', 'dependency-audit', 'openspec']) {
+    for (const id of ['lint', 'test', 'typecheck', 'dependency-audit', 'openspec', 'code-quality']) {
       expect(ci.jobs[id].needs).toBeUndefined();
     }
     expect(ci.jobs.browser.needs).toBe('build');
+    expect(ci.jobs['cross-engine'].needs).toBe('build');
     const deploy = workflow('deploy');
     expect(deploy.jobs.validate.uses).toBe('./.github/workflows/ci.yml');
     expect(deploy.jobs.deploy.needs).toBe('validate');
     expect(deploy.jobs.deploy.if).toBeUndefined();
   });
 
-  test.each(statuses.flatMap(lint => statuses.map(scan => [lint, scan])))(
-    'le vrai guard Bash reçoit lint=%s et trivy=%s avant toute fabrication',
-    (lint, scan) => {
+  test.each(statuses.flatMap(lint => statuses.flatMap(scan => statuses.map(quality => [lint, scan, quality]))))(
+    'le vrai guard Bash reçoit lint=%s, trivy=%s et qualité=%s avant toute fabrication',
+    (lint, scan, quality) => {
       const result = spawnSync('bash', ['-e', '-o', 'pipefail', '-c', `${guard.run}\nprintf 'BUILD_ALLOWED\\n'`], {
-        env: { ...process.env, SECURITY_LINT_RESULT: lint, TRIVY_SCAN_RESULT: scan },
+        env: { ...process.env, SECURITY_LINT_RESULT: lint, TRIVY_SCAN_RESULT: scan, CODE_QUALITY_RESULT: quality },
         encoding: 'utf8',
       });
-      const accepted = lint === 'success' && scan === 'success';
+      const accepted = [lint, scan, quality].every(status => status === 'success');
       expect(result.status).toBe(accepted ? 0 : 1);
       expect(result.stdout.includes('BUILD_ALLOWED')).toBe(accepted);
       if (!accepted) {
         expect(result.stdout).toContain('::error::');
-        expect(result.stdout).toContain(lint !== 'success' ? 'security-lint' : 'trivy-scan');
+        expect(result.stdout).toContain(lint !== 'success' ? 'security-lint' : scan !== 'success' ? 'trivy-scan' : 'code-quality');
       }
     },
   );
 
   test.each(['', 'unknown'])('un statut absent ou inconnu (%s) reste bloquant', status => {
     const result = spawnSync('bash', ['-e', '-c', guard.run], {
-      env: { ...process.env, SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: status },
+      env: { ...process.env, SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: status, CODE_QUALITY_RESULT: 'success' },
       encoding: 'utf8',
     });
     expect(result.status).toBe(1);
     expect(result.stdout).toContain('trivy-scan');
+  });
+
+  test.each(['', 'unknown'])('un statut qualité absent ou inconnu (%s) reste bloquant', status => {
+    const result = spawnSync('bash', ['-e', '-c', guard.run], {
+      env: { ...process.env, SECURITY_LINT_RESULT: 'success', TRIVY_SCAN_RESULT: 'success', CODE_QUALITY_RESULT: status },
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain('code-quality');
   });
 });
 
