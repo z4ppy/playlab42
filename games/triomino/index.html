@@ -6,21 +6,15 @@
     <title>Triomino - Playlab42</title>
     <link rel="stylesheet" href="../../lib/theme.css" />
     <link rel="stylesheet" href="../../lib/ui.css" />
+    <link rel="stylesheet" href="../game-page.css" />
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-
       body {
-        font-family: var(--font-family);
-        background: var(--color-bg);
-        color: var(--color-text);
-        min-height: 100vh;
-        display: flex;
         flex-direction: column;
         align-items: center;
         padding: 16px;
       }
 
-      h1 { color: var(--color-text); font-size: 2em; margin-bottom: 4px; text-align: center; }
+      h1 { color: var(--color-text); font-size: 2em; margin-bottom: 4px; }
       .subtitle { color: var(--color-text-muted); font-size: 0.9em; margin-bottom: 16px; text-align: center; }
 
       /* — Écrans — */
@@ -58,11 +52,6 @@
         margin-top: 10px;
       }
       .btn-secondary:hover { background: var(--color-bg-secondary); }
-      .btn-draw { background: #3b82f6; color: white; }
-      .btn-pass { background: #6b7280; color: white; }
-      .btn-quit { background: #dc2626; color: white; margin-top: 8px; }
-      .btn-rules { background: #8b5cf6; color: white; margin-top: 8px; text-decoration: none; text-align: center; display: block; }
-      .btn-draw:not(:disabled):hover, .btn-pass:not(:disabled):hover, .btn-quit:hover, .btn-rules:hover { opacity: 0.85; }
 
       /* — Partie — */
       #game-screen { width: 100%; max-width: 960px; }

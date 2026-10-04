@@ -361,6 +361,59 @@ playlabTest.describe('Styles calcules des pages de jeu', () => {
   }
 });
 
+// Selecteurs que chaque page recoit du socle : jamais redeclares a l'identique dans la page.
+const SHARED_SELECTORS = ['*', 'body', 'h1', '.btn', '.btn:hover', '.btn-secondary'];
+const REUSED_SELECTORS = {
+  checkers: ['*', 'body', 'h1', '.btn', '.btn:hover', '.btn-secondary'],
+  tictactoe: ['*', 'body', 'h1', '.btn', '.btn:hover'],
+  mastermind: ['*', 'body', 'h1', '.btn-secondary'],
+  triomino: ['*', 'body', 'h1'],
+};
+
+playlabTest.describe('Socle CSS des pages de jeu', () => {
+  for (const [game, config] of Object.entries(GAMES)) {
+    playlabTest(`${game} : feuille partagee chargee avant le style de la page, sans declaration dupliquee`, async ({ page }) => {
+      await page.goto(config.path);
+      await expect(page.locator(config.ready).first()).toBeVisible();
+      const report = await page.evaluate(() => {
+        const declarations = rule => Object.fromEntries([...rule.style].map(property => [property, rule.style.getPropertyValue(property)]));
+        const sheets = [...document.styleSheets].map(sheet => ({
+          source: sheet.ownerNode.tagName === 'LINK' ? new URL(sheet.href).pathname : 'inline',
+          rules: [...sheet.cssRules].filter(rule => rule.selectorText).map(rule => ({ selector: rule.selectorText, declarations: declarations(rule) })),
+        }));
+        return { sheets, sharedButton: Boolean(document.querySelector('.btn')) };
+      });
+      expect(report.sheets.map(sheet => sheet.source)).toEqual(['/lib/theme.css', '/lib/ui.css', '/games/game-page.css', 'inline']);
+      const shared = report.sheets[2].rules;
+      expect(shared.map(rule => rule.selector)).toEqual(SHARED_SELECTORS);
+      const local = report.sheets[3].rules;
+      const repeated = [];
+      for (const rule of shared.filter(entry => REUSED_SELECTORS[game].includes(entry.selector))) {
+        for (const candidate of local.filter(entry => entry.selector === rule.selector)) {
+          for (const [property, value] of Object.entries(candidate.declarations)) {
+            if (rule.declarations[property] === value) { repeated.push(`${rule.selector} { ${property}: ${value} }`); }
+          }
+        }
+      }
+      expect(repeated, 'Declarations deja portees par games/game-page.css').toEqual([]);
+      // Les pages sans bouton .btn ne recoivent aucun effet du socle sur ce selecteur.
+      if (!REUSED_SELECTORS[game].includes('.btn')) { expect(report.sharedButton).toBe(false); }
+    });
+  }
+
+  for (const game of ['tictactoe', 'triomino']) {
+    playlabTest(`${game} : le bouton secondaire local redefinit tout le bouton secondaire du socle`, async ({ page }) => {
+      await page.goto(GAMES[game].path);
+      const overridden = await page.evaluate(() => {
+        const inline = [...document.styleSheets].find(sheet => sheet.ownerNode.tagName === 'STYLE');
+        const rule = [...inline.cssRules].find(candidate => candidate.selectorText === '.btn-secondary');
+        return ['background', 'color', 'border'].map(property => rule.style.getPropertyValue(property) !== '');
+      });
+      expect(overridden).toEqual([true, true, true]);
+    });
+  }
+});
+
 baseTest.describe('Styles calcules sans JavaScript', () => {
   baseTest.describe.configure({ mode: 'serial' });
   baseTest.use({ javaScriptEnabled: false, serviceWorkers: 'block' });

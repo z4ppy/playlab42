@@ -1,0 +1,50 @@
+/*
+ * Socle des quatre pages de jeu autonomes (damier, morpion, mastermind, triomino).
+ * Chargé après lib/theme.css et lib/ui.css, avant le <style> de chaque page : les
+ * règles ci-dessous ne contiennent que des déclarations strictement identiques,
+ * chaque page garde ses surcharges propres (disposition du body, titres, boutons).
+ * Il ne sert qu'à ces pages ; ne pas l'importer depuis un outil ou le portail.
+ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+}
+
+h1 {
+  text-align: center;
+}
+
+/* Bouton plein de damier et de morpion ; chaque page ajoute sa taille. */
+.btn {
+  background: var(--color-accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-inverse);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-normal);
+}
+
+.btn:hover {
+  background: var(--color-accent-hover);
+}
+
+/*
+ * Bouton secondaire de damier et de mastermind (le survol reste propre à la page).
+ * Morpion et triomino redéfinissent fond, couleur et bordure : leur rendu n'en dépend pas.
+ */
+.btn-secondary {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
