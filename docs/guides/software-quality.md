@@ -961,7 +961,7 @@ aucune > 20, et **58 clones / 610 lignes**. L'archivage reste une décision dist
 
 ## Contrats et qualité applicative
 
-**Continuation autorisée dans `quality/application-contracts`, non livrée.**
+**Travaux de `quality/application-contracts` livrés via la PR #152 sur main `5956cd9`.**
 Le change `strengthen-application-quality` poursuit les axes du bilan :
 orchestration et contrôles musicaux, Relativity, portail, commandes des jeux,
 contrats JS, budgets explicites et interactions critiques multi-navigateur.
@@ -1032,7 +1032,8 @@ Ces preuves locales ne sont pas une fusion ou une publication constatée.
 
 ### Première preuve native corrigée
 
-La [PR #152](https://github.com/z4ppy/playlab42/pull/152) est ouverte, non fusionnée.
+À cette première preuve, la [PR #152](https://github.com/z4ppy/playlab42/pull/152)
+était ouverte, non fusionnée.
 La CI [37213958151](https://github.com/z4ppy/playlab42/actions/runs/37213958151)
 et l'audit [37213958191](https://github.com/z4ppy/playlab42/actions/runs/37213958191)
 réussissent sur le head **26c838f**, après reproduction et correction d'une
@@ -1055,6 +1056,43 @@ triées intégralement, et pas de validation complète audio/3D/performance sur
 Firefox/WebKit. Le détecteur d'accordeur à très basse fréquence demande un contrat
 de plage exploitable avant modification de l'algorithme. Ce lot ne certifie donc
 ni une base « parfaite », ni un taux global de 100 %, ni zéro duplication.
+
+### Livraison constatée
+
+La PR #152 est fusionnée sur main
+`5956cd92f69c2a2d36c9f27fcc838dd6e4dd1290` :
+[publication 37218066993](https://github.com/z4ppy/playlab42/actions/runs/37218066993)
+et [audit 37218066738](https://github.com/z4ppy/playlab42/actions/runs/37218066738)
+réussis. Les rapports natifs de ce main sont téléchargés et leurs provenances,
+compteurs, Markdown et **66 sélecteurs / 96 fichiers appariés** vérifiés.
+La baseline confirme **56 clones / 584 lignes / 4 360 tokens**, aucune fonction
+JS/HTML >10 et couverture S/B/F/L **89,07/84,41/90,11/89,18 %**.
+Cette livraison ne vaut pas autorisation d'archiver le change.
+
+## Réduction sémantique des clones
+
+**Continuation autorisée dans `quality/semantic-deduplication`, non livrée.**
+Le change `reduce-semantic-clones` part du main #152 livré, avec des scopes
+indépendants sur styles partagés, pages jeux, musique, outils et petits contrats JS.
+Un clone de tokens n'est pas automatiquement un contrat commun : la cascade CSS,
+les palettes conditionnelles, les métadonnées HTML obligatoires et certaines
+branches de règles peuvent justifier une similarité conservée.
+
+Les contrats de styles sont caractérisés avant consolidation par des propriétés
+calculées dans le navigateur : thèmes, responsive et états concernés. Les
+trajectoires à seeds fixes, erreurs, données et messages des helpers JS restent
+caractérisés. Aucun changement de formatage, minimum de tokens/lignes, exclusion
+ou ratio ne doit masquer une dette ; les budgets absolus sont resserrés après
+mesure intégrée, jamais par anticipation.
+
+La première mutualisation réutilise `scripts/lib/build-report.js` pour publier
+les catalogues Parcours/Bookmarks après leurs diagnostics. **38 cas** sont verts
+avant extraction ; **64 cas ciblés** sont verts après, y compris le refus de
+remplacement sans faux succès. Le helper conserve **100/100/100/100 %** et
+les deux catalogues à epoch fixe restent identiques octet par octet.
+La mesure bornée du parent passe de **56/584/4 360** à **55/570/4 307**
+clones/lignes/tokens, sans changer les scanners ou leurs paramètres.
+Ce résultat partiel n'est pas encore une preuve des six scopes intégrés.
 
 ## Maintenance des références et exceptions
 

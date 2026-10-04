@@ -1,6 +1,6 @@
 ## Baseline et autorisation
-- [ ] Confirmer main fusionne et conserver les rapports natifs.
-- [ ] Valider strictement le change avant implementation.
+- [x] Confirmer main fusionne et conserver les rapports natifs.
+- [x] Valider strictement le change avant implementation.
 
 ## Scopes independants
 - [ ] Caracteriser et consolider les styles partages.
@@ -9,7 +9,7 @@
 - [ ] Caracteriser et consolider les styles outils.
 - [ ] Mutualiser les contrats JS musicaux reellement identiques.
 - [ ] Mutualiser les algorithmes jeux reellement identiques.
-- [ ] Examiner et consolider les entrees CLI de fabrication si justifie.
+- [x] Examiner et consolider les entrees CLI de fabrication si justifie.
 
 ## Integration et livraison proposee
 - [ ] Verifier les clones residuels et les trois compteurs absolus.

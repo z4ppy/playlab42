@@ -7,8 +7,8 @@ le commit livré sont référencés dans la
 Les correctifs de revue issus de `fix/review-software-factory` sont eux aussi
 **intégrés à `main` et publiés** via la PR #145. Leur validation native et leur
 publication sont référencées séparément dans la même preuve. Les continuations
-qualité livrées, dont la PR #151 sur main `a54954c`, sont distinguées du lot
-`quality/application-contracts` encore non livré dans le
+qualité livrées, dont la PR #151 sur main `a54954c` et la PR #152 sur `5956cd9`,
+sont distinguées du lot `quality/semantic-deduplication` encore non livré dans le
 [guide qualité](software-quality.md#contrats-et-qualité-applicative).
 Application statique, pas de backend ou plateforme d'exploitation ajoutée.
 

@@ -76,12 +76,15 @@ réussis. Il reste 53 fonctions JS/HTML > 10, aucune > 20, et 58 clones.
 sur main `a54954c` : [publication 37209561127](https://github.com/z4ppy/playlab42/actions/runs/37209561127)
 et [audit 37209560905](https://github.com/z4ppy/playlab42/actions/runs/37209560905)
 réussis, 49 fonctions > 10 et 58 clones.
-`quality/application-contracts` poursuit ensuite les contrats d'orchestration
-et protections applicatives en scopes parallèles ; cette continuation n'est
-pas encore livrée et ne promet pas une base « parfaite ». Elle ajoute des budgets
+`quality/application-contracts` est livrée via la PR #152 sur main `5956cd9` :
+[publication 37218066993](https://github.com/z4ppy/playlab42/actions/runs/37218066993)
+et [audit 37218066738](https://github.com/z4ppy/playlab42/actions/runs/37218066738)
+réussis, 0 fonction >10 et 56 clones. Elle ajoute des budgets
 de production bloquants pour Build et un smoke Chromium/Firefox/WebKit dans le
 check Browser existant ; les détails et limites restent dans le
 [bilan applicatif](software-quality.md#contrats-et-qualité-applicative).
+La continuation `quality/semantic-deduplication` consolide uniquement les clones
+ayant un contrat réellement commun, après caractérisation ; elle n'est pas livrée.
 
 ## Carte de l'usine
 

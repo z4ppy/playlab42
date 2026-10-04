@@ -142,8 +142,10 @@
       dans <code>quality/rendering-audio</code>, après caractérisation des rendus et contrats audio.
       La PR #151 a livré la simplification de fabrication et vérification d'archive
       dans <code>quality/artifact-pipeline</code>, après tests de comportement.
-      La suite <code>quality/application-contracts</code> caractérise les orchestrations et protège
-      les contrats applicatifs en scopes parallèles ; elle n'est pas encore livrée.</p>
+      La suite <code>quality/application-contracts</code> est livrée via la PR #152 :
+      orchestrations caractérisées, budgets bloquants et smoke multi-moteurs.
+      La continuation <code>quality/semantic-deduplication</code> mutualise seulement
+      les clones à contrat commun ; elle n'est pas encore livrée.</p>
     <p class="guide-note">« Parfait » n'est pas un critère vérifiable. Préférez des responsabilités
       compréhensibles, des erreurs et courses caractérisées, des budgets explicites et des limites honnêtes.
       Un zéro Jest ne prouve pas l'absence de tests navigateur ; un clone détecté ne justifie pas
