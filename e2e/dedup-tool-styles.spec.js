@@ -182,7 +182,42 @@ function readGolden() {
   return fs.existsSync(GOLDEN_URL) ? JSON.parse(fs.readFileSync(GOLDEN_URL, 'utf8')) : { pages: {} };
 }
 
+// Chaque élément et état mesuré doit exister explicitement : jamais de dictionnaire vide ni de sélecteur manqué.
+const REQUIRED = {
+  relativity: ['#hud[0]', '#clock-panel[0]', '#observer-view[0]', '#motor-panel[0]', '#doppler-graph[0]', '#play-button[0]',
+    '#reset-button[0]', '#probe-panels[0]>0div.hud', '#probe-panels[0]>2div.motor-panel', '#probe-panels[0]>4div.clock-panel'],
+  'json-formatter': ['header[0]', 'main[0]', 'footer[0]', 'header[0]>1div.actions>2button.primary#btn-format', 'main[0]>0div.panel>0div.panel-header'],
+  'local-data': ['main[0]', 'main[0]>3section'],
+};
+
+function expectCoverage(name, actual) {
+  const groups = name === 'relativity' ? [actual] : name === 'sans-javascript' ? [] : Object.values(actual).filter(value => value.layout);
+  for (const group of groups) {
+    const base = Object.values(group.layout)[0];
+    const colorBase = Object.values(group.colors)[0];
+    expect(Object.keys(base).length, `${name}: layout vide`).toBeGreaterThan(5);
+    expect(Object.keys(colorBase).length, `${name}: couleurs vides`).toBeGreaterThan(5);
+    for (const key of REQUIRED[name] ?? []) {
+      expect(Object.keys(base).some(candidate => candidate.startsWith(key)), `${name}: ${key} absent`).toBe(true);
+    }
+    expect(Object.keys(group.states).length, `${name}: états manquants`).toBeGreaterThan(5);
+  }
+  if (name === 'json-formatter') {
+    expect(Object.keys(actual.copie_desactivee)).toHaveLength(STATE_THEMES.length);
+  }
+  if (name === 'relativity') {
+    expect(Object.keys(actual.states)).toHaveLength(RELATIVITY_STATES.length * STATE_THEMES.length);
+  }
+  if (name === 'sans-javascript') {
+    expect(Object.keys(actual)).toHaveLength(8);
+    for (const values of Object.values(actual)) {
+      expect(Object.keys(values).length).toBeGreaterThan(5);
+    }
+  }
+}
+
 function checkGolden(name, actual) {
+  expectCoverage(name, actual);
   if (UPDATE) {
     const golden = readGolden();
     golden.meta = { layoutProps: LAYOUT_PROPS, colorProps: COLOR_PROPS };
