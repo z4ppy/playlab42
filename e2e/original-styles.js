@@ -10,7 +10,15 @@ export async function withOriginalStyles(page, capture) {
   const saved = await page.evaluateHandle(baseline => {
     const route = location.pathname;
     const plan = [];
-    for (const node of document.querySelectorAll('link[rel="stylesheet"]')) {
+    const links = [...document.querySelectorAll('link[rel="stylesheet"]')];
+    const required = ['/lib/theme.css'];
+    if (route === '/' || route === '/index.html') { required.push('/style.css', '/lib/parcours-viewer.css'); }
+    if (route.startsWith('/games/diese-et-mat/')) { required.push('/games/diese-et-mat/style.css'); }
+    if (route.startsWith('/games/') && Object.hasOwn(baseline.inline, route)) { required.push('/games/game-page.css'); }
+    for (const path of required) {
+      if (!links.some(node => new URL(node.href).pathname === path)) { throw new Error(`Lien de style absent : ${path}`); }
+    }
+    for (const node of links) {
       const path = new URL(node.href).pathname;
       if (Object.hasOwn(baseline.stylesheets, path) || baseline.added.includes(path)) {
         if (!node.sheet) { throw new Error(`Feuille absente : ${path}`); }
@@ -26,7 +34,7 @@ export async function withOriginalStyles(page, capture) {
       plan.push({ node, text });
     }
     if (plan.length === 0) { throw new Error(`Aucun style de référence : ${route}`); }
-    return plan.map(({ node, text }) => {
+    const items = plan.map(({ node, text }) => {
       const sheet = node.sheet;
       const disabled = sheet.disabled;
       let original = null;
@@ -37,9 +45,14 @@ export async function withOriginalStyles(page, capture) {
         original.textContent = text;
         node.before(original);
       }
-      sheet.disabled = true;
       return { sheet, disabled, original };
     });
+    if (items.some(({ original }) => original && !original.sheet)) {
+      for (const { original } of items) { original?.remove(); }
+      throw new Error('CSS original bloqué par le document');
+    }
+    for (const { sheet } of items) { sheet.disabled = true; }
+    return items;
   }, reference);
   try {
     await page.evaluate(() => {
