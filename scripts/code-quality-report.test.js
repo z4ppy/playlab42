@@ -5,6 +5,13 @@ import { parse } from 'yaml';
 import { generateQualityReport, normalizeCognitive, normalizeDuplication, selectSources, sourceScope } from './code-quality-report.js';
 
 const root = path.resolve(import.meta.dirname, '..');
+// Budget volontairement large : ces tests vérifient la mesure, pas le budget livré.
+const measureOnly = { budget: {
+  formatVersion: 1,
+  production: { cyclomatic: { maxPerFunction: 1000 }, cognitive: { maxPerFunction: 1000 },
+    duplication: { maxClones: 1000000, maxDuplicatedLines: 1000000, maxDuplicatedTokens: 1000000 } },
+  advisory: ['pedagogy', 'tests'],
+} };
 
 test('les scopes séparent pédagogie/tests et gardent JS/HTML/TS/CSS de production', () => {
   const files = [
@@ -155,7 +162,7 @@ describe('mesure intégrée avec les vrais scanners', () => {
   });
 
   test('mesure des clones, fonctions JS/HTML et cognitif TS avec provenance réelle', async () => {
-    const report = await generateQualityReport(directory);
+    const report = await generateQualityReport(directory, undefined, measureOnly);
     expect(execFileSync('git', ['status', '--porcelain'], { cwd: directory, encoding: 'utf8' })).toBe('');
     expect(report.provenance).toMatchObject({ runId: null, runAttempt: null, workingTree: 'clean' });
     expect(report.provenance.sha).toMatch(/^[a-f0-9]{40}$/);
@@ -173,7 +180,7 @@ describe('mesure intégrée avec les vrais scanners', () => {
     expect(report.scopes.tests.files).toEqual(['lib/probe.test.js']);
     const markdown = readFileSync(path.join(directory, 'coverage/code-quality/code-quality.md'), 'utf8');
     expect(markdown).toContain('pas sa complexité cyclomatique');
-    expect(markdown).toContain('sans seuil global');
+    expect(markdown).toContain('Budgets de production');
     expect(markdown).toContain('N/A (aucun TS)');
   }, 30000);
 
@@ -181,13 +188,13 @@ describe('mesure intégrée avec les vrais scanners', () => {
     process.env.GITHUB_SHA = 'a'.repeat(40);
     process.env.GITHUB_RUN_ID = '123';
     process.env.GITHUB_RUN_ATTEMPT = '1';
-    await expect(generateQualityReport(directory)).rejects.toThrow('SHA de provenance différent');
+    await expect(generateQualityReport(directory, undefined, measureOnly)).rejects.toThrow('SHA de provenance différent');
     expect(existsSync(path.join(directory, 'coverage/code-quality/code-quality.json'))).toBe(false);
   }, 30000);
 
   test('un fichier ignoré par le vrai ESLint ne devient pas zéro fonction', async () => {
     write('eslint.config.js', "export default [{ ignores: ['lib/first.js'] }];\n");
-    await expect(generateQualityReport(directory)).rejects.toThrow('Source ignorée ou non analysée');
+    await expect(generateQualityReport(directory, undefined, measureOnly)).rejects.toThrow('Source ignorée ou non analysée');
     expect(existsSync(path.join(directory, 'coverage/code-quality/code-quality.json'))).toBe(false);
   }, 30000);
 
@@ -199,7 +206,7 @@ describe('mesure intégrée avec les vrais scanners', () => {
     mkdirSync(output, { recursive: true });
     writeFileSync(path.join(output, 'code-quality.json'), '{"stale":true}');
     write(filename, source);
-    await expect(generateQualityReport(directory)).rejects.toThrow();
+    await expect(generateQualityReport(directory, undefined, measureOnly)).rejects.toThrow();
     expect(existsSync(path.join(output, 'code-quality.json'))).toBe(false);
     expect(existsSync(path.join(output, 'code-quality.md'))).toBe(false);
   }, 30000);
