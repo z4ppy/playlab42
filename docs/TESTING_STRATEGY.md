@@ -159,6 +159,17 @@ Le cas mobile contrôle aussi l'absence de débordement à 320 px.
 Le portail transmet sa préférence sonore à une nouvelle session GameKit
 sur `ready` ; ce contrat est exercé dans `e2e/portal.spec.js`.
 
+`e2e/board-game-ux.spec.js` mesure le contraste des séparations du morpion
+(au moins 3:1) dans quatre modes de thème, sur desktop et mobile, puis couvre
+la revue Go après deux passes : score encore absent, groupes entiers réversibles,
+confirmation et reprise. Les tests Jest de page suspendent aussi le bot pendant
+la revue et vérifient son redémarrage ; les tests moteur gardent le replay
+automatique historique et vérifient les états de revue gelés et restaurés en JSON.
+La référence CSS d'avant déduplication reste immuable : sa capture applique
+explicitement la seule nouvelle règle `.board` du morpion, avec attente des
+transitions et restauration, y compris sans JavaScript. Aucune propriété ou
+scénario n'est ignoré pour accepter ce changement intentionnel.
+
 ### Lancer la suite navigateur
 
 Toutes les commandes suivantes s'exécutent **dans l'environnement Docker isolé**,

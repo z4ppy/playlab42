@@ -157,13 +157,18 @@ describe('Page Go 9x9 : rendu et interactions', () => {
     expect($('btn-pass').disabled).toBe(false);
   });
 
-  it('une passe n\'est pas un dernier coup posé ; deux passes affichent les scores et le vainqueur', () => {
+  it('une passe efface le dernier coup ; deux passes ouvrent la revue avant confirmation', () => {
     $('bot-select').value = 'human';
     $('btn-start').click();
     click(4, 4);
     $('btn-pass').click();
     expect(document.querySelectorAll('.last-move')).toHaveLength(0);
     $('btn-pass').click();
+    expect(text('status')).toContain('Comptage');
+    expect([text('score-black'), text('score-white')]).toEqual(['-', '-']);
+    expect($('btn-confirm-score').hidden).toBe(false);
+    expect(cell(4, 4).getAttribute('aria-disabled')).toBe('false');
+    $('btn-confirm-score').click();
     expect(text('status')).toBe('Victoire Noir');
     expect([text('score-black'), text('score-white')]).toEqual(['81.0', '6.5']);
     expect($('btn-pass').disabled).toBe(true);
@@ -171,10 +176,55 @@ describe('Page Go 9x9 : rendu et interactions', () => {
     expect(cell(1, 1).getAttribute('aria-disabled')).toBe('true');
   });
 
+  it('marque un groupe au clavier, refuse une case vide et reprend sans effacer les pierres', () => {
+    $('bot-select').value = 'human';
+    $('btn-start').click();
+    click(4, 4);
+    $('btn-pass').click();
+    $('btn-pass').click();
+    click(0, 0);
+    expect(text('status')).toContain('Sélectionnez une pierre');
+    click(4, 4);
+    expect(cell(4, 4).getAttribute('aria-pressed')).toBe('true');
+    expect(document.querySelectorAll('.stone.dead')).toHaveLength(1);
+    $('btn-resume-play').click();
+    expect(text('status')).toBe('Au tour du joueur Blanc');
+    expect(document.querySelectorAll('.stone.dead')).toHaveLength(0);
+    expect(document.querySelectorAll('.stone.black')).toHaveLength(1);
+    expect($('btn-resume-play').hidden).toBe(true);
+    click(3, 4);
+    expect(document.querySelectorAll('.stone.white')).toHaveLength(1);
+  });
+
   it('la résignation de Noir donne Blanc vainqueur sans score', () => {
     $('btn-resign').click();
     expect(text('status')).toBe('Victoire Blanc');
     expect(text('score-black')).toBe('-');
+  });
+
+  it('suspend le bot et laisse l’humain revoir les groupes avant de reprendre le tour du bot', async () => {
+    let calls = 0;
+    class PassingBot {
+      onGameStart() {}
+      chooseAction() { calls++; return { type: 'pass' }; }
+    }
+    await mountPage({ './bots/greedy.js': { GreedyBot: PassingBot } });
+    click(4, 4);
+    jest.advanceTimersByTime(150);
+    $('btn-pass').click();
+    expect(text('status')).toContain('Comptage');
+    expect(cell(4, 4).getAttribute('aria-disabled')).toBe('false');
+    jest.advanceTimersByTime(2000);
+    expect(calls).toBe(1);
+    click(4, 4);
+    expect(document.querySelectorAll('.stone.dead')).toHaveLength(1);
+    expect(text('score-black')).toBe('-');
+    $('btn-resume-play').click();
+    expect(text('status')).toBe('Le bot joue (Blanc)');
+    jest.advanceTimersByTime(150);
+    expect(calls).toBe(2);
+    expect(text('status')).toBe('À vous (Noir)');
+    expect(document.querySelectorAll('.stone.dead')).toHaveLength(0);
   });
 
   it('la résignation de Blanc en hot-seat donne la victoire à Noir', () => {

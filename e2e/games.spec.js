@@ -25,6 +25,9 @@ test('Go: les deux humains jouent puis passent dans le vrai moteur', async ({ pa
   await expect(page.locator('.cell[data-x="1"][data-y="0"]')).toBeFocused();
   await activate(page.locator('#btn-pass'));
   await activate(page.locator('#btn-pass'), 'Space');
+  await expect(page.locator('#status')).toContainText('Comptage');
+  await expect(page.locator('#score-black')).toHaveText('-');
+  await activate(page.locator('#btn-confirm-score'));
   await expect(page.locator('#status')).toContainText(/termin|gagn|victoire|score/i);
 });
 
