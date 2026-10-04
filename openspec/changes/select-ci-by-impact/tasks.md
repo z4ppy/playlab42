@@ -12,3 +12,10 @@
 - [ ] Scenario natif de reutilisation apres changement documentaire.
 - [ ] PR livree sans fusion automatique.
 - [ ] Fusion, publication et archivage sur decision explicite ulterieure.
+
+## Lecture des preuves
+
+Une decision documentaire doit garder Build, les guides et les smokes executes.
+Les controles non applicables ne publient pas de rapports d'analyse fictifs.
+Une decision reused cite le run et le commit de l'execution originale ; les
+audits evolutifs ne sont jamais reutilises.
