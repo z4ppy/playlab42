@@ -275,6 +275,7 @@ describe('ui legacy - ExerciseView', () => {
     press('Escape');
     expect(callbacks.onQuit).toHaveBeenCalledTimes(1);
     expect(container.innerHTML).toBe('');
+    expect(() => view.dispose()).not.toThrow();
     view.init(exercise); // la vue est réutilisable ; l'afterEach la libère à nouveau
   });
 

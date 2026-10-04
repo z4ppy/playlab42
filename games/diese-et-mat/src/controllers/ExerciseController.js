@@ -292,33 +292,26 @@ export class ExerciseController extends EventEmitter {
     const question = this.currentQuestion;
 
     try {
-      switch (question.type) {
-        case 'note':
-          if (question.pitch) {
-            await this.audioEngine.playNote(question.pitch.toTone(), 0.5);
-          }
-          break;
-
-        case 'interval':
-          if (question.pitch1 && question.pitch2) {
-            await this.audioEngine.playNote(question.pitch1.toTone(), 0.4);
-            await this._delay(500);
-            await this.audioEngine.playNote(question.pitch2.toTone(), 0.4);
-          }
-          break;
-
-        case 'chord':
-          if (question.chord) {
-            const pitches = question.chord.getPitches();
-            await this.audioEngine.playChord(pitches.map(p => p.toTone()), 0.6);
-          }
-          break;
-
-        default:
-          break;
-      }
+      await this._playQuestion(question);
     } catch (error) {
       console.error('Erreur lecture audio:', error);
+    }
+  }
+
+  /**
+   * Joue la question selon son type
+   * @private
+   */
+  async _playQuestion(question) {
+    if (question.type === 'note' && question.pitch) {
+      await this.audioEngine.playNote(question.pitch.toTone(), 0.5);
+    } else if (question.type === 'interval' && question.pitch1 && question.pitch2) {
+      await this.audioEngine.playNote(question.pitch1.toTone(), 0.4);
+      await this._delay(500);
+      await this.audioEngine.playNote(question.pitch2.toTone(), 0.4);
+    } else if (question.type === 'chord' && question.chord) {
+      const pitches = question.chord.getPitches();
+      await this.audioEngine.playChord(pitches.map(p => p.toTone()), 0.6);
     }
   }
 

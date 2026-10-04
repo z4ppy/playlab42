@@ -492,9 +492,11 @@ export class ExerciseView {
     }
     if (this.noteRenderer) {
       this.noteRenderer.dispose();
+      this.noteRenderer = null;
     }
     if (this.noteButtons) {
       this.noteButtons.dispose();
+      this.noteButtons = null;
     }
     this.container.innerHTML = '';
   }
