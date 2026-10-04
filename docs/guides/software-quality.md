@@ -1071,7 +1071,8 @@ Cette livraison ne vaut pas autorisation d'archiver le change.
 
 ## Réduction sémantique des clones
 
-**Continuation livrée en PR dans `quality/semantic-deduplication`, PR #153 ouverte, non fusionnée.**
+**Continuation fusionnée via la PR #153, issue de `quality/semantic-deduplication` ;
+main `6ed1d3b13c45dfbb76c7c93850742cf6aba7697a`.**
 Le change `reduce-semantic-clones` part du main #152 livré, avec des scopes
 indépendants sur styles partagés, pages jeux, musique, outils et petits contrats JS.
 Un clone de tokens n'est pas automatiquement un contrat commun : la cascade CSS,
@@ -1155,7 +1156,7 @@ Ces preuves locales sont datées, pas une certification d'un head ultérieur.
 
 ### Première CI et portabilité des contrats de styles
 
-La [PR #153](https://github.com/z4ppy/playlab42/pull/153) est ouverte.
+La [PR #153](https://github.com/z4ppy/playlab42/pull/153) a été fusionnée.
 La première [CI 37227111602](https://github.com/z4ppy/playlab42/actions/runs/37227111602),
 head **5da95a7**, confirme le rapport **15/146/1 398**, les **70 sélecteurs /
 101 fichiers appariés** et les builds ; les sept fichiers qualité/Jest sont
@@ -1223,7 +1224,7 @@ restauration. Les contrôles Docker consultatifs ne sont pas exécutés sur cett
 Ces preuves désignent cette tête précise. Toute tête documentaire suivante
 est revérifiée ; ses identifiants et artefacts sont référencés dans la PR sans
 boucle de commits de provenance. Fusion, publication et archivage restent
-distincts et ne sont pas autorisés par cette livraison.
+distincts : la fusion externe de #153 est constatée, sans archivage automatique.
 
 ## Maintenance des références et exceptions
 

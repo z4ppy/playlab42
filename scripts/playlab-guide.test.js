@@ -172,7 +172,7 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(slide).toContain('neuf noms de checks requis restent inchangés');
   });
 
-  it('distingue la livraison applicative de la réduction de clones livrée en PR', () => {
+  it('distingue les preuves natives de la fusion externe du lot de clones', () => {
     const quality = readFileSync(resolve(root, 'docs/guides/software-quality.md'), 'utf8');
     const factory = readFileSync(resolve(root, 'docs/guides/software-factory.md'), 'utf8');
     const current = quality.split('## Réduction sémantique des clones')[1]
@@ -182,8 +182,8 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(factory).toContain('37218066738');
     expect(current).toContain('quality/semantic-deduplication');
     expect(current).toContain('reduce-semantic-clones');
-    expect(current).toContain('Continuation livrée en PR');
-    expect(current).toContain('PR #153 ouverte, non fusionnée');
+    expect(current).toContain('Continuation fusionnée via la PR #153');
+    expect(current).toContain('6ed1d3b13c45dfbb76c7c93850742cf6aba7697a');
     expect(current).toContain('37231437359');
     expect(current).toContain('2d17df94b1d0d3496c38c7e89a4121f3527d2afd');
     expect(current).toContain('Fusion, publication et archivage restent');
