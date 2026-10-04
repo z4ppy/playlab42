@@ -355,14 +355,8 @@
       import { createPlacementControls } from './placement-controls.js';
       import { observeDialog } from '../dialog-accessibility.js';
       import { createRackButton } from './rack-button.js';
+      import { renderTriominoBoard } from './ui/board-view.js';
       initTheme();
-
-      // — Constantes visuelles —
-      // Côté d'un triangle équilatéral
-      const SIDE = 60;
-      // Demi-côté and hauteur
-      const HALF_SIDE = SIDE / 2;
-      const TRI_H = SIDE * Math.sqrt(3) / 2;
 
       // — État global —
       const engine = new TriominoEngine();
@@ -536,109 +530,12 @@
       }
 
       function renderBoard() {
-        // Vider le plateau sauf les defs
-        boardSvg.innerHTML = '<defs><filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.15"/></filter><filter id="last-tile-glow"><feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#f97316" flood-opacity="0.8"/></filter></defs>';
-
-        const legalPositions = getLegalPositionsForSelected();
-
-        // Collecter toutes les positions à afficher pour calculer le viewBox
-        const allPositions = [];
-        for (const key of Object.keys(gameState.board)) {
-          allPositions.push(gameState.board[key].position);
-        }
-        for (const { pos } of legalPositions) {
-          allPositions.push(pos);
-        }
-
-        // Calculer le viewBox englobant
-        if (allPositions.length > 0) {
-          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-          for (const pos of allPositions) {
-            for (const [x, y] of triangleCorners(pos)) {
-              if (x < minX) {minX = x;}
-              if (y < minY) {minY = y;}
-              if (x > maxX) {maxX = x;}
-              if (y > maxY) {maxY = y;}
-            }
-          }
-          const pad = SIDE;
-          boardSvg.setAttribute('viewBox',
-            `${minX - pad} ${minY - pad} ${maxX - minX + 2 * pad} ${maxY - minY + 2 * pad}`);
-        }
-
-        // Dessiner les zones de drop disponibles
-        const selectedPlacement = placementControls.getSelected();
-        const distinctPositions = new Map();
-        for (const placement of legalPositions) {
-          const { pos } = placement;
-          const key = `${pos.col},${pos.row},${pos.orientation}`;
-          const selectedPosition = selectedPlacement?.pos;
-          if (!distinctPositions.has(key) || (selectedPosition?.col === pos.col && selectedPosition?.row === pos.row
-            && selectedPosition?.orientation === pos.orientation && placement.placed.join(',') === selectedPlacement.placed.join(','))) {
-            distinctPositions.set(key, placement);
-          }
-        }
-        for (const { pos, placed } of distinctPositions.values()) {
-          const pts = trianglePoints(pos);
-          const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-          poly.setAttribute('points', pts);
-          poly.setAttribute('fill', 'rgba(249,115,22,0.18)');
-          poly.setAttribute('stroke', '#f97316');
-          poly.setAttribute('stroke-width', '2');
-          poly.setAttribute('stroke-dasharray', '4 3');
-          poly.setAttribute('aria-hidden', 'true');
-          poly.style.cursor = 'pointer';
-          poly.addEventListener('click', () => placeTile(pos, placed));
-          boardSvg.appendChild(poly);
-        }
-
-        // Dessiner les tuiles posées
-        for (const key of Object.keys(gameState.board)) {
-          const cell = gameState.board[key];
-          drawPlacedTile(cell, key === lastPlacedPositionKey);
-        }
-      }
-
-      function drawPlacedTile(cell, isLastPlaced = false) {
-        const { position, placed } = cell;
-        const pts = trianglePoints(position);
-        const [cx, cy] = triangleCenter(position);
-
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('role', 'img');
-        g.setAttribute('aria-label', `Tuile ${placed.join(', ')}, colonne ${position.col}, ligne ${position.row}, ${position.orientation}${isLastPlaced ? ', dernière tuile posée' : ''}`);
-        if (isLastPlaced) {
-          g.setAttribute('filter', 'url(#last-tile-glow)');
-        }
-
-        const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        poly.setAttribute('points', pts);
-        poly.setAttribute('fill', isLastPlaced ? '#fed7aa' : '#fffff0');
-        poly.setAttribute('stroke', isLastPlaced ? '#f97316' : '#000000');
-        poly.setAttribute('stroke-width', isLastPlaced ? '3' : '2');
-        if (!isLastPlaced) {poly.setAttribute('filter', 'url(#shadow)');}
-        g.appendChild(poly);
-
-        // Afficher les 3 valeurs aux sommets, insetées vers le centre.
-        // placed[0] ? corners[0] (sommet), placed[1] ? corners[1], placed[2] ? corners[2]
-        const corners = triangleCorners(position);
-        const CORNER_INSET = 0.45;
-        placed.forEach((val, i) => {
-          const nx = corners[i][0] + (cx - corners[i][0]) * CORNER_INSET;
-          const ny = corners[i][1] + (cy - corners[i][1]) * CORNER_INSET;
-          const tx = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          tx.setAttribute('x', nx);
-          tx.setAttribute('y', ny);
-          tx.setAttribute('text-anchor', 'middle');
-          tx.setAttribute('dominant-baseline', 'central');
-          tx.setAttribute('font-size', '13');
-          tx.setAttribute('font-weight', '800');
-          tx.setAttribute('fill', '#7c1d0e');
-          tx.textContent = val;
-          g.appendChild(tx);
-        });
-
-        boardSvg.appendChild(g);
+        renderTriominoBoard(boardSvg, {
+          board: gameState.board,
+          legalPositions: getLegalPositionsForSelected(),
+          selectedPlacement: placementControls.getSelected(),
+          lastPlacedKey: lastPlacedPositionKey,
+        }, placeTile);
       }
 
       function renderRack() {
@@ -879,50 +776,6 @@
 
         showScreen(endScreen);
       }
-
-      // — Géométrie SVG —
-
-      function triangleCorners(pos) {
-        const { col, row, orientation } = pos;
-        const seqX = col * 2 + (orientation === 'DOWN' ? 1 : 0);
-        const seqY = row;
-        const isVisualUp = ((seqX + seqY) % 2 + 2) % 2 === 0;
-
-        const leftX = seqX * HALF_SIDE;
-        const rightX = leftX + SIDE;
-        const midX = leftX + HALF_SIDE;
-        const topY = seqY * TRI_H;
-        const botY = topY + TRI_H;
-
-        if (isVisualUp) {
-          // △ : corners[0]=sommet haut, [1]=bas-gauche, [2]=bas-droit
-          return [
-            [midX,   topY],
-            [leftX,  botY],
-            [rightX, botY],
-          ];
-        } else {
-          // ▽ : corners[0]=sommet bas, [1]=haut-gauche, [2]=haut-droit
-          return [
-            [midX,   botY],
-            [leftX,  topY],
-            [rightX, topY],
-          ];
-        }
-      }
-
-      function trianglePoints(pos) {
-        return triangleCorners(pos).map(c => c.join(',')).join(' ');
-      }
-
-      function triangleCenter(pos) {
-        const corners = triangleCorners(pos);
-        return [
-          (corners[0][0] + corners[1][0] + corners[2][0]) / 3,
-          (corners[0][1] + corners[1][1] + corners[2][1]) / 3,
-        ];
-      }
-
     </script>
   </body>
 </html>

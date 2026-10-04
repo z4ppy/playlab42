@@ -157,3 +157,11 @@ La vue contient le rack du joueur, les tailles des racks adverses et de la
 pioche, jamais leurs valeurs. `lastDrawnTile` est visible uniquement au joueur
 qui vient de piocher, pas à ses adversaires. Les tests de contrat communs
 exercent le moteur réel, la reprise JSON, les refus et cette confidentialité.
+
+### Rendu du plateau
+
+`index.html` garde l'état, les bots et les placements ; `ui/board-view.js`
+dessine zones de dépôt légales et tuiles posées, et `ui/board-geometry.js`
+convertit les positions du moteur en triangles SVG. Les placements légaux
+viennent du moteur via la page. `board-render.test.js` exécute le script réel
+de la page puis le rendu extrait contre les mêmes empreintes DOM de référence.

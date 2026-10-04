@@ -8,6 +8,8 @@ import { SeededRandom } from '../../lib/seeded-random.js';
 import { createPlacementControls } from './placement-controls.js';
 import { createRackButton } from './rack-button.js';
 import { observeDialog } from '../dialog-accessibility.js';
+import { renderTriominoBoard } from './ui/board-view.js';
+import { boardViewBox, triangleCenter, triangleCorners, trianglePoints } from './ui/board-geometry.js';
 
 const FIXTURE = fileURLToPath(new URL('./fixtures/render-corpus.json', import.meta.url));
 const PAGE = readFileSync(fileURLToPath(new URL('./index.html', import.meta.url)), 'utf8');
@@ -24,6 +26,7 @@ const modules = {
   './placement-controls.js': { createPlacementControls },
   '../dialog-accessibility.js': { observeDialog },
   './rack-button.js': { createRackButton },
+  './ui/board-view.js': { renderTriominoBoard },
 };
 
 // Le script réel s'exécute dans la fenêtre jsdom, isolé dans une fonction par montage.
@@ -224,5 +227,113 @@ describe('Rendu du plateau de la page Triomino', () => {
     expect(boards.some((html) => (html.match(/role="img"/g) ?? []).length >= 3)).toBe(true);
     expect(boards.some((html) => html.includes('last-tile-glow)"'))).toBe(true);
     expect(new Set(boards).size).toBeGreaterThan(10);
+  });
+});
+
+describe('Rendu public du plateau extrait', () => {
+  const engine = new engineModule.TriominoEngine();
+  const svgBoard = () => {
+    document.body.innerHTML = '<svg id="board-svg" viewBox="0 0 600 480"></svg>';
+    return boardSvg();
+  };
+
+  function playedState(placements) {
+    let state = engine.init({ mode: 'standard', playerIds: ['Joueur 1', 'Joueur 2'], seed: 42 });
+    const last = [];
+    for (let i = 0; i < placements; i++) {
+      const player = state.players[state.currentPlayerIndex].id;
+      const place = engine.getLegalActions(state, player).find((action) => action.type === 'PLACE');
+      state = engine.applyAction(state, place, player);
+      last.push(place);
+    }
+    return { state, last };
+  }
+
+  const keyOf = ({ pos }) => `${pos.col},${pos.row},${pos.orientation}`;
+
+  // Placements légaux d'une tuile du joueur actif, de préférence avec plusieurs rotations.
+  const legalFor = (state) => {
+    const player = state.players[state.currentPlayerIndex].id;
+    const places = engine.getLegalActions(state, player).filter((action) => action.type === 'PLACE');
+    const byTile = Map.groupBy(places, (action) => action.triominoId);
+    const tiles = [...byTile.values()].map((actions) => actions.map((action) => ({ pos: action.position, placed: action.placed })));
+    return tiles.find((legal) => new Set(legal.map(keyOf)).size < legal.length) ?? tiles[0];
+  };
+
+  test('calcule les coins, points et centres des triangles pointe en haut et en bas', () => {
+    const height = 60 * Math.sqrt(3) / 2;
+    expect(triangleCorners({ col: 0, row: 0, orientation: 'UP' })).toEqual([[30, 0], [0, height], [60, height]]);
+    expect(triangleCorners({ col: 0, row: 0, orientation: 'DOWN' })).toEqual([[60, height], [30, 0], [90, 0]]);
+    expect(triangleCorners({ col: 1, row: 1, orientation: 'UP' })[0]).toEqual([90, 2 * height]);
+    expect(trianglePoints({ col: 0, row: 0, orientation: 'UP' })).toBe(`30,0 0,${height} 60,${height}`);
+    const [cx, cy] = triangleCenter({ col: 0, row: 0, orientation: 'UP' });
+    expect(cx).toBe(30);
+    expect(cy).toBeCloseTo(height * 2 / 3, 10);
+  });
+
+  test('englobe les positions avec une marge d’un côté et ignore une liste vide', () => {
+    expect(boardViewBox([])).toBeNull();
+    const height = 60 * Math.sqrt(3) / 2;
+    expect(boardViewBox([{ col: 0, row: 0, orientation: 'UP' }])).toBe(`-60 -60 180 ${height + 120}`);
+    const wide = boardViewBox([{ col: 0, row: 0, orientation: 'UP' }, { col: 3, row: 0, orientation: 'UP' }]).split(' ').map(Number);
+    expect(wide[0]).toBe(-60);
+    expect(wide[2]).toBe(60 + 180 + 120);
+  });
+
+  test('vide le plateau, garde le viewBox sans position et ne dessine que les défs', () => {
+    const svg = svgBoard();
+    svg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'g'));
+    renderTriominoBoard(svg, { board: {}, legalPositions: [], selectedPlacement: null, lastPlacedKey: null }, jest.fn());
+    expect([...svg.children].map((child) => child.tagName)).toEqual(['defs']);
+    expect(svg.getAttribute('viewBox')).toBe('0 0 600 480');
+  });
+
+  test('dessine les tuiles du moteur dans l’ordre des clés avec seule la dernière mise en évidence', () => {
+    const { state, last } = playedState(3);
+    const svg = svgBoard();
+    const lastKey = Object.keys(state.board).at(-1);
+    renderTriominoBoard(svg, { board: state.board, legalPositions: [], selectedPlacement: null, lastPlacedKey: lastKey }, jest.fn());
+    const tiles = [...svg.querySelectorAll('g[role="img"]')];
+    expect(tiles).toHaveLength(3);
+    expect(tiles.map((tile) => tile.querySelectorAll('text').length)).toEqual([3, 3, 3]);
+    expect(tiles.filter((tile) => tile.hasAttribute('filter'))).toEqual([tiles[2]]);
+    expect(tiles[2].getAttribute('aria-label')).toMatch(/, dernière tuile posée$/);
+    expect(tiles[0].getAttribute('aria-label')).toBe(`Tuile ${last[0].placed.join(', ')}, colonne ${last[0].position.col}, ligne ${last[0].position.row}, ${last[0].position.orientation}`);
+    expect([...tiles[2].querySelectorAll('text')].map((text) => text.textContent)).toEqual(Object.values(state.board).at(-1).placed.map(String));
+    expect(tiles[2].firstElementChild.getAttribute('fill')).toBe('#fed7aa');
+    expect(tiles[0].firstElementChild.getAttribute('fill')).toBe('#fffff0');
+    expect(tiles[0].firstElementChild.getAttribute('filter')).toBe('url(#shadow)');
+    expect(svg.getAttribute('viewBox')).not.toBe('0 0 600 480');
+  });
+
+  test('délègue le clic de zone avec la rotation choisie sur un plateau vide', () => {
+    const { state } = playedState(0);
+    const legal = legalFor(state);
+    const rotationKey = keyOf(legal.find((entry) => legal.filter((other) => keyOf(other) === keyOf(entry)).length > 1));
+    const rotations = legal.filter((entry) => keyOf(entry) === rotationKey);
+    expect(rotations.length).toBeGreaterThan(1);
+    const svg = svgBoard();
+    const onPlace = jest.fn();
+    renderTriominoBoard(svg, { board: state.board, legalPositions: legal, selectedPlacement: rotations[1], lastPlacedKey: null }, onPlace);
+    const distinct = new Set(legal.map(keyOf));
+    const zones = [...svg.querySelectorAll(':scope > polygon')];
+    expect(zones).toHaveLength(distinct.size);
+    expect(zones[0].getAttribute('stroke-dasharray')).toBe('4 3');
+    expect(zones[0].getAttribute('aria-hidden')).toBe('true');
+    const chosenZone = zones[[...distinct].indexOf(rotationKey)];
+    chosenZone.dispatchEvent(new MouseEvent('click'));
+    expect(onPlace).toHaveBeenCalledWith(rotations[1].pos, rotations[1].placed);
+  });
+
+  test('place les zones avant les tuiles et garde la première rotation sans placement choisi', () => {
+    const { state } = playedState(1);
+    const legal = legalFor(state);
+    const svg = svgBoard();
+    const onPlace = jest.fn();
+    renderTriominoBoard(svg, { board: state.board, legalPositions: legal, selectedPlacement: null, lastPlacedKey: null }, onPlace);
+    const children = [...svg.children].map((child) => child.tagName);
+    expect(children.lastIndexOf('polygon')).toBeLessThan(children.indexOf('g'));
+    svg.querySelector(':scope > polygon').dispatchEvent(new MouseEvent('click'));
+    expect(onPlace).toHaveBeenCalledWith(legal[0].pos, legal[0].placed);
   });
 });
