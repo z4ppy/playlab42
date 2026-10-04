@@ -129,6 +129,9 @@ export default {
     './games/diese-et-mat/src/controllers/{panel-visibility,synth-slider-specs}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './scripts/build-runtime-vendors.js': { statements: 95, branches: 85, functions: 90, lines: 95 },
     './scripts/verify-site.js': { statements: 70, branches: 75, functions: 100, lines: 70 },
+    './scripts/build-guides.js': { statements: 94, branches: 80, functions: 96, lines: 94 },
+    './scripts/scaffold.js': { statements: 90, branches: 90, functions: 100, lines: 90 },
+    './scripts/lib/bookmark-metadata.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)

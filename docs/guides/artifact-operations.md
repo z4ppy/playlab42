@@ -7,9 +7,9 @@ le commit livré sont référencés dans la
 Les correctifs de revue issus de `fix/review-software-factory` sont eux aussi
 **intégrés à `main` et publiés** via la PR #145. Leur validation native et leur
 publication sont référencées séparément dans la même preuve. Les continuations
-qualité livrées, dont la PR #150 sur main `d4c55d2`, sont distinguées du lot
-`quality/artifact-pipeline` encore non livré dans le
-[guide qualité](software-quality.md#fabrication-et-vérification).
+qualité livrées, dont la PR #151 sur main `a54954c`, sont distinguées du lot
+`quality/application-contracts` encore non livré dans le
+[guide qualité](software-quality.md#contrats-et-qualité-applicative).
 Application statique, pas de backend ou plateforme d'exploitation ajoutée.
 
 ## Actualisation éditoriale et fabrication
@@ -87,7 +87,7 @@ précédentes restent disponibles, sans promouvoir un fichier temporaire.
 
 ## Inventaire, SBOM et source de confiance
 
-La continuation `quality/artifact-pipeline` clarifie les responsabilités sans
+La continuation `quality/artifact-pipeline`, livrée via la PR #151, clarifie les responsabilités sans
 changer les contrats : préparation des vendors validée avant nettoyage,
 bundle/copie et licences séparés ; identité et images contrôlées avant
 remplacement du site ; structure/identité, commit attendu et inventaire

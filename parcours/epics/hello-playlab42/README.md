@@ -78,8 +78,11 @@ lots précédents ; la CI le publie sans seuil global artificiel.
 La suite `quality/rendering-audio` a livré les corrections des six fonctions
 de production JS/HTML > 20 via la PR #150 (`d4c55d2`), après caractérisation
 des rendus et contrats audio. La continuation `quality/artifact-pipeline`
-simplifie la fabrication et la vérification après tests de comportement ;
-elle n'est pas encore livrée.
+a livré la simplification de fabrication/vérification via la PR #151
+(`a54954c`). La suite `quality/application-contracts` caractérise les
+orchestrations et renforce les protections applicatives en scopes parallèles ;
+elle n'est pas encore livrée. « Parfait » n'est pas un critère de sortie :
+préférer des contrats, mesures et limites explicitement vérifiables.
 Les neuf checks GitHub requis ne sont pas les dix ressources HTTP
 du smoke, qui incluent désormais le manifeste.
 Aucun run cron réussi, rollback de production ou archivage OpenSpec n'est

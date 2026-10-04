@@ -131,6 +131,11 @@ describe('Playlab42 — Guide et usine logicielle', () => {
     expect(current).toContain('37205096915');
     expect(current).toContain('## Fabrication et vérification');
     expect(current).toContain('quality/artifact-pipeline');
+    expect(current).toContain('PR #151');
+    expect(current).toContain('a54954c');
+    expect(current).toContain('37209561127');
+    expect(current).toContain('## Contrats et qualité applicative');
+    expect(current).toContain('quality/application-contracts');
     expect(current).toContain('refactor-core-with-contracts');
     expect(current).toContain('sans migration des états JSON');
     expect(current).toContain('pas une certification');
@@ -150,6 +155,8 @@ describe('Playlab42 — Guide et usine logicielle', () => {
       expect(document).toContain('quality:report');
       expect(document).toContain('PR #149');
       expect(document).toContain('PR #150');
+      expect(document).toContain('PR #151');
+      expect(document).toContain('quality/application-contracts');
     }
   });
 

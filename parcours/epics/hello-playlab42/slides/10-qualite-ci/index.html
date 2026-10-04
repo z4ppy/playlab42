@@ -134,8 +134,14 @@
       Un clone détecté n'est pas automatiquement un défaut à supprimer.
       La PR #150 a livré la correction des six hotspots de production au-dessus de 20
       dans <code>quality/rendering-audio</code>, après caractérisation des rendus et contrats audio.
-      La suite <code>quality/artifact-pipeline</code> simplifie la fabrication et la vérification d'archive,
-      après tests de comportement ; elle n'est pas encore livrée.</p>
+      La PR #151 a livré la simplification de fabrication et vérification d'archive
+      dans <code>quality/artifact-pipeline</code>, après tests de comportement.
+      La suite <code>quality/application-contracts</code> caractérise les orchestrations et protège
+      les contrats applicatifs en scopes parallèles ; elle n'est pas encore livrée.</p>
+    <p class="guide-note">« Parfait » n'est pas un critère vérifiable. Préférez des responsabilités
+      compréhensibles, des erreurs et courses caractérisées, des budgets explicites et des limites honnêtes.
+      Un zéro Jest ne prouve pas l'absence de tests navigateur ; un clone détecté ne justifie pas
+      automatiquement une abstraction. Chaque extraction reste instrumentée et protégée.</p>
 
     <h2>Lancer les mêmes contrôles en local (Docker)</h2>
     <pre class="code-block"><code>make info          # instance, port, URL du worktree

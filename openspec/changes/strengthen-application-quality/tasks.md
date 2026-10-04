@@ -9,7 +9,7 @@
 - [ ] Simplifier commandes/rendus/bots des jeux et cycle de vie GameKit.
 - [ ] Renforcer contrats JS et budgets de qualite avec preuves CLI.
 - [ ] Exercer des contrats critiques dans Chromium, Firefox et WebKit.
-- [ ] Simplifier les hotspots de fabrication restants apres caracterisation.
+- [x] Simplifier les hotspots de fabrication restants apres caracterisation.
 
 ## Integration et livraison proposee
 - [ ] Collecter les sources caracterisees et verrouiller les floors mesures.

@@ -72,8 +72,13 @@ la PR #150 au commit `d4c55d2` :
 [publication 37205096915](https://github.com/z4ppy/playlab42/actions/runs/37205096915)
 et [audit 37205096724](https://github.com/z4ppy/playlab42/actions/runs/37205096724)
 réussis. Il reste 53 fonctions JS/HTML > 10, aucune > 20, et 58 clones.
-`quality/artifact-pipeline` simplifie ensuite la fabrication et la vérification,
-après caractérisation ; cette continuation n'est pas encore livrée.
+`quality/artifact-pipeline` a livré cette simplification via la PR #151
+sur main `a54954c` : [publication 37209561127](https://github.com/z4ppy/playlab42/actions/runs/37209561127)
+et [audit 37209560905](https://github.com/z4ppy/playlab42/actions/runs/37209560905)
+réussis, 49 fonctions > 10 et 58 clones.
+`quality/application-contracts` poursuit ensuite les contrats d'orchestration
+et protections applicatives en scopes parallèles ; cette continuation n'est
+pas encore livrée et ne promet pas une base « parfaite ».
 
 ## Carte de l'usine
 

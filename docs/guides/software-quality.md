@@ -876,7 +876,7 @@ Le rapport natif du main `d4c55d2`, run `37205096915`, confirme 58 clones,
 
 ## Fabrication et vérification
 
-**Continuation autorisée dans `quality/artifact-pipeline`, non livrée.**
+**Travaux de `quality/artifact-pipeline` livrés via la PR #151 sur main `a54954c`.**
 Le change `simplify-artifact-pipeline` cible vendors (20), assemblage du site
 (17), vérification d'archive (17) et collecte d'images (12).
 Les tests de comportement précèdent le refactoring : vrais bundles esbuild
@@ -924,8 +924,7 @@ versionné, SHA complète `1e4c8a1cbce92535acbc026868556d576c97766a` et epoch
 Intégrité, corruption refusée/restauration et **77 scénarios Chromium**
 passent sur cette archive montée en lecture seule.
 
-La [PR #151](https://github.com/z4ppy/playlab42/pull/151) reste ouverte,
-sans fusion ni publication. Sa première
+Avant fusion, la [PR #151](https://github.com/z4ppy/playlab42/pull/151) a passé sa première
 [CI native 37207217083](https://github.com/z4ppy/playlab42/actions/runs/37207217083)
 et son [audit 37207217132](https://github.com/z4ppy/playlab42/actions/runs/37207217132)
 réussissent au head `1e4c8a1`, avec merge SHA testée
@@ -939,6 +938,42 @@ de la collecte locale, toujours au-dessus du floor hérité.
 Hadolint est ignoré sur PR, pas exécuté ni certifié.
 Les checks et preuves de la dernière tête sont référencés en commentaire
 de PR, sans confondre cette première validation avec les commits suivants.
+
+La livraison sur main `a54954ca70df1190b2b77aec42e036b3c7b9af31` est
+constatée séparément : [publication 37209561127](https://github.com/z4ppy/playlab42/actions/runs/37209561127)
+et [audit 37209560905](https://github.com/z4ppy/playlab42/actions/runs/37209560905)
+réussis. Le rapport natif de ce main confirme **49 fonctions > 10**,
+aucune > 20, et **58 clones / 610 lignes**. L'archivage reste une décision distincte.
+
+## Contrats et qualité applicative
+
+**Continuation autorisée dans `quality/application-contracts`, non livrée.**
+Le change `strengthen-application-quality` poursuit les axes du bilan :
+orchestration et contrôles musicaux, Relativity, portail, commandes des jeux,
+contrats JS, budgets explicites et interactions critiques multi-navigateur.
+Les scopes indépendants possèdent leurs fichiers et avancent en worktrees ;
+les tests de comportement précèdent chaque extraction.
+
+La cible est vérifiable, pas une promesse de perfection : erreurs et courses
+caractérisées, responsabilités compréhensibles, helpers toujours mesurés,
+collecte et floors fidèles, vérification des corps JS sur un périmètre explicite.
+Ni zéro clone ni 100 % global ne constituent un objectif automatique.
+Une interface exportée ou un zéro Jest ne prouve pas qu'un module est inutilisé.
+Les budgets absolus ne doivent pas être dilués par un ratio ou les supports
+pédagogiques ; des contrôles ciblés ne deviennent pas une certification complète.
+Les preuves d'implémentation, d'intégration et de dernière tête seront distinguées
+de la fusion, de la publication et de l'archivage.
+
+La fabrication restante est caractérisée avant extraction : résolution des
+liens, structure/champs du snapshot OG, préservation éditoriale, arguments
+et destinations du scaffold, compteurs et priorité des refus du rapport Jest.
+Les **127 tests ciblés** passent avant/après ; les **29 pages de guides**
+gardent des empreintes identiques avant l'actualisation documentaire.
+Les six hotspots et tous leurs helpers respectent le budget 10 réel.
+Les floors ajoutés sont guides **94/80/96/94 %**, scaffold **90/90/100/90 %**
+et métadonnées OG **100/100/100/100 %** S/B/F/L, après mesure ; les floors
+historiques ne baissent pas. Cette preuve bornée n'est pas une validation
+intégrée des scopes encore en cours.
 
 ## Maintenance des références et exceptions
 
