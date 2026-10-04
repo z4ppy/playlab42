@@ -14,6 +14,7 @@
 ## Integration et livraison proposee
 - [x] Verifier les clones residuels et les trois compteurs absolus.
 - [x] Resserer budgets/floors mesures et aligner guides/parcours.
-- [x] Valider gates, deux builds, archive/reprise et navigateurs.
-- [ ] Ouvrir la PR et verifier derniere tete native et artefacts.
+- [ ] Revalider gates, deux builds, archive/reprise et navigateurs apres portabilite des references CSS.
+- [x] Ouvrir la PR.
+- [ ] Verifier derniere tete native corrigee et artefacts.
 - [ ] Fusion, publication et archivage sur decision distincte, hors autorisation.

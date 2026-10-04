@@ -1071,7 +1071,7 @@ Cette livraison ne vaut pas autorisation d'archiver le change.
 
 ## Réduction sémantique des clones
 
-**Continuation autorisée dans `quality/semantic-deduplication`, non livrée.**
+**Continuation autorisée dans `quality/semantic-deduplication`, PR #153 ouverte, non livrée.**
 Le change `reduce-semantic-clones` part du main #152 livré, avec des scopes
 indépendants sur styles partagés, pages jeux, musique, outils et petits contrats JS.
 Un clone de tokens n'est pas automatiquement un contrat commun : la cascade CSS,
@@ -1153,9 +1153,36 @@ La suite Chromium prend environ 5,4 minutes dans ce runtime ; le job natif doit
 encore confirmer sa durée, installation et smoke inclus, dans sa limite de 15 minutes.
 Ces preuves locales sont datées, pas une certification d'un head ultérieur.
 
-La mesure locale ne prouve pas une livraison : la PR et sa dernière tête native
-doivent encore être vérifiées et référencées dans la PR. Fusion, publication et
-archivage restent distincts.
+### Première CI et portabilité des contrats de styles
+
+La [PR #153](https://github.com/z4ppy/playlab42/pull/153) est ouverte.
+La première [CI 37227111602](https://github.com/z4ppy/playlab42/actions/runs/37227111602),
+head **5da95a7**, confirme le rapport **15/146/1 398**, les **70 sélecteurs /
+101 fichiers appariés** et les builds ; les sept fichiers qualité/Jest sont
+téléchargés et vérifiés sur le merge testé **421d3c588ab84a04de591e5864af0328b5579ea7**.
+L'[audit 37227111574](https://github.com/z4ppy/playlab42/actions/runs/37227111574)
+réussit. La couverture native S/B/F/L est **89,63/84,88/90,54/89,73 %**.
+
+**Cette première CI échoue sur Browser**, pas sur les budgets : les dimensions
+typographiques des références Docker diffèrent de celles des polices système du
+runner, par exemple un titre Dames à 186,75×32 contre 222,516×28 pixels.
+Ce constat ne justifie ni ignorer largeur/hauteur, ni des tolérances, ni changer
+les polices de production ou régénérer une référence sur le code refactoré.
+
+Le corpus `e2e/fixtures/styles-before-reduction.json` est extrait des **dix CSS
+du main 5956cd9 avant refactoring**, avec son SHA et un hash de contenu verrouillé.
+`withOriginalStyles` rejoue ces octets au même emplacement, dans le même
+navigateur/OS et DOM que les styles refactorés ; le nouveau socle jeux est
+désactivé pendant la référence. Les mêmes propriétés, y compris les dimensions,
+doivent rester **exactement égales**. Les CSS courants sont restaurés après la
+capture, même rejetée. Les références calculées initiales restent immuables
+pour leurs formes et états ; la palette publique garde ses assertions de valeurs.
+Les tests du helper vérifient provenance, distinction d'une mutation réelle,
+restauration après rejet et refus d'un lien de style absent.
+
+La dernière tête native corrigée doit encore être vérifiée et référencée dans
+la PR. Une preuve locale ou un job partiellement vert n'est pas une livraison.
+Fusion, publication et archivage restent distincts.
 
 ## Maintenance des références et exceptions
 
