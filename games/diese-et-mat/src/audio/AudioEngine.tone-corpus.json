@@ -1,0 +1,1919 @@
+{
+  "start": {
+    "log": [
+      "Tone.start",
+      "new Filter#1 {\"frequency\":2000,\"type\":\"lowpass\",\"rolloff\":-12}",
+      "new FeedbackDelay#1 {\"delayTime\":0.2,\"feedback\":0.3,\"wet\":0}",
+      "new Reverb#1 {\"decay\":2.5,\"preDelay\":0.01,\"wet\":0}",
+      "Filter#1.connect \"FeedbackDelay#1\"",
+      "FeedbackDelay#1.connect \"Reverb#1\"",
+      "Reverb#1.toDestination",
+      "new PolySynth#1 \"ctor:Synth\" {\"oscillator\":{\"type\":\"triangle\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "PolySynth#1.volume.value = -10",
+      "PolySynth#1.disconnect",
+      "PolySynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "piano",
+      "synthType": "poly",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:piano": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"triangle8\"},\"envelope\":{\"attack\":0.005,\"decay\":1.5,\"sustain\":0.3,\"release\":2}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "piano",
+      "synthType": "poly",
+      "oscillator": "triangle8",
+      "envelope": {
+        "attack": 0.005,
+        "decay": 1.5,
+        "sustain": 0.3,
+        "release": 2
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:electricPiano": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:FMSynth\" {\"harmonicity\":3.01,\"modulationIndex\":4,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.001,\"decay\":0.8,\"sustain\":0.15,\"release\":1.5},\"modulation\":{\"type\":\"sine\"},\"modulationEnvelope\":{\"attack\":0.002,\"decay\":0.3,\"sustain\":0,\"release\":0.3}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "electricPiano",
+      "synthType": "fm",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.8,
+        "sustain": 0.15,
+        "release": 1.5
+      },
+      "fm": {
+        "harmonicity": 3.01,
+        "modulationIndex": 4
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:organ": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.01,\"decay\":0.01,\"sustain\":0.9,\"release\":0.3}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "organ",
+      "synthType": "poly",
+      "oscillator": "sine",
+      "envelope": {
+        "attack": 0.01,
+        "decay": 0.01,
+        "sustain": 0.9,
+        "release": 0.3
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:guitarClassic": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PluckSynth#1 {\"attackNoise\":1.5,\"dampening\":3500,\"resonance\":0.98,\"release\":2}",
+      "PluckSynth#1.volume.value = -10",
+      "PluckSynth#1.disconnect",
+      "PluckSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "guitarClassic",
+      "synthType": "pluck",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:guitarFolk": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PluckSynth#1 {\"attackNoise\":2.5,\"dampening\":4500,\"resonance\":0.97,\"release\":1.5}",
+      "PluckSynth#1.volume.value = -10",
+      "PluckSynth#1.disconnect",
+      "PluckSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "guitarFolk",
+      "synthType": "pluck",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 2.5,
+        "dampening": 4500,
+        "resonance": 0.97,
+        "release": 1.5
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:guitarElectric": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PluckSynth#1 {\"attackNoise\":3,\"dampening\":6000,\"resonance\":0.995,\"release\":3}",
+      "new Distortion#1 0.4",
+      "PluckSynth#1.volume.value = -10",
+      "PluckSynth#1.disconnect",
+      "Distortion#1.disconnect",
+      "PluckSynth#1.connect \"Distortion#1\"",
+      "Distortion#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "guitarElectric",
+      "synthType": "pluck",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 3,
+        "dampening": 6000,
+        "resonance": 0.995,
+        "release": 3
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:synthLead": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"sawtooth\"},\"envelope\":{\"attack\":0.01,\"decay\":0.2,\"sustain\":0.5,\"release\":0.4}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "synthLead",
+      "synthType": "poly",
+      "oscillator": "sawtooth",
+      "envelope": {
+        "attack": 0.01,
+        "decay": 0.2,
+        "sustain": 0.5,
+        "release": 0.4
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:retro8bit": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"square\"},\"envelope\":{\"attack\":0.001,\"decay\":0.15,\"sustain\":0.4,\"release\":0.2}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "retro8bit",
+      "synthType": "poly",
+      "oscillator": "square",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.15,
+        "sustain": 0.4,
+        "release": 0.2
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:bell": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:FMSynth\" {\"harmonicity\":5.5,\"modulationIndex\":8,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.001,\"decay\":1.5,\"sustain\":0.1,\"release\":2},\"modulation\":{\"type\":\"sine\"},\"modulationEnvelope\":{\"attack\":0.002,\"decay\":0.3,\"sustain\":0,\"release\":0.3}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "bell",
+      "synthType": "fm",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 1.5,
+        "sustain": 0.1,
+        "release": 2
+      },
+      "fm": {
+        "harmonicity": 5.5,
+        "modulationIndex": 8
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:percKick": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MembraneSynth#1 {\"pitchDecay\":0.05,\"octaves\":8,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.001,\"decay\":0.4,\"sustain\":0.01,\"release\":1.4}}",
+      "MembraneSynth#1.volume.value = -10",
+      "MembraneSynth#1.disconnect",
+      "MembraneSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "percKick",
+      "synthType": "membrane",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.4,
+        "sustain": 0.01,
+        "release": 1.4
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8,
+        "oscillator": {
+          "type": "sine"
+        }
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:percSnare": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new NoiseSynth#1 {\"noise\":{\"type\":\"white\"},\"envelope\":{\"attack\":0.001,\"decay\":0.15,\"sustain\":0,\"release\":0.03}}",
+      "new Filter#2 {\"frequency\":3000,\"type\":\"highpass\"}",
+      "NoiseSynth#1.volume.value = -10",
+      "NoiseSynth#1.disconnect",
+      "Filter#2.disconnect",
+      "NoiseSynth#1.connect \"Filter#2\"",
+      "Filter#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "percSnare",
+      "synthType": "noise",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.15,
+        "sustain": 0,
+        "release": 0.03
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:percTom": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MembraneSynth#1 {\"pitchDecay\":0.03,\"octaves\":4,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.001,\"decay\":0.3,\"sustain\":0,\"release\":0.2}}",
+      "MembraneSynth#1.volume.value = -10",
+      "MembraneSynth#1.disconnect",
+      "MembraneSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "percTom",
+      "synthType": "membrane",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.3,
+        "sustain": 0,
+        "release": 0.2
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.03,
+        "octaves": 4,
+        "oscillator": {
+          "type": "sine"
+        }
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:percWood": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MembraneSynth#1 {\"pitchDecay\":0.008,\"octaves\":2,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.001,\"decay\":0.08,\"sustain\":0,\"release\":0.05}}",
+      "MembraneSynth#1.volume.value = -10",
+      "MembraneSynth#1.disconnect",
+      "MembraneSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "percWood",
+      "synthType": "membrane",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.08,
+        "sustain": 0,
+        "release": 0.05
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.008,
+        "octaves": 2,
+        "oscillator": {
+          "type": "sine"
+        }
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:percHihat": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MetalSynth#1 {\"frequency\":400,\"harmonicity\":5.1,\"modulationIndex\":32,\"resonance\":4000,\"octaves\":1.5,\"envelope\":{\"attack\":0.001,\"decay\":0.05,\"release\":0.01}}",
+      "MetalSynth#1.volume.value = -10",
+      "MetalSynth#1.disconnect",
+      "MetalSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "percHihat",
+      "synthType": "metal",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.05,
+        "release": 0.01
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 400,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "preset:percCymbal": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MetalSynth#1 {\"frequency\":300,\"harmonicity\":12,\"modulationIndex\":20,\"resonance\":800,\"octaves\":1.5,\"envelope\":{\"attack\":0.001,\"decay\":1.5,\"release\":0.3}}",
+      "MetalSynth#1.volume.value = -10",
+      "MetalSynth#1.disconnect",
+      "MetalSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "percCymbal",
+      "synthType": "metal",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 1.5,
+        "release": 0.3
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 300,
+        "harmonicity": 12,
+        "modulationIndex": 20,
+        "resonance": 800,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "synthType:poly": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"triangle\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "poly",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "synthType:fm": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:FMSynth\" {\"harmonicity\":3,\"modulationIndex\":10,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8},\"modulation\":{\"type\":\"sine\"},\"modulationEnvelope\":{\"attack\":0.002,\"decay\":0.3,\"sustain\":0,\"release\":0.3}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "fm",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "synthType:pluck": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PluckSynth#1 {\"attackNoise\":1.5,\"dampening\":3500,\"resonance\":0.98,\"release\":2}",
+      "PluckSynth#1.volume.value = -10",
+      "PluckSynth#1.disconnect",
+      "PluckSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "pluck",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "synthType:membrane": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MembraneSynth#1 {\"pitchDecay\":0.05,\"octaves\":8,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "MembraneSynth#1.volume.value = -10",
+      "MembraneSynth#1.disconnect",
+      "MembraneSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "membrane",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "synthType:metal": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MetalSynth#1 {\"frequency\":200,\"harmonicity\":5.1,\"modulationIndex\":32,\"resonance\":4000,\"octaves\":1.5,\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "MetalSynth#1.volume.value = -10",
+      "MetalSynth#1.disconnect",
+      "MetalSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "metal",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "synthType:noise": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new NoiseSynth#1 {\"noise\":{\"type\":\"white\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "NoiseSynth#1.volume.value = -10",
+      "NoiseSynth#1.disconnect",
+      "NoiseSynth#1.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "noise",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "oscillator:sine": {
+    "log": [
+      "PolySynth#1.set {\"oscillator\":{\"type\":\"sine\"}}",
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "poly",
+      "oscillator": "sine",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "oscillator:triangle": {
+    "log": [
+      "PolySynth#1.set {\"oscillator\":{\"type\":\"triangle\"}}",
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"triangle\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "poly",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "oscillator:square": {
+    "log": [
+      "PolySynth#1.set {\"oscillator\":{\"type\":\"square\"}}",
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"square\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "poly",
+      "oscillator": "square",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "oscillator:sawtooth": {
+    "log": [
+      "PolySynth#1.set {\"oscillator\":{\"type\":\"sawtooth\"}}",
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"sawtooth\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "poly",
+      "oscillator": "sawtooth",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "filter-actif-puis-preset": {
+    "log": [
+      "Filter#1.frequency.value = 1200",
+      "PolySynth#1.disconnect",
+      "PolySynth#1.connect \"Filter#1\"",
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PluckSynth#1 {\"attackNoise\":3,\"dampening\":6000,\"resonance\":0.995,\"release\":3}",
+      "new Distortion#1 0.4",
+      "PluckSynth#1.volume.value = -10",
+      "PluckSynth#1.disconnect",
+      "Distortion#1.disconnect",
+      "PluckSynth#1.connect \"Distortion#1\"",
+      "Distortion#1.connect \"Filter#1\""
+    ],
+    "settings": {
+      "preset": "guitarElectric",
+      "synthType": "pluck",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 3,
+        "dampening": 6000,
+        "resonance": 0.995,
+        "release": 3
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": true,
+          "frequency": 1200
+        }
+      },
+      "volume": -10
+    }
+  },
+  "delay-reverb-puis-percussion": {
+    "log": [
+      "Reverb#1.wet.value = 0.7",
+      "FeedbackDelay#1.wet.value = 0.5",
+      "FeedbackDelay#1.delayTime.value = 0.4",
+      "FeedbackDelay#1.feedback.value = 0.5",
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new NoiseSynth#1 {\"noise\":{\"type\":\"white\"},\"envelope\":{\"attack\":0.001,\"decay\":0.15,\"sustain\":0,\"release\":0.03}}",
+      "new Filter#2 {\"frequency\":3000,\"type\":\"highpass\"}",
+      "NoiseSynth#1.volume.value = -10",
+      "NoiseSynth#1.disconnect",
+      "Filter#2.disconnect",
+      "NoiseSynth#1.connect \"Filter#2\"",
+      "Filter#2.connect \"FeedbackDelay#1\""
+    ],
+    "settings": {
+      "preset": "percSnare",
+      "synthType": "noise",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 0.15,
+        "sustain": 0,
+        "release": 0.03
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": true,
+          "amount": 0.7
+        },
+        "delay": {
+          "enabled": true,
+          "time": 0.4,
+          "feedback": 0.5
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "applySettings-preset": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:FMSynth\" {\"harmonicity\":5.5,\"modulationIndex\":8,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.001,\"decay\":1.5,\"sustain\":0.1,\"release\":2},\"modulation\":{\"type\":\"sine\"},\"modulationEnvelope\":{\"attack\":0.002,\"decay\":0.3,\"sustain\":0,\"release\":0.3}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\"",
+      "PolySynth#2.releaseAll",
+      "PolySynth#2.dispose",
+      "new PolySynth#3 \"ctor:FMSynth\" {\"harmonicity\":5.5,\"modulationIndex\":8,\"oscillator\":{\"type\":\"sine\"},\"envelope\":{\"attack\":0.001,\"decay\":1.5,\"sustain\":0.1,\"release\":2},\"modulation\":{\"type\":\"sine\"},\"modulationEnvelope\":{\"attack\":0.002,\"decay\":0.3,\"sustain\":0,\"release\":0.3}}",
+      "PolySynth#3.volume.value = -25",
+      "PolySynth#3.disconnect",
+      "PolySynth#3.connect \"Filter#1\"",
+      "Reverb#1.wet.value = 0.6",
+      "FeedbackDelay#1.wet.value = 0.5",
+      "FeedbackDelay#1.delayTime.value = 0.3",
+      "FeedbackDelay#1.feedback.value = 0.2",
+      "Filter#1.frequency.value = 900"
+    ],
+    "settings": {
+      "preset": "bell",
+      "synthType": "fm",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.001,
+        "decay": 1.5,
+        "sustain": 0.1,
+        "release": 2
+      },
+      "fm": {
+        "harmonicity": 5.5,
+        "modulationIndex": 8
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": true,
+          "amount": 0.6
+        },
+        "delay": {
+          "enabled": true,
+          "time": 0.3,
+          "feedback": 0.2
+        },
+        "filter": {
+          "enabled": true,
+          "frequency": 900
+        }
+      },
+      "volume": -25
+    }
+  },
+  "applySettings-custom-noise": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new NoiseSynth#1 {\"noise\":{\"type\":\"white\"},\"envelope\":{\"attack\":0.1,\"decay\":0.2,\"sustain\":0.4,\"release\":0.5}}",
+      "NoiseSynth#1.volume.value = -10",
+      "NoiseSynth#1.disconnect",
+      "NoiseSynth#1.connect \"FeedbackDelay#1\"",
+      "Reverb#1.wet.value = 0",
+      "FeedbackDelay#1.wet.value = 0",
+      "FeedbackDelay#1.delayTime.value = 0.2",
+      "FeedbackDelay#1.feedback.value = 0.3",
+      "Filter#1.frequency.value = 2000"
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "noise",
+      "oscillator": "square",
+      "envelope": {
+        "attack": 0.1,
+        "decay": 0.2,
+        "sustain": 0.4,
+        "release": 0.5
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "applySettings-type-inconnu": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new PolySynth#2 \"ctor:Synth\" {\"oscillator\":{\"type\":\"triangle\"},\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "PolySynth#2.volume.value = -10",
+      "PolySynth#2.disconnect",
+      "PolySynth#2.connect \"FeedbackDelay#1\"",
+      "Reverb#1.wet.value = 0",
+      "FeedbackDelay#1.wet.value = 0",
+      "FeedbackDelay#1.delayTime.value = 0.2",
+      "FeedbackDelay#1.feedback.value = 0.3",
+      "Filter#1.frequency.value = 2000"
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "inconnu",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 3,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 3500,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 8
+      },
+      "metal": {
+        "frequency": 200,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  },
+  "applySettings-parametres": {
+    "log": [
+      "PolySynth#1.releaseAll",
+      "PolySynth#1.dispose",
+      "new MetalSynth#1 {\"frequency\":400,\"harmonicity\":5.1,\"modulationIndex\":32,\"resonance\":4000,\"octaves\":1.5,\"envelope\":{\"attack\":0.02,\"decay\":0.1,\"sustain\":0.3,\"release\":0.8}}",
+      "MetalSynth#1.volume.value = -10",
+      "MetalSynth#1.disconnect",
+      "MetalSynth#1.connect \"FeedbackDelay#1\"",
+      "Reverb#1.wet.value = 0",
+      "FeedbackDelay#1.wet.value = 0",
+      "FeedbackDelay#1.delayTime.value = 0.2",
+      "FeedbackDelay#1.feedback.value = 0.3",
+      "Filter#1.frequency.value = 2000"
+    ],
+    "settings": {
+      "preset": "custom",
+      "synthType": "metal",
+      "oscillator": "triangle",
+      "envelope": {
+        "attack": 0.02,
+        "decay": 0.1,
+        "sustain": 0.3,
+        "release": 0.8
+      },
+      "fm": {
+        "harmonicity": 2,
+        "modulationIndex": 10
+      },
+      "pluck": {
+        "attackNoise": 1.5,
+        "dampening": 100,
+        "resonance": 0.98,
+        "release": 2
+      },
+      "membrane": {
+        "pitchDecay": 0.05,
+        "octaves": 2
+      },
+      "metal": {
+        "frequency": 400,
+        "harmonicity": 5.1,
+        "modulationIndex": 32,
+        "resonance": 4000,
+        "octaves": 1.5
+      },
+      "effects": {
+        "reverb": {
+          "enabled": false,
+          "amount": 0.3
+        },
+        "delay": {
+          "enabled": false,
+          "time": 0.2,
+          "feedback": 0.3
+        },
+        "filter": {
+          "enabled": false,
+          "frequency": 2000
+        }
+      },
+      "volume": -10
+    }
+  }
+}
