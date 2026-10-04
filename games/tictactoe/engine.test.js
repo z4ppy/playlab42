@@ -389,6 +389,29 @@ describe('TicTacToeEngine', () => {
 
       expect(line).toBe(null);
     });
+
+    it('retourne chacune des 8 lignes dans leur ordre de déclaration', () => {
+      const lines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6],
+      ];
+      for (const line of lines) {
+        const board = Array(9).fill(null);
+        for (const index of line) { board[index] = 'O'; }
+        expect(engine.getWinningLine(board)).toEqual(line);
+      }
+    });
+
+    it('privilégie la première ligne déclarée quand deux lignes sont complètes', () => {
+      const board = ['X', 'X', 'X', 'X', 'O', 'O', 'X', 'O', 'O'];
+      expect(engine.getWinningLine(board)).toEqual([0, 1, 2]);
+      expect(engine.getWinningLine(['X', 'O', 'O', 'X', 'X', 'X', 'X', 'O', 'O'])).toEqual([3, 4, 5]);
+    });
+
+    it('ne modifie pas la grille inspectée', () => {
+      const board = Object.freeze(['X', 'X', 'X', null, 'O', 'O', null, null, null]);
+      expect(engine.getWinningLine(board)).toEqual([0, 1, 2]);
+      expect(board).toEqual(['X', 'X', 'X', null, 'O', 'O', null, null, null]);
+    });
   });
 
   describe('Méthodes utilitaires', () => {

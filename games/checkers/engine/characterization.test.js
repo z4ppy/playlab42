@@ -44,3 +44,18 @@ test('la victoire prime sur les règles de nullité lors de la quarantième tran
   expect(next.board[9][2]).toEqual({ type: 'king', player: 0 });
   expect(engine.getValidActions(next, 'p2')).toEqual([]);
 });
+
+test('énumère les pièces en ordre ligne puis colonne et ignore les pièces adverses', () => {
+  const engine = new CheckersEngine();
+  const state = engine.init({ seed: 1, playerIds: ['p1', 'p2'] });
+  state.board = Array.from({ length: 10 }, () => Array(10).fill(null));
+  state.board[6][5] = { type: 'pawn', player: 0 };
+  state.board[6][1] = { type: 'pawn', player: 0 };
+  state.board[2][4] = { type: 'pawn', player: 1 };
+  state.board[9][0] = { type: 'pawn', player: 0 };
+  const snapshot = JSON.stringify(state);
+  const froms = engine.getValidActions(freezeInput(state), 'p1')
+    .map(({ from, to }) => `${from.row}${from.col}>${to.row}${to.col}`);
+  expect(froms).toEqual(['61>72', '61>70', '65>76', '65>74']);
+  expect(JSON.stringify(state)).toBe(snapshot);
+});
