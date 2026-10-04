@@ -78,6 +78,7 @@ async function scanCyclomatic(files, directory) {
   for (const result of results) {
     requireCondition(!result.fatalErrorCount && !result.errorCount,
       `ESLint n'a pas analysé correctement ${result.filePath} : ${result.messages.filter(message => message.severity === 2).map(message => message.message).join('; ')}`);
+    requireCondition(result.messages.every(message => message.ruleId), `Source ignorée ou non analysée par ESLint : ${result.filePath}`);
     for (const diagnostic of result.messages) {
       if (diagnostic.ruleId !== 'complexity') {
         requireCondition(diagnostic.severity !== 2 && !diagnostic.fatal, `Diagnostic ESLint : ${diagnostic.message}`);
@@ -151,7 +152,8 @@ export function renderQualityReport(report) {
   for (const scope of scopes) {
     const data = report.scopes[scope];
     const totals = data.duplication.totals;
-    lines.push(`| ${scope} | ${data.files.length} / ${totals.sources} | ${totals.clones} | ${totals.duplicatedLines} / ${totals.lines} | ${data.cyclomatic.filter(fn => fn.value > 10).length} / ${data.cyclomatic.filter(fn => fn.value > 20).length} | ${data.cognitive.filter(fn => fn.value > 15).length} |`);
+    const cognitive = data.cognitiveSources ? data.cognitive.filter(fn => fn.value > 15).length : 'N/A (aucun TS)';
+    lines.push(`| ${scope} | ${data.files.length} / ${totals.sources} | ${totals.clones} | ${totals.duplicatedLines} / ${totals.lines} | ${data.cyclomatic.filter(fn => fn.value > 10).length} / ${data.cyclomatic.filter(fn => fn.value > 20).length} | ${cognitive} |`);
   }
   lines.push('', '## Hotspots de production (cyclomatique JS/HTML)', '', '| Source | Ligne | Fonction | Complexité |', '|---|---|---|---|');
   for (const fn of report.scopes.production.cyclomatic.filter(fn => fn.value > 10).slice(0, 20)) {
@@ -199,6 +201,7 @@ export async function generateQualityReport(directory = root, output = path.join
       data[scope] = {
         files: members, duplication: scanDuplication(members, directory, folder),
         cyclomatic: cyclomatic.filter(fn => sourceScope(fn.file) === scope),
+        cognitiveSources: members.filter(file => file.endsWith('.ts')).length,
         cognitive: cognitive.filter(fn => sourceScope(fn.file) === scope),
       };
     }

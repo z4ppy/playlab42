@@ -56,6 +56,10 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | `games/go-9x9/engine.js` | 98 % | 100 % | 99 % |
 | Tetris : racine ; modules extraits | 98 % ; 100 % | 100 % | 100 % |
 | Triomino : placement et scoring extraits | 100 % | 100 % | 100 % |
+| Helpers de validation/déploiement/bilan extraits | 100 % | 100 % | 100 % |
+| Clavier App Diese & Mat ; forces Particle Life | 100 % | 100 % | 100 % |
+| Simulation Particle Life | 85 % | 100 % | 100 % |
+| Rapport Code quality | 75 % | 90 % | 90 % |
 
 Ces composants protègent déterminisme, portail, moteurs, outils et livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -681,6 +685,49 @@ Les métriques sont consultatives, sans seuil global artificiel ; l'exécution
 et la publication du rapport doivent réussir, et les budgets ciblés du lint
 et de Jest restent bloquants. Les résultats avant/après se comparent avec
 les mêmes outils, paramètres et périmètres, pas à partir d'un seul pourcentage.
+
+### Corrections caractérisées de cette continuation
+
+| Responsabilité | Avant → après |
+|----------------|----------------|
+| `checkDeployment` | Cyclomatique 39 → 3 ; validation et HTTP séparés |
+| `buildHierarchy` | Cyclomatique 19 → 5 ; ordre et regroupement conservés |
+| Quatre builders catalogue/parcours/bookmarks/TS | Maximum 20 → 10 ; neuf fonctions > 10 → zéro |
+| `App.handleKeydown` Diese & Mat | Cyclomatique 32 → 1 ; helper maximum 8 |
+| `Simulation.update` Particle Life | Cognitif 31 → 2 ; forces pures maximum 5 |
+| Niveau XP | Un calcul partagé ; suppression du clone de 87 tokens |
+
+Les tests CLI comparent code de sortie, stdout exact et JSON sur les anciens
+builders avant extraction ; l'archive précédente est préservée en cas d'erreur.
+Le clavier est exercé avec le vrai App et DOM, y compris focus, ordre d'Escape,
+modificateurs et fallback piano. Les coordonnées et forces conservent l'ordre
+des opérations ; trois snapshots seedés de 14 particules à 1/25/60 ticks sont
+identiques sans tolérance numérique.
+
+Le calcul XP rejette désormais explicitement les entrées non numériques
+(`TypeError`) et non finies (`RangeError`) : l'ancien calcul bouclait avec
+NaN/+Infinity. Ce correctif intentionnel ne prétend pas préserver le blocage.
+Les XP finies, négatives et fractionnaires restent compatibles, ainsi que la
+normalisation NaN → 0 déjà effectuée par ProgressTracker.
+
+Les nouveaux helpers JS, builders, contrôles de publication et hiérarchie
+sont protégés par ESLint **≤ 10**. Simulation et forces TS ont un budget
+cognitif Biome **≤ 10**, avec vrai CLI acceptant 10 et refusant 11.
+Les extractions restent collectées, le clavier App auparavant hors couverture
+est ajouté explicitement. Les seuils existants ne baissent pas ; les cinq
+nouveaux sélecteurs de couverture figurent dans la table du socle.
+Les appels CLI en subprocessus ne sont pas artificiellement comptés comme
+couverture Jest des wrappers.
+
+La comparaison locale intégrée, avec les mêmes paramètres que `ef0a2aa`,
+donne **68 → 62 clones de production**, **782 → 693 lignes dupliquées**,
+**75 → 62 fonctions JS/HTML > 10** et **8 → 6 > 20**.
+Les fonctions TS > 15 passent de **1 à 0**. Les clones pédagogiques restent
+à 150 ; aucune slide ou fixture n'est supprimée pour améliorer le score.
+Ces chiffres ne signifient pas que les 62 hotspots restants sont corrigés.
+Restent notamment AudioEngine/contrôleurs musicaux, rendus Dames/Triomino,
+helpers de fabrication et animations pédagogiques : les prioriser après
+caractérisation, pas imposer universellement un 10 avec des ignores.
 
 ## Maintenance des références et exceptions
 

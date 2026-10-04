@@ -25,10 +25,14 @@ const floors = {
   './games/tetris/engine.js': { statements: 100, branches: 98, functions: 100, lines: 100 },
   './games/tetris/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
   './games/triomino/engine/{placement,scoring}.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './scripts/code-quality-report.js': { statements: 90, branches: 75, functions: 90, lines: 90 },
+  './scripts/lib/{build-report,manifest-validation,deployment-resources,deployment-validators}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './games/diese-et-mat/src/AppKeyboard.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './tools/particle-life/src/Simulation.ts': { statements: 100, branches: 85, functions: 100, lines: 100 },
+  './tools/particle-life/src/forces.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
 };
 const concreteSource = selector => selector
-  .replace('{events,keyboard,loading,slide-messages}', 'loading')
-  .replace('{placement,scoring}', 'placement')
+  .replace(/\{([^}]+)\}/g, (_, choices) => choices.split(',')[0])
   .replace('*', 'scoring');
 const inherited = {
   './lib/seeded-random.js': { branches: 100, functions: 100, lines: 100, statements: 100 },
@@ -47,6 +51,7 @@ describe('Ratchet de couverture mesuré par module', () => {
       'games/triomino/engine/geometry.ts',
       'games/tetris/engine/scoring.js',
       'games/diese-et-mat/src/engine/ExerciseEngine.js',
+      'games/diese-et-mat/src/AppKeyboard.js',
     ];
     const fixtureHelper = 'lib/__tests__/engine-contract-helpers.js';
     mkdirSync(directory, { recursive: true });

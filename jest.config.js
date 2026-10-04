@@ -77,6 +77,7 @@ export default {
     'lib/**/*.{js,ts}',
     'games/**/engine.{js,ts}',
     'games/**/engine/**/*.{js,ts}',
+    'games/diese-et-mat/src/AppKeyboard.js',
     'tools/**/src/**/*.{js,ts}',
     'scripts/**/*.js',
     '!**/*.test.{js,ts}',
@@ -112,6 +113,11 @@ export default {
     './games/tetris/engine.js': { statements: 100, branches: 98, functions: 100, lines: 100 },
     './games/tetris/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/triomino/engine/{placement,scoring}.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './scripts/code-quality-report.js': { statements: 90, branches: 75, functions: 90, lines: 90 },
+    './scripts/lib/{build-report,manifest-validation,deployment-resources,deployment-validators}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/diese-et-mat/src/AppKeyboard.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './tools/particle-life/src/Simulation.ts': { statements: 100, branches: 85, functions: 100, lines: 100 },
+    './tools/particle-life/src/forces.ts': { statements: 100, branches: 100, functions: 100, lines: 100 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)

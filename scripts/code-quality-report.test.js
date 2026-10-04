@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
@@ -57,6 +57,43 @@ test('le rapport CI utilise le lockfile, une provenance et un artefact sans éch
   expect(manifest.devDependencies.jscpd).toBe('5.4.0');
 });
 
+test.each([
+  'tools/particle-life/src/Simulation.ts',
+  'tools/particle-life/src/forces.ts',
+])('le vrai budget cognitif protège %s à 10 et refuse 11', filename => {
+  mkdirSync(path.join(root, 'coverage'), { recursive: true });
+  const directory = mkdtempSync(path.join(root, 'coverage', 'cognitive-budget-'));
+  try {
+    copyFileSync(path.join(root, 'biome.json'), path.join(directory, 'biome.json'));
+    symlinkSync(path.join(root, 'node_modules'), path.join(directory, 'node_modules'), 'dir');
+    const source = path.join(directory, filename);
+    mkdirSync(path.dirname(source), { recursive: true });
+    const run = count => {
+      writeFileSync(source, [
+        'export function boundary(value: number): number {',
+        ...Array.from({ length: count }, (_, i) => `  if (value === ${i}) { return ${i}; }`),
+        '  return -1;',
+        '}',
+        '',
+      ].join('\n'));
+      return spawnSync(path.join(root, 'node_modules/.bin/biome'), [
+        'lint', `--config-path=${directory}`, '--reporter=json', source,
+      ], { cwd: directory, encoding: 'utf8' });
+    };
+    const valid = run(10);
+    expect(valid.status).toBe(0);
+    expect(JSON.parse(valid.stdout).summary.unchanged).toBe(1);
+    expect(JSON.parse(valid.stdout).summary.errors).toBe(0);
+    const invalid = run(11);
+    expect(invalid.status).toBe(1);
+    expect(JSON.parse(invalid.stdout).diagnostics).toEqual(expect.arrayContaining([
+      expect.objectContaining({ category: 'lint/complexity/noExcessiveCognitiveComplexity', severity: 'error' }),
+    ]));
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 describe('mesure intégrée avec les vrais scanners', () => {
   let directory;
   let environment;
@@ -89,6 +126,8 @@ describe('mesure intégrée avec les vrais scanners', () => {
     ].join('\n');
     write('lib/first.js', duplicate);
     write('lib/second.js', duplicate);
+    write('lib/probe.mjs', 'export function esm(value) { if (value) { return 1; } return 0; }\n');
+    write('lib/probe.cjs', 'module.exports = function common(value) { if (value) { return 1; } return 0; };\n');
     write('tools/probe/src/force.ts', [
       'export function force(values: number[][]): number {',
       '  let total = 0;',
@@ -124,6 +163,8 @@ describe('mesure intégrée avec les vrais scanners', () => {
     expect(report.scopes.production.cyclomatic).toEqual(expect.arrayContaining([
       expect.objectContaining({ file: 'lib/first.js', value: 12 }),
       expect.objectContaining({ file: 'games/probe/index.html', value: 2 }),
+      expect.objectContaining({ file: 'lib/probe.mjs', value: 2 }),
+      expect.objectContaining({ file: 'lib/probe.cjs', value: 2 }),
     ]));
     expect(report.scopes.production.cognitive).toEqual(expect.arrayContaining([
       expect.objectContaining({ file: 'tools/probe/src/force.ts', value: expect.any(Number) }),
@@ -133,6 +174,21 @@ describe('mesure intégrée avec les vrais scanners', () => {
     const markdown = readFileSync(path.join(directory, 'coverage/code-quality/code-quality.md'), 'utf8');
     expect(markdown).toContain('pas sa complexité cyclomatique');
     expect(markdown).toContain('sans seuil global');
+    expect(markdown).toContain('N/A (aucun TS)');
+  }, 30000);
+
+  test('refuse une provenance CI ne correspondant pas au checkout', async () => {
+    process.env.GITHUB_SHA = 'a'.repeat(40);
+    process.env.GITHUB_RUN_ID = '123';
+    process.env.GITHUB_RUN_ATTEMPT = '1';
+    await expect(generateQualityReport(directory)).rejects.toThrow('SHA de provenance différent');
+    expect(existsSync(path.join(directory, 'coverage/code-quality/code-quality.json'))).toBe(false);
+  }, 30000);
+
+  test('un fichier ignoré par le vrai ESLint ne devient pas zéro fonction', async () => {
+    write('eslint.config.js', "export default [{ ignores: ['lib/first.js'] }];\n");
+    await expect(generateQualityReport(directory)).rejects.toThrow('Source ignorée ou non analysée');
+    expect(existsSync(path.join(directory, 'coverage/code-quality/code-quality.json'))).toBe(false);
   }, 30000);
 
   test.each([

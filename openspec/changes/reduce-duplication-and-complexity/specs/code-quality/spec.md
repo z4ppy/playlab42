@@ -25,3 +25,8 @@ The system SHALL preserve existing behavior while reducing selected duplication 
 - **WHEN** a protected source is split into helpers
 - **THEN** the helpers remain instrumented or have explicit subprocess evidence
 - **AND** existing gates are not reduced to accept the change
+
+#### Scenario: Invalid XP inputs
+- **WHEN** a level calculation receives non-numeric or non-finite XP
+- **THEN** it throws an explicit contextual error instead of looping indefinitely or returning non-finite values
+- **AND** existing finite negative and fractional XP behavior is preserved

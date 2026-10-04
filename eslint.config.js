@@ -85,7 +85,19 @@ export default [
   },
 
   {
-    files: ['scripts/og-fetcher.js', 'scripts/lib/build-utils.js'],
+    files: [
+      'scripts/og-fetcher.js',
+      'scripts/lib/build-utils.js',
+      'scripts/code-quality-report.js',
+      'scripts/check-deployment.js',
+      'scripts/parcours-utils.js',
+      'scripts/build-{catalogue,parcours,bookmarks,typescript}.js',
+      'scripts/lib/deployment-*.js',
+      'scripts/lib/{build-report,manifest-validation}.js',
+      'games/diese-et-mat/src/AppKeyboard.js',
+      'games/diese-et-mat/src/engine/level-progress.js',
+    ],
+    ignores: ['**/*.test.js'],
     rules: {
       complexity: ['error', 10],
     },

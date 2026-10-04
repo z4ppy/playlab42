@@ -25,5 +25,23 @@
     "rules": {
       "preset": "recommended"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "tools/particle-life/src/Simulation.ts",
+        "tools/particle-life/src/forces.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 10 }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
