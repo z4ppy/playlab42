@@ -35,7 +35,8 @@ un job invalide sa reutilisation et son eligibilite comme preuve originale.
 
 Les audits npm, Trivy et Gitleaks ne sont pas reutilises : leurs bases et
 leurs entrees historiques evoluent. Les publications et executions manuelles
-restent completes. Les anciens runs PR sont annulables, jamais les publications.
+restent completes. Les anciens runs PR sont annulables ; les publications en
+cours ne sont pas interrompues.
 
 ## Limits
 

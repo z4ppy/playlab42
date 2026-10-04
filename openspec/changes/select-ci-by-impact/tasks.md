@@ -9,8 +9,9 @@
 
 - [x] Tests, lint, types, qualite et OpenSpec dans Docker.
 - [x] CI native complete et scenario documentaire reel.
-- [ ] Scenario natif de reutilisation apres changement documentaire.
+- [x] Scenario natif de reutilisation a entrees identiques et refus apres changement applicatif de main.
 - [x] PR livree sans fusion automatique.
+- [x] Revue de Dependabot #139 : tag officiel verifie, mise a jour et contrat des traces integres ; PR remplacee fermee apres CI verte.
 - [ ] Fusion, publication et archivage sur decision explicite ulterieure.
 
 ## Lecture des preuves

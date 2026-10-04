@@ -212,7 +212,7 @@ manquants. Sur `main` et en lancement manuel, la CI reste complète, sans
 réutilisation. Les audits npm, Trivy et Gitleaks, ainsi que l'audit quotidien,
 restent exécutés : les bases de vulnérabilités et l'historique ne sont pas des
 entrées figées. Les runs CI de PR devenus obsolètes sont annulables ; les
-publications ne le sont pas.
+publications en cours ne sont pas interrompues.
 
 ### Identité et contrôle après publication
 
