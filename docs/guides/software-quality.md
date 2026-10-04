@@ -846,6 +846,17 @@ La revue indépendante bornée n'a trouvé aucune régression qualifiée ;
 elle ne remplace ni ces exécutions ni une revue exhaustive.
 La dernière tête native et ses artefacts seront consignés en PR.
 
+Première preuve native de la [PR #150](https://github.com/z4ppy/playlab42/pull/150),
+head `1f996ce` : [CI 37203064725](https://github.com/z4ppy/playlab42/actions/runs/37203064725)
+et [audit 37203064661](https://github.com/z4ppy/playlab42/actions/runs/37203064661)
+réussis. Les 138 suites / 3 054 tests et 77 scénarios Chromium sont confirmés.
+Les deux fichiers Code quality et cinq fichiers Jest sont téléchargés et
+contrôlés : merge SHA `cc04528bfc45b6db1c0b3ca9fdfedd1f947ebcb4`,
+run/tentative `37203064725` / `1`, checkout propre, distinct du head.
+Les mesures de production sont confirmées ; le total Jest élargi natif est
+**73,03/70,17/77,71/72,75 %** S/B/F/L. La dernière tête requiert sa propre
+preuve en commentaire ; une PR verte ne signifie pas fusion ou publication.
+
 Des doubles Tone peuvent vérifier contrats et ordre, pas l'audition ni un
 microphone physique. Les interactions d'un vrai navigateur et la validation
 de l'archive constituent des preuves complémentaires, pas une validation

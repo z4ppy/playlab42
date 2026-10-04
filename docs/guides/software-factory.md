@@ -10,7 +10,7 @@ contribuer, GitHub Actions pour vérifier, GitHub Pages pour publier.
 Il n'est pas nécessaire d'ajouter Kubernetes, un backend ou une plateforme
 d'orchestration pour bénéficier de ces pratiques.
 
-Ce guide décrit le code versionné et les réglages observés le **3 octobre 2026**.
+Ce guide décrit le code versionné et les réglages observés le **4 octobre 2026**.
 Une correction préparée dans une branche n'est disponible en production qu'après
 livraison ; un fichier de workflow ne constitue pas une preuve d'exécution réussie.
 

@@ -12,5 +12,5 @@
 - [x] Collecter/protéger les extractions et comparer le rapport à périmètre constant.
 - [x] Aligner documentation, états de livraison et limites.
 - [x] Vérifier lint/types/tests, intégrité, builds et vrai navigateur.
-- [ ] Publier la PR et vérifier sa dernière tête native et ses artefacts.
+- [x] Publier la PR et vérifier sa dernière tête native et ses artefacts.
 - [ ] Livraison et archivage sur décision distincte, hors autorisation actuelle.
