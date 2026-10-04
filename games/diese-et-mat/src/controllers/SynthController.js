@@ -9,6 +9,8 @@
 
 import { EventEmitter } from '../utils/EventEmitter.js';
 import { AudioEngine } from '../audio/AudioEngine.js';
+import { hidePanel, isPanelVisible, showPanel } from './panelVisibility.js';
+import { SYNTH_EFFECT_SLIDERS, SYNTH_PARAM_SLIDERS } from './synthSliderSpecs.js';
 
 // ============================================================================
 // Classe SynthController
@@ -50,19 +52,14 @@ export class SynthController extends EventEmitter {
    * Affiche le panneau synthétiseur.
    */
   show() {
-    if (this.elements.overlay) {
-      this.elements.overlay.classList.add('visible');
-      this._init();
-    }
+    showPanel(this);
   }
 
   /**
    * Cache le panneau synthétiseur.
    */
   hide() {
-    if (this.elements.overlay) {
-      this.elements.overlay.classList.remove('visible');
-    }
+    hidePanel(this);
   }
 
   /**
@@ -71,7 +68,7 @@ export class SynthController extends EventEmitter {
    * @returns {boolean}
    */
   isVisible() {
-    return this.elements.overlay?.classList.contains('visible') || false;
+    return isPanelVisible(this);
   }
 
   // --------------------------------------------------------------------------
@@ -629,18 +626,7 @@ export class SynthController extends EventEmitter {
       checkbox.checked = config.enabled;
     }
 
-    switch (effectName) {
-      case 'reverb':
-        this._updateSliderValue('reverb-amount', (config.amount || 0.3) * 100, (v) => `${Math.round(v)}%`);
-        break;
-      case 'delay':
-        this._updateSliderValue('delay-time', (config.time || 0.2) * 1000, (v) => `${Math.round(v)}ms`);
-        this._updateSliderValue('delay-feedback', (config.feedback || 0.3) * 100, (v) => `${Math.round(v)}%`);
-        break;
-      case 'filter':
-        this._updateSliderValue('filter-frequency', config.frequency || 2000, (v) => `${Math.round(v)} Hz`);
-        break;
-    }
+    this._updateSliderSpecs(config, SYNTH_EFFECT_SLIDERS.get(effectName));
   }
 
   // --------------------------------------------------------------------------
@@ -752,47 +738,45 @@ export class SynthController extends EventEmitter {
   _updateAllSliders() {
     const config = this.synthManager.config;
 
-    // ADSR
     if (config.envelope) {
       this._updateADSRSliders(config.envelope);
     }
 
-    // FM
-    if (config.fm) {
-      this._updateSliderValue('fm-harmonicity', config.fm.harmonicity || 3, (v) => v.toFixed(1));
-      this._updateSliderValue('fm-modulation-index', config.fm.modulationIndex || 10, (v) => Math.round(v).toString());
-    }
-
-    // Pluck
-    if (config.pluck) {
-      this._updateSliderValue('pluck-attack-noise', (config.pluck.attackNoise || 1.5) * 10, (v) => (v / 10).toFixed(1));
-      this._updateSliderValue('pluck-dampening', config.pluck.dampening || 3500, (v) => `${Math.round(v)} Hz`);
-      this._updateSliderValue('pluck-resonance', (config.pluck.resonance || 0.98) * 100, (v) => (v / 100).toFixed(2));
-      this._updateSliderValue('pluck-release', (config.pluck.release || 2) * 1000, (v) => `${(v / 1000).toFixed(1)}s`);
-    }
-
-    // Membrane
-    if (config.membrane) {
-      this._updateSliderValue('membrane-pitch-decay', (config.membrane.pitchDecay || 0.05) * 1000, (v) => `${(v / 1000).toFixed(3)}s`);
-      this._updateSliderValue('membrane-octaves', config.membrane.octaves || 8, (v) => Math.round(v).toString());
-    }
-
-    // Metal
-    if (config.metal) {
-      this._updateSliderValue('metal-frequency', config.metal.frequency || 400, (v) => `${Math.round(v)} Hz`);
-      this._updateSliderValue('metal-harmonicity', config.metal.harmonicity || 5.1, (v) => v.toFixed(1));
-      this._updateSliderValue('metal-modulation-index', config.metal.modulationIndex || 32, (v) => Math.round(v).toString());
-      this._updateSliderValue('metal-resonance', config.metal.resonance || 4000, (v) => `${Math.round(v)} Hz`);
-      this._updateSliderValue('metal-octaves', config.metal.octaves || 1.5, (v) => v.toFixed(1));
-    }
-
-    // Effects
-    if (config.effects) {
-      for (const effectName of ['reverb', 'delay', 'filter']) {
-        if (config.effects[effectName]) {
-          this._updateEffectUI(effectName, config.effects[effectName]);
-        }
+    for (const [section, specs] of SYNTH_PARAM_SLIDERS) {
+      if (config[section]) {
+        this._updateSliderSpecs(config[section], specs);
       }
+    }
+
+    if (config.effects) {
+      this._updateEffects(config.effects);
+    }
+  }
+
+  /**
+   * Met à jour les effets présents dans la configuration.
+   * @private
+   *
+   * @param {Object} effects - Configuration des effets
+   */
+  _updateEffects(effects) {
+    for (const effectName of SYNTH_EFFECT_SLIDERS.keys()) {
+      if (effects[effectName]) {
+        this._updateEffectUI(effectName, effects[effectName]);
+      }
+    }
+  }
+
+  /**
+   * Met à jour des curseurs depuis une section de configuration.
+   * @private
+   *
+   * @param {Object} values - Section de configuration
+   * @param {Array} [specs] - Curseurs décrits dans synthSliderSpecs
+   */
+  _updateSliderSpecs(values, specs = []) {
+    for (const { id, key, fallback, scale, toDisplay } of specs) {
+      this._updateSliderValue(id, (values[key] || fallback) * scale, toDisplay);
     }
   }
 

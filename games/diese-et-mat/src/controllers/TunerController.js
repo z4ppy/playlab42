@@ -7,6 +7,7 @@
  */
 
 import EventEmitter from '../utils/EventEmitter.js';
+import { hidePanel, isPanelVisible, showPanel } from './panelVisibility.js';
 
 // ============================================================================
 // Classe TunerController
@@ -87,19 +88,14 @@ export class TunerController extends EventEmitter {
    * Affiche le panel accordeur.
    */
   show() {
-    if (this.elements.overlay) {
-      this.elements.overlay.classList.add('visible');
-      this._init();
-    }
+    showPanel(this);
   }
 
   /**
    * Cache le panel accordeur.
    */
   hide() {
-    if (this.elements.overlay) {
-      this.elements.overlay.classList.remove('visible');
-    }
+    hidePanel(this);
     this.stop();
   }
 
@@ -108,7 +104,7 @@ export class TunerController extends EventEmitter {
    * @returns {boolean}
    */
   isVisible() {
-    return this.elements.overlay?.classList.contains('visible') || false;
+    return isPanelVisible(this);
   }
 
   /**

@@ -9,6 +9,21 @@
 
 import { EventEmitter } from '../utils/EventEmitter.js';
 
+const CATEGORY_OPTIONS = [
+  ['all', 'Tous'],
+  ['notes', '🎼 Notes'],
+  ['intervals', '↕️ Intervalles'],
+  ['chords', '🎹 Accords'],
+  ['rhythm', '🥁 Rythme'],
+];
+
+const DIFFICULTY_OPTIONS = [
+  ['all', 'Tous'],
+  [1, '★☆☆'],
+  [2, '★★☆'],
+  [3, '★★★'],
+];
+
 // ============================================================================
 // Classe MenuController
 // ============================================================================
@@ -61,37 +76,30 @@ export class MenuController extends EventEmitter {
       return;
     }
 
-    const filteredExercises = this._getFilteredExercises();
-    const focusedElement = this.container.contains(document.activeElement) ? document.activeElement : null;
-    const focusedFilter = focusedElement?.closest('[data-filter]')?.dataset.filter;
-    const focusedValue = focusedElement?.dataset.value;
+    const focus = this._captureFocus();
+    this.container.innerHTML = this._renderMenu(this._getFilteredExercises());
+    this._decorateFilterButtons();
+    this._setupEventListeners();
+    this._restoreFocus(focus);
+  }
 
-    this.container.innerHTML = `
+  /**
+   * Génère le HTML complet du menu
+   * @private
+   */
+  _renderMenu(filteredExercises) {
+    const count = filteredExercises.length;
+    const plural = count > 1 ? 's' : '';
+
+    return `
       <div class="menu-container">
         <h2 class="menu-title">Choisissez un exercice</h2>
 
         <!-- Barre de filtres -->
         <div class="filters-bar">
-          <div class="filter-group">
-            <label class="filter-label">Catégorie</label>
-            <div class="filter-buttons" data-filter="category" role="group" aria-label="Catégorie">
-              <button class="filter-btn ${this.filters.category === 'all' ? 'active' : ''}" data-value="all">Tous</button>
-              <button class="filter-btn ${this.filters.category === 'notes' ? 'active' : ''}" data-value="notes">🎼 Notes</button>
-              <button class="filter-btn ${this.filters.category === 'intervals' ? 'active' : ''}" data-value="intervals">↕️ Intervalles</button>
-              <button class="filter-btn ${this.filters.category === 'chords' ? 'active' : ''}" data-value="chords">🎹 Accords</button>
-              <button class="filter-btn ${this.filters.category === 'rhythm' ? 'active' : ''}" data-value="rhythm">🥁 Rythme</button>
-            </div>
-          </div>
+          ${this._renderFilterGroup('category', 'Catégorie', CATEGORY_OPTIONS)}
 
-          <div class="filter-group">
-            <label class="filter-label">Difficulté</label>
-            <div class="filter-buttons" data-filter="difficulty" role="group" aria-label="Difficulté">
-              <button class="filter-btn ${this.filters.difficulty === 'all' ? 'active' : ''}" data-value="all">Tous</button>
-              <button class="filter-btn ${this.filters.difficulty === 1 ? 'active' : ''}" data-value="1">★☆☆</button>
-              <button class="filter-btn ${this.filters.difficulty === 2 ? 'active' : ''}" data-value="2">★★☆</button>
-              <button class="filter-btn ${this.filters.difficulty === 3 ? 'active' : ''}" data-value="3">★★★</button>
-            </div>
-          </div>
+          ${this._renderFilterGroup('difficulty', 'Difficulté', DIFFICULTY_OPTIONS)}
 
           <div class="filter-group filter-toggle">
             <label class="toggle-label">
@@ -103,7 +111,7 @@ export class MenuController extends EventEmitter {
 
         <!-- Compteur de résultats -->
         <div class="filter-results">
-          ${filteredExercises.length} exercice${filteredExercises.length > 1 ? 's' : ''} trouvé${filteredExercises.length > 1 ? 's' : ''}
+          ${count} exercice${plural} trouvé${plural}
         </div>
 
         <!-- Grille d'exercices -->
@@ -112,7 +120,57 @@ export class MenuController extends EventEmitter {
         </div>
       </div>
     `;
+  }
 
+  /**
+   * Génère le HTML d'un groupe de boutons de filtre
+   * @private
+   */
+  _renderFilterGroup(name, label, options) {
+    const buttons = options
+      .map(([value, text]) => `<button class="filter-btn ${this.filters[name] === value ? 'active' : ''}" data-value="${value}">${text}</button>`)
+      .join('\n              ');
+
+    return `<div class="filter-group">
+            <label class="filter-label">${label}</label>
+            <div class="filter-buttons" data-filter="${name}" role="group" aria-label="${label}">
+              ${buttons}
+            </div>
+          </div>`;
+  }
+
+  /**
+   * Mémorise le filtre focalisé avant le rendu
+   * @private
+   */
+  _captureFocus() {
+    const element = this.container.contains(document.activeElement) ? document.activeElement : null;
+    return {
+      filter: element?.closest('[data-filter]')?.dataset.filter,
+      value: element?.dataset.value,
+    };
+  }
+
+  /**
+   * Rend le focus au filtre mémorisé
+   * @private
+   */
+  _restoreFocus({ filter, value }) {
+    if (!filter) {
+      return;
+    }
+    const group = [...this.container.querySelectorAll('[data-filter]')].find(element => element.dataset.filter === filter);
+    const target = value
+      ? [...group.querySelectorAll('[data-value]')].find(element => element.dataset.value === value)
+      : group;
+    target?.focus();
+  }
+
+  /**
+   * Ajoute les attributs ARIA des boutons de filtre
+   * @private
+   */
+  _decorateFilterButtons() {
     this.container.querySelectorAll('.filter-btn').forEach(button => {
       button.setAttribute('aria-pressed', String(button.classList.contains('active')));
       const group = button.closest('[data-filter]').dataset.filter;
@@ -120,14 +178,6 @@ export class MenuController extends EventEmitter {
         button.setAttribute('aria-label', `Difficulté ${button.dataset.value}`);
       }
     });
-    this._setupEventListeners();
-    if (focusedFilter) {
-      const group = [...this.container.querySelectorAll('[data-filter]')].find(element => element.dataset.filter === focusedFilter);
-      const target = focusedValue
-        ? [...group.querySelectorAll('[data-value]')].find(element => element.dataset.value === focusedValue)
-        : group;
-      target?.focus();
-    }
   }
 
   /**

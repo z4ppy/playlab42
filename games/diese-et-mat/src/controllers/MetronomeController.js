@@ -7,6 +7,7 @@
  */
 
 import EventEmitter from '../utils/EventEmitter.js';
+import { hidePanel, isPanelVisible, showPanel } from './panelVisibility.js';
 import { Metronome } from '../audio/Metronome.js';
 
 // ============================================================================
@@ -85,19 +86,14 @@ export class MetronomeController extends EventEmitter {
    * Affiche le panel métronome.
    */
   show() {
-    if (this.elements.overlay) {
-      this.elements.overlay.classList.add('visible');
-      this._init();
-    }
+    showPanel(this);
   }
 
   /**
    * Cache le panel métronome.
    */
   hide() {
-    if (this.elements.overlay) {
-      this.elements.overlay.classList.remove('visible');
-    }
+    hidePanel(this);
     // Arrêter le métronome si actif
     this._stop();
   }
@@ -108,7 +104,7 @@ export class MetronomeController extends EventEmitter {
    * @returns {boolean}
    */
   isVisible() {
-    return this.elements.overlay?.classList.contains('visible') || false;
+    return isPanelVisible(this);
   }
 
   // --------------------------------------------------------------------------
