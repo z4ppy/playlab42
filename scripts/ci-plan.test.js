@@ -121,6 +121,16 @@ describe('Empreintes des vraies entrees Git', () => {
       expect(plan.controls.browser.mode).toBe('execute');
       expect(readTree(root, head).map(file => file.path)).toEqual(['games/new.html']);
       expect(plan.controls.browser.fingerprint).toBe(fingerprint('browser', readTree(root, head), runner));
+      writeFileSync(join(root, 'docs/guide.md'), '<script>document.title = "example";</script>');
+      const active = commit();
+      const activePlan = planCi({ eventName: 'pull_request', event: { pull_request: { base: { sha: head } } }, root, commit: active, runner });
+      expect(activePlan.full).toBe(true);
+      expect(activePlan.reuseAllowed).toBe(false);
+      writeFileSync(join(root, 'docs/guide.md'), 'Documentation passive');
+      const passive = commit();
+      const removal = planCi({ eventName: 'pull_request', event: { pull_request: { base: { sha: active } } }, root, commit: passive, runner });
+      expect(removal.full).toBe(true);
+      expect(removal.controls.browser.mode).toBe('execute');
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

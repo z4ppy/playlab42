@@ -1,6 +1,6 @@
 import { classifyChanges, fingerprint, controls } from './ci-plan.js';
 import { applyEvidence, reuseCi } from './ci-reuse.js';
-import { createEvidence, decideControl, renderPlan } from './ci-evidence.js';
+import { createEvidence, decideControl, renderPlan, guardBrowser } from './ci-evidence.js';
 
 const runner = { node: '26.10.0', image: 'ubuntu24-20261001', arch: 'x64' };
 const tree = [{ path: 'games/example/engine.js', mode: '100644', oid: 'a'.repeat(40) }];
@@ -85,6 +85,33 @@ describe('Preuves reussies, exactes et non chainees', () => {
 });
 
 describe('Erreurs et agregation bloquante', () => {
+  const browserNeeds = () => {
+    const jobs = needs();
+    jobs.impact.outputs = Object.fromEntries(controls.map(id => [id, makePlan().controls[id].mode]));
+    delete jobs.browser;
+    return jobs;
+  };
+
+  test('le vrai gate Browser accepte tous les amonts coherents', () => {
+    expect(() => guardBrowser(browserNeeds())).not.toThrow();
+  });
+
+  test.each(['impact', 'trivy-scan', 'dependency-audit', 'build', ...controls.filter(id => id !== 'browser')])(
+    'Browser refuse les amonts %s non reussis', id => {
+      for (const status of ['failure', 'skipped', 'cancelled', 'unknown', '']) {
+        const jobs = browserNeeds();
+        jobs[id].result = status;
+        expect(() => guardBrowser(jobs)).toThrow(id);
+      }
+    },
+  );
+
+  test('un gate non applicable inattendu fait echouer le check Browser requis', () => {
+    const jobs = browserNeeds();
+    jobs.test.outputs.mode = 'not-applicable';
+    expect(() => guardBrowser(jobs)).toThrow(/contraire au plan/);
+  });
+
   test.each(['failure', 'skipped', 'cancelled', '', 'unknown'])(
     'le statut %s empeche la creation de preuves', result => {
       const jobs = needs();

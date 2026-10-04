@@ -47,8 +47,8 @@ describe('Checks stables, selection explicite et preuves', () => {
   test('Browser documentaire ou reutilise verifie la nouvelle archive et les smokes', () => {
     expect(ci.jobs.browser.name).toBe('Browser');
     expect(ui.jobs.browser.name).toBe('Chromium interactions');
-    expect(ci.jobs.browser.needs).toBe('build');
-    expect(ci.jobs.browser.with.mode).toBe('${{ needs.build.outputs.browser-mode }}');
+    expect(ci.jobs.browser.needs).toContain('build');
+    expect(ci.jobs.browser.with.mode).toBe('${{ needs.impact.outputs.browser }}');
     expect(ui.on.workflow_call.outputs.mode.value).toBe('${{ jobs.browser.outputs.mode }}');
     const full = ui.jobs.browser.steps.find(step => step.run === 'npm run test:e2e');
     const docs = ui.jobs.browser.steps.find(step => step.run === 'npm run test:e2e -- e2e/guides.spec.js');
@@ -69,11 +69,19 @@ describe('Checks stables, selection explicite et preuves', () => {
     expect(script).toContain('reuseCi(plan');
     expect(script).toContain("CI_NODE_VERSION.replace(/^v/, '')");
     expect(ci.jobs.impact.steps.some(step => step.run === 'npm ci')).toBe(false);
-    const aggregate = ci.jobs.evidence;
+    const aggregate = ci.jobs.browser;
     expect(aggregate.if).toBe('always()');
-    expect(aggregate.needs).toEqual(expect.arrayContaining(['impact', 'build', 'trivy-scan', 'dependency-audit', ...controls]));
-    expect(aggregate.steps.find(step => step.run === 'node scripts/ci-evidence.js finish').env.CI_JOB_RESULTS)
-      .toBe('${{ toJSON(needs) }}');
+    expect(aggregate.needs).toEqual(expect.arrayContaining(['impact', 'build', 'trivy-scan', 'dependency-audit', ...controls.filter(id => id !== 'browser')]));
+    expect(aggregate.with.gates).toBe('${{ toJSON(needs) }}');
+    const steps = ui.jobs.browser.steps;
+    expect(steps.findIndex(step => step.run === 'node scripts/ci-evidence.js guard'))
+      .toBeLessThan(steps.findIndex(step => step.run === 'npm ci'));
+    const finish = steps.findIndex(step => step.run === 'node scripts/ci-evidence.js finish');
+    expect(finish).toBeGreaterThan(steps.findIndex(step => step.run?.includes('--config playwright.cross-engine.config.js')));
+    expect(steps[finish].if).toBe('inputs.prebuilt');
+    const archive = steps.find(step => step.with?.name?.startsWith('ci-evidence-'));
+    expect(archive.if).toBe('inputs.prebuilt');
+    expect(archive.with['if-no-files-found']).toBe('error');
   });
 
   test('les audits evolutifs, la publication complete et l’annulation PR restent distincts', () => {

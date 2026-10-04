@@ -207,7 +207,7 @@ réussis au maximum. Une preuve absente, expirée, invalide ou inaccessible
 provoque une nouvelle exécution ; les erreurs d'accès sont signalées.
 Les forks sans preuve admissible exécutent les contrôles nécessaires.
 
-Build et l'agrégateur final refusent les amonts échoués, annulés, ignorés ou
+Build et l'agrégateur intégré au check **Browser requis** refusent les amonts échoués, annulés, ignorés ou
 manquants. Sur `main` et en lancement manuel, la CI reste complète, sans
 réutilisation. Les audits npm, Trivy et Gitleaks, ainsi que l'audit quotidien,
 restent exécutés : les bases de vulnérabilités et l'historique ne sont pas des

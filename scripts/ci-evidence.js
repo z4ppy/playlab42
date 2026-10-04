@@ -36,17 +36,32 @@ export function createEvidence(plan, needs, { runId, attempt }) {
   }
   const results = Object.fromEntries(controls.map(id => {
     const mode = needs[id].outputs?.mode;
-    if (!modes.includes(mode)) { throw new Error(`Decision du controle ${id} absente ou invalide.`); }
     const expected = plan.controls[id].mode;
-    if (mode !== expected && !(expected === 'reused' && mode === 'execute')) {
-      throw new Error(`Decision du controle ${id} contraire au plan.`);
-    }
+    requireMode(id, expected, mode);
     const control = { ...plan.controls[id], mode, eligible: needs[id].outputs.eligible === 'true' };
     if (mode !== 'reused') { delete control.source; }
     return [id, control];
   }));
   return { version: proofVersion, repository: plan.repository, pr: plan.pr, commit: plan.commit,
     runner: plan.runner, runId, attempt, controls: results };
+}
+
+function requireMode(id, expected, actual) {
+  if (!modes.includes(expected) || !modes.includes(actual)) {
+    throw new Error(`Decision du controle ${id} absente ou invalide.`);
+  }
+  if (actual !== expected && !(expected === 'reused' && actual === 'execute')) {
+    throw new Error(`Decision du controle ${id} contraire au plan.`);
+  }
+}
+
+export function guardBrowser(needs) {
+  for (const id of ['impact', 'trivy-scan', 'dependency-audit', 'build', ...controls.filter(id => id !== 'browser')]) {
+    if (needs[id]?.result !== 'success') { throw new Error(`Le controle ${id} doit reussir : ${needs[id]?.result ?? 'absent'}.`); }
+  }
+  for (const id of controls.filter(id => id !== 'browser')) {
+    requireMode(id, needs.impact.outputs[id], needs[id].outputs?.mode);
+  }
 }
 
 function startControl() {
@@ -67,9 +82,17 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     if (process.argv[2] === 'start') {
       startControl();
+    } else if (process.argv[2] === 'guard') {
+      guardBrowser(JSON.parse(process.env.CI_JOB_RESULTS));
     } else if (process.argv[2] === 'finish') {
       const plan = JSON.parse(readFileSync(process.env.CI_PLAN_PATH, 'utf8'));
-      const evidence = createEvidence(plan, JSON.parse(process.env.CI_JOB_RESULTS), {
+      const needs = JSON.parse(process.env.CI_JOB_RESULTS);
+      if (process.env.CI_BROWSER_MODE) {
+        needs.browser = { result: 'success', outputs: {
+          mode: process.env.CI_BROWSER_MODE, eligible: process.env.CI_BROWSER_ELIGIBLE,
+        } };
+      }
+      const evidence = createEvidence(plan, needs, {
         runId: Number(process.env.GITHUB_RUN_ID), attempt: Number(process.env.GITHUB_RUN_ATTEMPT),
       });
       writeFileSync(process.env.CI_EVIDENCE_PATH, `${JSON.stringify(evidence, null, 2)}\n`);

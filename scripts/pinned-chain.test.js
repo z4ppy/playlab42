@@ -100,7 +100,7 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
       }
     }
     const browserUpload = workflows['ui-e2e.yml'].jobs.browser.steps
-      .find(step => step.uses?.startsWith('actions/upload-artifact@'));
+      .find(step => step.with?.name === 'ui-e2e-failure');
     expect(browserUpload.uses).toBe('actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02');
   });
 
@@ -128,7 +128,7 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
     expect(deploy.jobs.validate.uses).toBe('./.github/workflows/ci.yml');
     expect(deploy.jobs.deploy.needs).toBe('validate');
     expect(ci.jobs.browser.uses).toBe('./.github/workflows/ui-e2e.yml');
-    expect(ci.jobs.browser.needs).toBe('build');
+    expect(ci.jobs.browser.needs).toContain('build');
     expect(audit.jobs['npm-audit'].name).toBe('Audit dépendances npm');
     expect(audit.jobs.gitleaks.name).toBe('Détection de secrets');
   });

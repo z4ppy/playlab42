@@ -8,7 +8,9 @@ impose le parcours complet avec explication.
 Les jobs requis ne sont pas ignores au niveau du job. Leurs etapes rendent
 un resultat explicite : execution, documentation, non-applicabilite ou
 reutilisation. Build refuse toujours un amont echoue, annule ou ignore.
-Un agregateur final refuse egalement tout resultat manquant ou non reussi.
+Un agregateur dans le check Browser requis refuse egalement tout resultat
+manquant, non reussi ou contraire au plan. L'ecriture et l'archivage des preuves
+font partie de ce check, apres les tests et smokes, pas d'un job facultatif.
 
 Le parcours documentaire execute les contrats des guides, skills et parcours,
 la fabrication reproductible, la verification de l'archive, les interactions

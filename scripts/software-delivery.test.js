@@ -21,7 +21,7 @@ describe('Contrat des workflows de livraison', () => {
   test('attendre tous les contrôles et réutiliser le même artefact sans reconstruire', () => {
     expect(Object.keys(ci.jobs)).toEqual(expect.arrayContaining(['lint', 'test', 'typecheck', 'build', 'openspec', 'browser']));
     expect(ci.jobs.openspec.steps.some(step => step.run === 'npm run openspec:validate')).toBe(true);
-    expect(ci.jobs.browser.needs).toBe('build');
+    expect(ci.jobs.browser.needs).toContain('build');
     expect(ci.jobs.browser.uses).toBe('./.github/workflows/ui-e2e.yml');
     expect(ci.jobs.browser.with.prebuilt).toBe(true);
     expect(ci.jobs.typecheck.steps.some(step => step.run === 'npm run build:ts')).toBe(false);

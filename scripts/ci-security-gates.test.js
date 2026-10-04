@@ -38,7 +38,8 @@ describe('Build requis agrège les gates de sécurité sans succès ignoré', ()
     for (const id of ['lint', 'test', 'typecheck', 'openspec', 'code-quality']) {
       expect(ci.jobs[id].needs).toBe('impact');
     }
-    expect(ci.jobs.browser.needs).toBe('build');
+    expect(ci.jobs.browser.needs).toEqual(expect.arrayContaining(['impact', 'build', 'test', 'lint', 'typecheck', 'openspec']));
+    expect(ci.jobs.browser.if).toBe('always()');
     const deploy = workflow('deploy');
     expect(deploy.jobs.validate.uses).toBe('./.github/workflows/ci.yml');
     expect(deploy.jobs.deploy.needs).toBe('validate');
