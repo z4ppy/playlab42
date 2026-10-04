@@ -6,8 +6,10 @@ le commit livré sont référencés dans la
 [preuve de livraison](software-factory.md#livraison-constatée-et-correctifs-locaux).
 Les correctifs de revue issus de `fix/review-software-factory` sont eux aussi
 **intégrés à `main` et publiés** via la PR #145. Leur validation native et leur
-publication sont référencées séparément dans la même preuve. Le plan qualité
-suivant reste une proposition, pas une implémentation livrée.
+publication sont référencées séparément dans la même preuve. Les continuations
+qualité livrées, dont la PR #150 sur main `d4c55d2`, sont distinguées du lot
+`quality/artifact-pipeline` encore non livré dans le
+[guide qualité](software-quality.md#fabrication-et-vérification).
 Application statique, pas de backend ou plateforme d'exploitation ajoutée.
 
 ## Actualisation éditoriale et fabrication
@@ -84,6 +86,15 @@ Lors d'un refresh en erreur, les métadonnées éditoriales
 précédentes restent disponibles, sans promouvoir un fichier temporaire.
 
 ## Inventaire, SBOM et source de confiance
+
+La continuation `quality/artifact-pipeline` clarifie les responsabilités sans
+changer les contrats : préparation des vendors validée avant nettoyage,
+bundle/copie et licences séparés ; identité et images contrôlées avant
+remplacement du site ; structure/identité, commit attendu et inventaire
+canonique contrôlés séparément dans la vérification.
+Les refus, ordre des effets et sorties CLI sont caractérisés avant extraction.
+Le différentiel conserve tous les octets publics à SHA et epoch contrôlés ;
+il ne constitue pas une attestation signée ou une publication.
 
 - `build-info.json` : version et SHA CI (null en développement sans SHA fourni).
 - `build-sbom.cdx.json` : CycloneDX native `npm sbom`, dépendances de fabrication

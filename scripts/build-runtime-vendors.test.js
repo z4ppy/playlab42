@@ -1,8 +1,8 @@
 import { containedPath, assertVersion, buildRuntimeVendors } from './build-runtime-vendors.js';
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
 import { hashFile } from './lib/artifact-inventory.js';
 
 describe('Contrat des distributions runtime', () => {
@@ -74,7 +74,9 @@ describe('Contrat des distributions runtime', () => {
         ['fixture-copy', ['LICENSE']],
       ]);
       expect(await readFile(join(output, 'bundle/index.js'), 'utf8')).toContain('Fixture pédagogique.');
-      expect((await import(pathToFileURL(join(output, 'bundle/index.js')).href)).result).toBe(4);
+      expect(execFileSync(process.execPath, ['--input-type=module', '-e',
+        "import { result } from './assets/vendor/bundle/index.js'; process.stdout.write(String(result));",
+      ], { cwd: root, encoding: 'utf8' })).toBe('4');
       expect(await readFile(join(output, 'copied/nested/runtime.js'), 'utf8')).toBe('export const copied = true;');
       await expect(readFile(join(output, 'copied/nested/node_modules/private/index.js')))
         .rejects.toMatchObject({ code: 'ENOENT' });

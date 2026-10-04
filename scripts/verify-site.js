@@ -4,6 +4,29 @@ import { getRootDir, readJSONSync } from './lib/build-utils.js';
 import { inventorySite } from './lib/artifact-inventory.js';
 import { referencedBookmarkImages } from './build-site.js';
 
+function hasValidManifestStructure(manifest) {
+  return manifest.formatVersion === 1 && Array.isArray(manifest.files) && manifest.files.length > 0;
+}
+
+function hasValidArtifactCommit(commit) {
+  return commit === null || (typeof commit === 'string' && /^[a-f\d]{40}$/i.test(commit));
+}
+
+function assertBuildIdentity(manifest, identity) {
+  if (!hasValidManifestStructure(manifest)
+    || typeof identity.version !== 'string' || !identity.version
+    || manifest.version !== identity.version || manifest.commit !== identity.commit
+    || !hasValidArtifactCommit(manifest.commit)) {
+    throw new Error('Manifeste ou identité du build invalide.');
+  }
+}
+
+function assertExpectedCommit(commit, expectedCommit) {
+  if (expectedCommit !== null && (!/^[a-f\d]{40}$/i.test(expectedCommit) || commit?.toLowerCase() !== expectedCommit.toLowerCase())) {
+    throw new Error(`Commit différent : attendu ${expectedCommit}, reçu ${commit}.`);
+  }
+}
+
 /**
  * Vérifie tous les fichiers de l'artefact contre son manifeste et le commit attendu.
  * Le manifeste lui-même doit provenir d'une archive/run de confiance.
@@ -15,15 +38,8 @@ export function verifySite(site, expectedCommit = null) {
   const actual = inventorySite(site);
   const manifest = readJSONSync(join(site, 'build-manifest.json'));
   const identity = readJSONSync(join(site, 'build-info.json'));
-  if (manifest.formatVersion !== 1 || !Array.isArray(manifest.files) || !manifest.files.length
-    || typeof identity.version !== 'string' || !identity.version
-    || manifest.version !== identity.version || manifest.commit !== identity.commit
-    || !(manifest.commit === null || (typeof manifest.commit === 'string' && /^[a-f\d]{40}$/i.test(manifest.commit)))) {
-    throw new Error('Manifeste ou identité du build invalide.');
-  }
-  if (expectedCommit !== null && (!/^[a-f\d]{40}$/i.test(expectedCommit) || manifest.commit?.toLowerCase() !== expectedCommit.toLowerCase())) {
-    throw new Error(`Commit différent : attendu ${expectedCommit}, reçu ${manifest.commit}.`);
-  }
+  assertBuildIdentity(manifest, identity);
+  assertExpectedCommit(manifest.commit, expectedCommit);
   if (JSON.stringify(actual) !== JSON.stringify(manifest.files)) {
     throw new Error('Intégrité du site invalide : fichiers modifiés, absents, supplémentaires ou inventaire non canonique.');
   }

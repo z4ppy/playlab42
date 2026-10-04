@@ -64,6 +64,8 @@ Les seuils `jest.config.js` s'appliquent à `test:coverage`, exécuté en CI :
 | AudioEngine | 84 % | 95 % | 94 % lignes / 93 % statements |
 | MenuController | 97 % | 100 % | 100 % |
 | SynthController | 86 % | 96 % | 98 % lignes / 96 % statements |
+| Runtime vendors | 85 % | 90 % | 95 % |
+| Vérification d'archive | 75 % | 100 % | 70 % |
 
 Ces composants protègent déterminisme, portail, moteurs, outils et livraison. Les seuils
 ont été choisis après mesure, pas pour imposer 80 % à tout le dépôt.
@@ -766,7 +768,11 @@ confirme les mêmes compteurs de production, avec six fonctions JS/HTML > 20.
 
 ## Rendus et audio
 
-**Continuation autorisée dans `quality/rendering-audio`, non livrée.**
+**Travaux de `quality/rendering-audio` intégrés à main et publiés via la PR #150.**
+La fusion `d4c55d25774f1bb9b814404f25f81a331728b369` est constatée :
+[publication 37205096915](https://github.com/z4ppy/playlab42/actions/runs/37205096915)
+et [audit 37205096724](https://github.com/z4ppy/playlab42/actions/runs/37205096724)
+réussis, y compris le contrôle du site publié.
 Le change `simplify-rendering-and-audio` cible les six fonctions de production
 au-dessus de 20 du dernier rapport natif, après tests de comportement :
 
@@ -861,6 +867,56 @@ Des doubles Tone peuvent vérifier contrats et ordre, pas l'audition ni un
 microphone physique. Les interactions d'un vrai navigateur et la validation
 de l'archive constituent des preuves complémentaires, pas une validation
 audio perceptive.
+
+La [preuve finale de la PR #150](https://github.com/z4ppy/playlab42/pull/150#issuecomment-5980139089)
+porte sur head `08b57ab`, CI `37203367442` et audit `37203367395`,
+avec merge SHA testée `ad30b43261771d74fc52035253f4bb964a9edb7a`.
+Le rapport natif du main `d4c55d2`, run `37205096915`, confirme 58 clones,
+610 lignes dupliquées et 53 fonctions JS/HTML > 10, aucune > 20.
+
+## Fabrication et vérification
+
+**Continuation autorisée dans `quality/artifact-pipeline`, non livrée.**
+Le change `simplify-artifact-pipeline` cible vendors (20), assemblage du site
+(17), vérification d'archive (17) et collecte d'images (12).
+Les tests de comportement précèdent le refactoring : vrais bundles esbuild
+et dépendances scopées, copies sans node_modules, licences/notices et fallback
+Apache, ordre des refus, identité, fichiers facultatifs et inventaire canonique.
+Le vrai CLI de vérification conserve stdout, stderr et codes de sortie.
+
+Les responsabilités sont séparées dans les trois fichiers existants ;
+pas de framework de pipeline ni de nouvelle dépendance. Les inventaires
+vendors et archive gardent leurs différences de tri et de liens, sans
+mutualisation artificielle. Les trois sources, fonctions privées comprises,
+restent collectées et protégées par ESLint <= 10 ; les seuils hérités restent
+inchangés. Deux floors mesurés
+s'ajoutent : vendors **95/85/90/95 %** S/B/F/L, vérification **70/75/100/70 %**.
+Les appels CLI en subprocessus ne deviennent pas artificiellement de la
+couverture Jest : les blocs d'entrée/sortie restent partiellement non instrumentés.
+
+La comparaison avant/après du refactoring donne un manifeste identique pour
+les **1 051 fichiers** publics, à identité contrôlée `027288d` et
+`SOURCE_DATE_EPOCH=1791119849`. Cette identité fixe sert au différentiel,
+pas à annoncer un nouveau commit livré. Les quatre artefacts OpenSpec du
+lot expliquent l'augmentation de 1 047 à 1 051 ; les scripts restent hors site.
+Les versions runtime, lockfile, règles de publication et octets des
+distributions/licences ne changent pas.
+
+Le rapport local, à outils, paramètres et exclusions constants, mesure
+**49 fonctions JS/HTML > 10 au lieu de 53**, toujours aucune > 20.
+Les quatre fonctions ciblées passent respectivement de **20 à 7**, **17 à 5**,
+**17 à 3** et **12 à 5** ; tous leurs helpers respectent aussi le budget 10.
+La duplication de production reste **58 clones / 610 lignes** : ce lot réduit
+la complexité, sans prétendre supprimer les clones. Le périmètre reste
+197 sources sélectionnées et 186 scannées pour la duplication.
+
+La validation locale Docker passe **138 suites / 3 093 tests**, lint JS/HTML/TS,
+lint sécurité, types, 35 validations OpenSpec et audit npm sans vulnérabilité.
+La collecte Jest reste inchangée ; elle mesure **73,38/70,62/77,99/73,07 %**
+S/B/F/L sur son périmètre, pas sur tout le dépôt.
+Les trois sources ciblées mesurent respectivement **96,26/86,95/90/96,03 %**,
+**94,44/94,44/100/93,54 %** et **72,72/78,12/100/72,72 %**.
+Ces preuves locales ne remplacent pas les checks natifs de la tête proposée.
 
 ## Maintenance des références et exceptions
 

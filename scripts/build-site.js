@@ -19,19 +19,16 @@ export function isPublicSitePath(path) {
     && (DIRECTORIES.includes(parts[0]) || (parts.length === 1 && [...FILES, ...OPTIONAL_FILES].includes(path)));
 }
 
-/**
- * Reconstruit le dossier généré site, avec le commit CI ou null en local.
- * @param {{root?: string, commit?: string|null}} options Racine des sources et SHA vérifiable.
- * @returns {string} Chemin du site préparé.
- */
-export function buildSite({ root = getRootDir(import.meta.url), commit = process.env.GITHUB_SHA || null } = {}) {
-  root = resolve(root);
+function readBuildIdentity(root, commit) {
   if (commit !== null && !/^[a-f\d]{40}$/i.test(commit)) {
     throw new Error('Le commit du build doit être un SHA Git complet.');
   }
   const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
   if (typeof version !== 'string' || !version) {throw new Error('Version du projet absente.');}
-  const images = referencedBookmarkImages(root);
+  return { version, commit };
+}
+
+function prepareSiteOutput(root) {
   const output = join(root, 'site');
   if (existsSync(output)) {
     if (lstatSync(output).isSymbolicLink() || !existsSync(join(output, 'build-info.json'))) {
@@ -40,8 +37,11 @@ export function buildSite({ root = getRootDir(import.meta.url), commit = process
     rmSync(output, { recursive: true });
   }
   mkdirSync(output);
-  writeFileSync(join(output, 'build-info.json'), `${JSON.stringify({ version, commit }, null, 2)}\n`);
-  const filter = source => {
+  return output;
+}
+
+function publicSourceFilter(root, images) {
+  return source => {
     const path = relative(root, source).split(/[\\/]/).join('/');
     if (!isPublicSitePath(path)) {return false;}
     if (path.startsWith('data/bookmarks-images/') && !images.has(path)) {return false;}
@@ -50,16 +50,57 @@ export function buildSite({ root = getRootDir(import.meta.url), commit = process
     }
     return true;
   };
+}
+
+function copyPublicSources(root, output, filter) {
   for (const name of [...FILES, ...DIRECTORIES]) {
     cpSync(join(root, name), join(output, name), { recursive: true, filter });
   }
   for (const name of OPTIONAL_FILES) {
     if (existsSync(join(root, name))) {cpSync(join(root, name), join(output, name), { filter });}
   }
+}
+
+function assertSitePrerequisites(output) {
   for (const name of ['data/catalogue.json', 'data/parcours.json', 'data/bookmarks.json', 'docs/site/index.html']) {
     if (!existsSync(join(output, name))) {throw new Error(`Build préalable incomplet : ${name}`);}
   }
+}
+
+/**
+ * Reconstruit le dossier généré site, avec le commit CI ou null en local.
+ * @param {{root?: string, commit?: string|null}} options Racine des sources et SHA vérifiable.
+ * @returns {string} Chemin du site préparé.
+ */
+export function buildSite({ root = getRootDir(import.meta.url), commit = process.env.GITHUB_SHA || null } = {}) {
+  root = resolve(root);
+  const identity = readBuildIdentity(root, commit);
+  const images = referencedBookmarkImages(root);
+  const output = prepareSiteOutput(root);
+  writeFileSync(join(output, 'build-info.json'), `${JSON.stringify(identity, null, 2)}\n`);
+  copyPublicSources(root, output, publicSourceFilter(root, images));
+  assertSitePrerequisites(output);
   return output;
+}
+
+function assertLocalBookmarkImage(root, image) {
+  if (!/^data\/bookmarks-images\/[a-z\d][a-z\d._-]*\.(?:png|jpe?g|webp|gif|svg)$/i.test(image)) {
+    throw new Error(`Chemin image bookmark invalide : ${image}`);
+  }
+  let stat;
+  try {
+    stat = lstatSync(join(root, image));
+  } catch (cause) {
+    throw new Error(`Image bookmark locale indisponible : ${image} (${cause.message})`, { cause });
+  }
+  if (!stat.isFile()) {throw new Error(`Image bookmark locale non régulière : ${image}`);}
+}
+
+function collectBookmarkImage(root, bookmark, images) {
+  const image = bookmark.meta?.ogImage || bookmark.image;
+  if (!image?.startsWith('data/bookmarks-images/')) {return;}
+  assertLocalBookmarkImage(root, image);
+  images.add(image);
 }
 
 /**
@@ -73,19 +114,7 @@ export function referencedBookmarkImages(root) {
   for (const category of catalogue.categories) {
     if (!Array.isArray(category.bookmarks)) {throw new Error('Catalogue bookmarks invalide : bookmarks requis.');}
     for (const bookmark of category.bookmarks) {
-      const image = bookmark.meta?.ogImage || bookmark.image;
-      if (!image?.startsWith('data/bookmarks-images/')) {continue;}
-      if (!/^data\/bookmarks-images\/[a-z\d][a-z\d._-]*\.(?:png|jpe?g|webp|gif|svg)$/i.test(image)) {
-        throw new Error(`Chemin image bookmark invalide : ${image}`);
-      }
-      let stat;
-      try {
-        stat = lstatSync(join(root, image));
-      } catch (cause) {
-        throw new Error(`Image bookmark locale indisponible : ${image} (${cause.message})`, { cause });
-      }
-      if (!stat.isFile()) {throw new Error(`Image bookmark locale non régulière : ${image}`);}
-      images.add(image);
+      collectBookmarkImage(root, bookmark, images);
     }
   }
   return images;

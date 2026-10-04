@@ -67,8 +67,13 @@ au commit `72a8f5d` : refactorings mesurés et rapport explicite de
 duplication/complexité. La [publication 37199116572](https://github.com/z4ppy/playlab42/actions/runs/37199116572)
 et l'[audit 37199116386](https://github.com/z4ppy/playlab42/actions/runs/37199116386)
 sont réussis. Le rapport de ce main contient encore six fonctions de production
-JS/HTML > 20 ; `quality/rendering-audio` les traite après caractérisation,
-sans annoncer sa livraison.
+JS/HTML > 20. La suite `quality/rendering-audio` est maintenant livrée via
+la PR #150 au commit `d4c55d2` :
+[publication 37205096915](https://github.com/z4ppy/playlab42/actions/runs/37205096915)
+et [audit 37205096724](https://github.com/z4ppy/playlab42/actions/runs/37205096724)
+réussis. Il reste 53 fonctions JS/HTML > 10, aucune > 20, et 58 clones.
+`quality/artifact-pipeline` simplifie ensuite la fabrication et la vérification,
+après caractérisation ; cette continuation n'est pas encore livrée.
 
 ## Carte de l'usine
 

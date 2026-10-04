@@ -92,6 +92,7 @@ export default [
       'scripts/check-deployment.js',
       'scripts/parcours-utils.js',
       'scripts/build-{catalogue,parcours,bookmarks,typescript}.js',
+      'scripts/{build-runtime-vendors,build-site,verify-site}.js',
       'scripts/lib/deployment-*.js',
       'scripts/lib/{build-report,manifest-validation}.js',
       'games/diese-et-mat/src/AppKeyboard.js',

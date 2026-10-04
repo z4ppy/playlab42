@@ -36,6 +36,8 @@ const floors = {
   './games/diese-et-mat/src/controllers/MenuController.js': { statements: 100, branches: 97, functions: 100, lines: 100 },
   './games/diese-et-mat/src/controllers/SynthController.js': { statements: 96, branches: 86, functions: 96, lines: 98 },
   './games/diese-et-mat/src/controllers/{panel-visibility,synth-slider-specs}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+  './scripts/build-runtime-vendors.js': { statements: 95, branches: 85, functions: 90, lines: 95 },
+  './scripts/verify-site.js': { statements: 70, branches: 75, functions: 100, lines: 70 },
 };
 const concreteSource = selector => selector
   .replace(/\{([^}]+)\}/g, (_, choices) => choices.split(',')[0])

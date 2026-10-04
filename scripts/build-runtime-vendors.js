@@ -101,19 +101,10 @@ async function preserveLicense(packageRoot, output, fallbackRoot = null) {
   return { package: manifest.name, version: manifest.version, license: manifest.license, notices };
 }
 
-/**
- * Génère les assets et un manifest déterministe.
- * @param {object} options - Options de build (tests/intégration)
- * @param {string} [options.root] - Racine du projet
- * @param {object} [options.config] - Configuration alternative
- * @returns {Promise<object>} Manifest produit
- */
-export async function buildRuntimeVendors({ root = ROOT, config } = {}) {
-  config ||= JSON.parse(await readFile(CONFIG, 'utf8'));
-  const output = join(root, 'assets/vendor');
+async function prepareLibraries(root, output, libraries) {
   const packages = new Map();
   const assetRoots = new Set();
-  for (const library of config.libraries) {
+  for (const library of libraries) {
     const packageRoot = containedPath(join(root, 'node_modules'), library.package);
     const manifest = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'));
     assertVersion(library, manifest);
@@ -126,48 +117,61 @@ export async function buildRuntimeVendors({ root = ROOT, config } = {}) {
     assetRoots.add(assetRoot);
     packages.set(packageRoot, library);
   }
-  await mkdir(output, { recursive: true });
-  for (const assetRoot of assetRoots) {
-    await rm(assetRoot, { recursive: true, force: true });
+  return { packages, assetRoots };
+}
+
+function collectBundledPackages(root, inputs, packages) {
+  for (const input of Object.keys(inputs)) {
+    const absolute = resolve(root, input);
+    const marker = `${sep}node_modules${sep}`;
+    const index = absolute.lastIndexOf(marker);
+    if (index < 0) {continue;}
+    const parts = absolute.slice(index + marker.length).split(sep);
+    const name = parts[0].startsWith('@') ? parts.slice(0, 2).join(sep) : parts[0];
+    const dependencyRoot = join(absolute.slice(0, index + marker.length), name);
+    if (!packages.has(dependencyRoot)) {packages.set(dependencyRoot, {});}
   }
-  for (const library of config.libraries) {
-    const packageRoot = containedPath(join(root, 'node_modules'), library.package);
-    const destination = containedPath(output, library.destination);
-    if (library.bundle) {
-      await mkdir(dirname(destination), { recursive: true });
-      const result = await build({
-        absWorkingDir: root,
-        entryPoints: [containedPath(packageRoot, library.bundle)],
-        outfile: destination,
-        bundle: true,
-        format: 'esm',
-        platform: 'browser',
-        target: ['es2022'],
-        minify: true,
-        legalComments: 'inline',
-        metafile: true,
-        logLevel: 'silent',
-      });
-      for (const input of Object.keys(result.metafile.inputs)) {
-        const absolute = resolve(root, input);
-        const marker = `${sep}node_modules${sep}`;
-        const index = absolute.lastIndexOf(marker);
-        if (index < 0) {continue;}
-        const parts = absolute.slice(index + marker.length).split(sep);
-        const name = parts[0].startsWith('@') ? parts.slice(0, 2).join(sep) : parts[0];
-        const dependencyRoot = join(absolute.slice(0, index + marker.length), name);
-        if (!packages.has(dependencyRoot)) {packages.set(dependencyRoot, {});}
-      }
-    } else {
-      await mkdir(destination, { recursive: true });
-      for (const source of library.copy) {
-        await cp(containedPath(packageRoot, source), containedPath(destination, source), {
-          recursive: true,
-          filter: (path) => !relative(packageRoot, path).split(sep).includes('node_modules'),
-        });
-      }
-    }
+}
+
+async function bundleLibrary(root, packageRoot, destination, library, packages) {
+  await mkdir(dirname(destination), { recursive: true });
+  const result = await build({
+    absWorkingDir: root,
+    entryPoints: [containedPath(packageRoot, library.bundle)],
+    outfile: destination,
+    bundle: true,
+    format: 'esm',
+    platform: 'browser',
+    target: ['es2022'],
+    minify: true,
+    legalComments: 'inline',
+    metafile: true,
+    logLevel: 'silent',
+  });
+  collectBundledPackages(root, result.metafile.inputs, packages);
+}
+
+async function copyLibrary(packageRoot, destination, library) {
+  await mkdir(destination, { recursive: true });
+  for (const source of library.copy) {
+    await cp(containedPath(packageRoot, source), containedPath(destination, source), {
+      recursive: true,
+      filter: (path) => !relative(packageRoot, path).split(sep).includes('node_modules'),
+    });
   }
+}
+
+async function generateLibrary(root, output, library, packages) {
+  const packageRoot = containedPath(join(root, 'node_modules'), library.package);
+  const destination = containedPath(output, library.destination);
+  if (library.bundle) {
+    await bundleLibrary(root, packageRoot, destination, library, packages);
+  } else {
+    await copyLibrary(packageRoot, destination, library);
+  }
+}
+
+async function preserveDeclaredLicenses(root, output, packages) {
   const licenses = [];
   const licenseRoots = [];
   for (const [packageRoot, library] of [...packages].sort(([a], [b]) => a.localeCompare(b))) {
@@ -176,6 +180,29 @@ export async function buildRuntimeVendors({ root = ROOT, config } = {}) {
     licenses.push(license);
     licenseRoots.push(containedPath(output, `licenses/${license.package.replaceAll('/', '__')}`));
   }
+  return { licenses, licenseRoots };
+}
+
+/**
+ * Génère les assets et un manifest déterministe.
+ * @param {object} options - Options de build (tests/intégration)
+ * @param {string} [options.root] - Racine du projet
+ * @param {object} [options.config] - Configuration alternative
+ * @returns {Promise<object>} Manifest produit
+ */
+export async function buildRuntimeVendors({ root = ROOT, config } = {}) {
+  config ||= JSON.parse(await readFile(CONFIG, 'utf8'));
+  const output = join(root, 'assets/vendor');
+  // Tout valider avant de nettoyer les distributions existantes.
+  const { packages, assetRoots } = await prepareLibraries(root, output, config.libraries);
+  await mkdir(output, { recursive: true });
+  for (const assetRoot of assetRoots) {
+    await rm(assetRoot, { recursive: true, force: true });
+  }
+  for (const library of config.libraries) {
+    await generateLibrary(root, output, library, packages);
+  }
+  const { licenses, licenseRoots } = await preserveDeclaredLicenses(root, output, packages);
   const files = [];
   for (const directory of [...assetRoots, ...licenseRoots]) {
     files.push(...await inventory(directory, output));
