@@ -1030,6 +1030,25 @@ avec les mêmes outils, paramètres et exclusions. Les helpers portent les sourc
 de production sélectionnées à **205**, contre 197 dans la baseline.
 Ces preuves locales ne sont pas une fusion ou une publication constatée.
 
+### Première preuve native corrigée
+
+La [PR #152](https://github.com/z4ppy/playlab42/pull/152) est ouverte, non fusionnée.
+La CI [37213958151](https://github.com/z4ppy/playlab42/actions/runs/37213958151)
+et l'audit [37213958191](https://github.com/z4ppy/playlab42/actions/runs/37213958191)
+réussissent sur le head **26c838f**, après reproduction et correction d'une
+fixture CLI héritant à tort de la provenance GitHub du job parent. La garde
+SHA de production et les budgets n'ont pas été affaiblis.
+
+Les deux fichiers Code quality et les cinq fichiers Jest sont téléchargés :
+SHA de merge testé **14995b43921c6e9a3f62afbb8628e625f58a05d6**, run/tentative,
+arbre propre, compteurs et paramètres vérifiés. Les **66 sélecteurs**, soit
+**96 fichiers appariés**, satisfont chaque floor par fichier et les quatre métriques.
+Les **175 suites / 4 033 tests / 3 snapshots** passent ; couverture native
+S/B/F/L **89,07/84,41/90,11/89,18 %**, sur le périmètre élargi, pas une hausse
+directement comparable au total de #151.
+Cette preuve datée ne prétend pas certifier un head documentaire ultérieur ;
+la dernière tête est revérifiée et référencée dans la PR, sans anticiper une livraison.
+
 La suite conserve des limites explicites : bootstrap musical à zéro Jest,
 panneaux Relativity partiellement caractérisés, heuristiques consultatives non
 triées intégralement, et pas de validation complète audio/3D/performance sur

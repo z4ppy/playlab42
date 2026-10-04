@@ -15,5 +15,5 @@
 - [x] Collecter les sources caracterisees et verrouiller les floors mesures.
 - [x] Aligner guides/parcours et comparer le rapport et ses limites.
 - [x] Valider les gates complets, deux builds, archive/reprise et navigateur.
-- [ ] Ouvrir la PR et verifier derniere tete native et artefacts.
+- [x] Ouvrir la PR et verifier derniere tete native et artefacts.
 - [ ] Fusion, publication et archivage sur decision distincte, hors autorisation.
