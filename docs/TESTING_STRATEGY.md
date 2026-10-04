@@ -149,6 +149,16 @@ utilise la vraie bibliothèque Tone ; les assertions headless ne constituent pas
 mesure de la restitution sonore ni de sa qualité perceptive. Neural Style
 doit afficher l'erreur de chargement du modèle quand sa bibliothèque est absente,
 puis accepter les imports locaux ; aucune inférence ni exactitude ML n'est revendiquée.
+`e2e/neural-style-gallery.spec.js` couvre aussi les 24 miniatures, la sélection
+clavier de Sunflowers, la lecture/export Canvas sans contamination CORS et
+l'erreur d'une image indisponible sans remplacement du style précédent.
+Les réponses image sont contrôlées : une largeur non standard renvoie HTTP 400,
+comme Wikimedia, et une indisponibilité HTTP 429 reste une erreur visible.
+La galerie utilise **330 px**, une taille de miniature
+[standard Wikimedia](https://www.mediawiki.org/wiki/Common_thumbnail_sizes) :
+les URL directes à 300, 350 ou 400 px sont désormais refusées par ce service.
+Ces tests déterministes ne certifient pas sa disponibilité distante ; les images
+et le modèle Magenta restent des dépendances réseau.
 Le laboratoire Deep Learning/Chart.js n'est pas couvert par ce socle.
 La vieille arborescence TensorFlow de Magenta n'est pas ajoutée aux dépendances npm du projet.
 

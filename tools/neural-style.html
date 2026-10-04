@@ -546,51 +546,51 @@
     // Taille maximale des images (pour éviter les problèmes de mémoire GPU)
     const MAX_IMAGE_SIZE = 512;
 
-    // Styles d'exemple (images libres de droits - URLs vérifiées)
+    // Wikimedia refuse les tailles non standard : https://www.mediawiki.org/wiki/Common_thumbnail_sizes
     const sampleStyles = [
       // === CLASSIQUES ===
-      { name: 'Starry Night', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/300px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg' },
-      { name: 'The Scream', artist: 'Munch', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/300px-The_Scream.jpg' },
-      { name: 'Sunflowers', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Vincent_Willem_van_Gogh_127.jpg/300px-Vincent_Willem_van_Gogh_127.jpg' },
-      { name: 'Water Lilies', artist: 'Monet', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg/400px-Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg' },
-      { name: 'Impression Sunrise', artist: 'Monet', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Monet_-_Impression%2C_Sunrise.jpg/400px-Monet_-_Impression%2C_Sunrise.jpg' },
-      { name: 'The Kiss', artist: 'Klimt', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg/300px-The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg' },
-      { name: 'Starry Rhine', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Starry_Night_Over_the_Rhone.jpg/400px-Starry_Night_Over_the_Rhone.jpg' },
-      { name: 'Irises', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Irises-Vincent_van_Gogh.jpg/350px-Irises-Vincent_van_Gogh.jpg' },
+      { name: 'Starry Night', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/330px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg' },
+      { name: 'The Scream', artist: 'Munch', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/The_Scream.jpg/330px-The_Scream.jpg' },
+      { name: 'Sunflowers', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Vincent_Willem_van_Gogh_127.jpg/330px-Vincent_Willem_van_Gogh_127.jpg' },
+      { name: 'Water Lilies', artist: 'Monet', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg/330px-Claude_Monet_-_Water_Lilies_-_1906%2C_Ryerson.jpg' },
+      { name: 'Impression Sunrise', artist: 'Monet', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Monet_-_Impression%2C_Sunrise.jpg/330px-Monet_-_Impression%2C_Sunrise.jpg' },
+      { name: 'The Kiss', artist: 'Klimt', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg/330px-The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg' },
+      { name: 'Starry Rhine', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Starry_Night_Over_the_Rhone.jpg/330px-Starry_Night_Over_the_Rhone.jpg' },
+      { name: 'Irises', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Irises-Vincent_van_Gogh.jpg/330px-Irises-Vincent_van_Gogh.jpg' },
 
       // === ART JAPONAIS (Ukiyo-e) ===
-      { name: 'Great Wave', artist: 'Hokusai', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/400px-Tsunami_by_hokusai_19th_century.jpg' },
-      { name: 'Plum Garden', artist: 'Hiroshige', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Ando_Hiroshige_-_Plum_Garden%2C_Kameido_-_Google_Art_Project.jpg/400px-Ando_Hiroshige_-_Plum_Garden%2C_Kameido_-_Google_Art_Project.jpg' },
+      { name: 'Great Wave', artist: 'Hokusai', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tsunami_by_hokusai_19th_century.jpg/330px-Tsunami_by_hokusai_19th_century.jpg' },
+      { name: 'Plum Garden', artist: 'Hiroshige', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Ando_Hiroshige_-_Plum_Garden%2C_Kameido_-_Google_Art_Project.jpg/330px-Ando_Hiroshige_-_Plum_Garden%2C_Kameido_-_Google_Art_Project.jpg' },
 
       // === ABSTRAIT ===
-      { name: 'Composition VII', artist: 'Kandinsky', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Vassily_Kandinsky%2C_1913_-_Composition_7.jpg/400px-Vassily_Kandinsky%2C_1913_-_Composition_7.jpg' },
-      { name: 'Yellow Red Blue', artist: 'Kandinsky', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Kandinsky_-_Jaune_Rouge_Bleu.jpg/400px-Kandinsky_-_Jaune_Rouge_Bleu.jpg' },
-      { name: 'Broadway Boogie', artist: 'Mondrian', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Piet_Mondrian%2C_1942_-_Broadway_Boogie_Woogie.jpg/300px-Piet_Mondrian%2C_1942_-_Broadway_Boogie_Woogie.jpg' },
+      { name: 'Composition VII', artist: 'Kandinsky', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Vassily_Kandinsky%2C_1913_-_Composition_7.jpg/330px-Vassily_Kandinsky%2C_1913_-_Composition_7.jpg' },
+      { name: 'Yellow Red Blue', artist: 'Kandinsky', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Kandinsky_-_Jaune_Rouge_Bleu.jpg/330px-Kandinsky_-_Jaune_Rouge_Bleu.jpg' },
+      { name: 'Broadway Boogie', artist: 'Mondrian', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Piet_Mondrian%2C_1942_-_Broadway_Boogie_Woogie.jpg/330px-Piet_Mondrian%2C_1942_-_Broadway_Boogie_Woogie.jpg' },
 
       // === POINTILLISME ===
-      { name: 'Sunday Afternoon', artist: 'Seurat', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/A_Sunday_on_La_Grande_Jatte%2C_Georges_Seurat%2C_1884.jpg/400px-A_Sunday_on_La_Grande_Jatte%2C_Georges_Seurat%2C_1884.jpg' },
+      { name: 'Sunday Afternoon', artist: 'Seurat', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/A_Sunday_on_La_Grande_Jatte%2C_Georges_Seurat%2C_1884.jpg/330px-A_Sunday_on_La_Grande_Jatte%2C_Georges_Seurat%2C_1884.jpg' },
       { name: 'Circus', artist: 'Seurat', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Georges_Seurat_-_The_Circus_-_Google_Art_Project.jpg/330px-Georges_Seurat_-_The_Circus_-_Google_Art_Project.jpg' },
 
       // === STREET ART / GRAFFITI ===
-      { name: 'Graffiti Brazil', artist: 'Street Art', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Graffiti_in_Brazil.JPG/400px-Graffiti_in_Brazil.JPG' },
-      { name: 'Mural Etnias', artist: 'Eduardo Kobra', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Mural_Etnias%2C_Panorama_%28Eduardo_Kobra%29.jpg/400px-Mural_Etnias%2C_Panorama_%28Eduardo_Kobra%29.jpg' },
+      { name: 'Graffiti Brazil', artist: 'Street Art', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Graffiti_in_Brazil.JPG/330px-Graffiti_in_Brazil.JPG' },
+      { name: 'Mural Etnias', artist: 'Eduardo Kobra', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Mural_Etnias%2C_Panorama_%28Eduardo_Kobra%29.jpg/330px-Mural_Etnias%2C_Panorama_%28Eduardo_Kobra%29.jpg' },
 
       // === BD / COMICS ===
-      { name: 'Vintage Comics', artist: 'Comics', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Adventures_Into_the_Unknown_No_1.jpg/300px-Adventures_Into_the_Unknown_No_1.jpg' },
+      { name: 'Vintage Comics', artist: 'Comics', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Adventures_Into_the_Unknown_No_1.jpg/330px-Adventures_Into_the_Unknown_No_1.jpg' },
 
       // === RENAISSANCE & BAROQUE ===
-      { name: 'Girl with Pearl', artist: 'Vermeer', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/300px-1665_Girl_with_a_Pearl_Earring.jpg' },
-      { name: 'Birth of Venus', artist: 'Botticelli', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/400px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg' },
+      { name: 'Girl with Pearl', artist: 'Vermeer', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/330px-1665_Girl_with_a_Pearl_Earring.jpg' },
+      { name: 'Birth of Venus', artist: 'Botticelli', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/330px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg' },
 
       // === ROMANTISME ===
-      { name: 'Wanderer', artist: 'Friedrich', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg/300px-Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg' },
-      { name: 'Almond Blossoms', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg/400px-Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg' },
+      { name: 'Wanderer', artist: 'Friedrich', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg/330px-Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg' },
+      { name: 'Almond Blossoms', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg/330px-Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg' },
 
       // === POST-IMPRESSIONNISME ===
-      { name: 'Bedroom', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Vincent_van_Gogh_-_De_slaapkamer_-_Google_Art_Project.jpg/400px-Vincent_van_Gogh_-_De_slaapkamer_-_Google_Art_Project.jpg' },
+      { name: 'Bedroom', artist: 'Van Gogh', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Vincent_van_Gogh_-_De_slaapkamer_-_Google_Art_Project.jpg/330px-Vincent_van_Gogh_-_De_slaapkamer_-_Google_Art_Project.jpg' },
 
       // === EXPRESSIONNISME ===
-      { name: 'Blue Horse', artist: 'Franz Marc', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Marc%2C_Franz_-_Blue_Horse_I_-_Google_Art_Project.jpg/300px-Marc%2C_Franz_-_Blue_Horse_I_-_Google_Art_Project.jpg' },
+      { name: 'Blue Horse', artist: 'Franz Marc', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Marc%2C_Franz_-_Blue_Horse_I_-_Google_Art_Project.jpg/330px-Marc%2C_Franz_-_Blue_Horse_I_-_Google_Art_Project.jpg' },
     ];
 
     /**
