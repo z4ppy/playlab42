@@ -244,3 +244,10 @@ jobs:
     uses: ./.github/workflows/ui-e2e.yml
     with:
       prebuilt: true
+
+  cross-engine:
+    name: Cross-engine
+    needs: build
+    uses: ./.github/workflows/ui-cross-engine.yml
+    with:
+      prebuilt: true

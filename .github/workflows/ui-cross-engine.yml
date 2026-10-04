@@ -1,0 +1,62 @@
+name: UI cross-engine
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      prebuilt:
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-cross-engine-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !inputs.prebuilt }}
+
+jobs:
+  smoke:
+    name: Chromium Firefox WebKit smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '26'
+          cache: npm
+      - name: Dependencies
+        run: npm ci
+      - name: Navigateurs et dépendances système
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Archive construite par la CI
+        if: inputs.prebuilt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/pages-artifact
+      - name: Extraire le site sans le reconstruire
+        if: inputs.prebuilt
+        run: |
+          mkdir -p site
+          tar -xf "$RUNNER_TEMP/pages-artifact/artifact.tar" -C site
+      - name: Vérifier tous les octets de l'archive reçue
+        if: inputs.prebuilt
+        run: npm run verify:site
+      - name: Smoke multi-moteurs
+        run: npx playwright test -c playwright.cross-engine.config.js
+        env:
+          PLAYWRIGHT_PREBUILT: ${{ inputs.prebuilt && '1' || '0' }}
+      - name: Failure report and traces
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ui-cross-engine-failure
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
