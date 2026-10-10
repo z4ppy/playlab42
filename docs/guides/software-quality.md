@@ -106,10 +106,14 @@ une mise à jour ciblée, vérifier ses contrats et conserver le lockfile.
 
 - `serve` utilise `compression@1.8.2`, qui corrige la fuite mémoire sur interruption
   d'une réponse compressée ([CVE-2026-87776](https://github.com/advisories/GHSA-vc2v-76pw-4v95)).
-- `js-yaml@3` utilise `argparse@2.0.1`, qui conserve les alias de compatibilité v1
+- `js-yaml@3` utilise l'adaptateur local `vendor/argparse` basé sur `argparse@2.0.1`,
+  qui conserve les alias de compatibilité v1
   employés par son CLI et ne dépend plus de `sprintf-js`
   ([CVE-2026-97058](https://github.com/advisories/GHSA-hp3w-g68c-fv3c)).
-  L'API `safeLoad` de YAML 3 utilisée par Istanbul reste inchangée.
+  L'adaptateur restaure aussi la valeur de l'option historique `version`, perdue
+  par le constructeur amont. L'API `safeLoad` de YAML 3 utilisée par Istanbul
+  reste inchangée. Le paquet amont est installé sous l'alias `argparse-modern`,
+  sans copie ni modification de son code.
 
 `scripts/dependency-security.test.js` couvre la résolution des dépendances réelles,
 le chargement de configuration YAML par Istanbul, le CLI YAML et l'absence de

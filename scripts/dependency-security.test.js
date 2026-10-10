@@ -16,7 +16,8 @@ describe('security overrides for development dependencies', () => {
 
   it('removes sprintf-js without replacing the js-yaml 3 API', () => {
     expect(require('js-yaml/package.json').version).toMatch(/^3\./);
-    expect(yamlRequire('argparse/package.json').version).toBe('2.0.1');
+    expect(yamlRequire('argparse')).toBe(require('../vendor/argparse'));
+    expect(require('argparse-modern/package.json').version).toBe('2.0.1');
     expect(require('js-yaml').safeLoad('enabled: true\n')).toEqual({ enabled: true });
 
     const lock = JSON.parse(readFileSync(new URL('../package-lock.json', import.meta.url), 'utf8'));

@@ -61,6 +61,7 @@
     "@playwright/test": "1.63.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.4",
+    "argparse": "file:vendor/argparse",
     "braces": "file:vendor/braces",
     "esbuild": "^0.28.0",
     "eslint": "^10.12.0",
@@ -88,7 +89,7 @@
       "compression": "1.8.2"
     },
     "js-yaml@3": {
-      "argparse": "2.0.1"
+      "argparse": "$argparse"
     }
   }
 }
