@@ -1,0 +1,15 @@
+{
+  "name": "argparse",
+  "version": "2.0.1-playlab42.1",
+  "private": true,
+  "description": "Compatibility adapter for js-yaml 3 using argparse 2 without sprintf-js",
+  "type": "commonjs",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "argparse-modern": "npm:argparse@2.0.1"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
