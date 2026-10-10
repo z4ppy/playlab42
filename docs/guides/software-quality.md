@@ -100,6 +100,22 @@ make openspec-validate
 Tout runtime passe par Docker. Ne pas lancer `npm audit fix --force` : proposer
 une mise à jour ciblée, vérifier ses contrats et conserver le lockfile.
 
+### Overrides de sécurité des dépendances de développement
+
+`package.json` impose deux corrections ciblées, sans rétrograder Jest ni `serve` :
+
+- `serve` utilise `compression@1.8.2`, qui corrige la fuite mémoire sur interruption
+  d'une réponse compressée ([CVE-2026-87776](https://github.com/advisories/GHSA-vc2v-76pw-4v95)).
+- `js-yaml@3` utilise `argparse@2.0.1`, qui conserve les alias de compatibilité v1
+  employés par son CLI et ne dépend plus de `sprintf-js`
+  ([CVE-2026-97058](https://github.com/advisories/GHSA-hp3w-g68c-fv3c)).
+  L'API `safeLoad` de YAML 3 utilisée par Istanbul reste inchangée.
+
+`scripts/dependency-security.test.js` couvre la résolution des dépendances réelles,
+le chargement de configuration YAML par Istanbul, le CLI YAML et l'absence de
+`sprintf-js` dans le lockfile. Retirer ces overrides seulement lorsque les versions
+amont installées corrigent les mêmes problèmes ; conserver les audits bloquants.
+
 ### Périmètre du lint de sécurité
 
 `eslint.security.config.js` active les règles d'exécution dynamique, URL de
