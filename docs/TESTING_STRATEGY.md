@@ -197,7 +197,8 @@ docker run --rm --init --ipc=host \
 ```
 
 `docker/e2e.Dockerfile` utilise les navigateurs et dépendances système de l'image
-officielle `mcr.microsoft.com/playwright:v1.63.0-noble`. Node 26 et npm sont copiés
+officielle `mcr.microsoft.com/playwright`, dont la version correspond au client
+`@playwright/test` de `package.json`. Node 26 et npm sont copiés
 depuis `node:26-bookworm-slim` ; le build vérifie explicitement Node 26, compatible
 avec le contrat `engines.node >=24`. `npm ci` installe le lockfile **dans l'image**,
 pas dans le volume Alpine ni sur l'hôte. Le volume anonyme `node_modules` est
