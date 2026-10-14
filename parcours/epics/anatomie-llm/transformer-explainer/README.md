@@ -94,6 +94,14 @@ Alternative HTML, sans module de montage :
 
 ## Fabrication, exclusivement en Docker
 
+Le lockfile du fork intègre les correctifs de sécurité des dépendances. Les
+overrides conservent les branches compatibles de `brace-expansion`, utilisent
+le même fork borné de `braces` que Playlab42 et mettent à jour `protobufjs`,
+`sharp` et le parseur PostCSS. Le cours importe uniquement le tokenizer de
+Transformers.js ; les poids et le runtime ONNX restent épinglés séparément.
+Après toute mise à jour, reconstruire `public/` et ses notices de licence,
+puis vérifier les tests dédiés et les tests navigateur du parcours.
+
 Depuis le sous-répertoire `.source/` **dans un conteneur Node 26** :
 
 ```sh

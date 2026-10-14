@@ -34,7 +34,9 @@ function licenses(folder) {
   }
 }
 licenses(resolve('node_modules'));
-writeFileSync('static/licenses/dependencies.txt', notices.sort().join('\n'));
+// Normaliser les fins de ligne sans modifier le texte des licences tierces.
+writeFileSync('static/licenses/dependencies.txt', notices.sort().join('\n')
+  .replace(/\r\n/g, '\n').replace(/[\t ]+$/gm, ''));
 execFileSync(process.execPath, ['scripts/remove-telemetry.mjs'], { stdio: 'inherit' });
 execFileSync('npm', ['run', 'build'], { stdio: 'inherit' });
 if (localDirectory) {

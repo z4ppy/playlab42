@@ -42,7 +42,11 @@ export default {
     '/dist/',
     '/assets/vendor/',
   ],
-  modulePathIgnorePatterns: ['<rootDir>/assets/vendor/'],
+  // Les dépendances du fork sont indépendantes de celles du portail.
+  modulePathIgnorePatterns: [
+    '<rootDir>/assets/vendor/',
+    '<rootDir>/parcours/epics/anatomie-llm/transformer-explainer/.source/',
+  ],
 
   // Transformation : esbuild pour TypeScript (transpilation seule, sans
   // vérification de types ; celle-ci est assurée par `npm run typecheck`)
