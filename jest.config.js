@@ -35,6 +35,8 @@ export default {
 
   // Fichiers à ignorer
   testPathIgnorePatterns: [
+    // Le fork utilise node:test, exécuté séparément par test:gpt2.
+    '/transformer-explainer/.source/',
     '/node_modules/',
     '/data/',
     '/dist/',

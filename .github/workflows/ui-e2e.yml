@@ -81,6 +81,9 @@ jobs:
       - name: Vérifier tous les octets de l'archive reçue
         if: inputs.prebuilt
         run: npm run verify:site
+      - name: Préparer les poids GPT-2 pour un build autonome
+        if: ${{ !inputs.prebuilt }}
+        run: npm run prepare:gpt2
       - name: Real browser suite
         if: steps.decision.outputs.mode == 'execute'
         run: npm run test:e2e

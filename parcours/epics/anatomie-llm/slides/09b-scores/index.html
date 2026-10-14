@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Un score n’est pas une probabilité. Un parcours interactif Playlab42.">
+  <title>Un score n’est pas une probabilité. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="09b-scores">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités" aria-current="page"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>13 / 22</span> Du calcul à la réponse</p>
+      <div class="hero-heading"><h1>Un score n’est pas<br>une probabilité.</h1><div class="hero-seal" aria-hidden="true"><span>13</span><i></i><i></i><i></i></div></div>
+      <p class="lead">−2, 0, 3 : ces nombres peuvent être des scores. Ce ne sont pas encore des chances de choisir un token.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>La sortie du modèle attribue un score, appelé logit, à chaque token du vocabulaire. Ces scores peuvent être négatifs et leur somme n’a pas de valeur particulière. Ce sont leurs écarts qui comptent : un candidat au score plus grand reçoit davantage de probabilité après conversion.</p>
+<p>Le <dfn>softmax</dfn> transforme les scores en nombres positifs dont la somme vaut 1. Il amplifie les écarts par une exponentielle puis divise par le total. Dans cette étape, trois scores choisis à la main permettent de voir cette transformation, sans confondre ce petit exemple avec la sortie d’un modèle entraîné.</p>
+<p><strong>Un repère numérique :</strong> les scores [0 ; 0 ; 0] donnent environ [33,3 % ; 33,3 % ; 33,3 %]. [1 ; 1 ; 1] donne exactement les mêmes probabilités : ajouter une constante à tous les scores ne change pas leurs écarts. Dans Luciole, la sortie contient 333 scores, un par entrée du vocabulaire.</p>
+<p>Une distribution n’est toujours pas un choix. On peut prendre son maximum ou tirer un candidat au hasard selon les probabilités obtenues. L’étape « Le tirage » applique ces stratégies à cinq candidats fictifs pour rendre leurs effets visibles ; le laboratoire les utilise avec les vrais scores de Luciole. Une probabilité élevée n’est pas une garantie de vérité.</p>
+<details><summary>Facultatif · formule softmax</summary><p>probabilité(i) = exp(scoreᵢ) / somme des exp(scores). On retire en pratique le score maximal avant l’exponentielle pour stabiliser le calcul, sans changer le résultat.</p></details><details class="code-reading"><summary>Dans le code de Luciole · Stabiliser softmax sans changer les probabilités</summary><p>Soustraire le maximum avant exp évite de calculer des exponentielles trop grandes. Chaque valeur est divisée par le total. La température règle la concentration ; la branche temperature === 0 sélectionne directement le premier maximum.</p><pre tabindex="0" aria-label="Extrait JavaScript : Stabiliser softmax sans changer les probabilités"><code>  const max = Math.max(...logits);
+  if (temperature === 0) { return logits.map((_, i) =&gt; Number(i === logits.indexOf(max))); }
+  const exp = logits.map(v =&gt; Math.exp((v - max) / temperature));
+  const sum = exp.reduce((s, v) =&gt; s + v, 0);
+  return exp.map(v =&gt; v / sum);
+}</code></pre><p><a href="../17-sources/code.html#math" target="_blank" rel="noopener noreferrer">Lire le fichier complet dans Playlab42 ↗</a><br><span class="source-path">parcours/epics/anatomie-llm/_shared/math.js</span></p></details><div class="formula" aria-label="Relation à retenir">scores libres → softmax → probabilités qui totalisent 100 %</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>Scores, probabilités et choix sont trois étapes distinctes. Une probabilité n’est pas un certificat de vérité.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>Ces trois candidats et leurs scores sont une expérience de calcul, pas une prédiction attribuée à Luciole ou à un service commercial.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>logits</dt><dd>Scores non normalisés produits avant la conversion en probabilités.</dd></div><div><dt>softmax</dt><dd>Transforme des scores quelconques en nombres positifs dont la somme vaut 1 : une distribution de probabilités.</dd></div><div><dt>décodage</dt><dd>Procédure qui choisit les tokens à partir des scores du modèle : choix du maximum ou tirage après application de filtres.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · Avant le tirage</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Changez les trois scores. Rendez-les égaux, puis augmentez-en un seul : les probabilités changent mais leur somme reste égale à 1.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="logits">logits</dfn> · <dfn data-term="softmax">softmax</dfn> · <dfn data-term="décodage">décodage</dfn></div>
+      <div id="experiment-root" data-experiment="scores"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Si les trois scores sont égaux, quelles probabilités softmax obtient-on ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Un tiers pour chacun. Des scores identiques ont les mêmes exponentielles ; chacun reçoit donc un tiers du total.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Attention Is All You Need — Vaswani et al., 2017 ↗</a><a href="https://arxiv.org/abs/1904.09751" target="_blank" rel="noopener noreferrer">The Curious Case of Neural Text Degeneration — Holtzman et al., 2019 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Séparer le score de la probabilité avant d’introduire température, filtres et tirage.</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../08-experts/index.html" data-chapter="08-experts">← MLP et MoE</a>
+    <a href="../09-logit-lens/index.html" data-chapter="09-logit-lens"><span>CONTINUER</span> La logit lens →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

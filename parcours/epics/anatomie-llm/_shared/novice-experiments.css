@@ -1,0 +1,36 @@
+.novice-lesson {
+  min-width: 0;
+}
+
+.novice-detail {
+  margin-block: 1rem;
+}
+
+.novice-detail summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.novice-detail .formula {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.novice-table {
+  max-width: 100%;
+  margin-block: 1rem;
+}
+
+.novice-table table {
+  width: 100%;
+}
+
+.novice-table td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-width: 7rem;
+}
+
+.novice-table th {
+  min-width: 4rem;
+}
