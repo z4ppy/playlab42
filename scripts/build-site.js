@@ -5,6 +5,7 @@ import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, rmSync, writeFi
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getRootDir } from './lib/build-utils.js';
+import { assertLocalGpt2Assets } from './lib/gpt2-assets.js';
 
 const DIRECTORIES = ['app', 'assets', 'lib', 'tools', 'games', 'parcours', 'data', 'docs', 'bookmarks', 'openspec'];
 const FILES = ['index.html', 'app.js', 'style.css', 'README.md', 'AGENTS.md', 'LICENSE'];
@@ -76,6 +77,7 @@ export function buildSite({ root = getRootDir(import.meta.url), commit = process
   root = resolve(root);
   const identity = readBuildIdentity(root, commit);
   const images = referencedBookmarkImages(root);
+  assertLocalGpt2Assets(root);
   const output = prepareSiteOutput(root);
   writeFileSync(join(output, 'build-info.json'), `${JSON.stringify(identity, null, 2)}\n`);
   copyPublicSources(root, output, publicSourceFilter(root, images));

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Changer d’échelle. Tout retrouver. Un parcours interactif Playlab42.">
+  <title>Changer d’échelle. Tout retrouver. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="16b-transformer-explainer">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2" aria-current="page"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>22 / 22</span> Tout assembler</p>
+      <div class="hero-heading"><h1>Changer d’échelle.<br>Tout retrouver.</h1><div class="hero-seal" aria-hidden="true"><span>22</span><i></i><i></i><i></i></div></div>
+      <p class="lead">Après Luciole, retrouvez le même enchaînement dans le véritable Transformer Explainer, adapté en français pour Playlab42.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>Cette dernière expérience est une adaptation du projet <strong>Transformer Explainer</strong>, et non une nouvelle vue de Luciole. Elle utilise GPT-2, son propre tokenizer, ses poids et ses activations. Les identifiants et les dimensions de Luciole ne doivent pas être transférés à ce modèle.</p>
+<p>Le principe reste familier : découper un prompt, lire les embeddings, faire circuler l’information dans l’attention, transformer les représentations et choisir un token dans la distribution de sortie. Parcourez la vue d’ensemble, puis ouvrez un mécanisme pour retrouver les notions étudiées séparément.</p>
+<p><strong>Un repère historique :</strong> GPT-2 date de 2019. Ce final permet d’observer les mécanismes à une autre échelle ; il ne représente pas les capacités des assistants actuels.</p>
+<p><strong>Traduire une interface n’est pas entraîner un modèle.</strong> Les commandes et explications sont adaptées en français, mais GPT-2 reste le modèle d’origine, principalement entraîné sur de l’anglais. Commencez avec les prompts anglais proposés ; une suite française peut être moins fiable.</p>
+<p>Le modèle est beaucoup plus volumineux que Luciole : son chargement est volontaire et séparé du parcours léger. Le navigateur calcule les prédictions ; les contraintes et ressources nécessaires sont indiquées avant le lancement. Une erreur de chargement n’est jamais remplacée par des résultats inventés.</p><div class="formula" aria-label="Relation à retenir">mêmes principes · autre tokenizer · autres poids · autre échelle</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>Le modèle change, mais les mécanismes deviennent reconnaissables. L’échelle n’efface ni les limites des données ni celles de l’interprétation.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>GPT-2 et Luciole sont deux modèles indépendants. Le chargement du final est plus lourd ; ni son interface française ni une génération plausible ne garantissent une réponse correcte.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>tokenizer</dt><dd>Algorithme et vocabulaire qui convertissent un texte en identifiants de tokens.</dd></div><div><dt>embeddings</dt><dd>Vecteurs appris associés aux identifiants des tokens.</dd></div><div><dt>attention</dt><dd>Opération qui mélange les informations des tokens en leur donnant des poids différents.</dd></div><div><dt>logits</dt><dd>Scores non normalisés produits avant la conversion en probabilités.</dd></div><div><dt>température</dt><dd>Réglage qui rend le choix du prochain token plus ou moins dispersé. Ici, 0 choisit toujours le candidat au score maximal.</dd></div><div><dt>inférence</dt><dd>Exécution du modèle avec ses paramètres fixés pour produire des prédictions.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · Le grand final</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Ce final est facultatif : prévoyez 657 Mo à charger, plusieurs Go de mémoire et HTTPS ou localhost. Ouvrez le laboratoire dans un nouvel onglet, puis cliquez sur « Charger GPT-2 ». Une fois prêt, masquez les informations ou passez en plein écran. Commencez avec un exemple anglais.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="tokenizer">tokenizer</dfn> · <dfn data-term="embeddings">embeddings</dfn> · <dfn data-term="attention">attention</dfn> · <dfn data-term="logits">logits</dfn> · <dfn data-term="température">température</dfn> · <dfn data-term="inférence">inférence</dfn></div>
+      <div id="experiment-root" data-experiment="transformerExplainer"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Traduire Transformer Explainer en français modifie-t-il les poids de GPT-2 ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Non, seules l’interface et les explications changent. La langue de l’interface est distincte du corpus et des paramètres appris. GPT-2 reste inchangé ; l’inférence ne le réentraîne pas.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://poloclub.github.io/transformer-explainer/" target="_blank" rel="noopener noreferrer">Transformer Explainer — Polo Club, Georgia Tech ↗</a><a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" target="_blank" rel="noopener noreferrer">Language Models are Unsupervised Multitask Learners — Radford et al., 2019 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Prévoir le chargement avant une présentation. Relier la vue globale aux étapes précédentes. Ne pas comparer directement les IDs de GPT-2 et ceux de Luciole.</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../16-synthese/index.html" data-chapter="16-synthese">← La synthèse</a>
+    <a href="../18-glossaire/index.html" data-chapter="18-glossaire">Ouvrir le glossaire →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : L’ordre fait la différence. Un parcours interactif Playlab42.">
+  <title>L’ordre fait la différence. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="06-position">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE" aria-current="page"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>11 / 22</span> À l’intérieur du Transformer</p>
+      <div class="hero-heading"><h1>L’ordre fait<br>la différence.</h1><div class="hero-seal" aria-hidden="true"><span>11</span><i></i><i></i><i></i></div></div>
+      <p class="lead">« Le chien mord le chat » n’est pas « Le chat mord le chien ». Il faut coder la position.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>Vous avez maintenant manipulé Q et K. Revenons à l’ordre : Luciole ajoute un <strong>vecteur de position appris</strong> à chaque embedding, avant les blocs. Le token « chat » peut ainsi commencer avec une liste différente selon sa position. La position n’est ni une connaissance nouvelle ni un mot ajouté au prompt.</p>
+<p>D’autres modèles utilisent <dfn>RoPE</dfn> : au lieu de cette addition, des rotations par paires de coordonnées sont appliquées aux requêtes Q et aux clés K. Le cadran ci-dessous est une illustration de cette <strong>variante, absente de Luciole</strong>. Une paire de nombres devient une flèche ; sa rotation encode une position. Ce n’est pas une flèche de pensée.</p>
+<p>Dans le cadran, les contenus Q et K sont maintenus fixes : les faire tourner ensemble conserve leur produit scalaire ; changer leur écart peut le modifier. Dans un modèle complet, déplacer du texte peut aussi changer son contexte et ses représentations. Cette propriété du cadran ne signifie donc pas que toute la sortie reste identique.</p>
+<p>RoPE emploie plusieurs fréquences pour représenter différentes échelles de distance. Il ne garantit pas une mémoire infinie ni une utilisation fiable de tout long contexte : architecture, entraînement et évaluations restent déterminants.</p>
+<details><summary>Facultatif · pourquoi une rotation commune ne change rien</summary><p>Dans une paire, ⟨R(m)q, R(n)k⟩ = ⟨q, R(n − m)k⟩. Une rotation conserve le produit scalaire. Agrandir la fenêtre autorisée ne garantit pas une extrapolation fiable hors des positions rencontrées.</p></details><div class="formula" aria-label="Relation à retenir">Luciole : embedding + position apprise · variante RoPE : rotation de Q et K</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>L’ordre doit être représenté. Luciole emploie des positions apprises ; RoPE est un autre choix, pas une mémoire infinie.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>Les cadrans ne représentent qu’une paire de dimensions inventée. Luciole n’utilise pas RoPE : ses positions sont des vecteurs appris ajoutés aux embeddings.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>rope</dt><dd>Rotary Position Embedding : rotations de paires de coordonnées de Q et K dépendant de la position.</dd></div><div><dt>q/k/v</dt><dd>Query, Key, Value : requête, clé, valeur. Q et K déterminent les proportions du mélange ; V fournit les nombres à mélanger.</dd></div><div><dt>produit scalaire</dt><dd>Somme des produits des coordonnées correspondantes de deux vecteurs. Sert notamment à calculer les scores d’attention.</dd></div><div><dt>dimension</dt><dd>Une des coordonnées d’un vecteur. Un vecteur de dimension 32 contient 32 nombres.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · La géométrie de l’ordre</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Déplacez ensemble les deux positions avec « Position m ». Le score reste stable. Changez ensuite l’écart : le score peut varier. Ce cadran ne décrit pas Luciole.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="rope">rope</dfn> · <dfn data-term="q/k/v">q/k/v</dfn> · <dfn data-term="produit scalaire">produit scalaire</dfn> · <dfn data-term="dimension">dimension</dfn></div>
+      <div id="experiment-root" data-experiment="rope"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Comment Luciole représente-t-il la position avant ses blocs ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>En ajoutant un vecteur de position appris. Le cadran explore une variante moderne indépendante. Les poids de positions de Luciole sont appris avant publication puis restent fixes.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://arxiv.org/abs/2104.09864" target="_blank" rel="noopener noreferrer">RoFormer — Su et al., 2021 ↗</a><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Attention Is All You Need — Vaswani et al., 2017 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Seulement après Q/K/V. Distinguer position apprise réelle et RoPE illustratif. Transition : attention mélange, MLP transforme.</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../07-attention/index.html" data-chapter="07-attention">← L’attention causale</a>
+    <a href="../08-experts/index.html" data-chapter="08-experts"><span>CONTINUER</span> MLP et MoE →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

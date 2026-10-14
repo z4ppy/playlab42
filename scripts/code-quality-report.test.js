@@ -20,6 +20,9 @@ test('les scopes séparent pédagogie/tests et gardent JS/HTML/TS/CSS de product
     'e2e/ui.spec.js', 'lib/__tests__/fixture.js', 'games/a/engine.test.ts',
     'site/app.js', 'tools/a/dist/main.js', 'assets/vendor/three.js',
     'node_modules/plugin/index.js', 'vendor/braces/index.js', 'docs/site/main.js',
+    'parcours/epics/anatomie-llm/transformer-explainer/.source/src/utils/data.ts',
+    'parcours/epics/anatomie-llm/transformer-explainer/.source/.eslintrc.cjs',
+    'parcours/epics/anatomie-llm/transformer-explainer/public/_app/immutable/main.js',
   ];
   const selected = selectSources(files);
   expect(selected).toHaveLength(9);

@@ -1,0 +1,22 @@
+.experience-choice { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; margin-bottom: .6rem; }
+.experience-choice .control { display: flex; flex-direction: row; align-items: center; gap: .65rem; flex: 1 1 26rem; min-width: 0; max-width: 100%; }
+.experience-choice .control label { flex: 0 0 auto; }
+.experience-choice select { flex: 1 1 15rem; width: auto; min-width: 0; max-width: 100%; }
+.choice-storage-notice:empty { display: none; }
+.choice-storage-notice { padding: .6rem; border-left: 3px solid var(--warm); }
+.calculation-note { padding: .2rem 0; margin-bottom: .6rem; }
+.calculation-note summary { cursor: pointer; font-weight: 600; font-size: .8rem; color: var(--muted); }
+.calculation-note p { margin: .5rem 0 0; }
+.experience-choice > .calculation-note { flex: 0 1 auto; margin: 0; }
+.experience-choice > .calculation-note[open] { flex-basis: 100%; padding: .5rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+.example-badge, .active-model { color: var(--muted); }
+.gpt2-lab-link { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+.selected-instrument, .experience-content { min-width: 0; }
+.real-tokenizer-choice .tokenizer-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 1rem; }
+.real-tokenizer-choice .tokenizer-recipe { padding-left: 1.3rem; }
+@media (max-width: 600px) {
+  .experience-choice .control { flex-basis: 100%; flex-direction: column; align-items: stretch; }
+  .experience-choice select { flex: 0 1 auto; width: 100%; }
+  .experience-choice > .calculation-note { flex-basis: 100%; }
+  .selected-instrument > .button-row { align-items: stretch; flex-direction: column; }
+}

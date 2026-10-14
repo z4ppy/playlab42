@@ -1,0 +1,10 @@
+# Conserver toutes les règles amont et limiter cette exception au code minifié.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Faux positif Transformers.js : unk_token suivi de la création du vocabulaire"
+condition = "AND"
+paths = ['''^parcours/epics/anatomie-llm/transformer-explainer/public/_app/immutable/chunks/[^/]+\.js$''']
+regexTarget = "match"
+regexes = ['''\b[a-zA-Z_$][\w$]*\.unk_token,this\.vocab=new\s''']

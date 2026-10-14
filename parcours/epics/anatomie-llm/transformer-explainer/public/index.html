@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="referrer" content="no-referrer" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://raw.githubusercontent.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'" />
+		<title>GPT-2 · Transformer Explainer · Playlab42</title>
+		<link href="./_app/immutable/entry/start.CdOd-dtc.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CouH_Kye.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/CmJvF-x9.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/D1nPeLlk.js" rel="modulepreload">
+		<link href="./_app/immutable/entry/app.BlAfc6Fw.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BcCHkkLX.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/B2zl-F9X.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/BsXK8UBB.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/0.DemUrh2s.js" rel="modulepreload">
+		<link href="./_app/immutable/chunks/Dhli4HXF.js" rel="modulepreload">
+		<link href="./_app/immutable/nodes/2.m6JGJdNk.js" rel="modulepreload">
+		
+		<link href="./_app/immutable/assets/0.DJDF4c_z.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/2.BduVi5nr.css" rel="stylesheet">
+	</head>
+	<body>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><a class="playlab-skip" href="#main">Aller au laboratoire</a> <main id="main" style="--min-screen-width:1300px;--min-column-width:20px"><!--[--><!--[--><div class="playlab-lab svelte-1uha8ag"><section id="lab-information" class="playlab-intro svelte-1uha8ag" aria-labelledby="fork-title"><div class="playlab-heading svelte-1uha8ag"><div class="svelte-1uha8ag"><p class="playlab-eyebrow svelte-1uha8ag">PLAYLAB42 · ORIGINAL-GPT2 · 124 MILLIONS DE PARAMÈTRES</p> <h1 id="fork-title" class="svelte-1uha8ag">À l’intérieur d’un vrai Transformer</h1></div> <a href="./credits.html" target="_blank" rel="noreferrer" class="svelte-1uha8ag">Source, licences et crédits ↗</a> <!--[-1--><!--]--></div> <p class="svelte-1uha8ag">Fork local de <strong class="svelte-1uha8ag">Transformer Explainer — Polo Club of Data Science</strong>. GPT-2 a surtout appris l’anglais :
+		vous pouvez saisir du français, mais ses continuations ne sont ni un modèle francophone ni des réponses fiables.</p> <!--[0--><p class="svelte-1uha8ag">Aucun poids n’est chargé avant votre accord. Le téléchargement à la demande représente <strong class="svelte-1uha8ag">656,7 Mo (626,2 Mio)</strong>,
+			avec les SHA-256 des fichiers de la révision amont. <strong class="svelte-1uha8ag">Lecture du manifeste servi par ce site…</strong> Le tokenizer et le moteur ONNX sont servis localement. Le calcul et votre prompt restent dans ce navigateur, sans télémétrie. <strong class="svelte-1uha8ag">HTTPS ou localhost est nécessaire</strong> pour vérifier l’intégrité.
+			Prévoyez plusieurs Go de mémoire et un ordinateur récent. Pas de mode hors ligne garanti ; le cache dépend du navigateur.</p> <button class="playlab-primary svelte-1uha8ag" disabled="">Charger GPT-2 · 657 Mo</button> <!--[-1--><!--]--><!--]--> <p role="status" aria-live="polite" class="svelte-1uha8ag"></p> <!--[-1--><!--]--></section> <!--[-1--><!--]--></div><!--]--><!--]--></main> <section class="playlab-guide" aria-labelledby="guide-title"><h2 id="guide-title">Explorer, pas seulement générer</h2> <ol><li><strong>Vue d’ensemble :</strong> partez d’un prompt court, puis suivez les vecteurs de gauche à droite. Les unités sont des tokens, pas nécessairement des mots.</li> <li><strong>Attention :</strong> ouvrez le bloc Attention, changez de tête et inspectez sa matrice. Une ligne montre comment un token pondère les positions déjà accessibles ; le futur est masqué.</li> <li><strong>Douze blocs :</strong> passez d’un bloc GPT-2 au suivant. Les activations affichées proviennent du véritable export ONNX amont, pas du petit modèle Luciole.</li> <li><strong>Température et tirage :</strong> comparez les probabilités avec des températures basses et hautes. Top-k conserve k candidats ; top-p conserve une masse cumulée de probabilité. « Générer » ajoute un token à la fois.</li></ol> <p>La vue conserve l’architecture interactive d’origine : un large schéma horizontal, avec défilement dans son propre espace.
+		Le panneau d’aide explique chaque opération. Certains noms mathématiques restent standards (Q, K, V, logits, softmax, MLP).</p> <p><strong>Limites :</strong> GPT-2 n’est pas un assistant conversationnel. Ses textes peuvent être inexacts, biaisés ou inappropriés.
+		Les rectangles résument des vecteurs : leur taille ne représente pas la quantité de connaissances du modèle.
+		Les générations de ce laboratoire sont produites par GPT-2.</p> <p><a href="https://github.com/poloclub/transformer-explainer" target="_blank" rel="noreferrer">Projet original de Polo Club</a> · <a href="credits.html">Provenance et licences</a> · adaptation française Playlab42.</p></section><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_14fxe6q = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						assets: "/parcours/epics/anatomie-llm/transformer-explainer/public"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("./_app/immutable/entry/start.CdOd-dtc.js"),
+						import("./_app/immutable/entry/app.BlAfc6Fw.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 2],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>

@@ -1,10 +1,11 @@
 # Bibliothèques navigateur locales
 
-Diese et Mat, Relativity Lab et les slides mathématiques utilisent les distributions réelles
+Diese et Mat, Relativity Lab, Anatomie d'un LLM et les slides mathématiques utilisent les distributions réelles
 suivantes, sans CDN :
 
 | Bibliothèque | Version | Entrée locale |
 |---|---|---|
+| Tokenizers.js | 0.2.0 | `assets/vendor/tokenizers/tokenizers.js` |
 | Tone | 15.1.22 | `assets/vendor/tone/tone.js` |
 | VexFlow | 5.0.0 | `assets/vendor/vexflow/vexflow.js` |
 | MathJax | 4.1.3 | `assets/vendor/mathjax/tex-mml-chtml.js` |
@@ -27,7 +28,7 @@ make serve
 ```
 
 Le script sous-jacent est `node scripts/build-runtime-vendors.js`. Il n'effectue
-aucun téléchargement : esbuild existant assemble Tone et VexFlow en ESM ; les
+aucun téléchargement : esbuild existant assemble Tone, VexFlow et Tokenizers.js en ESM ; les
 composants MathJax et les fontes sont copiés sans modification. Three.js et
 lil-gui ne sont pas transformés : leurs modules ESM et OrbitControls sont
 copiés avec leurs licences. `three.module.js` importe aussi `three.core.js` ;
@@ -52,6 +53,12 @@ le service local, les tests navigateur et la publication. Une installation
 que l'installation npm fonctionne sans réseau.
 
 ## Compatibilité navigateur
+
+- Anatomie d'un LLM utilise Tokenizers.js en JavaScript, sans serveur d'inférence,
+  WASM ou WebGPU. Les trois définitions de vocabulaire sont versionnées dans
+  l'epic avec leurs révisions et licences, puis chargées localement à la demande.
+  Les cas connus sont vérifiés avec les vrais tokeniseurs : IDs, normalisation,
+  unités inconnues et texte vide. Aucun poids GPT-2, BERT ou T5 n'est distribué.
 
 - Relativity Lab utilise le renderer WebGL, pas WebGPU. Three r163 a retiré
   WebGL 1 : **WebGL 2 est désormais requis**, avec les modules ESM et import

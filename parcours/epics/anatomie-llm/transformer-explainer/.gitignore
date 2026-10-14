@@ -1,0 +1,11 @@
+.source/static/runtime/
+.source/static/licenses/dependencies.txt
+.source/npm-cache/
+.source/browser-results/
+.source/build-output.log
+.source/check-output.log
+.source/.model-cache/
+public/model-v2/
+public/model-local-manifest.json
+.source/test-artifacts/
+.source/local-model-output.log

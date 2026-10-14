@@ -1,0 +1,130 @@
+{
+  "id": "anatomie-llm",
+  "title": "Anatomie d’un LLM — Suivez ce token",
+  "description": "Ouvrez la machine : 22 étapes progressives, de vrais tokeniseurs et un mini-Transformer inspectable. Des premiers nombres aux comparaisons 3D.",
+  "hierarchy": [
+    "autres"
+  ],
+  "tags": [
+    "ia",
+    "llm",
+    "transformer",
+    "deep-learning",
+    "interactif"
+  ],
+  "metadata": {
+    "author": "cyrille",
+    "created": "2026-10-12",
+    "duration": "110 min",
+    "difficulty": "intermediate",
+    "language": "fr"
+  },
+  "icon": "◎",
+  "thumbnail": "thumbnail.svg",
+  "content": [
+    {
+      "id": "section-1",
+      "title": "Du texte aux représentations",
+      "content": [
+        {
+          "id": "01-un-token"
+        },
+        {
+          "id": "01b-luciole"
+        },
+        {
+          "id": "02-tokenisation"
+        },
+        {
+          "id": "02b-cas-reels"
+        },
+        {
+          "id": "03-prompt"
+        },
+        {
+          "id": "03b-nombres"
+        },
+        {
+          "id": "04-embeddings"
+        }
+      ]
+    },
+    {
+      "id": "section-2",
+      "title": "À l’intérieur du Transformer",
+      "content": [
+        {
+          "id": "05-transformer"
+        },
+        {
+          "id": "06b-tetes"
+        },
+        {
+          "id": "07-attention"
+        },
+        {
+          "id": "06-position"
+        },
+        {
+          "id": "08-experts"
+        }
+      ]
+    },
+    {
+      "id": "section-3",
+      "title": "Du calcul à la réponse",
+      "content": [
+        {
+          "id": "09b-scores"
+        },
+        {
+          "id": "09-logit-lens"
+        },
+        {
+          "id": "10-tirage"
+        },
+        {
+          "id": "11-effort"
+        }
+      ]
+    },
+    {
+      "id": "section-4",
+      "title": "Mémoire, performance et apprentissage",
+      "content": [
+        {
+          "id": "12-memoire"
+        },
+        {
+          "id": "13-performance"
+        },
+        {
+          "id": "14-apprentissage"
+        }
+      ]
+    },
+    {
+      "id": "section-5",
+      "title": "Tout assembler",
+      "content": [
+        {
+          "id": "15-laboratoire"
+        },
+        {
+          "id": "16-synthese"
+        },
+        {
+          "id": "16b-transformer-explainer"
+        }
+      ]
+    },
+    {
+      "id": "17-sources",
+      "optional": true
+    },
+    {
+      "id": "18-glossaire",
+      "optional": true
+    }
+  ]
+}
