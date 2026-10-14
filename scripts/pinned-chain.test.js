@@ -120,7 +120,9 @@ describe('Chaîne épinglée et reproductibilité bornée', () => {
     }
     expect(from.join('\n')).toContain('node:26-alpine@');
     expect(from.join('\n')).toContain('node:26-bookworm-slim@');
-    expect(from.join('\n')).toContain('playwright:v1.63.0-noble@');
+    // L'image fournit les navigateurs attendus par la version du client npm.
+    const playwrightVersion = JSON.parse(read('package.json')).devDependencies['@playwright/test'];
+    expect(from.join('\n')).toContain(`playwright:v${playwrightVersion}-noble@`);
     const directories = parse(read('.github/dependabot.yml')).updates
       .filter(update => update['package-ecosystem'] === 'docker')
       .map(update => update.directory);
