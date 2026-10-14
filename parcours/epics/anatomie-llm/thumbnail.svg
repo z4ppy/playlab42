@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-labelledby="title desc">
+  <title id="title">Anatomie d’un LLM</title>
+  <desc id="desc">Des tokens traversent des blocs de calcul concentriques. Suivez ce token, un parcours Playlab42.</desc>
+  <rect width="760" height="360" fill="#101827"/>
+  <g fill="none" stroke="#42516a">
+    <circle cx="602" cy="180" r="160"/><circle cx="602" cy="180" r="130"/><circle cx="602" cy="180" r="98"/>
+    <path d="M435 180h285M602 20v320"/>
+  </g>
+  <g fill="#101827" stroke="#ff8fa3" stroke-width="2">
+    <rect x="537" y="106" width="90" height="110" rx="14"/>
+    <rect x="557" y="126" width="90" height="110" rx="14"/>
+    <rect x="577" y="146" width="90" height="110" rx="14"/>
+  </g>
+  <g fill="#ff8fa3"><circle cx="602" cy="181" r="5"/><circle cx="640" cy="181" r="5"/><circle cx="602" cy="217" r="5"/><circle cx="640" cy="217" r="5"/></g>
+  <text x="42" y="57" font-family="monospace" font-size="14" letter-spacing="3" fill="#ff8fa3">PLAYLAB42 / CARNET 01</text>
+  <text x="40" y="147" font-family="Georgia,serif" font-size="60" fill="#f1f5fb">Anatomie</text>
+  <text x="40" y="214" font-family="Georgia,serif" font-size="60" fill="#f1f5fb">d’un LLM.</text>
+  <text x="43" y="285" font-family="sans-serif" font-size="21" fill="#b8c3d4">Suivez ce token. Ouvrez la machine.</text>
+  <path d="M43 315h350" stroke="#42516a"/><circle cx="397" cy="315" r="4" fill="#f4b752"/>
+</svg>

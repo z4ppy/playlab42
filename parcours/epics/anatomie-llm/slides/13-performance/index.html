@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Calculer vite. Lire assez vite. Un parcours interactif Playlab42.">
+  <title>Calculer vite. Lire assez vite. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="13-performance">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération" aria-current="page"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>18 / 22</span> Mémoire, performance et apprentissage</p>
+      <div class="hero-heading"><h1>Calculer vite.<br>Lire assez vite.</h1><div class="hero-seal" aria-hidden="true"><span>18</span><i></i><i></i><i></i></div></div>
+      <p class="lead">Un GPU peut disposer de beaucoup de puissance et attendre malgré tout ses données.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>Le <strong>prefill</strong> traite plusieurs positions du prompt. Le <strong>décodage</strong> produit ensuite un token par séquence et par itération. À petit batch, relire les poids peut coûter davantage que les multiplications elles-mêmes.</p>
+<p>Le <strong>batch</strong> est le nombre de séquences traitées ensemble. Le <strong>débit</strong> compte les tokens produits par seconde pour l’ensemble ; la <strong>latence</strong> est le temps d’attente pour une séquence. Le modèle roofline compare le nombre d’opérations par octet lu à deux limites : la vitesse de calcul et celle de lecture de la mémoire. Regrouper plusieurs séquences permet de réutiliser les mêmes poids.</p>
+<p>Deux attentes sont perceptibles : le <strong>temps avant le premier token</strong> comprend notamment la file d’attente et le traitement du prompt ; le <strong>temps entre les tokens</strong> détermine ensuite le rythme d’affichage. Un service peut produire beaucoup de tokens au total tout en faisant attendre une personne.</p>
+<p><strong>Une optimisation majeure : FlashAttention.</strong> Elle organise l’attention dense pour réduire les échanges avec la mémoire GPU et éviter de stocker toute la matrice intermédiaire. Elle conserve le calcul d’attention exact, aux arrondis numériques près. Elle ne remplace pas le KV cache et ne supprime pas le nombre quadratique de comparaisons du prefill dense.</p>
+<p>Notre estimation concerne un grand modèle dense hypothétique, pas Luciole. Elle ignore notamment l’attention, le cache et les communications. Luciole recalcule tout le contexte sans cache dans le navigateur. Les deux temps donnent une <strong>borne idéale</strong>, jamais une mesure de sa latence.</p>
+<details><summary>Facultatif · modèle de coût simplifié</summary><p>On compte environ 2P opérations par token et une lecture complète des poids par pas. t ≥ max(2P × batch / FLOP·s⁻¹, P × octets_poids / octets·s⁻¹). P désigne le nombre de paramètres. Le débit total ne donne pas le temps d’attente individuel.</p></details><div class="formula" aria-label="Relation à retenir">temps idéal ≥ le plus lent des deux : calculer / lire les poids</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>Le goulot d’étranglement dépend de la charge et du matériel. « Toujours limité par la mémoire » est trop général.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>GPU illustratif : 600 TFLOP/s et 3 To/s, sans constructeur associé. Aucune promesse de performance réelle.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>prefill</dt><dd>Traitement initial des positions du prompt. Sa dernière sortie permet déjà de choisir le premier nouveau token.</dd></div><div><dt>décodage</dt><dd>Procédure qui choisit les tokens à partir des scores du modèle : choix du maximum ou tirage après application de filtres.</dd></div><div><dt>batch</dt><dd>Ensemble de séquences traitées ensemble. Cela peut améliorer le débit sans accélérer chaque requête individuellement.</dd></div><div><dt>flop</dt><dd>Une opération arithmétique en virgule flottante. FLOP/s mesure un débit d’opérations, pas un débit de tokens.</dd></div><div><dt>bande passante</dt><dd>Quantité de données que le matériel peut transférer par seconde, par exemple de la mémoire vers les unités de calcul.</dd></div><div><dt>latence</dt><dd>Temps d’attente pour obtenir un résultat. À distinguer du débit, qui compte les résultats produits par seconde.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · Les limites matérielles</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Augmentez le batch et observez le changement de régime. Distinguez débit total et latence par séquence.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="prefill">prefill</dfn> · <dfn data-term="décodage">décodage</dfn> · <dfn data-term="batch">batch</dfn> · <dfn data-term="flop">flop</dfn> · <dfn data-term="bande passante">bande passante</dfn> · <dfn data-term="latence">latence</dfn></div>
+      <div id="experiment-root" data-experiment="roofline"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Augmenter le batch réduit-il nécessairement la latence d’une requête individuelle ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Non, le débit peut augmenter sans réduire sa latence. Le batching amortit des lectures et améliore le débit, mais ajoute aussi du calcul et éventuellement de l’attente.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://doi.org/10.1145/1498765.1498785" target="_blank" rel="noopener noreferrer">Roofline: An Insightful Visual Performance Model — Williams et al., 2009 ↗</a><a href="https://arxiv.org/abs/2205.14135" target="_blank" rel="noopener noreferrer">FlashAttention — Dao et al., 2022 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Accroche : calcul et lecture font la course. Manipulation : batch 1 puis 512. Transition : d’où viennent les poids ?</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../12-memoire/index.html" data-chapter="12-memoire">← Le KV cache</a>
+    <a href="../14-apprentissage/index.html" data-chapter="14-apprentissage"><span>CONTINUER</span> L’apprentissage →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

@@ -5,7 +5,7 @@ const unavailableScripts = new Set([
 const cdpEndpoint = process.env.PLAYLAB_CDP_ENDPOINT;
 
 // Le navigateur execute les distributions reelles, jamais les mocks Jest.
-export const test = base.extend({
+export const nativeTest = base.extend({
   ...(cdpEndpoint ? {
     browser: [async ({ playwright }, use) => {
       const browser = await playwright.chromium.connectOverCDP(cdpEndpoint);
@@ -17,6 +17,9 @@ export const test = base.extend({
       }
     }, { scope: 'worker' }],
   } : {}),
+});
+
+export const test = nativeTest.extend({
   page: async ({ page, baseURL }, use) => {
     const failures = [];
     const origin = new URL(baseURL).origin;

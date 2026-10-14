@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Un identifiant entre. Un vecteur apparaît. Un parcours interactif Playlab42.">
+  <title>Un identifiant entre. Un vecteur apparaît. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="04-embeddings">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings" aria-current="page"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>07 / 22</span> Du texte aux représentations</p>
+      <div class="hero-heading"><h1>Un identifiant entre.<br>Un vecteur apparaît.</h1><div class="hero-seal" aria-hidden="true"><span>07</span><i></i><i></i><i></i></div></div>
+      <p class="lead">Le modèle n’effectue pas ses calculs sur des mots. Il manipule des coordonnées apprises.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>La table d’<dfn>embeddings</dfn> associe à chaque token un vecteur de dimension fixe. C’est d’abord une lecture de ligne dans une matrice apprise. Luciole utilise 32 dimensions ; un modèle de production en utilise souvent des milliers.</p>
+<p><strong>Trois moments à distinguer :</strong> le même ID lit toujours la même ligne d’embedding. Luciole y ajoute ensuite le vecteur de sa position. Les blocs produisent enfin des <strong>représentations contextualisées</strong>, dépendantes des tokens accessibles. « chat » part donc du même embedding dans deux phrases, mais son état peut évoluer différemment. Notre petit corpus ne suffit pas à démontrer une compréhension générale des ambiguïtés.</p>
+<p>La similarité cosinus compare des directions à partir des 32 coordonnées. L’atlas 3D permet d’en choisir trois et de faire tourner la vue. Les vingt-neuf autres sont cachées : deux points proches à l’écran ne prouvent ni synonymie ni proximité dans l’espace complet. Les coordonnées viennent des vrais poids de Luciole, pas d’une carte inventée.</p>
+<details><summary>Facultatif · notation de la table</summary><p>E ∈ ℝᵛˣᵈ : v tokens dans le vocabulaire, d nombres par token. L’embedding du token d’identifiant i est la ligne i de E, pas une multiplication du numéro i par un sens.</p></details><details class="code-reading"><summary>Dans le code de Luciole · Lire les embeddings et ajouter les positions</summary><p>gather lit les lignes de la table demandées par les IDs. Le second gather lit les positions 0, 1, 2… add additionne les deux tableaux. Aucune recherche de sens dans un dictionnaire n’est effectuée.</p><pre tabindex="0" aria-label="Extrait JavaScript : Lire les embeddings et ajouter les positions"><code>  const embedding = gather(weights.token, ids);
+  let x = add(embedding, gather(weights.position, ids.map((_, i) =&gt; i)));</code></pre><p><a href="../17-sources/code.html#model" target="_blank" rel="noopener noreferrer">Lire le fichier complet dans Playlab42 ↗</a><br><span class="source-path">parcours/epics/anatomie-llm/_shared/model.js</span></p></details><div class="formula" aria-label="Relation à retenir">identifiant du token → ligne de la table apprise → 32 nombres dans Luciole</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>Un embedding est une représentation apprise, pas un dictionnaire de concepts lisibles dimension par dimension.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>Nos voisins sont ceux d’un minuscule corpus. N’en déduisez pas une géographie universelle du langage.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>embeddings</dt><dd>Vecteurs appris associés aux identifiants des tokens.</dd></div><div><dt>vecteur</dt><dd>Liste ordonnée de nombres. Ici, chaque token est représenté par 32 coordonnées.</dd></div><div><dt>dimension</dt><dd>Une des coordonnées d’un vecteur. Un vecteur de dimension 32 contient 32 nombres.</dd></div><div><dt>similarité cosinus</dt><dd>Mesure de l’alignement de deux vecteurs : 1 pour la même direction, 0 pour des directions perpendiculaires, −1 pour des directions opposées.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · L’espace des représentations</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Choisissez deux tokens, puis trois coordonnées pour les axes X, Y et Z. Tournez la vue : le dessin change, mais la similarité sur les 32 nombres reste identique.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="embeddings">embeddings</dfn> · <dfn data-term="vecteur">vecteur</dfn> · <dfn data-term="dimension">dimension</dfn> · <dfn data-term="similarité cosinus">similarité cosinus</dfn></div>
+      <div id="experiment-root" data-experiment="embeddings"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Une dimension d’embedding signifie-t-elle nécessairement « masculin », « ville » ou « positif » ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Non, les représentations sont généralement distribuées. L’information peut être distribuée entre de nombreuses directions. Une interprétation exige des observations et des expériences supplémentaires.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Attention Is All You Need — Vaswani et al., 2017 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Accroche : un mot devient une ligne. Manipulation : paris et france. Transition : comment ces lignes se transforment-elles ?</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../03b-nombres/index.html" data-chapter="03b-nombres">← Lire vecteurs et matrices</a>
+    <a href="../05-transformer/index.html" data-chapter="05-transformer"><span>CONTINUER</span> La carte du modèle →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

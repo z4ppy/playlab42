@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Lire le code de Luciole Un parcours interactif Playlab42.">
+  <title>Lire le code de Luciole — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="17-sources">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide"><header class="hero"><p class="eyebrow">LECTURE FACULTATIVE · JAVASCRIPT</p><h1>Luciole, du texte au code.</h1><p class="lead">Les fichiers complets ci-dessous sont ceux du projet au moment de la génération du cours. Aucun entraînement n’est lancé en ouvrant cette page.</p></header><nav class="lesson-navigation" aria-label="Fichiers source"><a href="#model">model.js</a><a href="#tensor">tensor.js</a><a href="#math">math.js</a><a href="#training">train-llm-anatomy.js</a></nav><p>Dans le dépôt <a href="https://github.com/z4ppy/playlab42" target="_blank" rel="noopener noreferrer">Playlab42 ↗</a>, retrouvez ces fichiers aux chemins indiqués. Cette lecture locale accompagne la version du cours que vous consultez.</p><section class="source-file" aria-labelledby="model"><h2 id="model" tabindex="-1">model.js</h2><p>Commencer ici : tokenizer, chargement des poids et passage avant des deux blocs.</p><p class="source-path">parcours/epics/anatomie-llm/_shared/model.js</p><pre tabindex="0" aria-label="Code complet de model.js"><code>import { Tensor, add, matmul, gather, relu, rmsnorm, attention } from &#39;./tensor.js&#39;;
+
+/** Tokenizer lexical volontairement fermé, distinct des BPE de production. */
+export function lexicalPieces(text) {
+  return text.normalize(&#39;NFC&#39;).toLocaleLowerCase(&#39;fr&#39;).match(/[\p{L}\p{N}]+|[^\s\p{L}\p{N}]/gu) || [];
+}
+
+export function tokenize(text, vocabulary) {
+  const words = lexicalPieces(text);
+  const ids = words.map(word =&gt; vocabulary.indexOf(word));
+  const unknown = words.filter((_, i) =&gt; ids[i] &lt; 0);
+  if (unknown.length) { throw new Error(`Hors vocabulaire : ${[...new Set(unknown)].join(&#39;, &#39;)}. Utilisez un exemple ou les mots du corpus.`); }
+  return [vocabulary.indexOf(&#39;&lt;bos&gt;&#39;), ...ids];
+}
+
+/** Vérifie les poids avant toute inférence ; aucun remplacement implicite. */
+export function loadWeights(model, train = false) {
+  const c = model.config;
+  if (!c || !Number.isInteger(c.dim) || c.dim &lt; 2 || c.dim &gt; 128 ||
+    !Number.isInteger(c.layers) || c.layers &lt; 1 || c.layers &gt; 8 ||
+    !Number.isInteger(c.heads) || c.heads &lt; 1 || c.dim % c.heads ||
+    !Number.isInteger(c.context) || c.context &lt; 2 || c.context &gt; 128 ||
+    !Array.isArray(model.vocabulary) || model.vocabulary.length &lt; 3 ||
+    !model.vocabulary.includes(&#39;&lt;bos&gt;&#39;) || !model.vocabulary.includes(&#39;&lt;eos&gt;&#39;)) {
+    throw new Error(&#39;Configuration du mini-modèle invalide.&#39;);
+  }
+  const shapes = { token: [model.vocabulary.length, c.dim], position: [c.context, c.dim], output: [c.dim, model.vocabulary.length] };
+  for (let i = 0; i &lt; c.layers; i++) {
+    for (const name of [&#39;q&#39;, &#39;k&#39;, &#39;v&#39;, &#39;o&#39;]) { shapes[`${i}.${name}`] = [c.dim, c.dim]; }
+    shapes[`${i}.up`] = [c.dim, c.dim * 2];
+    shapes[`${i}.down`] = [c.dim * 2, c.dim];
+  }
+  return Object.fromEntries(Object.entries(shapes).map(([name, [rows, cols]]) =&gt; {
+    const data = model.weights?.[name];
+    if (!Array.isArray(data) || data.length !== rows * cols || data.some(v =&gt; !Number.isFinite(v))) {
+      throw new Error(`Poids invalides : ${name}.`);
+    }
+    return [name, new Tensor(data, rows, cols, train)];
+  }));
+}
+
+/** Inférence exacte : chaque trace correspond aux tenseurs utilisés pour prédire. */
+export function forward(ids, weights, config) {
+  if (!ids.length || ids.length &gt; config.context) {
+    throw new RangeError(`Le mini-modèle accepte de 1 à ${config.context} tokens, début compris.`);
+  }
+  const embedding = gather(weights.token, ids);
+  let x = add(embedding, gather(weights.position, ids.map((_, i) =&gt; i)));
+  const traces = [{ state: x, embedding }];
+  for (let i = 0; i &lt; config.layers; i++) {
+    const normalized = rmsnorm(x);
+    const q = matmul(normalized, weights[`${i}.q`]);
+    const k = matmul(normalized, weights[`${i}.k`]);
+    const v = matmul(normalized, weights[`${i}.v`]);
+    const attended = attention(q, k, v, config.heads);
+    const residual = add(x, matmul(attended.result, weights[`${i}.o`]));
+    const hidden = relu(matmul(rmsnorm(residual), weights[`${i}.up`]));
+    x = add(residual, matmul(hidden, weights[`${i}.down`]));
+    traces.push({ state: x, attention: attended.maps, q, k, v, hidden });
+  }
+  return { logits: matmul(rmsnorm(x), weights.output), traces };
+}
+
+export function logitLens(state, weights) {
+  return matmul(rmsnorm(state), weights.output).toRows().at(-1);
+}
+
+export function decode(ids, vocabulary) {
+  return ids.map(id =&gt; vocabulary[id]).filter(t =&gt; t !== &#39;&lt;bos&gt;&#39; &amp;&amp; t !== &#39;&lt;eos&gt;&#39;)
+    .join(&#39; &#39;).replace(/\s+([.,!?;:])/g, &#39;$1&#39;);
+}
+</code></pre></section><section class="source-file" aria-labelledby="tensor"><h2 id="tensor" tabindex="-1">tensor.js</h2><p>Les opérations numériques et leurs gradients : matrices, attention causale et perte.</p><p class="source-path">parcours/epics/anatomie-llm/_shared/tensor.js</p><pre tabindex="0" aria-label="Code complet de tensor.js"><code>/**
+ * Petit moteur matriciel différentiable. Les gradients ne sont alloués que
+ * pendant l&#39;entraînement ; l&#39;inférence utilise exactement les mêmes opérations.
+ */
+export class Tensor {
+  constructor(data, rows, cols, train = false) {
+    if (data.length !== rows * cols || rows &lt; 1 || cols &lt; 1) {
+      throw new RangeError(&#39;Dimensions de tenseur incompatibles.&#39;);
+    }
+    this.data = Float64Array.from(data);
+    this.rows = rows;
+    this.cols = cols;
+    this.grad = train ? new Float64Array(data.length) : null;
+    this.parents = [];
+    this.backwardOp = () =&gt; {};
+  }
+
+  /** Propage un gradient scalaire une fois dans l&#39;ordre topologique inverse. */
+  backward() {
+    if (!this.grad || this.data.length !== 1) {
+      throw new Error(&#39;La rétropropagation exige une perte scalaire différentiable.&#39;);
+    }
+    const visited = new Set();
+    const order = [];
+    const visit = tensor =&gt; {
+      if (visited.has(tensor)) { return; }
+      visited.add(tensor);
+      tensor.parents.forEach(visit);
+      order.push(tensor);
+    };
+    visit(this);
+    this.grad[0] = 1;
+    order.reverse().forEach(tensor =&gt; tensor.backwardOp());
+  }
+
+  toRows() {
+    return Array.from({ length: this.rows }, (_, i) =&gt;
+      Array.from(this.data.slice(i * this.cols, (i + 1) * this.cols)));
+  }
+}
+
+function operation(data, rows, cols, parents, backward) {
+  const result = new Tensor(data, rows, cols, parents.some(p =&gt; p.grad));
+  if (result.grad) {
+    result.parents = parents;
+    result.backwardOp = () =&gt; backward(result.grad);
+  }
+  return result;
+}
+
+export function add(a, b) {
+  if (a.rows !== b.rows || a.cols !== b.cols) { throw new RangeError(&#39;Addition incompatible.&#39;); }
+  return operation(a.data.map((v, i) =&gt; v + b.data[i]), a.rows, a.cols, [a, b], grad =&gt; {
+    grad.forEach((v, i) =&gt; {
+      if (a.grad) { a.grad[i] += v; }
+      if (b.grad) { b.grad[i] += v; }
+    });
+  });
+}
+
+export function matmul(a, b) {
+  if (a.cols !== b.rows) { throw new RangeError(&#39;Produit matriciel incompatible.&#39;); }
+  const data = new Float64Array(a.rows * b.cols);
+  for (let i = 0; i &lt; a.rows; i++) {
+    for (let k = 0; k &lt; a.cols; k++) {
+      for (let j = 0; j &lt; b.cols; j++) {
+        data[i * b.cols + j] += a.data[i * a.cols + k] * b.data[k * b.cols + j];
+      }
+    }
+  }
+  return operation(data, a.rows, b.cols, [a, b], grad =&gt; {
+    for (let i = 0; i &lt; a.rows; i++) {
+      for (let k = 0; k &lt; a.cols; k++) {
+        for (let j = 0; j &lt; b.cols; j++) {
+          const g = grad[i * b.cols + j];
+          if (a.grad) { a.grad[i * a.cols + k] += g * b.data[k * b.cols + j]; }
+          if (b.grad) { b.grad[k * b.cols + j] += g * a.data[i * a.cols + k]; }
+        }
+      }
+    }
+  });
+}
+
+export function gather(table, ids) {
+  if (!ids.length || ids.some(id =&gt; !Number.isInteger(id) || id &lt; 0 || id &gt;= table.rows)) {
+    throw new RangeError(&#39;Identifiant hors du vocabulaire.&#39;);
+  }
+  const data = ids.flatMap(id =&gt; Array.from(table.data.slice(id * table.cols, (id + 1) * table.cols)));
+  return operation(data, ids.length, table.cols, [table], grad =&gt; {
+    if (!table.grad) { return; }
+    ids.forEach((id, i) =&gt; {
+      for (let j = 0; j &lt; table.cols; j++) { table.grad[id * table.cols + j] += grad[i * table.cols + j]; }
+    });
+  });
+}
+
+export function relu(a) {
+  return operation(a.data.map(v =&gt; Math.max(0, v)), a.rows, a.cols, [a], grad =&gt; {
+    if (a.grad) { grad.forEach((v, i) =&gt; { a.grad[i] += a.data[i] &gt; 0 ? v : 0; }); }
+  });
+}
+
+/** RMSNorm sans gain appris : x / sqrt(moyenne(x²) + epsilon). */
+export function rmsnorm(a) {
+  const data = new Float64Array(a.data.length);
+  const scales = [];
+  for (let i = 0; i &lt; a.rows; i++) {
+    const row = a.data.slice(i * a.cols, (i + 1) * a.cols);
+    const scale = 1 / Math.sqrt(row.reduce((s, v) =&gt; s + v * v, 0) / a.cols + 1e-5);
+    scales.push(scale);
+    row.forEach((v, j) =&gt; { data[i * a.cols + j] = v * scale; });
+  }
+  return operation(data, a.rows, a.cols, [a], grad =&gt; {
+    if (!a.grad) { return; }
+    for (let i = 0; i &lt; a.rows; i++) {
+      let dot = 0;
+      for (let j = 0; j &lt; a.cols; j++) { dot += grad[i * a.cols + j] * a.data[i * a.cols + j]; }
+      for (let j = 0; j &lt; a.cols; j++) {
+        const k = i * a.cols + j;
+        a.grad[k] += grad[k] * scales[i] - a.data[k] * scales[i] ** 3 * dot / a.cols;
+      }
+    }
+  });
+}
+
+/** Attention multi-tête causale, avec cartes exactes pour l&#39;inspection. */
+export function attention(q, k, v, heads) {
+  if (q.cols % heads || q.rows !== k.rows || q.rows !== v.rows || q.cols !== k.cols || q.cols !== v.cols) {
+    throw new RangeError(&#39;Dimensions des têtes incompatibles.&#39;);
+  }
+  const width = q.cols / heads;
+  const n = q.rows;
+  const scale = 1 / Math.sqrt(width);
+  const maps = Array.from({ length: heads }, () =&gt; Array.from({ length: n }, () =&gt; Array(n).fill(0)));
+  const data = new Float64Array(n * q.cols);
+  for (let h = 0; h &lt; heads; h++) {
+    for (let i = 0; i &lt; n; i++) {
+      const scores = [];
+      for (let j = 0; j &lt;= i; j++) {
+        let score = 0;
+        for (let d = 0; d &lt; width; d++) { score += q.data[i * q.cols + h * width + d] * k.data[j * q.cols + h * width + d]; }
+        scores.push(score * scale);
+      }
+      const max = Math.max(...scores);
+      const exps = scores.map(s =&gt; Math.exp(s - max));
+      const sum = exps.reduce((s, x) =&gt; s + x, 0);
+      exps.forEach((x, j) =&gt; { maps[h][i][j] = x / sum; });
+      for (let d = 0; d &lt; width; d++) {
+        for (let j = 0; j &lt;= i; j++) { data[i * q.cols + h * width + d] += maps[h][i][j] * v.data[j * q.cols + h * width + d]; }
+      }
+    }
+  }
+  const result = operation(data, n, q.cols, [q, k, v], grad =&gt; {
+    for (let h = 0; h &lt; heads; h++) {
+      for (let i = 0; i &lt; n; i++) {
+        const dp = Array(i + 1).fill(0);
+        for (let j = 0; j &lt;= i; j++) {
+          for (let d = 0; d &lt; width; d++) {
+            const qi = i * q.cols + h * width + d;
+            const kj = j * q.cols + h * width + d;
+            dp[j] += grad[qi] * v.data[kj];
+            if (v.grad) { v.grad[kj] += maps[h][i][j] * grad[qi]; }
+          }
+        }
+        const mean = dp.reduce((s, x, j) =&gt; s + x * maps[h][i][j], 0);
+        for (let j = 0; j &lt;= i; j++) {
+          const ds = maps[h][i][j] * (dp[j] - mean) * scale;
+          for (let d = 0; d &lt; width; d++) {
+            const qi = i * q.cols + h * width + d;
+            const kj = j * q.cols + h * width + d;
+            if (q.grad) { q.grad[qi] += ds * k.data[kj]; }
+            if (k.grad) { k.grad[kj] += ds * q.data[qi]; }
+          }
+        }
+      }
+    }
+  });
+  return { result, maps };
+}
+
+export function crossEntropy(logits, targets) {
+  if (targets.length !== logits.rows || targets.some(t =&gt; !Number.isInteger(t) || t &lt; 0 || t &gt;= logits.cols)) {
+    throw new RangeError(&#39;Cibles incompatibles.&#39;);
+  }
+  let loss = 0;
+  const probabilities = logits.toRows().map((row, i) =&gt; {
+    const max = Math.max(...row);
+    const exp = row.map(v =&gt; Math.exp(v - max));
+    const sum = exp.reduce((s, v) =&gt; s + v, 0);
+    loss += Math.log(sum) + max - row[targets[i]];
+    return exp.map(v =&gt; v / sum);
+  });
+  return operation([loss / targets.length], 1, 1, [logits], grad =&gt; {
+    if (!logits.grad) { return; }
+    probabilities.forEach((row, i) =&gt; row.forEach((p, j) =&gt; {
+      logits.grad[i * logits.cols + j] += (p - Number(j === targets[i])) / targets.length * grad[0];
+    }));
+  });
+}
+</code></pre></section><section class="source-file" aria-labelledby="math"><h2 id="math" tabindex="-1">math.js</h2><p>Softmax, filtres de décodage et tirage ; contient aussi les estimateurs pédagogiques.</p><p class="source-path">parcours/epics/anatomie-llm/_shared/math.js</p><pre tabindex="0" aria-label="Code complet de math.js"><code>import { SeededRandom } from &#39;../../../../lib/seeded-random.js&#39;;
+
+export function softmax(logits, temperature = 1) {
+  if (!logits.length || logits.some(v =&gt; !Number.isFinite(v)) || !Number.isFinite(temperature) || temperature &lt; 0) {
+    throw new RangeError(&#39;Logits finis et température positive ou nulle requis.&#39;);
+  }
+  const max = Math.max(...logits);
+  if (temperature === 0) { return logits.map((_, i) =&gt; Number(i === logits.indexOf(max))); }
+  const exp = logits.map(v =&gt; Math.exp((v - max) / temperature));
+  const sum = exp.reduce((s, v) =&gt; s + v, 0);
+  return exp.map(v =&gt; v / sum);
+}
+
+/** Ordre explicite : température, top-k, min-p, top-p, puis renormalisation. */
+export function distribution(logits, temperature = 1, topP = 1, minP = 0, topK = logits.length) {
+  if (!Number.isFinite(topP) || topP &lt;= 0 || topP &gt; 1 || !Number.isFinite(minP) || minP &lt; 0 || minP &gt; 1) {
+    throw new RangeError(&#39;top-p doit être dans ]0,1] et min-p dans [0,1].&#39;);
+  }
+  const probabilities = softmax(logits, temperature);
+  if (!Number.isInteger(topK) || topK &lt; 1 || topK &gt; logits.length) {
+    throw new RangeError(&#39;top-k doit être un entier entre 1 et la taille du vocabulaire.&#39;);
+  }
+  const peak = Math.max(...probabilities);
+  const eligible = probabilities.map((p, id) =&gt; ({ p, id }))
+    .filter(({ p }) =&gt; p &gt; 0).sort((a, b) =&gt; b.p - a.p || a.id - b.id)
+    .slice(0, topK).filter(({ p }) =&gt; p &gt;= peak * minP);
+  const total = eligible.reduce((s, item) =&gt; s + item.p, 0);
+  const kept = Array(logits.length).fill(0);
+  let cumulative = 0;
+  for (const { p, id } of eligible) {
+    kept[id] = p;
+    cumulative += p;
+    if (cumulative &gt;= topP * total) { break; }
+  }
+  return kept.map(p =&gt; p / cumulative);
+}
+
+export function sample(probabilities, rng) {
+  if (!probabilities.length || probabilities.some(p =&gt; !Number.isFinite(p) || p &lt; 0) ||
+    Math.abs(probabilities.reduce((s, p) =&gt; s + p, 0) - 1) &gt; 1e-8) {
+    throw new RangeError(&#39;Distribution normalisée requise.&#39;);
+  }
+  const draw = rng.random();
+  let sum = 0;
+  for (let i = 0; i &lt; probabilities.length; i++) {
+    sum += probabilities[i];
+    if (draw &lt; sum) { return i; }
+  }
+  return probabilities.findLastIndex(p =&gt; p &gt; 0);
+}
+
+export function histogram(probabilities, count = 100, seed = 42) {
+  if (!Number.isInteger(count) || count &lt; 1 || count &gt; 10000) { throw new RangeError(&#39;Nombre de tirages invalide.&#39;); }
+  const rng = new SeededRandom(seed);
+  const bins = probabilities.map(() =&gt; 0);
+  for (let i = 0; i &lt; count; i++) { bins[sample(probabilities, rng)]++; }
+  return bins;
+}
+
+export function kvBytes({ layers, kvHeads, headDim, tokens, batch, bytes }) {
+  const values = [layers, kvHeads, headDim, tokens, batch, bytes];
+  if (values.some(v =&gt; !Number.isFinite(v) || v &lt;= 0)) { throw new RangeError(&#39;Dimensions du cache strictement positives requises.&#39;); }
+  return 2 * layers * kvHeads * headDim * tokens * batch * bytes;
+}
+
+export function roofline({ parameters, batch, weightBytes, bandwidth, flops }) {
+  if ([parameters, batch, weightBytes, bandwidth, flops].some(v =&gt; !Number.isFinite(v) || v &lt;= 0)) {
+    throw new RangeError(&#39;Paramètres matériels strictement positifs requis.&#39;);
+  }
+  const operations = 2 * parameters * batch;
+  const readBytes = parameters * weightBytes;
+  const computeSeconds = operations / flops;
+  const memorySeconds = readBytes / bandwidth;
+  return { intensity: operations / readBytes, computeSeconds, memorySeconds, seconds: Math.max(computeSeconds, memorySeconds) };
+}
+
+export function rotatePair(x, y, position, frequency = 1) {
+  const angle = position * frequency;
+  return [x * Math.cos(angle) - y * Math.sin(angle), x * Math.sin(angle) + y * Math.cos(angle)];
+}
+
+/** Rotation orthogonale pour l&#39;atlas ; aucune modification des embeddings. */
+export function rotate3D(point, azimuth, elevation) {
+  if (point.length !== 3 || [...point, azimuth, elevation].some(v =&gt; !Number.isFinite(v))) {
+    throw new RangeError(&#39;Trois coordonnées et deux angles finis sont requis.&#39;);
+  }
+  const [x, y, z] = point;
+  const horizontal = x * Math.cos(azimuth) + z * Math.sin(azimuth);
+  const depth = -x * Math.sin(azimuth) + z * Math.cos(azimuth);
+  return [horizontal, y * Math.cos(elevation) - depth * Math.sin(elevation),
+    y * Math.sin(elevation) + depth * Math.cos(elevation)];
+}
+</code></pre></section><section class="source-file" aria-labelledby="training"><h2 id="training" tabindex="-1">train-llm-anatomy.js</h2><p>Le script exécuté avant publication : corpus, prédictions décalées, gradients, Adam et mesures.</p><p class="source-path">scripts/train-llm-anatomy.js</p><pre tabindex="0" aria-label="Code complet de train-llm-anatomy.js"><code>/**
+ * Préentraînement éditorial hors build et hors navigateur.
+ * Exécuter dans Docker : node scripts/train-llm-anatomy.js
+ */
+import { readFile, writeFile } from &#39;node:fs/promises&#39;;
+import { createHash } from &#39;node:crypto&#39;;
+import { SeededRandom } from &#39;../lib/seeded-random.js&#39;;
+import { loadWeights, lexicalPieces, tokenize, forward } from &#39;../parcours/epics/anatomie-llm/_shared/model.js&#39;;
+import { crossEntropy } from &#39;../parcours/epics/anatomie-llm/_shared/tensor.js&#39;;
+import { evaluateExamples } from &#39;../parcours/epics/anatomie-llm/_shared/evaluation.js&#39;;
+import { createCorpus } from &#39;./llm-anatomy-corpus.js&#39;;
+
+const root = new URL(&#39;../parcours/epics/anatomie-llm/assets/&#39;, import.meta.url);
+const tatoebaText = await readFile(new URL(&#39;tatoeba.json&#39;, root), &#39;utf8&#39;);
+const corpus = createCorpus(JSON.parse(tatoebaText));
+const corpusText = `${JSON.stringify(corpus, null, 2)}\n`;
+const vocabulary = [&#39;&lt;bos&gt;&#39;, &#39;&lt;eos&gt;&#39;, ...new Set(corpus.splits.train.flatMap(e =&gt; lexicalPieces(e.text)))];
+const config = { dim: 32, heads: 4, layers: 2, context: 32 };
+const seed = 42;
+const steps = 12000;
+const rng = new SeededRandom(seed);
+const weights = {};
+function matrix(name, rows, cols, scale) {
+  weights[name] = Array.from({ length: rows * cols }, () =&gt; (rng.random() * 2 - 1) * scale);
+}
+matrix(&#39;token&#39;, vocabulary.length, config.dim, 0.25);
+matrix(&#39;position&#39;, config.context, config.dim, 0.1);
+matrix(&#39;output&#39;, config.dim, vocabulary.length, 0.2);
+for (let i = 0; i &lt; config.layers; i++) {
+  for (const name of [&#39;q&#39;, &#39;k&#39;, &#39;v&#39;, &#39;o&#39;]) { matrix(`${i}.${name}`, config.dim, config.dim, 0.25); }
+  matrix(`${i}.up`, config.dim, config.dim * 2, 0.25);
+  matrix(`${i}.down`, config.dim * 2, config.dim, 0.18);
+}
+const model = { config, vocabulary, weights };
+const tensors = loadWeights(model, true);
+const parameters = Object.values(tensors);
+const moments = parameters.map(p =&gt; [new Float64Array(p.data.length), new Float64Array(p.data.length)]);
+const families = [&#39;original&#39;, &#39;natural&#39;, &#39;agreement&#39;, &#39;context&#39;];
+const groups = families.map(family =&gt; corpus.splits.train.filter(e =&gt; e.family === family)
+  .map(e =&gt; [...tokenize(e.text, vocabulary), 1]));
+for (const examples of Object.values(corpus.splits)) {
+  for (const example of examples) {
+    if (tokenize(example.text, vocabulary).length &gt; config.context) {
+      throw new Error(`Contexte insuffisant : ${example.id}`);
+    }
+  }
+}
+// Sous-ensembles fixes et étalés dans chaque famille ; aucun cas de test ici.
+const monitoring = Object.fromEntries([&#39;train&#39;, &#39;validation&#39;].map(split =&gt; [split,
+  [&#39;agreement&#39;, &#39;context&#39;].flatMap(family =&gt; {
+    const examples = corpus.splits[split].filter(e =&gt; e.family === family);
+    const count = Math.min(32, examples.length);
+    return Array.from({ length: count }, (_, i) =&gt; examples[Math.floor(i * examples.length / count)]);
+  }),
+]));
+const history = [];
+function checkpoint(step) {
+  const inference = loadWeights({ ...model, weights: Object.fromEntries(Object.entries(tensors).map(([name, t]) =&gt; [name, Array.from(t.data)])) });
+  const monitored = Object.fromEntries(Object.entries(monitoring).map(([split, examples]) =&gt;
+    [split, evaluateExamples(model, inference, examples)]));
+  history.push({ step, ...monitored });
+  console.log(`Étape ${step}/${steps} : apprentissage ${monitored.train.loss.toFixed(4)}, validation ${monitored.validation.loss.toFixed(4)}`);
+}
+checkpoint(0);
+for (let step = 0; step &lt; steps; step++) {
+  // Préserver les exemples historiques, sans les laisser noyés dans les patrons.
+  const choice = rng.random();
+  const group = groups[choice &lt; 0.15 ? 0 : choice &lt; 0.3 ? 1 : choice &lt; 0.65 ? 2 : 3];
+  const sequence = group[rng.int(0, group.length - 1)];
+  parameters.forEach(p =&gt; p.grad.fill(0));
+  const prediction = forward(sequence.slice(0, -1), tensors, config);
+  const loss = crossEntropy(prediction.logits, sequence.slice(1));
+  loss.backward();
+  const rate = 0.0025 * (1 - step / steps * 0.9);
+  parameters.forEach((p, index) =&gt; {
+    const [first, second] = moments[index];
+    p.data.forEach((value, i) =&gt; {
+      const g = Math.max(-1, Math.min(1, p.grad[i]));
+      first[i] = 0.9 * first[i] + 0.1 * g;
+      second[i] = 0.999 * second[i] + 0.001 * g * g;
+      p.data[i] = value - rate * (first[i] / (1 - 0.9 ** (step + 1))) /
+        (Math.sqrt(second[i] / (1 - 0.999 ** (step + 1))) + 1e-8);
+    });
+  });
+  if ((step + 1) % 1000 === 0) { checkpoint(step + 1); }
+}
+model.weights = Object.fromEntries(Object.entries(tensors).map(([name, t]) =&gt; [name, Array.from(t.data, v =&gt; Number(v.toFixed(7)))]));
+const inference = loadWeights(model);
+// Le test n&#39;est consulté qu&#39;après les mises à jour, jamais pour choisir un arrêt.
+const evaluation = {
+  version: 2,
+  method: &#39;Perte moyenne par phrase, en nats/token. Exactitude du token cible au maximum des logits du vocabulaire entier. Test consulté uniquement à la fin ; ni arrêt anticipé ni sélection de checkpoint.&#39;,
+  splits: Object.fromEntries(Object.entries(corpus.splits).map(([split, examples]) =&gt;
+    [split, evaluateExamples(model, inference, examples)])),
+};
+model.meta = {
+  name: &#39;Luciole · mini-Transformer pédagogique&#39;,
+  version: 2, date: &#39;2026-10-12&#39;, source: &#39;corpus.json&#39;,
+  corpusSha256: createHash(&#39;sha256&#39;).update(corpusText).digest(&#39;hex&#39;),
+  tatoebaSha256: createHash(&#39;sha256&#39;).update(tatoebaText).digest(&#39;hex&#39;),
+  script: &#39;scripts/train-llm-anatomy.js&#39;,
+  seed, steps, optimizer: &#39;Adam, clipping élémentaire ±1, taux 0.0025 → 0.00025&#39;,
+  sampling: &#39;15 % phrases originales, 15 % Tatoeba, 35 % accords, 35 % boîtes ; uniforme dans chaque famille.&#39;,
+  parameters: parameters.reduce((s, p) =&gt; s + p.data.length, 0),
+  counts: Object.fromEntries(Object.entries(corpus.splits).map(([split, examples]) =&gt; [split, examples.length])),
+  monitoring: &#39;Courbes : 64 phrases fixes par lot, 32 accords et 32 boîtes, avec le même mélange de tâches. Elles excluent les phrases originales et Tatoeba. Dernière évaluation séparée sur les lots complets.&#39;,
+  history, trainingLoss: evaluation.splits.train.loss,
+  license: &#39;CC-BY-NC-SA-4.0&#39;,
+  limitation: corpus.meta.limitations,
+};
+if (!Number.isFinite(model.meta.trainingLoss) || model.meta.trainingLoss &gt; 1) {
+  throw new Error(`Apprentissage insuffisant : ${model.meta.trainingLoss}. Aucun poids publié.`);
+}
+const modelText = `${JSON.stringify(model)}\n`;
+evaluation.modelSha256 = createHash(&#39;sha256&#39;).update(modelText).digest(&#39;hex&#39;);
+await writeFile(new URL(&#39;corpus.json&#39;, root), corpusText);
+await writeFile(new URL(&#39;model.json&#39;, root), modelText);
+await writeFile(new URL(&#39;evaluation.json&#39;, root), `${JSON.stringify(evaluation)}\n`);
+console.log(JSON.stringify({ parameters: model.meta.parameters, vocabulary: vocabulary.length, counts: model.meta.counts,
+  scores: Object.fromEntries(Object.entries(evaluation.splits).map(([split, result]) =&gt;
+    [split, Object.fromEntries(Object.entries(result.tasks).map(([task, value]) =&gt; [task, `${value.correct}/${value.total}`]))])) }, null, 2));
+</code></pre></section></article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer">← Transformer Explainer · GPT-2</a>
+    <a href="../18-glossaire/index.html" data-chapter="18-glossaire">Ouvrir le glossaire →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

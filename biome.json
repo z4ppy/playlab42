@@ -11,7 +11,8 @@
       "!!**/playwright-report",
       "!!**/site",
       "!!**/vendor",
-      "!!**/.git"
+      "!!**/.git",
+      "!!parcours/epics/anatomie-llm/transformer-explainer/.source"
     ]
   },
   "formatter": {

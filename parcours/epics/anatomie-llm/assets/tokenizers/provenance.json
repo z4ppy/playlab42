@@ -1,0 +1,81 @@
+{
+  "runtime": "@huggingface/tokenizers@0.2.0",
+  "note": "Définitions originales non modifiées ; aucun poids de modèle. T5 déclare Apache-2.0 dans sa fiche : le texte standard de la licence est fourni.",
+  "definitions": [
+    {
+      "id": "gpt2",
+      "model": "openai-community/gpt2",
+      "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+      "source": "https://huggingface.co/openai-community/gpt2/tree/607a30d783dfa663caf39e06633721c8d4cfcd7e",
+      "license": "MIT",
+      "licenseSource": "https://raw.githubusercontent.com/openai/gpt-2/master/LICENSE",
+      "files": [
+        {
+          "name": "tokenizer.json",
+          "bytes": 1355256,
+          "sha256": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "bytes": 26,
+          "sha256": "5e04eb606e3a1583530a42e36c2a6b6615c86f34fe77e44d9ddeb43ff940931f"
+        },
+        {
+          "name": "LICENSE",
+          "bytes": 1403,
+          "sha256": "0dbeda4bc78823b1d67ec0ee414d8690ee4cad826bc9c147b215adc3af202436"
+        }
+      ]
+    },
+    {
+      "id": "bert",
+      "model": "google-bert/bert-base-uncased",
+      "revision": "86b5e0934494bd15c9632b12f734a8a67f723594",
+      "source": "https://huggingface.co/google-bert/bert-base-uncased/tree/86b5e0934494bd15c9632b12f734a8a67f723594",
+      "license": "Apache-2.0",
+      "licenseSource": "https://huggingface.co/google-bert/bert-base-uncased/resolve/86b5e0934494bd15c9632b12f734a8a67f723594/LICENSE",
+      "files": [
+        {
+          "name": "tokenizer.json",
+          "bytes": 466062,
+          "sha256": "ce64fce797c24f68df90b40a3f74f579b336a493db14bd583fd520ea0d8c9a98"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "bytes": 48,
+          "sha256": "a025160ef0431f1a392f6f050c1310f4c5d9fb6f275932dbccba73c4d214bf10"
+        },
+        {
+          "name": "LICENSE",
+          "bytes": 11356,
+          "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+        }
+      ]
+    },
+    {
+      "id": "t5",
+      "model": "google-t5/t5-small",
+      "revision": "df1b051c49625cf57a3d0d8d3863ed4d13564fe4",
+      "source": "https://huggingface.co/google-t5/t5-small/tree/df1b051c49625cf57a3d0d8d3863ed4d13564fe4",
+      "license": "Apache-2.0",
+      "licenseSource": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "files": [
+        {
+          "name": "tokenizer.json",
+          "bytes": 1389353,
+          "sha256": "d2acde0d8d71dd30a711834b07781b9c89feaac33fd332f60507699282740066"
+        },
+        {
+          "name": "tokenizer_config.json",
+          "bytes": 2324,
+          "sha256": "d1e7146101aa96282057f374aa9c3b260fba2109e5990edb1775d6efc70ffa3c"
+        },
+        {
+          "name": "LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    }
+  ]
+}
