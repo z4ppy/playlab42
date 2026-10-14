@@ -9,6 +9,7 @@ describe('Contrat des distributions runtime', () => {
   test('épingler seulement les distributions autorisées', () => {
     const config = JSON.parse(readFileSync(new URL('./runtime-vendors.json', import.meta.url)));
     expect(config.libraries.map(({ package: name, version }) => `${name}@${version}`)).toEqual([
+      '@huggingface/tokenizers@0.2.0',
       'tone@15.1.22',
       'vexflow@5.0.0',
       'mathjax@4.1.3',

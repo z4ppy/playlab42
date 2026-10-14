@@ -9,4 +9,8 @@ export const sourceIgnores = [
   'vendor/**',
   'docs/site/**',
   'site/**',
+  // Fork tiers et distributions générées ; ses tests dédiés utilisent node:test.
+  'parcours/epics/anatomie-llm/transformer-explainer/.source/**',
+  'parcours/epics/anatomie-llm/transformer-explainer/.source/.*',
+  'parcours/epics/anatomie-llm/transformer-explainer/public/**',
 ];

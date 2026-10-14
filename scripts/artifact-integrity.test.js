@@ -7,6 +7,7 @@ import { inventorySite } from './lib/artifact-inventory.js';
 import { verifySite } from './verify-site.js';
 import { normalizeBuildSBOM } from './build-provenance.js';
 import { exerciseArtifactRecovery } from './check-artifact-recovery.js';
+import { gpt2PublicPath } from './lib/gpt2-assets.js';
 
 let root;
 const commit = 'a'.repeat(40);
@@ -26,6 +27,15 @@ test('vérifier tous les octets et une identité attendue', () => {
   expect(verifySite(root, commit)).toEqual({ version: '1.0', commit, checked: 3 });
   expect(verifySite(root, commit.toUpperCase()).checked).toBe(3);
   expect(() => verifySite(root, 'b'.repeat(40))).toThrow(/Commit différent/);
+});
+
+test('refuser un laboratoire sans poids même si son inventaire de publication est cohérent', () => {
+  mkdirSync(join(root, gpt2PublicPath), { recursive: true });
+  writeFileSync(join(root, gpt2PublicPath, 'index.html'), '<html>GPT-2</html>');
+  writeFileSync(join(root, 'build-manifest.json'), JSON.stringify({
+    formatVersion: 1, version: '1.0', commit, files: inventorySite(root),
+  }));
+  expect(() => verifySite(root, commit)).toThrow(/GPT-2 local incomplet/);
 });
 
 test('conserver stdout, stderr et codes du vrai CLI de vérification', () => {

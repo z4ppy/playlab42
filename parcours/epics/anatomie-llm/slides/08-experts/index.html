@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Beaucoup d’experts. Peu au travail. Un parcours interactif Playlab42.">
+  <title>Beaucoup d’experts. Peu au travail. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="08-experts">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE" aria-current="page"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>12 / 22</span> À l’intérieur du Transformer</p>
+      <div class="hero-heading"><h1>Beaucoup d’experts.<br>Peu au travail.</h1><div class="hero-seal" aria-hidden="true"><span>12</span><i></i><i></i><i></i></div></div>
+      <p class="lead">Le modèle peut stocker beaucoup de paramètres sans tous les activer pour chaque token.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>Reprenons la différence : <strong>l’attention mélange plusieurs positions ; le MLP transforme une position à la fois</strong>, avec les mêmes poids à chaque position. Le MLP de Luciole est dense : il transforme 32 nombres en 64, applique ReLU, puis revient à 32. Il traite un vecteur déjà contextualisé par l’attention, sans consulter directement une autre ligne.</p>
+<p>Un <dfn>MoE</dfn> remplace certains MLP par plusieurs réseaux appelés experts et un routeur. Pour chaque position, celui-ci attribue des scores puis sélectionne un sous-ensemble, souvent les k meilleurs : c’est le top-k. Les sorties choisies sont pondérées et combinées. Il s’agit d’un choix <strong>à l’intérieur d’une couche</strong>, pas d’un choix entre plusieurs assistants complets.</p>
+<p>L’animation montre uniquement un routage <strong>inventé</strong>. Luciole n’a ni experts ni routeur. Un « expert » est un réseau de neurones, pas un spécialiste humain ni une source de savoir identifiée. Les paramètres actifs influencent le calcul ; tous les paramètres influencent le stockage.</p>
+<p class="anecdote"><strong>Un cas réel :</strong> le rapport DeepSeek-V3 annonce 671 milliards de paramètres au total, dont 37 milliards activés par token. Ces deux nombres répondent à des questions différentes : quelle capacité est stockée, et quelle partie participe au calcul d’un token ? Ils ne donnent pas à eux seuls la mémoire ni la latence d’un service.</p>
+<details><summary>Facultatif · combinaison des sorties et coûts</summary><p>sortie = Σ poids_routeur(expert) × expert(x). Les poids des experts sélectionnés sont ici renormalisés. Communication, équilibrage et capacité des experts ajoutent des coûts, non représentés par ce petit routage.</p></details><div class="formula" aria-label="Relation à retenir">Luciole : MLP dense entier · variante MoE : quelques réseaux sélectionnés</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>Paramètres totaux, paramètres actifs et coût réel sont trois quantités distinctes.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>Le routage montré est synthétique, déterministe et sans étiquette sémantique. Luciole est un modèle dense.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>mlp</dt><dd>Petit réseau de neurones qui transforme les nombres de chaque token, sans consulter directement les autres positions.</dd></div><div><dt>moe</dt><dd>Mixture of Experts : plusieurs réseaux experts dont un sous-ensemble est activé par un routeur.</dd></div><div><dt>routeur</dt><dd>Composant qui attribue des scores aux experts et choisit lesquels exécuter pour un token.</dd></div><div><dt>top-k</dt><dd>Sélection des k candidats ayant les scores les plus élevés. Ici, elle choisit les experts actifs.</dd></div><div><dt>poids</dt><dd>Nombres ajustés pendant l’entraînement et conservés pendant la génération. Ils déterminent les transformations du modèle.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · La transformation</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Passez de un à trois experts actifs. Observez les routes et le budget actif, sans modifier le nombre total d’experts.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="mlp">mlp</dfn> · <dfn data-term="moe">moe</dfn> · <dfn data-term="routeur">routeur</dfn> · <dfn data-term="top-k">top-k</dfn> · <dfn data-term="poids">poids</dfn></div>
+      <div id="experiment-root" data-experiment="moe"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Activer deux experts sur huit divise-t-il forcément toute la mémoire du modèle par quatre ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Non, les poids des autres experts doivent encore être stockés ou chargés. Le calcul activé est réduit, mais les poids totaux et les coûts de déplacement ne disparaissent pas.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://arxiv.org/abs/2101.03961" target="_blank" rel="noopener noreferrer">Switch Transformers — Fedus et al., 2021 ↗</a><a href="https://arxiv.org/abs/2412.19437" target="_blank" rel="noopener noreferrer">DeepSeek-V3 Technical Report — DeepSeek-AI, 2024 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Accroche : actif ne signifie pas stocké. Manipulation : top-k. Transition : quand une prédiction devient-elle visible ?</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../06-position/index.html" data-chapter="06-position">← Position et RoPE</a>
+    <a href="../09b-scores/index.html" data-chapter="09b-scores"><span>CONTINUER</span> Des scores aux probabilités →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

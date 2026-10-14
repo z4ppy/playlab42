@@ -346,6 +346,11 @@ jobs:
       - name: Installation des dépendances
         run: npm ci
 
+      - name: Préparer les poids GPT-2 statiques vérifiés
+        run: |
+          npm run test:gpt2
+          npm run prepare:gpt2
+
       - name: Build
         run: |
           export SOURCE_DATE_EPOCH="$(git show -s --format=%ct "$GITHUB_SHA")"

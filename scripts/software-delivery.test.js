@@ -58,6 +58,19 @@ describe('Contrat des workflows de livraison', () => {
     expect(deploy.jobs.deploy.permissions).toEqual({ contents: 'read', pages: 'write', 'id-token': 'write' });
   });
 
+  test('préparer GPT-2 avant fabrication, sans modifier les octets de l’archive reçue', () => {
+    const build = ci.jobs.build.steps;
+    const preparation = build.findIndex(step => step.run?.includes('npm run prepare:gpt2'));
+    expect(preparation).toBeGreaterThan(-1);
+    expect(build[preparation].run).toContain('npm run test:gpt2');
+    expect(preparation).toBeLessThan(build.findIndex(step => step.name === 'Build'));
+    const steps = browser.jobs.browser.steps;
+    const local = steps.findIndex(step => step.run === 'npm run prepare:gpt2');
+    expect(local).toBeGreaterThan(-1);
+    expect(steps[local].if).toBe('${{ !inputs.prebuilt }}');
+    expect(local).toBeLessThan(steps.findIndex(step => step.run === 'npm run test:e2e'));
+  });
+
   test('contrôler ensuite la publication avec le SHA du run et des réessais bornés', () => {
     expect(deploy.jobs.smoke.needs).toBe('deploy');
     const probe = deploy.jobs.smoke.steps.find(step => step.env?.DEPLOYMENT_URL);

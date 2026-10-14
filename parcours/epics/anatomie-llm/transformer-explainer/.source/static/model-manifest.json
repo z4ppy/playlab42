@@ -1,0 +1,322 @@
+{
+  "revision": "bfe50afba10b9b560b84143ee1107d977defa74f",
+  "source": "https://raw.githubusercontent.com/poloclub/transformer-explainer/bfe50afba10b9b560b84143ee1107d977defa74f/static/model-v2",
+  "bytes": 656662664,
+  "chunks": [
+    {
+      "file": "gpt2.onnx.part0",
+      "bytes": 10485760,
+      "sha256": "e68f4ec77e8baa8f063816f18ad184859014f90ce5e96a138cbda3fa0ff5b5e0"
+    },
+    {
+      "file": "gpt2.onnx.part1",
+      "bytes": 10485760,
+      "sha256": "549b09983b18f683db7f9e1eeb7a901e6f1fb907c03b926eea8478eb5162e6ae"
+    },
+    {
+      "file": "gpt2.onnx.part2",
+      "bytes": 10485760,
+      "sha256": "4c453c9c32b3c2b7dc651d76b239ea6da113cfa19df0297f085949fca9eb5a93"
+    },
+    {
+      "file": "gpt2.onnx.part3",
+      "bytes": 10485760,
+      "sha256": "5df56b6dd251ced0177b494b6587f3a774044e8840cb255163a1cc9077b57a29"
+    },
+    {
+      "file": "gpt2.onnx.part4",
+      "bytes": 10485760,
+      "sha256": "d788d9aea7584dafc35043d48b7170c367c7ec1fed9529d8582c953d2b85e9f2"
+    },
+    {
+      "file": "gpt2.onnx.part5",
+      "bytes": 10485760,
+      "sha256": "cd91a42a5c2d7307140a1d0ee0694042f6ed3ac465f55911dcb3d67a4d7bed69"
+    },
+    {
+      "file": "gpt2.onnx.part6",
+      "bytes": 10485760,
+      "sha256": "cb800b68c9dfc34cd86121f5db98849dd37a38cb4911e785ed8ee45897eb0aa7"
+    },
+    {
+      "file": "gpt2.onnx.part7",
+      "bytes": 10485760,
+      "sha256": "e6fe04c34fafcbd46f133e9d21af1718f78815582a5142cf411029220deb7d55"
+    },
+    {
+      "file": "gpt2.onnx.part8",
+      "bytes": 10485760,
+      "sha256": "3b3ce3790b68cb01d7a6a489420603afb398de883d637548a65a4ddce7eaa1a4"
+    },
+    {
+      "file": "gpt2.onnx.part9",
+      "bytes": 10485760,
+      "sha256": "ade8b47da63a96f177b79b050103bef92b69c78f16239b74718b2c6f373b94c0"
+    },
+    {
+      "file": "gpt2.onnx.part10",
+      "bytes": 10485760,
+      "sha256": "e682ac1c90f4e69ef4fad6f5b1822b1565caa3fdfdf93d0a7b500eb2df1ffc92"
+    },
+    {
+      "file": "gpt2.onnx.part11",
+      "bytes": 10485760,
+      "sha256": "83d6b3fcd91ebbdc462a6471dc36a3ba42402cc5ab74361c12f4a78e1f73a547"
+    },
+    {
+      "file": "gpt2.onnx.part12",
+      "bytes": 10485760,
+      "sha256": "4d075161e0e9d6b9c4f04467ef0741b4edad2528f6a3d4368788e32e9971bfbc"
+    },
+    {
+      "file": "gpt2.onnx.part13",
+      "bytes": 10485760,
+      "sha256": "3176be6ae7814532b104c673b7ab9ec72d9077effd493b6a6286c4e75c9572d0"
+    },
+    {
+      "file": "gpt2.onnx.part14",
+      "bytes": 10485760,
+      "sha256": "dafcd42736707ff04fc32a8d758e620eec6819f0b831ed75b2cd220e869319ce"
+    },
+    {
+      "file": "gpt2.onnx.part15",
+      "bytes": 10485760,
+      "sha256": "3bef2ebe774983a8a60aa1ea2a54dc04a50b3868653d1e120253c32e55176b9e"
+    },
+    {
+      "file": "gpt2.onnx.part16",
+      "bytes": 10485760,
+      "sha256": "107410f6681a12a9e2f9a422ffea65d64d66f6dd296c857bbbfa4d7fbd52c57e"
+    },
+    {
+      "file": "gpt2.onnx.part17",
+      "bytes": 10485760,
+      "sha256": "e1d486e18018ef404650fb8518bcc850cbf6cdf141add1e67c0c0a3bd5dafb0c"
+    },
+    {
+      "file": "gpt2.onnx.part18",
+      "bytes": 10485760,
+      "sha256": "3b2d1d8e19b1dc7b34640018382fa26747f08c1a512150b033b59ebeeaf7e946"
+    },
+    {
+      "file": "gpt2.onnx.part19",
+      "bytes": 10485760,
+      "sha256": "cf898d6efd0670f25114a34b0a06f395848f965661fcba545778ed40ca783405"
+    },
+    {
+      "file": "gpt2.onnx.part20",
+      "bytes": 10485760,
+      "sha256": "9a4ae49f7a24319af01bd9e29d383e14b151bb937b1c106b28105f28e60fcf46"
+    },
+    {
+      "file": "gpt2.onnx.part21",
+      "bytes": 10485760,
+      "sha256": "a670abf3dfea7ca21787a451616fe19390dafad56745ac29ddfd406bacf01ed9"
+    },
+    {
+      "file": "gpt2.onnx.part22",
+      "bytes": 10485760,
+      "sha256": "1de50b09c19a565f250d9474c4f9a3dee415fe3f564f5f7793c2c6b2329fb31d"
+    },
+    {
+      "file": "gpt2.onnx.part23",
+      "bytes": 10485760,
+      "sha256": "d0ef000e7541cbc2611b3931bacd4268e7a76699671c23b520c261de2d92406a"
+    },
+    {
+      "file": "gpt2.onnx.part24",
+      "bytes": 10485760,
+      "sha256": "059512f5cf3bc25498964cf3ed8e5f7832e9c44883c87b0dfcc9496e34f742b5"
+    },
+    {
+      "file": "gpt2.onnx.part25",
+      "bytes": 10485760,
+      "sha256": "b9480b5c8d6abd9534f1d650ddfe3d0297cd36ceecdda01343b3a2252f42a8fe"
+    },
+    {
+      "file": "gpt2.onnx.part26",
+      "bytes": 10485760,
+      "sha256": "dab43a26bde053c5730aba37072ef43da4689989820c72e0724b39b834d35a4b"
+    },
+    {
+      "file": "gpt2.onnx.part27",
+      "bytes": 10485760,
+      "sha256": "7701027f53e820e8dc039ec81811b99d5b00971245de4010789f04f766291772"
+    },
+    {
+      "file": "gpt2.onnx.part28",
+      "bytes": 10485760,
+      "sha256": "5c7a2142ee1ddbe4e9d53150e33b3a6dff121e36a26a568be17f1c2f3fa169c5"
+    },
+    {
+      "file": "gpt2.onnx.part29",
+      "bytes": 10485760,
+      "sha256": "ead4f847709d983d906810f9c6c74d5c03a9481c16a14eee33b98b3c03ecf310"
+    },
+    {
+      "file": "gpt2.onnx.part30",
+      "bytes": 10485760,
+      "sha256": "7544f17f8cb5f0dafc2898341ff7c8133123ace0314e42e224ae2380c3f97f4c"
+    },
+    {
+      "file": "gpt2.onnx.part31",
+      "bytes": 10485760,
+      "sha256": "958c3167cde94e075a1bb03fa68661f2dea3ddaeff1db0f9ab2b044a14e7af86"
+    },
+    {
+      "file": "gpt2.onnx.part32",
+      "bytes": 10485760,
+      "sha256": "d589bad40ed58f4b1017a5371523b80331fd732f8973efe752f23b2f264e1feb"
+    },
+    {
+      "file": "gpt2.onnx.part33",
+      "bytes": 10485760,
+      "sha256": "c828bd3f9c390463417d7ffbf41917d4d4a3853f002808adac9406e3681c3065"
+    },
+    {
+      "file": "gpt2.onnx.part34",
+      "bytes": 10485760,
+      "sha256": "212b70d994ca9591d36652a72d1b6a5c0d26025bacbf2b40757d028c5bffd096"
+    },
+    {
+      "file": "gpt2.onnx.part35",
+      "bytes": 10485760,
+      "sha256": "d732fdb3e955398f2206f9c7615b43650a79b8c812b19f13b850da5d363d5be9"
+    },
+    {
+      "file": "gpt2.onnx.part36",
+      "bytes": 10485760,
+      "sha256": "476f6c4dff17188b57adbf8fcd9dfdc4e6b4b920a1d3590a786e8d0a44f6ff25"
+    },
+    {
+      "file": "gpt2.onnx.part37",
+      "bytes": 10485760,
+      "sha256": "d549b543cdd76eea1bfaf3f8f8cd331dd416e1e6397c1b7a0966c6a3ebace1c9"
+    },
+    {
+      "file": "gpt2.onnx.part38",
+      "bytes": 10485760,
+      "sha256": "9cd50735506c000060efdd6d0f0ec6e0270c90178df1a2e71e4884b7f35e001c"
+    },
+    {
+      "file": "gpt2.onnx.part39",
+      "bytes": 10485760,
+      "sha256": "d2f99ebc7bf06b8edbc90737bbc7343a34b1f81b8316051a8697f8391dbace14"
+    },
+    {
+      "file": "gpt2.onnx.part40",
+      "bytes": 10485760,
+      "sha256": "005999fd5dd2939822d1583bee94a996dbfe73e458383bbe9d912d67e565b326"
+    },
+    {
+      "file": "gpt2.onnx.part41",
+      "bytes": 10485760,
+      "sha256": "fcf5c31d78959665ef3aa6caf3b4ae70079f3597328db1ca1775c6770a353956"
+    },
+    {
+      "file": "gpt2.onnx.part42",
+      "bytes": 10485760,
+      "sha256": "2632a01eead26d2bbf36d0cef9e68fb31f0ba41a7f2aaabd9d46269626b71f0c"
+    },
+    {
+      "file": "gpt2.onnx.part43",
+      "bytes": 10485760,
+      "sha256": "535996ed96d27f74b4ff40aec4661ad99ff7ad3678122928d8e26b106337ef8a"
+    },
+    {
+      "file": "gpt2.onnx.part44",
+      "bytes": 10485760,
+      "sha256": "ebdd009c0f462b9671d23d42795e146c851fe2eda4da42717cc4d72a0a2fbffb"
+    },
+    {
+      "file": "gpt2.onnx.part45",
+      "bytes": 10485760,
+      "sha256": "1abcfe20c5113c8903f0583c7b879301518aef931bffeb111e70ab551ee2e231"
+    },
+    {
+      "file": "gpt2.onnx.part46",
+      "bytes": 10485760,
+      "sha256": "1cd15add953bab78080bf15b23cf1e5f6d5e9b90644fc66fee5cfa27059cf9b9"
+    },
+    {
+      "file": "gpt2.onnx.part47",
+      "bytes": 10485760,
+      "sha256": "667badead54ba608f48a9a5541702d67a3393b7f80c9b8bbb874f33db71198e0"
+    },
+    {
+      "file": "gpt2.onnx.part48",
+      "bytes": 10485760,
+      "sha256": "d71a384aaca7526fd904ee3e423741dba71fba952a99b3abf99862ebc2327516"
+    },
+    {
+      "file": "gpt2.onnx.part49",
+      "bytes": 10485760,
+      "sha256": "4118f9b0ba9f6066f09825bd179aaa231b39cbac5dc0caf9cac49b711519d2ae"
+    },
+    {
+      "file": "gpt2.onnx.part50",
+      "bytes": 10485760,
+      "sha256": "1a0310ea2b31ec945dd83011e9280b15bd7fddb41283745a0be73d20fa8c0720"
+    },
+    {
+      "file": "gpt2.onnx.part51",
+      "bytes": 10485760,
+      "sha256": "2763952abc420b595212827cc518e8e424795e97bc7ad9a97501a0fc9e9eb989"
+    },
+    {
+      "file": "gpt2.onnx.part52",
+      "bytes": 10485760,
+      "sha256": "80e76d251c9c82084dbfaf146cf080dbcd8dbe61611aca1580c5c3571f071239"
+    },
+    {
+      "file": "gpt2.onnx.part53",
+      "bytes": 10485760,
+      "sha256": "68fce6414cf2a29b9b792eababb51ccf24f735fa7760555ac2186fa2b85d7781"
+    },
+    {
+      "file": "gpt2.onnx.part54",
+      "bytes": 10485760,
+      "sha256": "f36b9764b6b5ffad1e12279167ec7580ffbedbcfee665532a7ec8f2803b3fb43"
+    },
+    {
+      "file": "gpt2.onnx.part55",
+      "bytes": 10485760,
+      "sha256": "3330a963e368a1f52fee32e15c7a166b90a35698ced2b3c0a10f87ceb764e610"
+    },
+    {
+      "file": "gpt2.onnx.part56",
+      "bytes": 10485760,
+      "sha256": "1036f4f077210ce6992404aadbfcc5d02fe9cec4b1ec9e609330dd44748c865d"
+    },
+    {
+      "file": "gpt2.onnx.part57",
+      "bytes": 10485760,
+      "sha256": "56fdc6f52ca9fb698e797322bf17abc7ce7863976a47720b627ab8dae94d0715"
+    },
+    {
+      "file": "gpt2.onnx.part58",
+      "bytes": 10485760,
+      "sha256": "927248484462e77b942d466ac99c2c57e40b5093236ed104be1b8575622b2519"
+    },
+    {
+      "file": "gpt2.onnx.part59",
+      "bytes": 10485760,
+      "sha256": "b893bf43b232234975452c6d97006941641bed084efd98e5da575d9b06bf9d22"
+    },
+    {
+      "file": "gpt2.onnx.part60",
+      "bytes": 10485760,
+      "sha256": "d5dcbb467096dfbaa00aa1efa873ba76f176d3461d53320a1ac2bd08dba6add0"
+    },
+    {
+      "file": "gpt2.onnx.part61",
+      "bytes": 10485760,
+      "sha256": "e44f5b33cdab28f11fc00929497b4221d5fe7e6d6638ada4a42a882075e0ed6b"
+    },
+    {
+      "file": "gpt2.onnx.part62",
+      "bytes": 6545544,
+      "sha256": "2309a656926052767302d95688e81defe4c635b5d95c12c866aa13d8e37698a2"
+    }
+  ]
+}

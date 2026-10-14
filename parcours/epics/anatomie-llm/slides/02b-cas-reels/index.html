@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Du code, du français. Des comptes différents. Un parcours interactif Playlab42.">
+  <title>Du code, du français. Des comptes différents. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="02b-cas-reels">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation" aria-current="page"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>04 / 22</span> Du texte aux représentations</p>
+      <div class="hero-heading"><h1>Du code, du français.<br>Des comptes différents.</h1><div class="hero-seal" aria-hidden="true"><span>04</span><i></i><i></i><i></i></div></div>
+      <p class="lead">Une demande de support, une fonction JavaScript, un message structuré : comparons des textes que l’on envoie vraiment.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>La comparaison utilise les définitions publiques originales de GPT-2, BERT uncased et T5 small, pas des découpages inventés. Vous pouvez changer chaque texte et examiner les pièces, leurs identifiants et la reconstruction obtenue. Aucun poids de ces modèles n’est chargé : <strong>tokeniser n’est pas générer une réponse</strong>.</p>
+<p>BERT uncased met notamment en minuscules et retire les accents : « ÉTÉ » peut revenir sous la forme « ete ». GPT-2 travaille sur des unités issues des octets. T5 applique ses propres règles de normalisation. Dans les pièces affichées, Ġ représente notamment un espace encodé, ## une continuation WordPiece, et ▁ un marqueur d’espace de SentencePiece. Leur aspect à l’écran ne décrit pas une pensée du modèle.</p>
+<p>Un nombre de tokens plus petit ne prouve pas qu’un modèle comprend mieux. Et ces comptes concernent uniquement le texte saisi, sans ajout automatique de marqueurs spéciaux. Le coût d’un appel réel dépend aussi du modèle, du template, des outils et de la sortie générée.</p><div class="formula" aria-label="Relation à retenir">même texte + vocabulaire différent → pièces et identifiants différents</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>Le tokenizer fait partie du modèle : son vocabulaire, ses règles et ses identifiants ne sont pas interchangeables.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>GPT-2, BERT et T5 sont des cas publics documentés, pas les tokeniseurs universels des assistants actuels. Aucun appel à ces modèles n’est effectué.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>tokenizer</dt><dd>Algorithme et vocabulaire qui convertissent un texte en identifiants de tokens.</dd></div><div><dt>wordpiece</dt><dd>Découpage en sous-mots utilisé notamment par BERT. Le préfixe interne ## signale un morceau qui continue un mot.</dd></div><div><dt>unigram</dt><dd>Méthode qui choisit un découpage en sous-mots selon des scores appris pour les pièces du vocabulaire. Utilisée ici par T5.</dd></div><div><dt>unicode</dt><dd>Standard qui identifie les caractères par des points de code. Un emoji visible peut regrouper plusieurs points de code.</dd></div><div><dt>utf-8</dt><dd>Encodage des points de code Unicode en octets. Un caractère ne correspond donc pas toujours à un seul octet.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · Des entrées du quotidien</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Choisissez « Comparer les quatre », puis un exemple de texte. Changez un accent, un espace ou un nom de variable et comparez les découpages et le texte reconstruit.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="tokenizer">tokenizer</dfn> · <dfn data-term="wordpiece">wordpiece</dfn> · <dfn data-term="unigram">unigram</dfn> · <dfn data-term="unicode">unicode</dfn> · <dfn data-term="utf-8">utf-8</dfn></div>
+      <div id="experiment-root" data-experiment="tokenizerCases"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Pourquoi « ÉTÉ » peut-il être reconstruit en « ete » avec BERT uncased ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Le tokenizer normalise la casse et les accents. La normalisation fait partie de la tokenisation. Il faut distinguer découpage réversible et transformation de l’entrée.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://huggingface.co/docs/transformers/tokenizer_summary" target="_blank" rel="noopener noreferrer">Hugging Face — Tokenizer summary ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Manipulation : support, code et JSON. Comparer les trois vrais découpages, puis leurs reconstructions.</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../02-tokenisation/index.html" data-chapter="02-tokenisation">← La tokenisation</a>
+    <a href="../03-prompt/index.html" data-chapter="03-prompt"><span>CONTINUER</span> Le template caché →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

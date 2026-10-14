@@ -1,6 +1,12 @@
 {
   "libraries": [
     {
+      "package": "@huggingface/tokenizers",
+      "version": "0.2.0",
+      "bundle": "dist/tokenizers.mjs",
+      "destination": "tokenizers/tokenizers.js"
+    },
+    {
       "package": "tone",
       "version": "15.1.22",
       "bundle": "build/esm/index.js",

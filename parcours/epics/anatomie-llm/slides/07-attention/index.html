@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Chaque token interroge son passé. Un parcours interactif Playlab42.">
+  <title>Chaque token interroge son passé. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="07-attention">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale" aria-current="page"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>10 / 22</span> À l’intérieur du Transformer</p>
+      <div class="hero-heading"><h1>Chaque token<br>interroge son passé.</h1><div class="hero-seal" aria-hidden="true"><span>10</span><i></i><i></i><i></i></div></div>
+      <p class="lead">Chaque ligne de la grille indique comment un token mélange les informations accessibles. Les positions futures sont masquées.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>Retrouvons le calcul pas à pas sous forme de grille. Une <strong>ligne</strong> est le token qui consulte ; une <strong>colonne</strong>, le token consulté. Une case donne le poids utilisé pour mélanger son V. Les projections Q et K fixent les scores, le masque interdit le futur, softmax donne les poids, puis la tête combine les V.</p>
+<p>Le <strong>masque causal</strong> interdit de regarder les positions futures. À l’entraînement, on peut calculer plusieurs prédictions en parallèle tout en respectant cette contrainte. À l’inférence autorégressive, les nouvelles positions arrivent successivement.</p>
+<p><strong>Pourquoi la diagonale est-elle autorisée ?</strong> La représentation de « chat » utilise déjà « chat » pour prédire le token <em>suivant</em>. Consulter sa propre position est donc permis. Chaque ligne a sa propre distribution totalisant 100 % ; les colonnes n’ont pas cette contrainte.</p>
+<p>La grille montre les véritables poids d’attention de Luciole. Changez de tête pour voir un autre mélange du même texte, puis de bloc pour voir une autre étape. Deux blocs sont successifs ; quatre têtes sont parallèles dans chacun. Une case intense n’est pas une explication exhaustive de la décision finale.</p>
+<details><summary>Facultatif · notation mathématique</summary><p>Attention(Q,K,V) = softmax(QKᵀ / √dₖ + masque) V. Le produit scalaire dépend des directions et des longueurs, pas seulement de l’angle. dₖ = 8 coordonnées par tête dans Luciole. Les scores futurs sont exclus avant softmax ; leurs poids sont nuls.</p></details><div class="formula" aria-label="Relation à retenir">ligne = token qui consulte · colonne = token consulté · × = futur interdit</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>L’attention est une opération de mélange pondéré, contrainte par le masque causal.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>« Causal » signifie ici que le futur est masqué. Une grande valeur d’attention ne prouve pas, à elle seule, qu’un token a causé la réponse finale.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>tête</dt><dd>Un des calculs d’attention effectués en parallèle dans un bloc. Dans Luciole, chaque tête possède ses matrices de projection pour Q, K et V.</dd></div><div><dt>attention</dt><dd>Opération qui mélange les informations des tokens en leur donnant des poids différents.</dd></div><div><dt>q/k/v</dt><dd>Query, Key, Value : requête, clé, valeur. Q et K déterminent les proportions du mélange ; V fournit les nombres à mélanger.</dd></div><div><dt>masque causal</dt><dd>Contrainte interdisant à une position de consulter les positions futures.</dd></div><div><dt>softmax</dt><dd>Transforme des scores quelconques en nombres positifs dont la somme vaut 1 : une distribution de probabilités.</dd></div><div><dt>poids d’attention</dt><dd>Coefficients calculés par softmax après les scores Q·K et le masque, pour mélanger les valeurs V. Une ligne totalise 1.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · La circulation</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Choisissez « le chat » puis la ligne « le » : « chat » reste dans le futur. Observez la dernière ligne, puis une autre tête et un autre bloc.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="tête">tête</dfn> · <dfn data-term="attention">attention</dfn> · <dfn data-term="q/k/v">q/k/v</dfn> · <dfn data-term="masque causal">masque causal</dfn> · <dfn data-term="softmax">softmax</dfn> · <dfn data-term="poids d’attention">poids d’attention</dfn></div>
+      <div id="experiment-root" data-experiment="attention"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Pourquoi les cases au-dessus de la diagonale sont-elles masquées ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Pour empêcher la fuite d’information depuis le futur. La cible ne doit pas être visible dans l’entrée utilisée pour la prédire.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Attention Is All You Need — Vaswani et al., 2017 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Accroche : le futur est fermé. Manipulation : ligne le puis dernière ligne. Transition : Q et K sont connus, comment ajouter l’ordre ?</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../06b-tetes/index.html" data-chapter="06b-tetes">← Une tête pas à pas</a>
+    <a href="../06-position/index.html" data-chapter="06-position"><span>CONTINUER</span> Position et RoPE →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

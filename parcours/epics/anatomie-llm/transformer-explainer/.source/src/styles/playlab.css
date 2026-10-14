@@ -1,0 +1,58 @@
+:root {
+	font-family: system-ui, -apple-system, sans-serif;
+	color: #23352f;
+	background: #f7f8f2;
+	font-size: 16px;
+	--playlab-accent: #31765d;
+}
+body { margin: 0; }
+button, a, [contenteditable], input { touch-action: manipulation; }
+button:focus-visible, a:focus-visible, input:focus-visible, [contenteditable]:focus-visible, [tabindex]:focus-visible {
+	outline: 3px solid #af672c !important;
+	outline-offset: 3px;
+}
+a { color: #256348; text-underline-offset: .2em; }
+.playlab-intro, .playlab-guide { max-width: 1200px; margin: auto; padding: 1.5rem 2rem; line-height: 1.65; }
+.playlab-intro p, .playlab-guide p { margin: .7rem 0; }
+.playlab-intro.loaded { padding: .75rem 1rem; }
+.playlab-intro.loaded .playlab-heading h1 { font-size: 1.4rem; margin-bottom: .25rem; }
+.playlab-heading { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; }
+.playlab-heading h1 { font: 2rem/1.2 Georgia, serif; margin: .4rem 0 1rem; }
+.playlab-eyebrow { color: #31765d; font: .72rem/1.4 monospace; letter-spacing: .1em; }
+.playlab-primary, .playlab-secondary {
+	padding: .8rem 1.2rem; min-height: 44px; border-radius: 8px; border: 1px solid #31765d; margin: .5rem .5rem .5rem 0;
+}
+.playlab-primary { background: #31765d; color: white; font-weight: 650; }
+.playlab-secondary { background: white; color: #23352f; }
+.playlab-primary:disabled { opacity: .6; cursor: progress; }
+.playlab-error { padding: 1rem; border: 1px solid #a33932; color: #842d28; background: #fff2ef; overflow-wrap: anywhere; }
+.playlab-workspace { overflow-x: auto; border-block: 1px solid #c8d8cb; background: white; }
+.playlab-workspace > .top-bar { min-width: 1300px; }
+.playlab-viz { min-width: 1300px; height: max(680px, 75vh); position: relative; }
+.playlab-intro[hidden] { display: none; }
+.playlab-view-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .5rem; padding: .25rem 1rem; }
+.playlab-view-controls .playlab-secondary { margin: 0; padding: .4rem .8rem; }
+.playlab-view-controls p { margin: 0; }
+.playlab-lab.focused { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+:root:has(.playlab-lab.focused), body:has(.playlab-lab.focused) { overflow: hidden; }
+body:has(.playlab-lab.focused) .playlab-guide { display: none; }
+.playlab-lab.focused .playlab-view-controls { flex: 0 0 auto; }
+.playlab-lab.focused .playlab-workspace { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.playlab-lab.focused .top-bar { flex: 0 0 auto; }
+.playlab-lab.focused .playlab-viz { flex: 1; min-height: 380px; height: auto; }
+.playlab-lab:fullscreen { background: #f7f8f2; overflow: auto; }
+:root[data-theme="dark"] .playlab-lab:fullscreen { background: #19251f; }
+.playlab-guide { border-top: 1px solid #c8d8cb; margin-top: 1.5rem; }
+.playlab-guide h2 { font: 1.6rem Georgia, serif; margin-bottom: 1rem; }
+.playlab-guide ol { list-style: decimal; padding-left: 1.5rem; }
+.playlab-guide li { margin: .65rem 0; }
+.playlab-skip { position: fixed; left: 1rem; top: -100px; z-index: 10000; background: white; padding: 1rem; }
+.playlab-skip:focus { top: 1rem; }
+:root[data-theme="dark"] { color: #e6ecdf; background: #19251f; }
+:root[data-theme="dark"] .playlab-intro a,
+:root[data-theme="dark"] .playlab-guide a,
+:root[data-theme="dark"] .playlab-eyebrow { color: #a6d5b2; }
+@media (max-width: 700px) {
+	.playlab-intro, .playlab-guide { padding: 1rem; }
+	.playlab-heading { display: block; }
+}

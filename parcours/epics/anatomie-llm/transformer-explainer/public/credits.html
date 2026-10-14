@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Provenance et licences · Transformer Explainer FR</title>
+<style>body{max-width:850px;margin:2rem auto;padding:1rem;font:17px/1.7 system-ui;background:#f7f8f2;color:#23352f}a{color:#256348}h1,h2{font-family:Georgia,serif}code{overflow-wrap:anywhere}</style></head>
+<body>
+<h1>Transformer Explainer · fork Playlab42</h1>
+<p><a href="index.html">← Retour au laboratoire GPT-2</a></p>
+<h2>Un vrai fork, pas une reproduction</h2>
+<p>Le code Svelte, les visualisations D3, les calculs de probabilités, l’inspection des douze blocs et les sorties intermédiaires ONNX proviennent de
+<a href="https://github.com/poloclub/transformer-explainer" rel="noreferrer">poloclub/transformer-explainer</a>,
+révision <code>bfe50afba10b9b560b84143ee1107d977defa74f</code> (6 juin 2026).
+Copyright © 2022 Polo Club of Data Science. Le fork conserve cette attribution et la
+<a href="licenses/TRANSFORMER-EXPLAINER-LICENSE.txt">licence MIT complète</a>.
+Créateurs crédités par l’amont : Aeree Cho, Grace C. Kim, Alexander Karpekov, Alec Helbling,
+Jay Wang, Seongmin Lee, Benjamin Hoover et Polo Chau (Georgia Institute of Technology).
+L’article CHI 2026 associe également Minsuk Kahng. La citation complète est conservée dans le README original.</p>
+<p>Adaptations Playlab42 : interface et guide en français, couleurs vert sauge et ocre, moteur WebAssembly local,
+consentement explicite avant téléchargement, contrôle SHA-256, erreurs et reprise visibles, suppression de Google Tag Manager,
+Google Analytics et des polices distantes. Les modèles de démonstration précalculés ne sont pas utilisés comme solution de repli.</p>
+<h2>Poids, tokenizer et moteur</h2>
+<p>GPT-2 small : 124 millions de paramètres, 12 blocs, 12 têtes, états cachés de dimension 768, vocabulaire de 50 257 tokens.
+L’export instrumenté ONNX de Polo Club est constitué de 63 fichiers, au total <strong>656 662 664 octets</strong> (656,7 Mo / 626,2 Mio).
+Ce sont les poids réels exportés par l’amont, pas un autre modèle fourni par une API. L’exporteur amont utilise
+<code>GPT2LMHeadModel.from_pretrained('gpt2')</code> pour reprendre les poids de GPT-2.
+Après consentement, le navigateur charge une copie statique sur ce site lorsqu’elle a été préparée ;
+sinon, il utilise <code>raw.githubusercontent.com</code>, à la révision ci-dessus.
+La source choisie est annoncée avant le clic. Aucun serveur de génération ni relais de modèle n’est requis.
+Les sommes SHA-256 sont consignées dans <a href="model-manifest.json">le manifeste</a>.</p>
+<p>Les poids GPT-2 sont distribués sous MIT selon la
+<a href="https://huggingface.co/openai-community/gpt2" rel="noreferrer">fiche du modèle d’origine</a>.
+La <a href="licenses/GPT2-LICENSE.txt">licence MIT modifiée d’OpenAI</a> est conservée : les textes créés vous appartiennent,
+mais ils doivent être utilisés de façon responsable et identifiés comme générés par GPT-2.
+GPT-2 est surtout anglophone ; il peut produire des textes biaisés, faux ou inappropriés.</p>
+<p>Le tokenizer local provient de <a href="https://huggingface.co/Xenova/gpt2" rel="noreferrer">Xenova/gpt2</a>,
+révision <code>bf2c7f02e0b826c60d03af341171bde20893da66</code>. Il reprend le vocabulaire GPT-2.
+ONNX Runtime Web 1.23.0 (Microsoft, MIT) et Transformers.js 2.17.2 (Hugging Face, Apache-2.0) sont intégrés localement.
+Les licences des dépendances sont livrées dans <a href="licenses/dependencies.txt">les notices tierces</a>.</p>
+<h2>Confidentialité, réseau et limites</h2>
+<p>Aucun prompt ni événement d’usage n’est envoyé. Les téléchargements des poids ne contiennent pas le prompt.
+Comme pour toute requête HTTP, l’hébergeur distant peut voir votre adresse IP et les métadonnées de connexion.
+Il n’y a ni script CDN automatique, ni télémétrie, ni compte nécessaire.
+Le navigateur peut conserver les poids en cache, mais aucun mode hors ligne n’est garanti.
+Le chargement nécessite une connexion et plusieurs Go de mémoire disponibles.
+HTTPS ou localhost est nécessaire pour vérifier les SHA-256. Un blocage réseau/CORS est une erreur, pas une réussite native.
+Le bouton Réessayer réutilise les morceaux vérifiés si le cache est autorisé.</p>
+<p>Les noms mathématiques standard (Q, K, V, logits, softmax, MLP, GELU) restent utilisés.
+Certains détails des fenêtres avancées de poids conservent des formulations anglaises de l’amont.
+La génération se fait un token à la fois, pour des prompts courts (25 mots, 48 tokens au maximum).</p>
+</body></html>
