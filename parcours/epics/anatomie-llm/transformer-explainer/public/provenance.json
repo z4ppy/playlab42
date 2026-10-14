@@ -1,0 +1,34 @@
+{
+  "fork": "Playlab42 Transformer Explainer FR — original-gpt2",
+  "upstream": {
+    "repository": "https://github.com/poloclub/transformer-explainer",
+    "revision": "bfe50afba10b9b560b84143ee1107d977defa74f",
+    "retrieved": "2026-10-12",
+    "license": "MIT",
+    "copyright": "2022 Polo Club of Data Science"
+  },
+  "weights": {
+    "model": "GPT-2 small (124M)",
+    "export": "upstream static/model-v2, instrumented ONNX",
+    "revision": "bfe50afba10b9b560b84143ee1107d977defa74f",
+    "bytes": 656662664,
+    "manifest": "model-manifest.json",
+    "license": "MIT (GPT-2 model card); OpenAI Modified MIT notice preserved",
+    "notice": "licenses/GPT2-LICENSE.txt",
+    "download": "explicit user consent only; raw.githubusercontent.com"
+  },
+  "tokenizer": {
+    "repository": "https://huggingface.co/Xenova/gpt2",
+    "revision": "bf2c7f02e0b826c60d03af341171bde20893da66",
+    "hosting": "local"
+  },
+  "runtime": {
+    "onnxruntime-web": "1.23.0",
+    "transformers.js": "2.17.2",
+    "hosting": "local",
+    "dependencyNotices": "licenses/dependencies.txt"
+  },
+  "offlineGuaranteed": false,
+  "telemetry": false,
+  "promptsSent": false
+}

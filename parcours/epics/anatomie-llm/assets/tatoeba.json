@@ -1,0 +1,271 @@
+{
+  "meta": {
+    "name": "Tatoeba — échantillon des exports CC0",
+    "retrieved": "2026-10-12",
+    "license": "CC0-1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "documentation": "https://tatoeba.org/en/downloads",
+    "attribution": "Tatoeba et ses contributeurs ; identifiants et liens conservés pour chaque phrase.",
+    "selection": "40 phrases choisies et relues pour leur brièveté et leur usage pédagogique : 16 françaises, 16 anglaises, 8 espagnoles. Non représentatif, non aligné pour la traduction, entièrement utilisé pour apprendre.",
+    "changes": "Textes originaux conservés ici. Le tokenizer applique ensuite NFC et minuscules ; aucun découpage en paires de traduction.",
+    "sources": [
+      {
+        "language": "fra",
+        "url": "https://downloads.tatoeba.org/exports/per_language/fra/fra_sentences_CC0.tsv.bz2",
+        "sha256": "cf4509f2f3fd542222be2cf085d0d814ce3f9405263c5746bcc965d7e83dfd08"
+      },
+      {
+        "language": "eng",
+        "url": "https://downloads.tatoeba.org/exports/per_language/eng/eng_sentences_CC0.tsv.bz2",
+        "sha256": "06f2006beb90441a0891e4df865084fe812afd35b23e31f9364a5fd7809b47af"
+      },
+      {
+        "language": "spa",
+        "url": "https://downloads.tatoeba.org/exports/per_language/spa/spa_sentences_CC0.tsv.bz2",
+        "sha256": "e8cecab4e084fa4d9843f66c1dab90c5747057e0bc63a758c406235297b636c7"
+      }
+    ]
+  },
+  "sentences": [
+    {
+      "id": 331708,
+      "language": "fra",
+      "text": "Je rajoute une phrase d'exemple.",
+      "url": "https://tatoeba.org/en/sentences/show/331708"
+    },
+    {
+      "id": 333372,
+      "language": "fra",
+      "text": "Je fais un autre test.",
+      "url": "https://tatoeba.org/en/sentences/show/333372"
+    },
+    {
+      "id": 333440,
+      "language": "fra",
+      "text": "L'homme que tu as vu hier est mon oncle.",
+      "url": "https://tatoeba.org/en/sentences/show/333440"
+    },
+    {
+      "id": 333444,
+      "language": "fra",
+      "text": "C'est l'aide dont nous avons besoin.",
+      "url": "https://tatoeba.org/en/sentences/show/333444"
+    },
+    {
+      "id": 333644,
+      "language": "fra",
+      "text": "Je vais plus souvent à Bruxelles qu'à Paris.",
+      "url": "https://tatoeba.org/en/sentences/show/333644"
+    },
+    {
+      "id": 333865,
+      "language": "fra",
+      "text": "Appelle-moi dès que tu l'auras rencontré !",
+      "url": "https://tatoeba.org/en/sentences/show/333865"
+    },
+    {
+      "id": 337964,
+      "language": "fra",
+      "text": "J'ai besoin de neuf heures de sommeil.",
+      "url": "https://tatoeba.org/en/sentences/show/337964"
+    },
+    {
+      "id": 337966,
+      "language": "fra",
+      "text": "Tu dors vraiment beaucoup !",
+      "url": "https://tatoeba.org/en/sentences/show/337966"
+    },
+    {
+      "id": 346872,
+      "language": "fra",
+      "text": "J'ai un peu de temps, mais toujours pas beaucoup...",
+      "url": "https://tatoeba.org/en/sentences/show/346872"
+    },
+    {
+      "id": 373572,
+      "language": "fra",
+      "text": "Avez-vous une carte de fidélité ?",
+      "url": "https://tatoeba.org/en/sentences/show/373572"
+    },
+    {
+      "id": 387265,
+      "language": "fra",
+      "text": "Je n'ai plus que du beurre dans mon frigo.",
+      "url": "https://tatoeba.org/en/sentences/show/387265"
+    },
+    {
+      "id": 387279,
+      "language": "fra",
+      "text": "Tu t'en sors ? Je peux t'aider si tu veux.",
+      "url": "https://tatoeba.org/en/sentences/show/387279"
+    },
+    {
+      "id": 7061795,
+      "language": "fra",
+      "text": "Attention ! Les portes vont se fermer !",
+      "url": "https://tatoeba.org/en/sentences/show/7061795"
+    },
+    {
+      "id": 7104385,
+      "language": "fra",
+      "text": "Je partirai la semaine prochaine !",
+      "url": "https://tatoeba.org/en/sentences/show/7104385"
+    },
+    {
+      "id": 7108211,
+      "language": "fra",
+      "text": "Nous vivons dans un monde magnifique.",
+      "url": "https://tatoeba.org/en/sentences/show/7108211"
+    },
+    {
+      "id": 7108265,
+      "language": "fra",
+      "text": "Nous vivons une belle époque.",
+      "url": "https://tatoeba.org/en/sentences/show/7108265"
+    },
+    {
+      "id": 331259,
+      "language": "eng",
+      "text": "Most people think computers will never be able to think.",
+      "url": "https://tatoeba.org/en/sentences/show/331259"
+    },
+    {
+      "id": 332331,
+      "language": "eng",
+      "text": "It is more time-efficient to do several tasks sequentially than attempt to do them simultaneously.",
+      "url": "https://tatoeba.org/en/sentences/show/332331"
+    },
+    {
+      "id": 334553,
+      "language": "eng",
+      "text": "I should stop procrastinating.",
+      "url": "https://tatoeba.org/en/sentences/show/334553"
+    },
+    {
+      "id": 337215,
+      "language": "eng",
+      "text": "How can video games inspire us to make better applications for e-learning?",
+      "url": "https://tatoeba.org/en/sentences/show/337215"
+    },
+    {
+      "id": 384016,
+      "language": "eng",
+      "text": "No, I'm not afraid of ghosts.",
+      "url": "https://tatoeba.org/en/sentences/show/384016"
+    },
+    {
+      "id": 403860,
+      "language": "eng",
+      "text": "I'm not good at multitasking.",
+      "url": "https://tatoeba.org/en/sentences/show/403860"
+    },
+    {
+      "id": 482832,
+      "language": "eng",
+      "text": "The Great Dane is a breed of domestic dog known for its giant size.",
+      "url": "https://tatoeba.org/en/sentences/show/482832"
+    },
+    {
+      "id": 515726,
+      "language": "eng",
+      "text": "I don't speak Catalan.",
+      "url": "https://tatoeba.org/en/sentences/show/515726"
+    },
+    {
+      "id": 618394,
+      "language": "eng",
+      "text": "No words can express how amazing you are.",
+      "url": "https://tatoeba.org/en/sentences/show/618394"
+    },
+    {
+      "id": 618396,
+      "language": "eng",
+      "text": "It's rare to meet nice people like you.",
+      "url": "https://tatoeba.org/en/sentences/show/618396"
+    },
+    {
+      "id": 761916,
+      "language": "eng",
+      "text": "Tatoeba: Because a language is more than the sum of its words.",
+      "url": "https://tatoeba.org/en/sentences/show/761916"
+    },
+    {
+      "id": 763114,
+      "language": "eng",
+      "text": "Would you like to become a trusted user?",
+      "url": "https://tatoeba.org/en/sentences/show/763114"
+    },
+    {
+      "id": 764407,
+      "language": "eng",
+      "text": "Find multilingual sentence equivalents at Tatoeba.org.",
+      "url": "https://tatoeba.org/en/sentences/show/764407"
+    },
+    {
+      "id": 1565645,
+      "language": "eng",
+      "text": "The Great Jerboa is a species of rodent.",
+      "url": "https://tatoeba.org/en/sentences/show/1565645"
+    },
+    {
+      "id": 1565647,
+      "language": "eng",
+      "text": "Jerboas look like kangaroos due to having many similarities such as long hind legs, very short forelegs, and long tails.",
+      "url": "https://tatoeba.org/en/sentences/show/1565647"
+    },
+    {
+      "id": 1566978,
+      "language": "eng",
+      "text": "I don't speak Turkish.",
+      "url": "https://tatoeba.org/en/sentences/show/1566978"
+    },
+    {
+      "id": 504299,
+      "language": "spa",
+      "text": "Yo ya me sé las tablas de multiplicar.",
+      "url": "https://tatoeba.org/en/sentences/show/504299"
+    },
+    {
+      "id": 7104310,
+      "language": "spa",
+      "text": "El agua viva es un agua que fluye como la de un río.",
+      "url": "https://tatoeba.org/en/sentences/show/7104310"
+    },
+    {
+      "id": 7104352,
+      "language": "spa",
+      "text": "Estos tonos son azulados.",
+      "url": "https://tatoeba.org/en/sentences/show/7104352"
+    },
+    {
+      "id": 7104382,
+      "language": "spa",
+      "text": "¡Me marcharé la semana que viene!",
+      "url": "https://tatoeba.org/en/sentences/show/7104382"
+    },
+    {
+      "id": 7104384,
+      "language": "spa",
+      "text": "¡Me iré la próxima semana!",
+      "url": "https://tatoeba.org/en/sentences/show/7104384"
+    },
+    {
+      "id": 7105304,
+      "language": "spa",
+      "text": "No se puede vivir sin dormir.",
+      "url": "https://tatoeba.org/en/sentences/show/7105304"
+    },
+    {
+      "id": 8203016,
+      "language": "spa",
+      "text": "Escríbemelo en una oración.",
+      "url": "https://tatoeba.org/en/sentences/show/8203016"
+    },
+    {
+      "id": 10552878,
+      "language": "spa",
+      "text": "¡Son todos iguales!",
+      "url": "https://tatoeba.org/en/sentences/show/10552878"
+    }
+  ]
+}

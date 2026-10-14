@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- Produit par scripts/generate-llm-anatomy.js ; source éditoriale : _shared/chapters.js. -->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anatomie d’un LLM : Une prédiction se dessine. Un parcours interactif Playlab42.">
+  <title>Une prédiction se dessine. — Anatomie d’un LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/course.css">
+  <link rel="stylesheet" href="../../_shared/novice-experiments.css">
+  <link rel="stylesheet" href="../../_shared/experience-selection.css">
+  <script type="module" src="../../_shared/course.js"></script>
+</head>
+<body data-chapter="09-logit-lens">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="masthead">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token"><span class="brand-mark" aria-hidden="true">◎</span> ANATOMIE <span class="brand-light">D’UN LLM</span></a>
+    <div class="masthead-actions"><span class="edition">PLAYLAB42 · CARNET 01</span><button type="button" id="theme-toggle" aria-label="Changer de thème">◐ <span>Thème</span></button></div>
+  </header>
+  <nav class="chapter-rail" aria-label="Étapes du parcours">
+    <a href="../01-un-token/index.html" data-chapter="01-un-token" aria-label="1. Suivez ce token"><span>01</span></a><a href="../01b-luciole/index.html" data-chapter="01b-luciole" aria-label="2. La fiche de Luciole"><span>02</span></a><a href="../02-tokenisation/index.html" data-chapter="02-tokenisation" aria-label="3. La tokenisation"><span>03</span></a><a href="../02b-cas-reels/index.html" data-chapter="02b-cas-reels" aria-label="4. Cas réels de tokenisation"><span>04</span></a><a href="../03-prompt/index.html" data-chapter="03-prompt" aria-label="5. Le template caché"><span>05</span></a><a href="../03b-nombres/index.html" data-chapter="03b-nombres" aria-label="6. Lire vecteurs et matrices"><span>06</span></a><a href="../04-embeddings/index.html" data-chapter="04-embeddings" aria-label="7. Les embeddings"><span>07</span></a><a href="../05-transformer/index.html" data-chapter="05-transformer" aria-label="8. La carte du modèle"><span>08</span></a><a href="../06b-tetes/index.html" data-chapter="06b-tetes" aria-label="9. Une tête pas à pas"><span>09</span></a><a href="../07-attention/index.html" data-chapter="07-attention" aria-label="10. L’attention causale"><span>10</span></a><a href="../06-position/index.html" data-chapter="06-position" aria-label="11. Position et RoPE"><span>11</span></a><a href="../08-experts/index.html" data-chapter="08-experts" aria-label="12. MLP et MoE"><span>12</span></a><a href="../09b-scores/index.html" data-chapter="09b-scores" aria-label="13. Des scores aux probabilités"><span>13</span></a><a href="../09-logit-lens/index.html" data-chapter="09-logit-lens" aria-label="14. La logit lens" aria-current="page"><span>14</span></a><a href="../10-tirage/index.html" data-chapter="10-tirage" aria-label="15. Le tirage"><span>15</span></a><a href="../11-effort/index.html" data-chapter="11-effort" aria-label="16. L’effort de raisonnement"><span>16</span></a><a href="../12-memoire/index.html" data-chapter="12-memoire" aria-label="17. Le KV cache"><span>17</span></a><a href="../13-performance/index.html" data-chapter="13-performance" aria-label="18. Le coût de génération"><span>18</span></a><a href="../14-apprentissage/index.html" data-chapter="14-apprentissage" aria-label="19. L’apprentissage"><span>19</span></a><a href="../15-laboratoire/index.html" data-chapter="15-laboratoire" aria-label="20. Le laboratoire"><span>20</span></a><a href="../16-synthese/index.html" data-chapter="16-synthese" aria-label="21. La synthèse"><span>21</span></a><a href="../16b-transformer-explainer/index.html" data-chapter="16b-transformer-explainer" aria-label="22. Transformer Explainer · GPT-2"><span>22</span></a>
+  </nav>
+  <main id="contenu" class="course-page"><article class="slide">
+    <header class="hero">
+      <p class="eyebrow"><span>14 / 22</span> Du calcul à la réponse</p>
+      <div class="hero-heading"><h1>Une prédiction<br>se dessine.</h1><div class="hero-seal" aria-hidden="true"><span>14</span><i></i><i></i><i></i></div></div>
+      <p class="lead">Peut-on regarder la sortie avant la sortie ? Oui, à condition de savoir ce que l’on mesure.</p>
+    </header>
+    <nav class="lesson-navigation" aria-label="Parcours de cette page"><a href="#comprendre">1 · Comprendre</a><a href="#experience-title">2 · Expérimenter</a><a href="#defi">3 · Vérifier</a></nav>
+    <div class="editorial-grid">
+      <section class="explanation" aria-labelledby="comprendre"><p class="eyebrow">1 · AVANT DE MANIPULER</p><h2 id="comprendre" tabindex="-1">Comprendre le mécanisme.</h2><p>À la fin du modèle, une transformation convertit la représentation du dernier token en scores pour les tokens suivants possibles : c’est la <strong>projection de sortie</strong>. La <dfn>logit lens</dfn> réutilise cette transformation plus tôt, sur les représentations intermédiaires. Elle permet de comparer les candidats visibles au fil des couches.</p>
+<p>La projection donne des logits ; softmax permet de les lire comme une distribution sur le vocabulaire. Les couches intermédiaires n’ont pas été entraînées à produire directement la réponse avec cette projection. Une lecture changeante n’est donc pas un dysfonctionnement. La <em>tuned lens</em> apprend des transformations adaptées aux couches pour améliorer cette lecture ; elle n’est pas implémentée dans Luciole.</p>
+<p>Ici, la même tête de sortie et RMSNorm lisent l’état initial puis les deux blocs de Luciole. Les barres sont calculées à partir de ses vrais tenseurs. Le chemin n’est pas nécessairement monotone vers le bon token.</p>
+<details><summary>Facultatif · calcul de la sonde</summary><p>lecture intermédiaire = softmax(Norm(x_couche) W_sortie). Ce sont des lectures calculées, pas des décisions déjà prises par chaque couche.</p></details><div class="formula" aria-label="Relation à retenir">représentation intermédiaire → même projection de sortie → candidats visibles</div><a class="explanation-link" href="#experience-title">Passer à l’expérience ↓</a></section>
+      <aside class="margin-notes"><section class="takeaway"><p class="eyebrow">À RETENIR</p><p>Une sonde est un instrument de lecture, pas un accès direct aux intentions du modèle.</p></section><section class="caution"><p class="eyebrow">LES LIMITES</p><p>Avec seulement deux blocs et un corpus mémorisable, cette démonstration ne mesure pas une émergence générale du raisonnement.</p></section><details class="plain-definitions"><summary>Le vocabulaire de cette étape</summary><dl><div><dt>logit lens</dt><dd>Lecture des représentations intermédiaires à travers la projection de sortie.</dd></div><div><dt>logits</dt><dd>Scores non normalisés produits avant la conversion en probabilités.</dd></div><div><dt>projection</dt><dd>Conversion d’un vecteur par multiplication avec une matrice de paramètres appris.</dd></div><div><dt>rmsnorm</dt><dd>Opération qui remet les nombres d’un vecteur à une échelle comparable, sans les transformer en probabilités.</dd></div><div><dt>softmax</dt><dd>Transforme des scores quelconques en nombres positifs dont la somme vaut 1 : une distribution de probabilités.</dd></div></dl></details></aside>
+    </div>
+    <section class="experiment" aria-labelledby="experience-title">
+      <div class="experiment-heading"><div><p class="eyebrow">2 · EXPÉRIMENTER · Les représentations intermédiaires</p><h2 id="experience-title" tabindex="-1">À vous de manipuler.</h2></div><div class="experiment-options"><span class="live-badge">EXPLORATION GUIDÉE</span><a class="explanation-link" href="#comprendre">Relire l’explication ↑</a></div></div>
+      <p class="instruction">Gardez « le chat » et parcourez les profondeurs 0, 1 et 2 : plusieurs suites restent visibles. Comparez ensuite avec la capitale de la France, où un candidat domine.</p>
+      <div class="vocabulary-hints" aria-label="Vocabulaire de cette étape"><span>Un mot vous bloque ?</span> <dfn data-term="logit lens">logit lens</dfn> · <dfn data-term="logits">logits</dfn> · <dfn data-term="projection">projection</dfn> · <dfn data-term="rmsnorm">rmsnorm</dfn> · <dfn data-term="softmax">softmax</dfn></div>
+      <div id="experiment-root" data-experiment="lens"><p class="loading-note">Chargement de l’expérience locale…</p></div>
+      <noscript><p>JavaScript est nécessaire pour manipuler cette expérience. Les explications, schémas, extraits de code et corrections restent lisibles sans JavaScript.</p></noscript>
+    </section>
+    <section class="challenge" aria-labelledby="defi"><p class="eyebrow">3 · VÉRIFIER SA COMPRÉHENSION</p><h2 id="defi" tabindex="-1">Une mauvaise prédiction intermédiaire prouve-t-elle que la couche ne sert à rien ?</h2><div id="challenge-choices"></div><p id="challenge-feedback" role="status"></p><details><summary>Lire la correction</summary><p>Non, elle n’est pas nécessairement entraînée pour cette lecture directe. Une représentation peut être utile aux couches suivantes sans être directement lisible avec la tête finale.</p></details></section>
+    <section class="chapter-sources"><h2>Pour aller à la source</h2><a href="https://arxiv.org/abs/2303.08112" target="_blank" rel="noopener noreferrer">Eliciting Latent Predictions from Transformers with the Tuned Lens — Belrose et al., 2023 ↗</a></section>
+    <details class="presenter-notes"><summary>Notes pour une présentation animée</summary><p>Accroche : une radiographie imparfaite. Manipulation : couche 0, 1, 2. Transition : une distribution n’est pas encore un choix.</p></details>
+  </article></main>
+  <nav class="page-navigation" aria-label="Navigation entre les pages">
+    <a href="../09b-scores/index.html" data-chapter="09b-scores">← Des scores aux probabilités</a>
+    <a href="../10-tirage/index.html" data-chapter="10-tirage"><span>CONTINUER</span> Le tirage →</a>
+  </nav>
+  <footer class="course-footer"><span>Suivez ce token. Gardez votre esprit critique.</span><a href="../17-sources/index.html" data-chapter="17-sources">Sources</a><a href="../18-glossaire/index.html" data-chapter="18-glossaire">Glossaire</a><span>Playlab42 · 2026</span></footer>
+</body>
+</html>

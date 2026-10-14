@@ -3,6 +3,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { buildSite, isPublicSitePath } from './build-site.js';
 import { inventorySite } from './lib/artifact-inventory.js';
+import { createHash } from 'node:crypto';
+import { assertLocalGpt2Assets, gpt2PublicPath } from './lib/gpt2-assets.js';
 
 describe('Packaging du site public', () => {
   let root;
@@ -10,6 +12,20 @@ describe('Packaging du site public', () => {
     const parts = path.split('/');
     mkdirSync(join(root, ...parts.slice(0, -1)), { recursive: true });
     writeFileSync(join(root, path), content);
+  };
+  const putModel = () => {
+    const chunks = ['premier fragment', 'second fragment'].map((text, index) => {
+      const bytes = Buffer.from(text);
+      const file = `gpt2.onnx.part${index}`;
+      put(`${gpt2PublicPath}/model-v2/${file}`, bytes);
+      return { file, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') };
+    });
+    const upstream = { revision: 'a'.repeat(40), source: 'https://example.test/model-v2',
+      bytes: chunks.reduce((sum, chunk) => sum + chunk.bytes, 0), chunks };
+    put(`${gpt2PublicPath}/model-manifest.json`, JSON.stringify(upstream));
+    put(`${gpt2PublicPath}/model-local-manifest.json`, JSON.stringify({
+      ...upstream, source: './model-v2', upstreamSource: upstream.source,
+    }));
   };
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'playlab-site-'));
@@ -51,6 +67,55 @@ describe('Packaging du site public', () => {
     expect(existsSync(join(output, 'obsolete.html'))).toBe(false);
     expect(existsSync(join(root, 'index.html'))).toBe(true);
   });
+
+  test('publier le laboratoire GPT-2 sans sa chaîne de fabrication isolée', () => {
+    const laboratory = 'parcours/epics/anatomie-llm/transformer-explainer';
+    for (const name of [
+      'public/index.html', 'public/assets/model-runtime.wasm', 'public/model-manifest.json',
+      'README.md', 'LICENSE',
+      '.source/src/main.js', '.source/package-lock.json', '.source/node_modules/compiler/index.js',
+    ]) {put(`${laboratory}/${name}`);}
+    putModel();
+    const output = buildSite({ root, commit: null });
+    for (const name of ['public/index.html', 'public/assets/model-runtime.wasm', 'public/model-manifest.json', 'README.md', 'LICENSE']) {
+      expect(existsSync(join(output, laboratory, name))).toBe(true);
+    }
+    expect(existsSync(join(output, laboratory, '.source'))).toBe(false);
+    expect(() => assertLocalGpt2Assets(output)).not.toThrow();
+    expect(readFileSync(join(output, gpt2PublicPath, 'model-v2/gpt2.onnx.part1'), 'utf8')).toBe('second fragment');
+  });
+
+  test.each(['model-local-manifest.json', 'model-v2/gpt2.onnx.part1'])(
+    'refuser les poids incomplets (%s) avant de remplacer le site précédent', file => {
+      putModel();
+      const output = buildSite({ root, commit: null });
+      const before = inventorySite(output);
+      rmSync(join(root, gpt2PublicPath, file));
+      expect(() => buildSite({ root, commit: null })).toThrow(/GPT-2 local incomplet/);
+      expect(inventorySite(output)).toEqual(before);
+    },
+  );
+
+  test('refuser une corruption de même taille dans les sources et dans le paquet', () => {
+    putModel();
+    const output = buildSite({ root, commit: null });
+    const file = `${gpt2PublicPath}/model-v2/gpt2.onnx.part0`;
+    put(file, 'X'.repeat(Buffer.byteLength('premier fragment')));
+    expect(() => buildSite({ root, commit: null })).toThrow(/Intégrité incorrecte/);
+    writeFileSync(join(output, file), 'X'.repeat(Buffer.byteLength('premier fragment')));
+    expect(() => assertLocalGpt2Assets(output)).toThrow(/Intégrité incorrecte/);
+  });
+
+  test.each(['source', 'revision', 'bytes', 'chunks', 'upstreamSource'])(
+    'refuser un manifeste local divergent : %s', field => {
+      putModel();
+      const file = `${gpt2PublicPath}/model-local-manifest.json`;
+      const manifest = JSON.parse(readFileSync(join(root, file), 'utf8'));
+      manifest[field] = field === 'source' ? 'https://example.test/model-v2' : null;
+      put(file, JSON.stringify(manifest));
+      expect(() => buildSite({ root, commit: null })).toThrow(/manifeste local/);
+    },
+  );
 
   test('conserver les octets publics, fichiers facultatifs et identité sur deux fabrications', () => {
     for (const name of ['favicon.ico', 'favicon.svg', 'CNAME', 'CHANGELOG.md']) {put(name, `contenu ${name}`);}

@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { getRootDir, readJSONSync } from './lib/build-utils.js';
 import { inventorySite } from './lib/artifact-inventory.js';
 import { referencedBookmarkImages } from './build-site.js';
+import { assertLocalGpt2Assets } from './lib/gpt2-assets.js';
 
 function hasValidManifestStructure(manifest) {
   return manifest.formatVersion === 1 && Array.isArray(manifest.files) && manifest.files.length > 0;
@@ -44,6 +45,7 @@ export function verifySite(site, expectedCommit = null) {
     throw new Error('Intégrité du site invalide : fichiers modifiés, absents, supplémentaires ou inventaire non canonique.');
   }
   referencedBookmarkImages(site);
+  assertLocalGpt2Assets(site);
   return { version: manifest.version, commit: manifest.commit, checked: actual.length };
 }
 
