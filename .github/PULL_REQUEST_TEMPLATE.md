@@ -22,6 +22,7 @@
 - [ ] Le contenu est responsive (mobile + desktop)
 - [ ] Les commentaires sont en français
 - [ ] Change OpenSpec lié, ou absence justifiée selon le périmètre
+- [ ] `author` renseigné avec le vrai nom de la personne (ni « Playlab42 », ni « AI Assistant », ni « Anonyme »)
 - [ ] Résultats des contrôles pertinents indiqués, validations non exécutées signalées
 
 ### Pour un Tool

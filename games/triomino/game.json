@@ -8,7 +8,7 @@
   },
   "type": "turn-based",
   "tags": ["strategy", "classic", "family", "tiles", "1-4-players"],
-  "author": "Playlab42",
+  "author": "hjehanno",
   "icon": "🔺",
   "version": "1.0.0",
   "language": "typescript",

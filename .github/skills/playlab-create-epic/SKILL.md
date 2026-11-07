@@ -27,7 +27,9 @@ Partir de `templates/epic/` avec le générateur documenté dans
 
 1. Créer `parcours/epics/<id>/epic.json`. Utiliser les champs actuels :
    `id`, `title`, `description`, `hierarchy`, `tags`, `metadata`, `content`.
-   Renseigner auteur et date sans inventer l'identité de l'utilisateur.
+   Renseigner `metadata.author` (affiché sur la carte du parcours) avec le nom
+   de la personne qui l'écrit (`git config user.name` ou demande explicite), et
+   la date, sans inventer son identité ni utiliser « Playlab42 » ou « Anonyme ».
 2. Ordonner les feuilles de `content` par ids de slides ; les sections ont leur
    propre `content`. Les ids doivent résoudre vers les dossiers réels.
    Ne pas remplacer cette structure par une liste de chemins inventée.

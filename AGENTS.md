@@ -128,6 +128,7 @@ applicable) et une décision explicite ; ne jamais archiver pour simuler l'achè
 - **Nommage** : camelCase (variables), PascalCase (types), kebab-case (fichiers)
 - **Simplicité** : Préférer solutions simples, éviter over-engineering
 - **Isomorphisme** : Les moteurs de jeux sont compatibles navigateur et Node, sans DOM, réseau ou système de fichiers ; aucun serveur de jeu n'est déployé aujourd'hui
+- **Auteur** : Tout jeu (`game.json`), outil (`tool.json`) et parcours (`epic.json`, `metadata.author`) renseigne `author` avec le nom de la personne qui l'a réalisé, affiché sur sa carte (« Par … »). Ne jamais mettre « Playlab42 », « AI Assistant » ou « Anonyme » : utiliser le `git config user.name` de la personne, ou le lui demander. Les co-auteurs s'ajoutent dans le même champ, séparés par des virgules
 - **Docker-first** : Tout dans le container, rien sur le host
 
 ## Stack technique

@@ -2,6 +2,7 @@
   "id": "local-data",
   "name": "Mes données locales",
   "description": "Sauvegarde et restauration explicites des préférences, scores et progressions Playlab42, sans serveur.",
+  "author": "Cyrille",
   "tags": ["utilitaire", "donnees", "confidentialite"],
   "icon": "💾",
   "version": "1.0.0"

@@ -468,6 +468,17 @@ main {
   line-height: 1.65;
 }
 
+.card-info .card-author[hidden] {
+  display: none;
+}
+
+.card-info .card-author {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-style: italic;
+  -webkit-line-clamp: 1;
+}
+
 .card-tags {
   display: flex;
   flex-wrap: wrap;
