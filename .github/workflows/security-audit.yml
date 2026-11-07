@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload des résultats npm audit
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: npm-audit-results
           path: npm-audit-results.json
@@ -76,7 +76,7 @@ jobs:
 
       - name: Upload des résultats ESLint
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: eslint-security-results
           path: eslint-security-results.json
@@ -108,7 +108,7 @@ jobs:
 
       - name: Upload du rapport GitLeaks expurgé
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: gitleaks-results
           path: gitleaks-results.json
@@ -171,7 +171,7 @@ jobs:
           no-fail: true
 
       - name: Upload des résultats Hadolint vers Security tab
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4
         if: always()
         with:
           sarif_file: hadolint-results.sarif
@@ -179,7 +179,7 @@ jobs:
 
       - name: Archive Hadolint (consultatif, pas une certification de sécurité)
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: ${{ matrix.category }}
           path: hadolint-results.sarif
@@ -210,7 +210,7 @@ jobs:
         run: node scripts/build-security-report.js > security-report.md
 
       - name: Upload du rapport consolidé
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: security-report
           path: security-report.md

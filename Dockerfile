@@ -1,5 +1,5 @@
 # Playlab42 - Container de développement
-FROM node:26-alpine@sha256:143494b1da2945f061539253adc65e4f1569ddf07da2d384c022c791a9d90a4a
+FROM node:26-alpine@sha256:6f08a523443ddedf52941874c203475b0ad503e859ad70cb26ab8be9a517dbd5
 
 # Outils de base
 RUN apk add --no-cache \
