@@ -67,7 +67,7 @@ test('le rapport CI utilise le lockfile, une provenance et un artefact sans éch
   expect(archive.with.path).toContain('code-quality.json');
   expect(archive.with.path).toContain('code-quality.md');
   const manifest = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
-  expect(manifest.devDependencies.jscpd).toBe('5.4.0');
+  expect(manifest.devDependencies.jscpd).toBe('5.4.2');
 });
 
 test.each([
