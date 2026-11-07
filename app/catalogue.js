@@ -9,7 +9,7 @@ import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
 import { cloneTemplate } from '../lib/dom.js';
 import {
-  appendThumbnailImage, matchesQuery, renderTagFilters, setDiscoveryCount, setDiscoveryMessage,
+  appendThumbnailImage, authorName, matchesQuery, renderAuthor, renderTagFilters, setDiscoveryCount, setDiscoveryMessage,
 } from '../lib/catalogue-ui.js';
 
 let catalogueError = null;
@@ -106,6 +106,7 @@ export function createCardElement(item, type) {
   // Info
   title.textContent = (item.icon ? `${item.icon} ` : '') + item.name;
   desc.textContent = item.description;
+  renderAuthor(fragment.querySelector('.card-author'), item);
 
   // Tags
   if (item.tags?.length) {
@@ -138,7 +139,7 @@ export function filterItems(items) {
       return false;
     }
     // Filtre par recherche
-    return matchesQuery(search, item.name, item.description, ...(item.tags || []));
+    return matchesQuery(search, item.name, item.description, authorName(item), ...(item.tags || []));
   });
 }
 

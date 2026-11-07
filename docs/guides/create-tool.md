@@ -109,7 +109,7 @@ Créez `tools/mon-outil.json` :
 | `name` | Oui | Nom affiché |
 | `description` | Oui | Description courte |
 | `tags` | Non | Tags pour filtrage |
-| `author` | Non | Auteur |
+| `author` | Recommandé | Nom de la personne qui a réalisé l'outil, affiché sur sa carte (« Par … ») |
 | `icon` | Non | Emoji pour la vignette |
 | `version` | Non | Version de l'outil |
 

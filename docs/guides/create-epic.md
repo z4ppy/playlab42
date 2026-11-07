@@ -85,7 +85,7 @@ mkdir -p parcours/epics/mon-epic/slides/01-intro
 | `description` | ✅ | Description courte (1-3 phrases) |
 | `hierarchy` | ✅ | Position dans la hiérarchie (`["playlab42"]` ou `["autres"]`) |
 | `tags` | ✅ | Tags pour le filtrage |
-| `metadata.author` | ✅ | Auteur de l'epic |
+| `metadata.author` | ✅ | Nom de la personne qui a écrit l'epic, affiché sur sa carte (« Par … ») |
 | `metadata.created` | ✅ | Date de création (ISO 8601) |
 | `metadata.updated` | | Date de dernière modification |
 | `metadata.duration` | | Durée estimée (`"15 min"`, `"2h"`) |

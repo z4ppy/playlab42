@@ -51,7 +51,9 @@ un moteur existant pour faire fonctionner un nouveau client.
 
 - Créer `game.json` avec l'id du dossier et les champs requis réels ; vérifier
   tous les chemins et les bots déclarés. Utiliser le format actuel, pas une
-  métadonnée inventée.
+  métadonnée inventée. Renseigner `author` avec le nom de la personne qui
+  réalise le jeu (`git config user.name` ou demande explicite) : il est affiché
+  sur la carte. Jamais « Playlab42 », « AI Assistant » ni « Anonyme ».
 - Ajouter `index.html` autonome et un client qui transmet les actions au moteur.
   Utiliser `playlab-ui` pour clavier, thèmes et primitives partagées.
 - Intégrer `GameKit` uniquement avec l'API lue dans les sources/guide.
