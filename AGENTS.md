@@ -428,4 +428,3 @@ git push -u origin feature/ma-feature
 ## Contexte utilisateur
 
 - Prénom : Cyrille
-- Organisation : Docaposte

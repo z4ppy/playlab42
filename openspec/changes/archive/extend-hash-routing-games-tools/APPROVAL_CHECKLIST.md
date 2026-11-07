@@ -299,4 +299,4 @@ Cette proposition est **complète et prête pour approbation par les stakeholder
 **Statut:** 🟡 Draft → 🟢 Ready for Approval (après ce checklist)  
 **Date:** 2025-01-14  
 **Auteur:** Claude  
-**Demandeur:** Cyrille (Docaposte)
+**Demandeur:** Cyrille

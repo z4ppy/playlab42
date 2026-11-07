@@ -884,5 +884,5 @@ les garanties automatisées et les améliorations restantes.
 
 ---
 
-*Document maintenu par l'équipe Docaposte*
+*Document maintenu par les contributeurs de Playlab42*
 *Dernière mise à jour : 2026-10-02*

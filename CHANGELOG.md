@@ -125,8 +125,8 @@ TypeScript optionnelle.
 - `escapeHtml()` centralisé dans `lib/dom.js`
 - Bookmarks : réorganisation des catégories, amélioration du fetch des
   métadonnées OpenGraph et du positionnement de la popup
-- Documentation : `AGENTS.md` agnostique remplace `CLAUDE.md`, organisation
-  renommée « Docaposte », badges Security Audit / License / Node.js au README
+- Documentation : `AGENTS.md` agnostique remplace `CLAUDE.md`, badges
+  Security Audit / License / Node.js au README
 - Image Docker : `node:25-alpine` → `node:26-alpine`
 - Mise à jour des dépendances de développement : ESLint 9 → 10, marked 17 → 18,
   Jest 30.5.2, `@types/node` 26, globals 17, Prettier 3.9.8
@@ -397,4 +397,4 @@ style: Formatage                     → (pas dans changelog)
 
 ---
 
-*Maintenu par l'équipe Docaposte*
+*Maintenu par les contributeurs de Playlab42*

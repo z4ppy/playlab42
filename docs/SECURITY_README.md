@@ -269,7 +269,6 @@ npm run lint
 
 **Créateur de l'audit** : Claude Code
 **Reviewer** : @z4ppy
-**Organisation** : Docaposte
 
 **Pour toute question** :
 1. Consulter `docs/SECURITY_SETUP.md`

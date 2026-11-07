@@ -244,7 +244,7 @@ Merci à toutes les personnes qui font vivre le projet : retrouvez-les parmi les
 
 ## Licence
 
-Playlab42 est un projet personnel de Cyrille ([@z4ppy](https://github.com/z4ppy)), partagé avec Docaposte et ouvert aux contributions. Il est distribué sous licence [**Apache 2.0**](LICENSE), une licence open source approuvée par l’OSI. Vous pouvez utiliser, modifier et redistribuer le projet, y compris à titre commercial, en conservant les mentions de copyright et la [notice](NOTICE), et en signalant vos modifications. La licence inclut une concession de brevets.
+Playlab42 est un projet personnel de Cyrille ([@z4ppy](https://github.com/z4ppy)), ouvert aux contributions. Il est distribué sous licence [**Apache 2.0**](LICENSE), une licence open source approuvée par l’OSI. Vous pouvez utiliser, modifier et redistribuer le projet, y compris à titre commercial, en conservant les mentions de copyright et la [notice](NOTICE), et en signalant vos modifications. La licence inclut une concession de brevets.
 
 Les composants tiers (dossier `vendor/`, tokenizers et modèles du parcours « Anatomie d’un LLM », etc.) restent soumis à leur propre licence, indiquée dans leur dossier.
 

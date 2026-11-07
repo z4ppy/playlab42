@@ -182,6 +182,6 @@ Ou: Commencer par [INDEX.md](./INDEX.md) pour un guide complet.
 
 **Status:** 🟡 Draft → 🟢 Ready for Approval  
 **Créé:** 2025-01-14 par Claude  
-**Demandé par:** Cyrille (Docaposte)
+**Demandé par:** Cyrille
 
 👉 **Commencez maintenant!**

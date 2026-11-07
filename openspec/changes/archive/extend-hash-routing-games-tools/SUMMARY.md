@@ -142,4 +142,4 @@ make test-watch # Watch mode
 
 Generated: 2025-01-14
 Author: Claude
-Requested by: Cyrille (Docaposte)
+Requested by: Cyrille
