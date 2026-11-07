@@ -1,0 +1,29 @@
+name: Proposer une idée
+description: Un nouvel outil, jeu, parcours ou une amélioration.
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: De quoi s'agit-il ?
+      options: [Nouvel outil, Nouveau jeu ou nouveau bot, Nouveau parcours, Amélioration du portail, Documentation, Autre]
+    validations:
+      required: true
+  - type: textarea
+    id: besoin
+    attributes:
+      label: Le besoin ou l'envie
+      description: Qu'est-ce que cela apporterait, et à qui (apprenants, formateurs, contributeurs) ?
+    validations:
+      required: true
+  - type: textarea
+    id: proposition
+    attributes:
+      label: Votre proposition
+      description: Une description, des exemples, des références. Les croquis sont bienvenus.
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: Je souhaite le réaliser moi-même (une Pull Request suivra).

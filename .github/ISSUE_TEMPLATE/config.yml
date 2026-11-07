@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Guide de contribution
+    url: https://github.com/z4ppy/playlab42/blob/main/CONTRIBUTING.md
+    about: Comment proposer un outil, un jeu, un parcours ou une correction.
+  - name: Signaler une faille de sécurité
+    url: https://github.com/z4ppy/playlab42/blob/main/SECURITY.md
+    about: Ne la décrivez pas dans une issue publique, suivez la procédure.

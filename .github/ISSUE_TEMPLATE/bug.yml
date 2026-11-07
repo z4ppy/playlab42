@@ -1,0 +1,47 @@
+name: Signaler un bug
+description: Quelque chose ne fonctionne pas comme prévu.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de signaler ce problème. S'il s'agit d'une faille de sécurité, **n'utilisez pas ce formulaire** : voir [SECURITY.md](https://github.com/z4ppy/playlab42/blob/main/SECURITY.md).
+  - type: dropdown
+    id: type
+    attributes:
+      label: Où se situe le problème ?
+      options: [Portail, Jeu, Outil, Parcours, Documentation, Build ou CI, Autre]
+    validations:
+      required: true
+  - type: input
+    id: contenu
+    attributes:
+      label: Contenu concerné
+      description: Nom du jeu, de l'outil ou du parcours, ou adresse de la page.
+  - type: textarea
+    id: description
+    attributes:
+      label: Ce qui se passe
+      description: Le comportement observé, et celui que vous attendiez.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Comment le reproduire
+      placeholder: |
+        1. Ouvrir…
+        2. Cliquer sur…
+        3. Constater…
+    validations:
+      required: true
+  - type: input
+    id: environnement
+    attributes:
+      label: Appareil et navigateur
+      description: Par exemple « iPhone 14, Safari » ou « Windows, Firefox 130 ». La taille d'écran compte pour les problèmes d'affichage.
+  - type: textarea
+    id: captures
+    attributes:
+      label: Captures d'écran ou messages d'erreur
+      description: Vous pouvez glisser des images directement dans ce champ.
