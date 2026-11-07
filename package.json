@@ -93,6 +93,17 @@
     },
     "js-yaml@3": {
       "argparse": "$argparse"
+    },
+    "glob": "^14.0.4",
+    "eslint": {
+      "minimatch": "^11.0.5"
+    },
+    "@eslint/config-array": {
+      "minimatch": "^11.0.5"
+    },
+    "test-exclude": {
+      "glob": "^14.0.4",
+      "minimatch": "^11.0.5"
     }
   }
 }
