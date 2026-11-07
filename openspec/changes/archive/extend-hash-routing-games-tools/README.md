@@ -167,7 +167,7 @@ Recipient: Opens directly to the game
 ## 📞 Contact
 
 - **Proposal Author:** Claude
-- **Requested by:** Cyrille (Docaposte)
+- **Requested by:** Cyrille
 - **Date:** 2025-01-14
 
 ---

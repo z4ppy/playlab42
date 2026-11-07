@@ -614,5 +614,5 @@ Mensuellement :
 
 ---
 
-*Document maintenu par l'équipe Docaposte*
+*Document maintenu par les contributeurs de Playlab42*
 *Dernière mise à jour : 2025-12-14*

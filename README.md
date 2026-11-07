@@ -9,15 +9,34 @@
 Un laboratoire pédagogique ouvert, où les parcours de formation<br/>
 rencontrent les mini-jeux, les outils et le développement assisté par IA.
 
-[**Explorer la plateforme →**](https://z4ppy.github.io/playlab42/) · [Contribuer](docs/guides/contributing.md) · [Documentation](#documentation)
+[**Explorer la plateforme →**](https://z4ppy.github.io/playlab42/) · [Démarrer en local](#démarrage-rapide) · [Contribuer](CONTRIBUTING.md) · [Documentation](#documentation)
 
 [![CI](https://github.com/z4ppy/playlab42/actions/workflows/ci.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/ci.yml)
 [![Deploy](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml)
 [![Security Audit](https://github.com/z4ppy/playlab42/actions/workflows/security-audit.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/security-audit.yml)
 [![Couverture](https://codecov.io/gh/z4ppy/playlab42/graph/badge.svg)](https://codecov.io/gh/z4ppy/playlab42)
-[![Licence : CC BY-NC-SA 4.0](https://img.shields.io/badge/CC_BY--NC--SA-4.0-64748b.svg)](LICENSE)
+[![Licence : Apache 2.0](https://img.shields.io/badge/licence-Apache_2.0-64748b.svg)](LICENSE)
+[![Dernier commit](https://img.shields.io/github/last-commit/z4ppy/playlab42)](https://github.com/z4ppy/playlab42/commits/main)
+[![Node.js ≥ 24](https://img.shields.io/badge/node-%E2%89%A5%2024-339933.svg)](package.json)
+[![PR bienvenues](https://img.shields.io/badge/PR-bienvenues-0891b2.svg)](CONTRIBUTING.md)
+[![Code de conduite](https://img.shields.io/badge/code_de_conduite-Contributor_Covenant-7c3aed.svg)](CODE_OF_CONDUCT.md)
 
 </div>
+
+<details>
+<summary><strong>Sommaire</strong></summary>
+
+- [Un terrain de jeu, un vrai projet](#un-terrain-de-jeu-un-vrai-projet)
+- [Points forts](#points-forts)
+- [Explorer](#explorer)
+- [Architecture](#architecture)
+- [Démarrage rapide](#démarrage-rapide)
+- [Contribuer](#contribuer)
+- [Documentation](#documentation)
+- [Communauté et support](#communauté-et-support)
+- [Licence](#licence)
+
+</details>
 
 ## Un terrain de jeu, un vrai projet
 
@@ -26,6 +45,15 @@ rencontrent les mini-jeux, les outils et le développement assisté par IA.
 Pendant une formation, on explore un concept, on l’expérimente, puis on crée quelque chose avec l’aide d’un agent IA. Un outil, un jeu, un parcours ou une amélioration de la documentation : chaque contribution peut devenir une ressource pour les sessions suivantes.
 
 Le code fait lui aussi partie du cours. Moteurs de jeux déterministes, tests automatisés, spécifications OpenSpec, instructions pour agents et CI/CD rendent les pratiques de développement visibles, pas seulement théoriques.
+
+## Points forts
+
+- **Zéro installation pour apprendre.** Tout s’ouvre dans le navigateur : pas de compte, pas de serveur, et vos préférences et scores restent dans votre navigateur.
+- **Des moteurs de jeux déterministes.** Mêmes règles dans le navigateur et dans Node, graines reproductibles, bots interchangeables : de quoi rejouer, tester et comparer.
+- **Accessible et mobile en ligne de mire.** Thèmes clair et sombre, navigation clavier, et un contrôle de l’usage sur écran étroit à chaque Pull Request.
+- **Un projet qui se prouve.** Tests, vérification de types, audits de sécurité et parcours navigateur tournent en CI, et les évolutions de comportement sont spécifiées avec OpenSpec.
+- **Fait pour être étendu.** Un manifest, un dossier, une Pull Request : votre outil, jeu ou parcours rejoint le catalogue.
+- **Prêt pour les agents IA.** [Instructions](AGENTS.md) et [skills de projet](docs/guides/project-skills.md) versionnés avec le code.
 
 ## Explorer
 
@@ -150,6 +178,10 @@ make serve
 3. Régénérez les catalogues, essayez le résultat dans le navigateur et lancez les contrôles adaptés : tests, lint et types.
 4. Ouvrez une Pull Request : la contribution est relue avant intégration et publication.
 
+Tout est résumé dans [CONTRIBUTING.md](CONTRIBUTING.md). Une question, un bug, une idée ? Les [modèles d’issues](https://github.com/z4ppy/playlab42/issues/new/choose) vous guident. Si vous ne savez pas par où commencer, une correction de documentation ou un test sur mobile est une excellente première contribution.
+
+Renseignez votre nom ou pseudo dans le champ `author` du manifest : il est affiché sur la carte de votre contribution.
+
 | Vous souhaitez… | Commencer ici |
 |-----------------|---------------|
 | Créer un outil | [Guide de création d’un outil](docs/guides/create-tool.md) |
@@ -158,6 +190,7 @@ make serve
 | Proposer une ressource | [Guide de contribution](docs/guides/contributing.md) |
 | Partir d’un gabarit | [Kit de contribution et galerie des composants](docs/guides/contribution-kit.md) |
 | Travailler avec un agent IA | [Instructions du projet](AGENTS.md) |
+| Connaître les règles de la communauté | [Code de conduite](CODE_OF_CONDUCT.md) |
 
 ### Se repérer dans le dépôt
 
@@ -196,9 +229,24 @@ playlab42/
 | Résoudre un problème local | [Dépannage](docs/TROUBLESHOOTING.md) |
 | Consulter l’évolution du projet | [Changelog](CHANGELOG.md) |
 
+## Communauté et support
+
+| Besoin | Où aller |
+|--------|----------|
+| Signaler un bug ou proposer une idée | [Issues](https://github.com/z4ppy/playlab42/issues/new/choose) |
+| Contribuer | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Signaler une faille de sécurité | [SECURITY.md](SECURITY.md), sans passer par une issue publique |
+| Signaler un comportement inacceptable | [Code de conduite](CODE_OF_CONDUCT.md) |
+| Résoudre un problème d’installation | [Dépannage](docs/TROUBLESHOOTING.md) |
+| Suivre les changements | [Changelog](CHANGELOG.md) |
+
+Merci à toutes les personnes qui font vivre le projet : retrouvez-les parmi les [contributeurs](https://github.com/z4ppy/playlab42/graphs/contributors).
+
 ## Licence
 
-Playlab42 est un projet collaboratif porté par **Docaposte**, distribué sous licence [**CC BY-NC-SA 4.0**](LICENSE) : attribution, usage non commercial et partage des adaptations sous la même licence.
+Playlab42 est un projet personnel de Cyrille ([@z4ppy](https://github.com/z4ppy)), ouvert aux contributions. Il est distribué sous licence [**Apache 2.0**](LICENSE), une licence open source approuvée par l’OSI. Vous pouvez utiliser, modifier et redistribuer le projet, y compris à titre commercial, en conservant les mentions de copyright et la [notice](NOTICE), et en signalant vos modifications. La licence inclut une concession de brevets.
+
+Les composants tiers (dossier `vendor/`, tokenizers et modèles du parcours « Anatomie d’un LLM », etc.) restent soumis à leur propre licence, indiquée dans leur dossier.
 
 ---
 

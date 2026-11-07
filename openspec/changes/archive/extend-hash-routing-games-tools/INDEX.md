@@ -220,4 +220,4 @@ T1-T5 completion → Validation & Merge
 
 Generated: 2025-01-14  
 Author: Claude  
-Requested by: Cyrille (Docaposte)
+Requested by: Cyrille
