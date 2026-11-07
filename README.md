@@ -15,7 +15,7 @@ rencontrent les mini-jeux, les outils et le développement assisté par IA.
 [![Deploy](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/deploy.yml)
 [![Security Audit](https://github.com/z4ppy/playlab42/actions/workflows/security-audit.yml/badge.svg)](https://github.com/z4ppy/playlab42/actions/workflows/security-audit.yml)
 [![Couverture](https://codecov.io/gh/z4ppy/playlab42/graph/badge.svg)](https://codecov.io/gh/z4ppy/playlab42)
-[![Licence : CC BY-NC-SA 4.0](https://img.shields.io/badge/CC_BY--NC--SA-4.0-64748b.svg)](LICENSE)
+[![Licence : Apache 2.0](https://img.shields.io/badge/licence-Apache_2.0-64748b.svg)](LICENSE)
 [![Dernier commit](https://img.shields.io/github/last-commit/z4ppy/playlab42)](https://github.com/z4ppy/playlab42/commits/main)
 [![Node.js ≥ 24](https://img.shields.io/badge/node-%E2%89%A5%2024-339933.svg)](package.json)
 [![PR bienvenues](https://img.shields.io/badge/PR-bienvenues-0891b2.svg)](CONTRIBUTING.md)
@@ -244,13 +244,9 @@ Merci à toutes les personnes qui font vivre le projet : retrouvez-les parmi les
 
 ## Licence
 
-Playlab42 est un projet collaboratif porté par **Docaposte**, distribué sous licence [**CC BY-NC-SA 4.0**](LICENSE) :
+Playlab42 est un projet collaboratif porté par **Docaposte**, distribué sous licence [**Apache 2.0**](LICENSE), une licence open source approuvée par l’OSI. Vous pouvez utiliser, modifier et redistribuer le projet, y compris à titre commercial, en conservant les mentions de copyright et la [notice](NOTICE), et en signalant vos modifications. La licence inclut une concession de brevets.
 
-- **Attribution** : citez le projet et ses auteurs, avec un lien vers la licence ;
-- **Usage non commercial** : l’usage commercial n’est pas autorisé sans accord ;
-- **Partage dans les mêmes conditions** : vos adaptations restent sous la même licence.
-
-Le code est lisible, réutilisable et modifiable dans ces limites. À cause de la clause non commerciale, il ne correspond pas à la définition « open source » de l’OSI.
+Les composants tiers (dossier `vendor/`, tokenizers et modèles du parcours « Anatomie d’un LLM », etc.) restent soumis à leur propre licence, indiquée dans leur dossier.
 
 ---
 

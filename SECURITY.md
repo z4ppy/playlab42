@@ -8,8 +8,9 @@ Playlab42 est un site statique publié en continu depuis la branche `main` ([ver
 
 **Merci de ne pas ouvrir d’issue publique pour une faille de sécurité.**
 
-1. Contactez les mainteneurs en message privé via leur profil GitHub (voir les [contributeurs](https://github.com/z4ppy/playlab42/graphs/contributors)), ou ouvrez une issue qui demande seulement un canal privé, **sans aucun détail technique**.
-2. Joignez, une fois le canal privé établi : une description, les étapes pour reproduire, l’impact estimé et, si possible, une piste de correction.
+1. Utilisez le [signalement privé de vulnérabilité GitHub](https://github.com/z4ppy/playlab42/security/advisories/new) (onglet *Security* → *Report a vulnerability*). Seuls les mainteneurs voient votre rapport.
+2. À défaut, écrivez à **z4ppy.bbc@gmail.com** en précisant « Playlab42 – sécurité » dans l’objet.
+3. Joignez : une description, les étapes pour reproduire, l’impact estimé et, si possible, une piste de correction.
 
 Vous recevrez un accusé de réception, puis des nouvelles de l’analyse. Le projet est maintenu par une petite équipe : comptez quelques jours ouvrés plutôt que quelques heures.
 

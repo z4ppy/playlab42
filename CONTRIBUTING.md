@@ -65,4 +65,4 @@ Les agents de code lisent [AGENTS.md](AGENTS.md) et les [skills de projet](docs/
 
 ## Licence des contributions
 
-Playlab42 est distribué sous licence [CC BY-NC-SA 4.0](LICENSE). En soumettant une contribution, vous acceptez qu’elle soit publiée sous cette même licence.
+Playlab42 est distribué sous licence [Apache 2.0](LICENSE). En soumettant une contribution, vous acceptez qu’elle soit publiée sous cette même licence (article 5 de la licence). N’ajoutez pas de code, d’image ou de texte dont vous n’avez pas les droits, et indiquez la licence de toute ressource tierce.

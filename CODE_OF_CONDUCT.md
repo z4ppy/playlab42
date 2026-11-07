@@ -34,7 +34,7 @@ Ce code s’applique dans tous les espaces du projet (dépôt, issues, Pull Requ
 
 ## Signalement et application
 
-Pour signaler un comportement inacceptable, contactez les mainteneurs en message privé via leur profil GitHub (voir les [contributeurs](https://github.com/z4ppy/playlab42/graphs/contributors)). Tous les signalements sont examinés avec sérieux et discrétion ; l’identité de la personne qui signale est protégée.
+Pour signaler un comportement inacceptable, écrivez à **z4ppy.bbc@gmail.com** (objet : « Playlab42 – code de conduite »), ou contactez un mainteneur en message privé via son profil GitHub. Tous les signalements sont examinés avec sérieux et discrétion ; l’identité de la personne qui signale est protégée.
 
 Les mainteneurs suivent ces étapes d’application, par ordre de gravité : 1) rappel privé à l’ordre, 2) avertissement formel, 3) exclusion temporaire, 4) exclusion définitive.
 
