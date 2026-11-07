@@ -24,6 +24,7 @@ jest.unstable_mockModule('../lib/dom.js', () => ({
           <div class="card-thumb"></div>
           <h3></h3>
           <p></p>
+          <p class="card-author" hidden></p>
           <div class="card-tags"></div>
         </div>
       `;
@@ -89,6 +90,15 @@ describe('catalogue: createCardElement with hash links', () => {
       const desc = fragment.querySelector('p');
 
       expect(desc.textContent).toBe('The classic morpion');
+    });
+
+    it('displays the author, or hides the line when unknown', () => {
+      const withAuthor = createCardElement({ ...mockGame, author: 'Cyrille' }, 'game');
+      expect(withAuthor.querySelector('.card-author').textContent).toBe('Par Cyrille');
+      expect(withAuthor.querySelector('.card-author').hidden).toBe(false);
+
+      const without = createCardElement({ ...mockGame, author: undefined }, 'tool');
+      expect(without.querySelector('.card-author').hidden).toBe(true);
     });
 
     it('renders tags', () => {
