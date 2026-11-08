@@ -185,6 +185,24 @@ describe('Packaging du site public', () => {
     expect(() => buildSite({ root, commit: null })).toThrow('Build préalable incomplet');
   });
 
+  test('ajouter aux pages des jeux une carte de partage aux URL absolues', () => {
+    put('data/catalogue.json', JSON.stringify({
+      games: [{ id: 'dames', name: 'Dames', description: 'Jeu de dames', path: 'games/dames/index.html' }],
+    }));
+    put('games/dames/index.html', '<html><head><title>Dames</title></head><body></body></html>');
+    put('games/dames/thumb.png');
+    const output = buildSite({ root, commit: null, siteUrl: 'https://exemple.test/lab' });
+    const page = readFileSync(join(output, 'games/dames/index.html'), 'utf8');
+    expect(page).toContain('<meta property="og:url" content="https://exemple.test/lab/games/dames/index.html">');
+    expect(page).toContain('<meta property="og:image" content="https://exemple.test/lab/games/dames/thumb.png">');
+    expect(readFileSync(join(root, 'games/dames/index.html'), 'utf8')).not.toContain('og:');
+  });
+
+  test('refuser une adresse publique non HTTPS avant de toucher au site', () => {
+    expect(() => buildSite({ root, commit: null, siteUrl: 'http://exemple.test/' })).toThrow('non HTTPS');
+    expect(existsSync(join(root, 'site'))).toBe(false);
+  });
+
   test('partager la politique de publication avec le lecteur documentaire', () => {
     expect(isPublicSitePath('docs/site/guides/architecture.html')).toBe(true);
     expect(isPublicSitePath('lib/types/game-engine.ts')).toBe(true);

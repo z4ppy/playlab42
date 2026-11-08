@@ -134,6 +134,13 @@ hors SBOM npm de fabrication. Voir [les garanties et la reprise](guides/artifact
 | README, conventions, licence et éventuel CNAME | Dockerfile, Makefile, package/lockfile de développement |
 | Manifeste hashé et SBOM CycloneDX de fabrication | Cache technique OG et snapshot source hors catalogue |
 
+Les pages des jeux et des outils reçoivent au packaging une **carte de partage**
+(Open Graph) tirée du catalogue : nom, description et vignette, ou l'image générale
+`assets/social-preview.jpg` à défaut. Le portail naviguant par hash, ses liens
+`#/games/…` affichent toujours la carte de l'accueil. Les URL des cartes sont
+absolues et utilisent `PLAYLAB_SITE_URL` (variable du dépôt, transmise au job build)
+ou, à défaut, `https://z4ppy.github.io/playlab42/`.
+
 Le lecteur de guides renvoie vers GitHub pour les fichiers réservés au dépôt.
 Les fichiers générés restent ignorés par Git, **y compris `site/`**. `.gitignore`
 ne constitue pas un filtre de publication ; c'est le script de packaging qui
