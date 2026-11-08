@@ -8,47 +8,37 @@
  * La grille et les commandes de lecture restent visibles ensemble, sans défilement.
  */
 
-/* === Couleurs des cellules (lues par le rendu canvas) === */
+/* === Couleurs des cellules (lues par le rendu canvas) ===
+ * Chaque couleur est écrite une seule fois, sous la forme
+ * « var(--ca-if-dark, sombre) var(--ca-if-light, clair) ». Les deux bascules
+ * valent « initial » (repli utilisé) ou vide (repli effacé) selon le thème ;
+ * elles sont posées sur :root, où les couleurs sont résolues, ce qui couvre
+ * [data-theme="light"] et la préférence système sans data-theme. */
 :root {
-  --ca-bg: #0a0f1c;
-  --ca-young: #fff2b3;
-  --ca-mid: #ff7a93;
-  --ca-old: #7b6cff;
-  --ca-trail: #2f7dd6;
-  --ca-grid: rgba(255, 255, 255, 0.09);
-  --ca-ghost: rgba(255, 242, 179, 0.55);
-  --ca-cursor: #ff8fa3;
-  --hud-bg: rgba(16, 24, 39, 0.78);
+  --ca-if-dark: initial;
+  --ca-if-light: ;
+  --ca-bg: var(--ca-if-dark, #0a0f1c) var(--ca-if-light, #ffffff);
+  --ca-young: var(--ca-if-dark, #fff2b3) var(--ca-if-light, #e0193f);
+  --ca-mid: var(--ca-if-dark, #ff7a93) var(--ca-if-light, #8b2fd6);
+  --ca-old: var(--ca-if-dark, #7b6cff) var(--ca-if-light, #0b6f80);
+  --ca-trail: var(--ca-if-dark, #2f7dd6) var(--ca-if-light, #f58fb0);
+  --ca-grid: var(--ca-if-dark, rgba(255, 255, 255, 0.09)) var(--ca-if-light, rgba(24, 35, 56, 0.1));
+  --ca-ghost: var(--ca-if-dark, rgba(255, 242, 179, 0.55)) var(--ca-if-light, rgba(180, 35, 73, 0.45));
+  --ca-cursor: var(--ca-if-dark, #ff8fa3) var(--ca-if-light, #b42349);
+  --hud-bg: var(--ca-if-dark, rgba(16, 24, 39, 0.78)) var(--ca-if-light, rgba(255, 255, 255, 0.86));
   /* #ef4444 n'atteint que 3,8:1 sur le fond des boutons sombres. */
-  --ca-danger: #fca5a5;
+  --ca-danger: var(--ca-if-dark, #fca5a5) var(--ca-if-light, var(--color-error));
 }
 
 [data-theme="light"] {
-  --ca-bg: #ffffff;
-  --ca-young: #e0193f;
-  --ca-mid: #8b2fd6;
-  --ca-old: #0b6f80;
-  --ca-trail: #f58fb0;
-  --ca-grid: rgba(24, 35, 56, 0.1);
-  --ca-ghost: rgba(180, 35, 73, 0.45);
-  --ca-cursor: #b42349;
-  --hud-bg: rgba(255, 255, 255, 0.86);
-  --ca-danger: var(--color-error);
+  --ca-if-dark: ;
+  --ca-if-light: initial;
 }
 
-/* Duplication voulue, comme lib/theme.css : préférence système sans data-theme. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --ca-bg: #ffffff;
-    --ca-young: #e0193f;
-    --ca-mid: #8b2fd6;
-    --ca-old: #0b6f80;
-    --ca-trail: #f58fb0;
-    --ca-grid: rgba(24, 35, 56, 0.1);
-    --ca-ghost: rgba(180, 35, 73, 0.45);
-    --ca-cursor: #b42349;
-    --hud-bg: rgba(255, 255, 255, 0.86);
-    --ca-danger: var(--color-error);
+    --ca-if-dark: ;
+    --ca-if-light: initial;
   }
 }
 
@@ -150,6 +140,18 @@ body {
   color: var(--color-text-inverse);
 }
 
+/* Socle commun des boutons à bordure (icônes, actions, motifs, commandes). */
+.icon-btn,
+.btn,
+.ctrl-btn,
+.pattern-btn {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
 .icon-btn {
   display: inline-flex;
   align-items: center;
@@ -157,13 +159,8 @@ body {
   width: 44px;
   height: 44px;
   flex: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-card);
-  color: var(--color-text);
   font-size: 1.25rem;
   line-height: 1;
-  cursor: pointer;
 }
 
 .icon-btn--small {
@@ -437,12 +434,7 @@ body {
   flex: 1 1 auto;
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-card);
-  color: var(--color-text);
   font-size: 0.9375rem;
-  cursor: pointer;
 }
 
 .btn--danger {
@@ -548,13 +540,8 @@ body {
   gap: 4px;
   min-height: 44px;
   padding: 6px 4px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-card);
-  color: var(--color-text);
   font-size: 0.8125rem;
   line-height: 1.2;
-  cursor: pointer;
 }
 
 .pattern-thumb {
@@ -597,11 +584,6 @@ body {
   min-width: 48px;
   min-height: 48px;
   padding: 2px 4px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-card);
-  color: var(--color-text);
-  cursor: pointer;
 }
 
 .ctrl-icon {
