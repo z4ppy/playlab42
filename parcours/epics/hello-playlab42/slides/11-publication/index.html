@@ -80,12 +80,12 @@
     <h2>Tester le résultat chez vous (Docker)</h2>
     <pre class="code-block"><code>make info          # nom d'instance, port, URL
 make up            # démarre le conteneur du worktree
-make npm CMD="run build:local"
+make npm CMD="run build:dev"
 make serve         # sert sur le port affiché par make info</code></pre>
     <p>
       Chaque worktree Git a son projet Docker et son port (plage 5200-5299, calculé depuis le nom du dossier) :
       plusieurs branches peuvent tourner en parallèle sans conflit. Pour reconstruire comme le fait le déploiement,
-      le mode local prépare aussi <code>site/</code>, mais omet l'enrichissement du snapshot.
+      <code>build:local</code> prépare aussi <code>site/</code>, mais omet l'enrichissement du snapshot ; il exige les poids GPT-2 (<code>make npm CMD="run prepare:gpt2"</code>).
     </p>
     <p class="guide-resource"><a href="../../../../../docs/site/guides/artifact-operations.html" target="_top">
       Lire le runbook : reproductibilité, inventaire, monitoring et reprise</a>.

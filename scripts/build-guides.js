@@ -161,7 +161,7 @@ const GROUPS = [
     title: 'Prendre ses repères', description: 'Comprendre le laboratoire avant de toucher au code.',
     guides: [
       ['guides/architecture.md', 'Lire l’architecture', 'Portail, outils, jeux et bibliothèques : une carte du projet.'],
-      ['GETTING_STARTED.md', 'Installer son environnement', 'Démarrer en local avec Docker, pas à pas.'],
+      ['GETTING_STARTED.md', 'Installer son environnement', 'Démarrer en local avec Node.js ou Docker, pas à pas.'],
       ['guides/contributing.md', 'Contribuer au projet', 'Du premier changement à une contribution vérifiée.'],
     ],
   },

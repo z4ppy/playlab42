@@ -6,10 +6,12 @@
   "scripts": {
     "prepare:gpt2": "node --use-env-proxy parcours/epics/anatomie-llm/transformer-explainer/.source/scripts/local-model.mjs --download",
     "test:gpt2": "cd parcours/epics/anatomie-llm/transformer-explainer/.source && node --test src/utils/*.test.js scripts/local-model.test.mjs scripts/integration-api.test.mjs",
+    "start": "npm run build:dev && npm run serve",
     "preserve": "npm run build:runtime && npm run build:guides",
     "serve": "npx serve . -p 5242 -C",
     "build": "npm run build:ts && npm run build:runtime && npm run build:catalogue && npm run build:parcours && npm run build:bookmarks && npm run build:guides && npm run build:site && npm run build:provenance",
     "build:local": "npm run build:ts && npm run build:runtime && npm run build:catalogue && npm run build:parcours && npm run build:bookmarks -- --skip-og && npm run build:guides && npm run build:site && npm run build:provenance",
+    "build:dev": "npm run build:ts && npm run build:catalogue && npm run build:parcours && npm run build:bookmarks -- --skip-og",
     "build:site": "node scripts/build-site.js",
     "check:deployment": "node scripts/check-deployment.js",
     "build:guides": "node scripts/build-guides.js",

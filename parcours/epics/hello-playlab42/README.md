@@ -100,6 +100,7 @@ Depuis ce worktree, dans Docker :
 
 ```bash
 make up
+make npm CMD="run prepare:gpt2"  # une fois : poids GPT-2 exigés par build:local
 make npm CMD="run build:local"
 make npm CMD="test -- --runInBand --runTestsByPath scripts/playlab-guide.test.js scripts/parcours-utils.test.js"
 make npm CMD="run test:e2e -- e2e/learning.spec.js e2e/playlab-guide.spec.js"

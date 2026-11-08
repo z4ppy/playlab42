@@ -1,243 +1,148 @@
-# Guide de Démarrage
+# Guide de démarrage
 
-Bienvenue sur **Playlab42** ! Ce guide vous accompagne dans la configuration de votre environnement de développement et vos premières contributions.
+Bienvenue sur **Playlab42** ! Ce guide vous accompagne dans la mise en place de votre environnement de développement et vos premières contributions.
+
+Pour simplement utiliser la plateforme, [la démo en ligne](https://z4ppy.github.io/playlab42/) suffit : rien à installer.
 
 ## Table des matières
 
-1. [Prérequis](#prérequis)
-2. [Installation](#installation)
-3. [Environnement de développement](#environnement-de-développement)
-4. [Premiers pas](#premiers-pas)
-5. [Workflow de contribution](#workflow-de-contribution)
-6. [Commandes utiles](#commandes-utiles)
-7. [Prochaines étapes](#prochaines-étapes)
+1. [Deux façons de travailler](#deux-façons-de-travailler)
+2. [Démarrage avec Node.js](#démarrage-avec-nodejs)
+3. [Démarrage avec Docker](#démarrage-avec-docker)
+4. [Au quotidien](#au-quotidien)
+5. [Éléments optionnels](#éléments-optionnels)
+6. [Premiers pas](#premiers-pas)
+7. [Workflow de contribution](#workflow-de-contribution)
+8. [Prochaines étapes](#prochaines-étapes)
 
-## Prérequis
+## Deux façons de travailler
 
-### Logiciels requis
+| | Node.js local | Docker |
+|---|---|---|
+| **Prérequis** | Git, Node.js 24 ou plus, environ 1 Go libre | Git, Docker avec Docker Compose, Make |
+| **Pour qui** | Découvrir le projet, contribution ponctuelle | Contribution régulière, environnement identique à la CI, plusieurs worktrees |
+| **Commandes** | `npm …` | `make …` et `make npm CMD="…"` |
 
-| Logiciel | Version minimum | Installation |
-|----------|-----------------|--------------|
-| **Git** | 2.30+ | [git-scm.com](https://git-scm.com/) |
-| **Docker** | 20.10+ | [docker.com/get-started](https://www.docker.com/get-started) |
-| **Docker Compose** | 2.0+ | Inclus avec Docker Desktop |
-| **Make** | 4.0+ | Préinstallé (macOS/Linux) ou [GnuWin32](http://gnuwin32.sourceforge.net/packages/make.htm) (Windows) |
-
-**Note importante** : Tout le développement se fait dans Docker. **Vous n'avez pas besoin de Node.js installé sur votre machine**.
+L’environnement de référence du projet reste **Docker-first** : la CI et les agents utilisent le conteneur (Node.js 26). La voie Node.js directe sert le même site et suffit pour découvrir le projet ou proposer une première contribution.
 
 ### Vérifier les installations
 
 ```bash
-# Vérifier Git
-git --version
-# → git version 2.30.0 ou supérieur
-
-# Vérifier Docker
-docker --version
-# → Docker version 20.10.0 ou supérieur
-
-# Vérifier Docker Compose
-docker compose version
-# → Docker Compose version 2.0.0 ou supérieur
-
-# Vérifier Make
-make --version
-# → GNU Make 4.0 ou supérieur
+git --version             # Git 2.30 ou plus
+node --version            # voie Node.js : v24 ou plus
+docker compose version    # voie Docker : Docker Compose 2 ou plus
+make --version            # voie Docker : GNU Make 4 ou plus
 ```
 
-### Compte GitHub
+Pour proposer vos changements, il vous faut aussi un compte [GitHub](https://github.com/) ; une [clé SSH](https://docs.github.com/fr/authentication/connecting-to-github-with-ssh) est recommandée.
 
-- Créer un compte sur [github.com](https://github.com/) si vous n'en avez pas
-- Configurer une clé SSH (recommandé) : [docs.github.com/authentication](https://docs.github.com/fr/authentication/connecting-to-github-with-ssh)
-
-## Installation
-
-### 1. Cloner le dépôt
+## Démarrage avec Node.js
 
 ```bash
-# Avec SSH (recommandé)
-git clone git@github.com:z4ppy/playlab42.git
+git clone https://github.com/z4ppy/playlab42.git && cd playlab42
+npm ci
+npm start        # puis ouvrir http://localhost:5242
+```
 
-# Ou avec HTTPS
+- `npm ci` installe les dépendances (environ 1 min 30 ; npm peut signaler des scripts d’installation non approuvés, sans effet sur le build).
+- `npm start` lance `build:dev` (TypeScript, catalogues, parcours, liens sans aperçus réseau), puis `serve`, précédé automatiquement de `build:runtime` et `build:guides`. Comptez de 20 secondes à 1 min 30.
+- Le serveur écoute sur le port **5242**. Arrêtez-le avec Ctrl+C. Pour relancer sans reconstruire : `npm run serve`.
+
+Ni Docker ni réseau ne sont nécessaires après `npm ci`, sauf pour les [éléments optionnels](#éléments-optionnels).
+
+## Démarrage avec Docker
+
+Les dépendances et les commandes Node.js tournent dans le conteneur ; rien n’est installé sur votre machine en dehors de Docker.
+
+```bash
 git clone https://github.com/z4ppy/playlab42.git
-
-# Se positionner dans le projet
 cd playlab42
-```
 
-### 2. Initialiser l'environnement Docker
-
-```bash
-# Une seule commande pour tout configurer
+# Construire l’image, démarrer le conteneur et installer les dépendances
 make init
-```
 
-**Ce que fait `make init`** :
-1. Build l'image Docker (Node.js 25 Alpine)
-2. Démarre le container
-3. Installe les dépendances npm (`npm install`)
-4. Affiche le statut
+# Préparer les contenus, catalogues et guides sans enrichissement réseau
+make npm CMD="run build:dev"
 
-**Durée** : 2-5 minutes (selon connexion internet)
-
-### 3. Vérifier l'installation
-
-```bash
-# Vérifier que le container tourne
-make status
-
-# Sortie attendue :
-# ✅ Container 'playlab42-dev' is running
-```
-
-**Problèmes ?** Voir [Troubleshooting](#troubleshooting) en fin de document.
-
-## Environnement de développement
-
-### Architecture Docker-first
-
-Tout tourne dans Docker, rien sur le host :
-
-```
-┌─────────────────────────────────────┐
-│        Votre machine (host)         │
-│                                     │
-│  ┌───────────────────────────────┐ │
-│  │  Container Docker             │ │
-│  │  (playlab42-dev)              │ │
-│  │                               │ │
-│  │  • Node.js 25                 │ │
-│  │  • npm dependencies           │ │
-│  │  • Tous les outils dev        │ │
-│  │                               │ │
-│  │  Code monté depuis host       │ │
-│  │  (bind mount)                 │ │
-│  └───────────────────────────────┘ │
-└─────────────────────────────────────┘
-```
-
-**Avantages** :
-- Environnement identique pour tous les développeurs
-- Pas de pollution du système hôte
-- Pas de conflits de versions Node.js
-- Facile à supprimer/réinitialiser
-
-### Shell de développement
-
-Pour exécuter des commandes dans le container :
-
-```bash
-# Ouvrir un shell interactif
-make shell
-
-# Vous êtes maintenant dans le container
-node@playlab42:/app$ npm --version
-node@playlab42:/app$ ls -la
-node@playlab42:/app$ exit  # Pour sortir
-```
-
-**Alternative** : Exécuter des commandes npm directement depuis le host :
-
-```bash
-# Syntaxe : make npm CMD="<commande>"
-make npm CMD="install lodash"
-make npm CMD="run test"
-make npm CMD="run lint"
-```
-
-### Serveur de développement
-
-```bash
-# Démarrer le serveur statique (port 5242)
+# Afficher l’URL locale, puis lancer le serveur
+make info
 make serve
-
-# Ou via npm
-make npm CMD="run serve"
 ```
 
-**Accès** : http://localhost:5242
+Ouvrez l’URL affichée par `make info`. Le port externe est calculé à partir du nom du dossier, dans la plage **5200–5299** ; `5242` est le port interne du conteneur, celui que le serveur affiche dans ses journaux.
 
-**Ce qui est servi** :
-- Portail principal (`index.html`)
-- Tous les tools (`tools/`)
-- Tous les games (`games/`)
-- Tous les parcours (`parcours/`)
+`make init` construit l’image (Node.js 26 Alpine), démarre le conteneur et installe les dépendances : comptez 2 à 5 minutes la première fois, selon la connexion. `make status` indique ensuite si le conteneur tourne.
 
-**Arrêter le serveur** : Ctrl+C
+### Travailler sur plusieurs branches en parallèle
+
+Chaque worktree utilise un nom de projet Docker et un port calculés à partir de son dossier. Initialisez l’environnement dans chaque worktree avec `make init`, puis consultez son URL avec `make info`.
+
+La plage de ports étant limitée, une collision reste possible. Pour choisir explicitement le port d’une instance, utilisez le même réglage pour toutes ses commandes :
+
+```bash
+export PLAYLAB_PORT=5280
+make init
+make info
+make serve
+```
+
+## Au quotidien
+
+| Docker | Node.js local | Usage |
+|--------|---------------|-------|
+| `make shell` | — | Ouvrir un shell dans le conteneur |
+| `make npm CMD="run build:dev"` | `npm run build:dev` | Reconstruire contenus et catalogues sans enrichissement réseau |
+| `make npm CMD="run build"` | `npm run build` | Build de publication complet, avec aperçus des liens (nécessite les poids GPT-2, voir ci-dessous) |
+| `make build-ts` | `npm run build:ts` | Transpiler les contenus TypeScript |
+| `make npm CMD="run build:ts:watch"` | `npm run build:ts:watch` | Transpiler TypeScript en continu |
+| `make serve` | `npm run serve` | Servir le site (avec `build:runtime` et `build:guides` en préalable) |
+| `make test` | `npm test` | Exécuter les tests Jest |
+| `make test-e2e` | `npm run test:e2e` | Exécuter les parcours navigateur (image Docker dédiée côté `make`) |
+| `make lint` | `npm run lint` | Vérifier la qualité du code |
+| `make typecheck` | `npm run typecheck` | Vérifier les types |
+| `make openspec-validate` | `npm run openspec:validate` | Valider strictement les spécifications |
+| `make down` | — | Arrêter les conteneurs |
+
+`make build` construit l’**image Docker**, pas les catalogues. `make clean` supprime conteneurs, volumes et `node_modules`. `make help` liste toutes les cibles.
+
+### Sécurité
+
+```bash
+make security-audit      # Audit de sécurité complet
+make security-npm        # Audit npm seulement
+make security-eslint     # ESLint security
+```
+
+## Éléments optionnels
+
+- **Laboratoire GPT-2** (parcours « Anatomie d’un LLM ») : l’étape s’affiche sans rien préparer, mais le modèle ne se charge qu’avec les poids locaux. Préparez-les avec `npm run prepare:gpt2` (ou `make npm CMD="run prepare:gpt2"`) : environ 657 Mo à télécharger.
+- **Aperçus des liens** : `build:dev` utilise `--skip-og` et ne récupère pas les aperçus OpenGraph des bookmarks ; `npm run build` les enrichit par le réseau.
+- **Archive de publication** : `build:local` et `build` produisent aussi `site/` et sa provenance, l’artefact déployé sur GitHub Pages. Ils exigent les poids GPT-2 : lancez `prepare:gpt2` d’abord. Le serveur local n’utilise pas `site/` : il sert la racine du dépôt.
 
 ## Premiers pas
 
 ### 1. Parcourir le code
 
-```bash
-# Structure du projet
-tree -L 2 -I 'node_modules'
+La carte du dépôt est dans [Architecture en bref](./ARCHITECTURE.md#se-repérer-dans-le-dépôt) ; le détail des composants dans le [guide Architecture](./guides/architecture.md).
 
-playlab42/
-├── index.html              # Portail principal
-├── app.js                  # Logique du portail
-├── style.css              # Styles globaux
-├── lib/                   # Bibliothèques partagées
-│   ├── gamekit.js
-│   ├── seeded-random.js
-│   └── assets.js
-├── tools/                 # Outils HTML standalone
-├── games/                 # Jeux autonomes
-│   └── tic-tac-toe/
-├── parcours/              # Contenus pédagogiques
-├── data/                  # Catalogues générés
-├── docs/                  # Documentation
-└── openspec/              # Spécifications
-```
-
-### 2. Exécuter les tests
+### 2. Exécuter les tests et les contrôles
 
 ```bash
-# Lancer tous les tests
-make test
-
-# Mode watch (relance automatiquement)
-make test-watch
-
-# Avec coverage
-make npm CMD="run test:coverage"
+make test                         # ou npm test
+make test-watch                   # ou npm run test:watch
+make npm CMD="run test:coverage"  # ou npm run test:coverage
+make lint                         # ou npm run lint
+make lint-fix                     # ou npm run lint:fix
 ```
 
-### 3. Vérifier la qualité du code
+### 3. Tester le portail localement
 
-```bash
-# Linter (ESLint)
-make lint
+Lancez le serveur (`npm start` ou `make serve`), puis vérifiez :
 
-# Corriger automatiquement
-make lint-fix
-```
-
-### 4. Builder les catalogues
-
-```bash
-# Builder tout
-make build
-
-# Ou individuellement
-make build-catalogue   # data/catalogue.json
-make build-parcours    # data/parcours.json
-```
-
-### 5. Tester le portail localement
-
-```bash
-# Démarrer le serveur
-make serve
-
-# Ouvrir http://localhost:5242 dans le navigateur
-```
-
-**Vérifier** :
-- [ ] Le portail charge
-- [ ] Le catalogue affiche les tools et games
-- [ ] Cliquer sur un tool/game ouvre l'iframe
-- [ ] Pas d'erreurs dans la console navigateur
+- [ ] Le portail se charge
+- [ ] Les onglets Parcours, Outils, Jeux et Liens affichent leurs cartes
+- [ ] Un outil ou un jeu s’ouvre
+- [ ] La console du navigateur ne montre pas d’erreur
 
 ## Workflow de contribution
 
@@ -314,7 +219,7 @@ make test
 make lint
 
 # Build
-make build
+make npm CMD="run build:dev"
 
 # Serveur local
 make serve
@@ -397,55 +302,6 @@ git pull upstream main  # ou origin main
 git branch -d feature/ma-fonctionnalite
 ```
 
-## Commandes utiles
-
-### Docker
-
-```bash
-make init          # Initialiser (build + up + install)
-make up            # Démarrer le container
-make down          # Arrêter le container
-make restart       # Redémarrer le container
-make status        # Statut du container
-make logs          # Voir les logs
-make shell         # Shell interactif dans le container
-make clean         # Supprimer container et volumes
-```
-
-### Développement
-
-```bash
-make serve         # Serveur statique (port 5242)
-make build         # Build complet (catalogue + parcours + bookmarks)
-make build-catalogue   # Build catalogue.json
-make build-parcours    # Build parcours.json
-```
-
-### Tests et qualité
-
-```bash
-make test          # Lancer les tests
-make test-watch    # Tests en mode watch
-make lint          # Vérifier le code avec ESLint
-make lint-fix      # Corriger automatiquement
-```
-
-### Sécurité
-
-```bash
-make security-audit      # Audit de sécurité complet
-make security-npm        # Audit npm seulement
-make security-eslint     # ESLint security
-```
-
-### npm (via container)
-
-```bash
-make npm CMD="install <package>"
-make npm CMD="run <script>"
-make npm CMD="test"
-```
-
 ## Prochaines étapes
 
 ### Documentation à lire
@@ -462,7 +318,8 @@ make npm CMD="test"
 - [docs/guides/create-epic.md](./guides/create-epic.md) - Créer un parcours
 
 **Pour contribuer au core** :
-- [docs/guides/architecture.md](./guides/architecture.md) - Architecture système
+- [docs/ARCHITECTURE.md](./ARCHITECTURE.md) - Architecture en bref
+- [docs/guides/architecture.md](./guides/architecture.md) - Architecture détaillée
 - [docs/guides/contributing.md](./guides/contributing.md) - Guide de contribution complet
 - [openspec/project.md](../openspec/project.md) - Conventions du projet
 
@@ -486,7 +343,7 @@ make npm CMD="test"
 ### Rejoindre la communauté
 
 - **Issues** : https://github.com/z4ppy/playlab42/issues
-- **Discussions** : https://github.com/z4ppy/playlab42/discussions
+- **Questions et idées** : https://github.com/z4ppy/playlab42/issues/new/choose
 - **Pull Requests** : https://github.com/z4ppy/playlab42/pulls
 
 ### Ressources externes
@@ -533,21 +390,22 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-### Port 5242 déjà utilisé
+### Port déjà utilisé
 
-**Symptôme** : `make serve` échoue (port déjà pris)
+**Symptôme** : `make serve` ou `npm run serve` échoue (`EADDRINUSE`).
 
 **Solution** :
 
 ```bash
-# Trouver le processus
+# Docker : choisir un autre port externe pour cette instance
+export PLAYLAB_PORT=5280
+make init
+make info
+
+# Node.js local : identifier le processus qui occupe le port 5242…
 lsof -i :5242
-
-# Tuer le processus
-kill -9 <PID>
-
-# Ou utiliser un autre port
-npx serve . -p 3000
+# … l’arrêter proprement, ou servir sur un autre port
+npx serve . -p 3000 -C
 ```
 
 ### Tests échouent
@@ -562,7 +420,7 @@ make npm CMD="ci"
 
 # Vérifier la version Node.js
 make shell
-node --version  # Devrait être v25.x
+node --version  # v26.x dans le conteneur
 
 # Nettoyer le cache Jest
 make npm CMD="run test -- --clearCache"
@@ -570,7 +428,7 @@ make npm CMD="run test -- --clearCache"
 
 ### Build échoue
 
-**Symptôme** : `make build` échoue
+**Symptôme** : `make npm CMD="run build:dev"` ou `npm run build:dev` échoue
 
 **Solutions** :
 
@@ -579,7 +437,7 @@ make npm CMD="run test -- --clearCache"
 # Valider le JSON : https://jsonlint.com/
 
 # Vérifier les logs
-make build 2>&1 | tee build.log
+make npm CMD="run build:dev" 2>&1 | tee build.log
 
 # Consulter docs/TROUBLESHOOTING.md
 ```
@@ -620,4 +478,4 @@ Vous êtes maintenant prêt à contribuer à Playlab42. N'hésitez pas à explor
 ---
 
 *Document maintenu par les contributeurs de Playlab42*
-*Dernière mise à jour : 2025-12-14*
+*Dernière mise à jour : 2026-11-08*

@@ -14,17 +14,24 @@ En participant, vous acceptez de respecter le [code de conduite](CODE_OF_CONDUCT
 
 ## Mettre en place l’environnement
 
-L’environnement est **Docker-first**. Prérequis : Git, Docker avec Docker Compose et Make.
+Prérequis : Git et Node.js 24 ou plus.
 
 ```bash
-git clone https://github.com/<votre-compte>/playlab42.git
-cd playlab42
+git clone https://github.com/<votre-compte>/playlab42.git && cd playlab42
+npm ci
+npm start        # puis ouvrir http://localhost:5242
+```
+
+L’environnement de référence du projet est **Docker-first** (Git, Docker avec Docker Compose et Make) :
+
+```bash
 make init
-make npm CMD="run build:local"
+make npm CMD="run build:dev"
+make info        # affiche l’URL locale
 make serve
 ```
 
-Le détail (ports, worktrees, commandes) est dans le [README](README.md#démarrage-rapide).
+Le détail (ports, worktrees, commandes du quotidien, éléments optionnels comme le laboratoire GPT-2) est dans le [guide de démarrage](docs/GETTING_STARTED.md).
 
 ## Proposer une modification
 
@@ -42,9 +49,9 @@ Le détail (ports, worktrees, commandes) est dans le [README](README.md#démarra
 4. Vérifiez votre travail avant d’ouvrir la Pull Request :
 
    ```bash
-   make lint        # qualité du code
-   make typecheck   # types
-   make test        # tests Jest
+   make lint        # qualité du code    (ou npm run lint)
+   make typecheck   # types              (ou npm run typecheck)
+   make test        # tests Jest         (ou npm test)
    ```
 
    Essayez aussi le résultat dans le navigateur, en thème clair **et** sombre, et sur un écran étroit (≈ 360 px de large) : le contenu doit rester utilisable au doigt.
