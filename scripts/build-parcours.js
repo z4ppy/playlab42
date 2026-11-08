@@ -8,6 +8,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from '
 import { join } from 'path';
 import { getRootDir, readJSONSync, getBuildTimestamp } from './lib/build-utils.js';
 import { publishCatalogue } from './lib/build-report.js';
+import { epicAnimatedThumbnail } from './lib/animated-thumbnails.js';
 import {
   extractSlideIds,
   countSlides,
@@ -282,6 +283,7 @@ function buildEpicEntry(epic, epicId, epicDir, glossaryTermCount) {
     difficulty: metadata.difficulty,
     icon: epic.icon,
     thumbnail: epic.thumbnail ? `./parcours/epics/${epicId}/${epic.thumbnail}` : null,
+    thumbnailAnimated: epicAnimatedThumbnail(epicDir, epic.thumbnail, `./parcours/epics/${epicId}`),
     slideCount: total,
     optionalSlideCount: optional,
     hasIndex: !!epic.index,

@@ -18,6 +18,7 @@ import {
   getBuildTimestamp,
 } from './lib/build-utils.js';
 import { validateRequiredFields, validateTagsAndVersion } from './lib/manifest-validation.js';
+import { markAnimatedThumbnails } from './lib/animated-thumbnails.js';
 
 // Obtenir le répertoire racine du projet
 const ROOT_DIR = getRootDir(import.meta.url);
@@ -298,8 +299,8 @@ async function main() {
   const catalogue = {
     version: '1.0',
     generatedAt: getBuildTimestamp(),
-    tools,
-    games,
+    tools: markAnimatedThumbnails(tools, 'tool', ROOT_DIR),
+    games: markAnimatedThumbnails(games, 'game', ROOT_DIR),
   };
 
   // Écrire le fichier
