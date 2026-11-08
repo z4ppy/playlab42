@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L'architecture Transformer (2017)</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../../parcours/_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    .paper-hero {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      text-align: center;
+      margin: var(--space-lg) 0;
+      border: 2px solid var(--color-accent);
+    }
+    .paper-hero h2 {
+      margin: 0;
+      color: var(--color-accent);
+      font-style: italic;
+    }
+    .paper-hero .date {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      margin-top: var(--space-xs);
+    }
+    .paper-hero .fun-fact {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--color-border);
+    }
+    .limitation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+    .limitation-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      border-left: 4px solid #ef4444;
+    }
+    .limitation-card h4 {
+      margin: 0 0 var(--space-sm) 0;
+      color: #ef4444;
+    }
+    .solution-card {
+      border-left: 4px solid #22c55e;
+    }
+    .solution-card h4 {
+      color: #22c55e;
+    }
+    .architecture-diagram {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      overflow-x: auto;
+    }
+    .architecture-svg {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+    .qkv-diagram {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      overflow-x: auto;
+    }
+    .formula-box {
+      background: var(--color-bg);
+      border: 2px solid var(--color-accent);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      font-family: 'Times New Roman', serif;
+      font-size: 1.3rem;
+      text-align: center;
+      margin: var(--space-lg) 0;
+    }
+    .formula-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+      margin-top: var(--space-sm);
+    }
+    .formula-note {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+      margin-top: var(--space-xs);
+      font-style: italic;
+    }
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .spec-item {
+      background: var(--color-bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .spec-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    .spec-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+    }
+    .concept-box {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .concept-box h4 {
+      margin: 0 0 var(--space-sm) 0;
+      color: var(--color-accent);
+    }
+    .positional-diagram {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+      overflow-x: auto;
+    }
+    .keywords-summary {
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+    .keywords-summary ul {
+      margin: 0;
+      padding-left: var(--space-lg);
+    }
+    .keywords-summary li {
+      margin-bottom: var(--space-sm);
+    }
+    .keywords-summary strong {
+      color: var(--color-accent);
+    }
+  </style>
+</head>
+<body>
+  <article class="slide">
+    <h1>⚡ L'architecture Transformer révolutionne le domaine (2017)</h1>
+
+    <div class="paper-hero">
+      <h2>"Attention Is All You Need"</h2>
+      <div class="date">12 juin 2017 — Google Brain & Google Research</div>
+      <p>Ashish Vaswani et sept co-auteurs</p>
+      <div class="fun-fact">
+        🎵 Le titre fait un clin d'œil aux Beatles ("All You Need Is Love").
+        Le nom "Transformer" a été choisi par Jakob Uszkoreit.
+      </div>
+    </div>
+
+    <p>
+      Ce papier ne prétend pas inventer l'attention — il reconnaît explicitement sa dette envers Bahdanau.
+      Son innovation est plus radicale : <strong>abandonner complètement les RNN</strong> et construire une architecture
+      <strong>entièrement basée sur l'attention</strong>.
+    </p>
+
+    <h2>Les limitations des RNN que le Transformer résout</h2>
+
+    <div class="limitation-grid">
+      <div class="limitation-card">
+        <h4>1. Traitement séquentiel</h4>
+        <p>Pour calculer h<sub>t</sub>, il faut d'abord calculer h<sub>t-1</sub>. Une phrase de 100 mots nécessite 100 étapes séquentielles.</p>
+      </div>
+      <div class="limitation-card">
+        <h4>2. Dépendances long terme</h4>
+        <p>Le "chemin" entre le premier et le dernier mot est de longueur O(n). L'information se dégrade.</p>
+      </div>
+      <div class="limitation-card">
+        <h4>3. Temps d'entraînement</h4>
+        <p>Impossible d'exploiter pleinement les GPUs, conçus pour le calcul parallèle massif.</p>
+      </div>
+    </div>
+
+    <div class="limitation-grid">
+      <div class="limitation-card solution-card">
+        <h4>✅ Solution Transformer</h4>
+        <p>
+          <strong>Parallélisation totale</strong> : chaque position calculée en parallèle.<br>
+          <strong>O(1) connexions</strong> : deux positions quelconques reliées directement.<br>
+          <strong>12h sur 8 GPUs</strong> au lieu de semaines !
+        </p>
+      </div>
+    </div>
+
+    <h2>Architecture détaillée</h2>
+
+    <div class="architecture-diagram">
+      <svg class="architecture-svg" viewBox="0 0 700 450" width="700" height="450">
+        <!-- Background -->
+        <defs>
+          <linearGradient id="encoderGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2"/>
+            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.05"/>
+          </linearGradient>
+          <linearGradient id="decoderGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.2"/>
+            <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0.05"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Titre -->
+        <text x="350" y="25" text-anchor="middle" fill="currentColor" font-weight="bold" font-size="16">Architecture Transformer Originale</text>
+
+        <!-- Encodeur -->
+        <g transform="translate(80, 50)">
+          <rect x="0" y="0" width="200" height="350" rx="10" fill="url(#encoderGrad)" stroke="#3b82f6" stroke-width="2"/>
+          <text x="100" y="25" text-anchor="middle" fill="#3b82f6" font-weight="bold" font-size="14">ENCODEUR</text>
+          <text x="100" y="42" text-anchor="middle" fill="#3b82f6" font-size="11">×6 couches</text>
+
+          <!-- Input Embedding -->
+          <rect x="20" y="300" width="160" height="35" rx="5" fill="#e0e7ff" stroke="#3b82f6"/>
+          <text x="100" y="322" text-anchor="middle" fill="#1e40af" font-size="11">Input Embedding</text>
+          <text x="100" y="335" text-anchor="middle" fill="#1e40af" font-size="9">+ Positional Encoding</text>
+
+          <!-- Multi-Head Attention -->
+          <rect x="20" y="220" width="160" height="60" rx="5" fill="#93c5fd" stroke="#3b82f6"/>
+          <text x="100" y="245" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Multi-Head</text>
+          <text x="100" y="260" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Self-Attention</text>
+          <text x="100" y="275" text-anchor="middle" fill="#1e40af" font-size="9">Add & Norm</text>
+
+          <!-- Feed Forward -->
+          <rect x="20" y="140" width="160" height="60" rx="5" fill="#93c5fd" stroke="#3b82f6"/>
+          <text x="100" y="165" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">Feed Forward</text>
+          <text x="100" y="180" text-anchor="middle" fill="#1e40af" font-size="11">(2 × Linear + ReLU)</text>
+          <text x="100" y="195" text-anchor="middle" fill="#1e40af" font-size="9">Add & Norm</text>
+
+          <!-- Output vers décodeur -->
+          <rect x="20" y="70" width="160" height="50" rx="5" fill="#dbeafe" stroke="#3b82f6" stroke-dasharray="4"/>
+          <text x="100" y="95" text-anchor="middle" fill="#1e40af" font-size="11">Répéter ×6</text>
+          <text x="100" y="110" text-anchor="middle" fill="#1e40af" font-size="9">→ vers décodeur</text>
+
+          <!-- Flèches -->
+          <path d="M100 300 L100 280" stroke="#3b82f6" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+          <path d="M100 220 L100 200" stroke="#3b82f6" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+          <path d="M100 140 L100 120" stroke="#3b82f6" stroke-width="2" fill="none" marker-end="url(#arrowBlue)"/>
+        </g>
+
+        <!-- Décodeur -->
+        <g transform="translate(420, 50)">
+          <rect x="0" y="0" width="200" height="350" rx="10" fill="url(#decoderGrad)" stroke="#22c55e" stroke-width="2"/>
+          <text x="100" y="25" text-anchor="middle" fill="#22c55e" font-weight="bold" font-size="14">DÉCODEUR</text>
+          <text x="100" y="42" text-anchor="middle" fill="#22c55e" font-size="11">×6 couches</text>
+
+          <!-- Output Embedding -->
+          <rect x="20" y="300" width="160" height="35" rx="5" fill="#dcfce7" stroke="#22c55e"/>
+          <text x="100" y="322" text-anchor="middle" fill="#166534" font-size="11">Output Embedding</text>
+          <text x="100" y="335" text-anchor="middle" fill="#166534" font-size="9">+ Positional Encoding</text>
+
+          <!-- Masked Multi-Head Attention -->
+          <rect x="20" y="235" width="160" height="50" rx="5" fill="#86efac" stroke="#22c55e"/>
+          <text x="100" y="255" text-anchor="middle" fill="#166534" font-size="10" font-weight="bold">Masked Multi-Head</text>
+          <text x="100" y="270" text-anchor="middle" fill="#166534" font-size="10" font-weight="bold">Self-Attention</text>
+
+          <!-- Cross-Attention -->
+          <rect x="20" y="165" width="160" height="55" rx="5" fill="#86efac" stroke="#22c55e"/>
+          <text x="100" y="185" text-anchor="middle" fill="#166534" font-size="10" font-weight="bold">Multi-Head</text>
+          <text x="100" y="200" text-anchor="middle" fill="#166534" font-size="10" font-weight="bold">Cross-Attention</text>
+          <text x="100" y="215" text-anchor="middle" fill="#166534" font-size="9">(K, V de l'encodeur)</text>
+
+          <!-- Feed Forward -->
+          <rect x="20" y="95" width="160" height="55" rx="5" fill="#86efac" stroke="#22c55e"/>
+          <text x="100" y="115" text-anchor="middle" fill="#166534" font-size="10" font-weight="bold">Feed Forward</text>
+          <text x="100" y="130" text-anchor="middle" fill="#166534" font-size="10">+ Add & Norm</text>
+          <text x="100" y="145" text-anchor="middle" fill="#166534" font-size="9">Répéter ×6</text>
+
+          <!-- Linear + Softmax -->
+          <rect x="20" y="55" width="160" height="30" rx="5" fill="#bbf7d0" stroke="#22c55e"/>
+          <text x="100" y="75" text-anchor="middle" fill="#166534" font-size="10">Linear + Softmax</text>
+
+          <!-- Flèches -->
+          <path d="M100 300 L100 285" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+          <path d="M100 235 L100 220" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+          <path d="M100 165 L100 150" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+          <path d="M100 95 L100 85" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+        </g>
+
+        <!-- Connexion Encodeur → Décodeur -->
+        <path d="M280 195 L420 195" stroke="#9333ea" stroke-width="3" fill="none" marker-end="url(#arrowPurple)"/>
+        <text x="350" y="185" text-anchor="middle" fill="#9333ea" font-size="10" font-weight="bold">K, V</text>
+
+        <!-- Inputs/Outputs -->
+        <text x="180" y="420" text-anchor="middle" fill="currentColor" font-size="12">Inputs</text>
+        <text x="520" y="420" text-anchor="middle" fill="currentColor" font-size="12">Outputs (shifted)</text>
+        <text x="520" y="435" text-anchor="middle" fill="currentColor" font-size="10">→ Probabilities</text>
+
+        <!-- Markers -->
+        <defs>
+          <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6"/>
+          </marker>
+          <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#22c55e"/>
+          </marker>
+          <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#9333ea"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="specs-grid">
+      <div class="spec-item">
+        <div class="spec-value">6</div>
+        <div class="spec-label">Couches</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-value">8</div>
+        <div class="spec-label">Têtes d'attention</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-value">512</div>
+        <div class="spec-label">Dimension modèle</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-value">65M</div>
+        <div class="spec-label">Paramètres (base)</div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-value">213M</div>
+        <div class="spec-label">Paramètres (big)</div>
+      </div>
+    </div>
+
+    <h2>Le mécanisme d'attention décortiqué</h2>
+
+    <p>
+      Le cœur du Transformer est le <strong>self-attention</strong>. Ce mécanisme repose sur trois matrices apprises :
+    </p>
+
+    <div class="qkv-diagram">
+      <svg class="architecture-svg" viewBox="0 0 650 300" width="650" height="300">
+        <!-- Titre -->
+        <text x="325" y="25" text-anchor="middle" fill="currentColor" font-weight="bold" font-size="14">Scaled Dot-Product Attention</text>
+
+        <!-- Input X -->
+        <g transform="translate(50, 60)">
+          <rect x="0" y="0" width="80" height="40" rx="5" fill="var(--color-bg-secondary)" stroke="currentColor"/>
+          <text x="40" y="25" text-anchor="middle" fill="currentColor" font-size="12" font-weight="bold">Input X</text>
+        </g>
+
+        <!-- Flèches vers Q, K, V -->
+        <path d="M130 80 L180 60" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M130 80 L180 100" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M130 80 L180 140" stroke="currentColor" stroke-width="2" fill="none"/>
+
+        <!-- Q -->
+        <g transform="translate(180, 40)">
+          <rect x="0" y="0" width="70" height="35" rx="5" fill="#ef4444" opacity="0.8"/>
+          <text x="35" y="22" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Q (Query)</text>
+          <text x="35" y="50" text-anchor="middle" fill="currentColor" font-size="10">"Ce que je cherche"</text>
+        </g>
+
+        <!-- K -->
+        <g transform="translate(180, 85)">
+          <rect x="0" y="0" width="70" height="35" rx="5" fill="#22c55e" opacity="0.8"/>
+          <text x="35" y="22" text-anchor="middle" fill="white" font-size="12" font-weight="bold">K (Key)</text>
+          <text x="35" y="50" text-anchor="middle" fill="currentColor" font-size="10">"Ce que je contiens"</text>
+        </g>
+
+        <!-- V -->
+        <g transform="translate(180, 130)">
+          <rect x="0" y="0" width="70" height="35" rx="5" fill="#3b82f6" opacity="0.8"/>
+          <text x="35" y="22" text-anchor="middle" fill="white" font-size="12" font-weight="bold">V (Value)</text>
+          <text x="35" y="50" text-anchor="middle" fill="currentColor" font-size="10">"Ce que je transmets"</text>
+        </g>
+
+        <!-- Étape 1: Q × K^T -->
+        <g transform="translate(280, 50)">
+          <path d="M0 15 L30 15" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#arrowBlack)"/>
+          <rect x="35" y="0" width="90" height="60" rx="5" fill="var(--color-bg-secondary)" stroke="currentColor"/>
+          <text x="80" y="25" text-anchor="middle" fill="currentColor" font-size="11" font-weight="bold">Q × K<tspan baseline-shift="super" font-size="8">T</tspan></text>
+          <text x="80" y="42" text-anchor="middle" fill="var(--color-text-muted)" font-size="9">Scores d'attention</text>
+        </g>
+
+        <!-- Étape 2: Scale -->
+        <g transform="translate(410, 50)">
+          <path d="M0 30 L20 30" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#arrowBlack)"/>
+          <rect x="25" y="0" width="70" height="60" rx="5" fill="#fef3c7" stroke="#f59e0b"/>
+          <text x="60" y="25" text-anchor="middle" fill="#92400e" font-size="11" font-weight="bold">÷ √d<tspan baseline-shift="sub" font-size="8">k</tspan></text>
+          <text x="60" y="42" text-anchor="middle" fill="#92400e" font-size="9">Scale</text>
+        </g>
+
+        <!-- Étape 3: Softmax -->
+        <g transform="translate(510, 50)">
+          <path d="M0 30 L20 30" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#arrowBlack)"/>
+          <rect x="25" y="0" width="70" height="60" rx="5" fill="#e0e7ff" stroke="#6366f1"/>
+          <text x="60" y="25" text-anchor="middle" fill="#4338ca" font-size="11" font-weight="bold">Softmax</text>
+          <text x="60" y="42" text-anchor="middle" fill="#4338ca" font-size="9">→ Poids α</text>
+        </g>
+
+        <!-- Étape 4: × V -->
+        <g transform="translate(535, 130)">
+          <path d="M35 -20 L35 10" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#arrowBlack)"/>
+          <rect x="0" y="15" width="70" height="40" rx="5" fill="#dbeafe" stroke="#3b82f6"/>
+          <text x="35" y="40" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="bold">× V</text>
+        </g>
+
+        <!-- Connexion V vers multiplication -->
+        <path d="M250 147 L535 147 L535 145" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4" fill="none"/>
+
+        <!-- Output -->
+        <g transform="translate(535, 190)">
+          <path d="M35 -15 L35 5" stroke="currentColor" stroke-width="2" fill="none" marker-end="url(#arrowBlack)"/>
+          <rect x="0" y="10" width="70" height="35" rx="5" fill="#9333ea" opacity="0.8"/>
+          <text x="35" y="32" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Output</text>
+        </g>
+
+        <!-- Explication scaling -->
+        <g transform="translate(50, 220)">
+          <rect x="0" y="0" width="430" height="60" rx="8" fill="#fefce8" stroke="#eab308"/>
+          <text x="215" y="22" text-anchor="middle" fill="#854d0e" font-size="11" font-weight="bold">Pourquoi diviser par √d<tspan baseline-shift="sub" font-size="8">k</tspan> ?</text>
+          <text x="215" y="40" text-anchor="middle" fill="#854d0e" font-size="10">Maintient la variance des scores à une valeur raisonnable.</text>
+          <text x="215" y="55" text-anchor="middle" fill="#854d0e" font-size="10">Évite que le softmax ne sature dans des régions à gradients faibles.</text>
+        </g>
+
+        <!-- Arrow marker -->
+        <defs>
+          <marker id="arrowBlack" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="formula-box">
+      Attention(Q, K, V) = softmax(QK<sup>T</sup> / √d<sub>k</sub>) × V
+      <div class="formula-label">Scaled Dot-Product Attention</div>
+      <div class="formula-note">Typiquement √d<sub>k</sub> = √64 = 8</div>
+    </div>
+
+    <div class="concept-box">
+      <h4>Multi-Head Attention : 8 perspectives simultanées</h4>
+      <p>
+        Le Multi-Head Attention applique l'attention en parallèle avec <strong>8 têtes différentes</strong>,
+        chacune apprenant des types de relations distincts :
+      </p>
+      <ul>
+        <li>Une tête pour les relations <strong>syntaxiques</strong> (sujet-verbe)</li>
+        <li>Une tête pour les <strong>coréférences</strong> pronominales</li>
+        <li>Une tête pour les relations <strong>sémantiques</strong></li>
+        <li>etc.</li>
+      </ul>
+      <p>Les résultats sont concaténés puis projetés linéairement.</p>
+    </div>
+
+    <h2>L'encodage positionnel</h2>
+
+    <p>
+      Contrairement aux RNN, le Transformer n'a aucune notion d'ordre intrinsèque.
+      Sans encodage positionnel, <em>"Le chat mange la souris"</em> serait équivalent à <em>"La souris mange le chat"</em>.
+    </p>
+
+    <div class="positional-diagram">
+      <svg class="architecture-svg" viewBox="0 0 600 180" width="600" height="180">
+        <!-- Titre -->
+        <text x="300" y="20" text-anchor="middle" fill="currentColor" font-weight="bold" font-size="13">Positional Encoding (fonctions sinusoïdales)</text>
+
+        <!-- Formules -->
+        <g transform="translate(50, 45)">
+          <rect x="0" y="0" width="500" height="50" rx="8" fill="var(--color-bg)" stroke="var(--color-border)"/>
+          <text x="250" y="22" text-anchor="middle" fill="currentColor" font-family="'Times New Roman', serif" font-size="14">
+            PE(pos, 2i) = sin(pos / 10000<tspan baseline-shift="super" font-size="10">2i/d</tspan>)
+          </text>
+          <text x="250" y="42" text-anchor="middle" fill="currentColor" font-family="'Times New Roman', serif" font-size="14">
+            PE(pos, 2i+1) = cos(pos / 10000<tspan baseline-shift="super" font-size="10">2i/d</tspan>)
+          </text>
+        </g>
+
+        <!-- Visualisation onde -->
+        <g transform="translate(50, 110)">
+          <text x="0" y="10" fill="var(--color-text-muted)" font-size="10">pos=0</text>
+          <text x="480" y="10" fill="var(--color-text-muted)" font-size="10">pos=n</text>
+
+          <!-- Onde sin -->
+          <path d="M30 30 Q80 0 130 30 Q180 60 230 30 Q280 0 330 30 Q380 60 430 30 Q480 0 500 30"
+                stroke="#3b82f6" stroke-width="2" fill="none"/>
+          <text x="515" y="35" fill="#3b82f6" font-size="10">sin</text>
+
+          <!-- Onde cos -->
+          <path d="M30 45 Q80 75 130 45 Q180 15 230 45 Q280 75 330 45 Q380 15 430 45 Q480 75 500 45"
+                stroke="#22c55e" stroke-width="2" fill="none"/>
+          <text x="515" y="50" fill="#22c55e" font-size="10">cos</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="keywords-summary">
+      <h3>Mots-clés à retenir</h3>
+      <ul>
+        <li><strong>Self-Attention</strong> : chaque position attend à toutes les autres</li>
+        <li><strong>Multi-Head Attention</strong> : plusieurs "têtes" capturent différents types de relations</li>
+        <li><strong>Scaled Dot-Product</strong> : normalisation par √d<sub>k</sub> pour stabiliser les gradients</li>
+        <li><strong>Positional Encoding</strong> : injection de l'information d'ordre dans les embeddings</li>
+      </ul>
+    </div>
+
+    <blockquote>
+      Le résultat pratique : un modèle entraînable en <strong>12 heures sur 8 GPUs P100</strong> là où les architectures RNN
+      prenaient des semaines pour atteindre des performances similaires.
+    </blockquote>
+  </article>
+</body>
+</html>

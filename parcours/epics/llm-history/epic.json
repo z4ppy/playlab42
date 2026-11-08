@@ -1,0 +1,27 @@
+{
+  "id": "llm-history",
+  "title": "Histoire des LLM : de l'attention au raisonnement",
+  "description": "Parcours complet sur l'évolution des Large Language Models, de l'invention de l'attention en 2014 aux modèles de raisonnement comme o3 et DeepSeek R1.",
+  "hierarchy": ["ia"],
+  "tags": ["ia", "llm", "deep-learning", "transformer", "histoire", "avance"],
+  "metadata": {
+    "author": "cyrille",
+    "created": "2025-12-15",
+    "duration": "60 min",
+    "difficulty": "intermediate",
+    "language": "fr"
+  },
+  "icon": "🧠",
+  "thumbnail": "thumbnail.svg",
+  "content": [
+    { "id": "01-introduction" },
+    { "id": "02-premices-attention" },
+    { "id": "03-transformer" },
+    { "id": "04-bert-gpt" },
+    { "id": "05-scaling" },
+    { "id": "06-chatgpt-democratisation" },
+    { "id": "07-techniques-cles" },
+    { "id": "08-acceleration-recente" },
+    { "id": "09-guide-pratique" }
+  ]
+}
