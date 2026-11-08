@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Les modèles qui raisonnent — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 12 · 2024–2026</p>
+      <h1>Les modèles qui « réfléchissent »</h1>
+      <p class="lead">Jusqu’en 2024, on améliorait un modèle surtout en l’entraînant plus. Les modèles de raisonnement ajoutent un second levier : <strong>dépenser plus de calcul au moment de répondre</strong>.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#o1">1 · o1 et o3</a></li>
+        <li><a href="#deepseek">2 · DeepSeek-R1</a></li>
+        <li><a href="#hybride">3 · Raisonnement réglable</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="o1">Septembre 2024 : o1 pense avant de répondre</h2>
+    <p>Avec <strong>o1</strong> (septembre 2024), OpenAI entraîne par renforcement un modèle à produire une longue <dfn data-term="chaîne de pensée">chaîne de pensée</dfn> avant sa réponse : il essaie, vérifie, revient en arrière. Cette réflexion est masquée à l’utilisateur. OpenAI observe que la qualité augmente avec le temps de réflexion accordé : c’est le <dfn data-term="calcul à l’inférence">calcul à l’inférence</dfn> (<em>test-time compute</em>).</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 640 230" role="img" aria-labelledby="ttc-title ttc-desc">
+        <title id="ttc-title">Deux leviers de calcul</title>
+        <desc id="ttc-desc">Deux courbes montantes : la précision augmente avec le calcul d’entraînement, et aussi avec le calcul dépensé à l’inférence, c’est-à-dire le temps de réflexion. Courbes illustratives.</desc>
+        <line class="svg-line" x1="60" y1="190" x2="300" y2="190"/><line class="svg-line" x1="60" y1="30" x2="60" y2="190"/>
+        <path class="svg-line-accent" stroke-width="2.5" d="M70 175 C 130 150, 190 110, 290 70"/>
+        <text class="svg-text-strong" x="180" y="22" text-anchor="middle">Entraîner plus</text>
+        <text class="svg-text-muted" x="180" y="215" text-anchor="middle">calcul d’entraînement (log)</text>
+        <line class="svg-line" x1="360" y1="190" x2="600" y2="190"/><line class="svg-line" x1="360" y1="30" x2="360" y2="190"/>
+        <path class="svg-line-accent" stroke-width="2.5" d="M370 178 C 430 140, 500 90, 590 60"/>
+        <text class="svg-text-strong" x="480" y="22" text-anchor="middle">Réfléchir plus longtemps</text>
+        <text class="svg-text-muted" x="480" y="215" text-anchor="middle">calcul à l’inférence (log)</text>
+        <text class="svg-text-muted" x="30" y="110" text-anchor="middle" transform="rotate(-90 30 110)">précision</text>
+      </svg>
+      <figcaption>Allure des courbes publiées par OpenAI pour o1 sur l’examen AIME. Courbes illustratives.</figcaption>
+    </figure>
+
+    <p>En décembre 2024, OpenAI annonce <strong>o3</strong>. Une préversion obtient 75,7 % sur ARC-AGI-1, un test de raisonnement visuel conçu pour résister à la mémorisation, et 87,5 % avec environ 172 fois plus de calcul.</p>
+    <aside class="nuance" aria-label="Lire les scores avec précaution">
+      <span class="box-label">Trois précautions sur ces scores</span>
+      <ul>
+        <li>Les <strong>85 %</strong> souvent cités ne sont pas « le niveau humain » : c’est le seuil du grand prix ARC, qui exige en plus une solution open source et peu coûteuse. o3 ne l’a pas remporté.</li>
+        <li>Le modèle o3 <strong>publié</strong> en avril 2025 est différent de la préversion : ARC Prize mesure 41 à 53 % sur ARC-AGI-1, et moins de 3 % sur ARC-AGI-2.</li>
+        <li>Le score de 25,2 % sur FrontierMath, un test de mathématiques de niveau recherche, a été discuté : Epoch AI a reconnu ensuite qu’OpenAI avait financé ce test et avait accès à la plupart des problèmes.</li>
+      </ul>
+    </aside>
+
+    <h2 id="deepseek">Janvier 2025 : DeepSeek-R1 publie la recette</h2>
+    <p>Le 20 janvier 2025, la start-up chinoise <strong>DeepSeek</strong> (financée par le fonds High-Flyer de Liang Wenfeng) publie <strong>R1</strong>, un modèle de raisonnement proche d’o1, avec ses poids sous licence MIT et un article qui décrit la méthode.</p>
+    <div class="cards">
+      <section class="card">
+        <h3>R1-Zero</h3>
+        <p>Renforcement <strong>seul</strong> (algorithme GRPO) appliqué au modèle de base, avec des récompenses vérifiables : réponse mathématique juste, code qui passe les tests. Des comportements de vérification et de retour en arrière apparaissent spontanément, mais les textes sont peu lisibles et mélangent les langues.</p>
+      </section>
+      <section class="card">
+        <h3>R1</h3>
+        <p>Un petit jeu de longues chaînes de pensée de qualité sert de « démarrage à froid » (affinage supervisé), puis plusieurs phases de renforcement. Des versions distillées (Qwen, Llama de 1,5 à 70 Md) rendent le raisonnement accessible sur une seule machine.</p>
+      </section>
+    </div>
+    <p>Le 27 janvier 2025, l’action Nvidia perd environ 17 %, soit près de 590 Md$ de capitalisation en une séance, un record. Un chiffre circule : DeepSeek aurait entraîné son modèle pour 5,6 M$.</p>
+    <aside class="myth" aria-label="Idée reçue">
+      <span class="box-label">Idée reçue</span>
+      <p>« DeepSeek a fabriqué un modèle de pointe pour 5,6 M$. » Ce montant (5,576 M$) correspond à la location supposée des GPU pour le <strong>seul dernier entraînement de DeepSeek-V3</strong>, le modèle de base. Il exclut la recherche, les essais, les salaires et l’achat du matériel. La rupture est réelle, mais c’est une rupture d’<strong>efficacité</strong>, pas un modèle à 6 M$.</p>
+    </aside>
+
+    <h2 id="hybride">2025–2026 : un raisonnement qu’on règle</h2>
+    <ol class="timeline">
+      <li><span class="date">Février 2025</span><span class="what">Claude 3.7 Sonnet</span> : premier modèle « hybride », qui répond directement ou réfléchit longuement selon le choix de l’utilisateur.</li>
+      <li><span class="date">Mars–avril 2025</span><span class="what">Gemini 2.5 Pro, Qwen3</span> : la réflexion devient une option standard, y compris dans des poids ouverts.</li>
+      <li><span class="date">Juin 2025</span><span class="what">Magistral</span> : premier modèle de raisonnement de Mistral, entraîné par renforcement.</li>
+      <li><span class="date">Août 2025</span><span class="what">GPT-5, DeepSeek V3.1</span> : un même modèle choisit ou reçoit un niveau d’effort de réflexion.</li>
+      <li><span class="date">2026</span><span class="what">Effort par défaut</span> : plusieurs modèles de pointe réfléchissent toujours, avec des niveaux d’effort réglables (par exemple Claude Opus 5.5, ou les niveaux low, high et max de DeepSeek V4-Pro).</li>
+    </ol>
+    <p>Pour voir comment l’effort de raisonnement change la génération token par token, suivez l’étape <a href="../../../../../index.html#/parcours/anatomie-llm/11-effort" target="_top">L’effort de raisonnement</a> d’Anatomie d’un LLM.</p>
+
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Qu’est-ce que le « calcul à l’inférence » ?</legend>
+        <label><input type="radio" name="q1" value="a" data-correct> Laisser le modèle produire plus de tokens de réflexion avant de répondre, pour améliorer la réponse.</label>
+        <label><input type="radio" name="q1" value="b"> Réentraîner le modèle pendant la conversation.</label>
+        <p class="explain" hidden>Les poids ne changent pas : on paie plus de tokens générés (donc plus de temps et d’argent) contre une meilleure réponse sur les problèmes difficiles.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Que couvrent les 5,6 M$ attribués à DeepSeek ?</legend>
+        <label><input type="radio" name="q2" value="a"> Tout le développement de DeepSeek-R1.</label>
+        <label><input type="radio" name="q2" value="b" data-correct> La location estimée des GPU pour le dernier entraînement de DeepSeek-V3 seulement.</label>
+        <p class="explain" hidden>L’article de V3 le précise : recherche, essais préalables et matériel sont exclus. C’est un indicateur d’efficacité, pas un budget total.</p>
+      </fieldset>
+      <fieldset>
+        <legend>o3 a-t-il dépassé « le niveau humain » sur ARC-AGI ?</legend>
+        <label><input type="radio" name="q3" value="a"> Oui, 87,5 % contre 85 % pour les humains.</label>
+        <label><input type="radio" name="q3" value="b" data-correct> La question est mal posée : 85 % est le seuil d’un prix, et le modèle publié fait nettement moins que la préversion.</label>
+        <p class="explain" hidden>Toujours vérifier ce que mesure un seuil, quelle version du modèle a été testée, et avec quel budget de calcul.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>OpenAI, <a href="https://openai.com/index/learning-to-reason-with-llms/" target="_blank" rel="noopener noreferrer">Learning to Reason with LLMs</a>, septembre 2024.</li>
+        <li>ARC Prize, <a href="https://arcprize.org/blog/oai-o3-pub-breakthrough" target="_blank" rel="noopener noreferrer">OpenAI o3 Breakthrough High Score on ARC-AGI-Pub</a>, décembre 2024 ; <a href="https://arcprize.org/blog/analyzing-o3-with-arc-agi" target="_blank" rel="noopener noreferrer">Analyzing o3 and o4-mini with ARC-AGI</a>, avril 2025.</li>
+        <li>Epoch AI, <a href="https://epoch.ai/blog/openai-and-frontiermath" target="_blank" rel="noopener noreferrer">Clarifying the creation and use of the FrontierMath benchmark</a>, janvier 2025.</li>
+        <li>DeepSeek-AI, <a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noopener noreferrer">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via RL</a>, janvier 2025.</li>
+        <li>DeepSeek-AI, <a href="https://arxiv.org/abs/2412.19437" target="_blank" rel="noopener noreferrer">DeepSeek-V3 Technical Report</a>, décembre 2024 (tableau 1 : coût d’entraînement).</li>
+        <li>Bloomberg, <a href="https://www.bloomberg.com/news/articles/2025-01-27/asml-sinks-as-china-ai-startup-triggers-panic-in-tech-stocks" target="_blank" rel="noopener noreferrer">China AI startup triggers panic in tech stocks</a>, 27 janvier 2025.</li>
+        <li>Anthropic, <a href="https://www.anthropic.com/news/claude-3-7-sonnet" target="_blank" rel="noopener noreferrer">Claude 3.7 Sonnet and Claude Code</a>, février 2025 ; <a href="https://www.anthropic.com/claude-opus-5-5" target="_blank" rel="noopener noreferrer">Claude Opus 5.5</a>, septembre 2026.</li>
+        <li>Mistral AI, <a href="https://mistral.ai/news/magistral" target="_blank" rel="noopener noreferrer">Magistral</a>, juin 2025 ; OpenAI, <a href="https://openai.com/index/introducing-gpt-5/" target="_blank" rel="noopener noreferrer">Introducing GPT-5</a>, août 2025 ; DeepSeek, <a href="https://api-docs.deepseek.com/updates/" target="_blank" rel="noopener noreferrer">journal des versions de l’API</a>.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

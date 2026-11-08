@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Débats et limites — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 15 · 2021–2026</p>
+      <h1>Débats et limites</h1>
+      <p class="lead">L’histoire des LLM n’est pas seulement technique. Fiabilité, droit d’auteur, évaluation, énergie, régulation : ces débats ont façonné les modèles autant que les articles de recherche.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#fiabilite">1 · Fiabilité</a></li>
+        <li><a href="#droit">2 · Données et droit</a></li>
+        <li><a href="#regulation">3 · Régulation</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="fiabilite">Fiabilité : plausible n’est pas vrai</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>Les hallucinations</h3>
+        <p>Un LLM produit le texte le plus <em>plausible</em>, pas le plus <em>vrai</em>. Il peut inventer une référence, une date ou une jurisprudence avec aplomb. En 2023, un avocat new-yorkais est sanctionné pour avoir cité des décisions inventées par ChatGPT. Le RAG, le raisonnement et la vérification réduisent le problème sans le supprimer.</p>
+      </section>
+      <section class="card">
+        <h3>Les « perroquets stochastiques »</h3>
+        <p>En 2021, Emily M. Bender, Timnit Gebru, Angelina McMillan-Major et Margaret Mitchell publient <em>On the Dangers of Stochastic Parrots</em> : coût environnemental, données non documentées, biais, illusion de compréhension. Le départ contesté de Timnit Gebru et Margaret Mitchell de Google, autour de cet article, en fait un événement.</p>
+      </section>
+      <section class="card">
+        <h3>Des évaluations fragiles</h3>
+        <p>Les bancs d’essai populaires (MMLU, GSM8K, HumanEval) sont saturés ou présents dans les données d’entraînement (<em>contamination</em>). D’où des tests plus récents et plus difficiles (GPQA, SWE-bench Verified, ARC-AGI-2), et les précautions vues aux chapitres 9, 12 et 14.</p>
+      </section>
+    </div>
+
+    <h2 id="droit">Données d’entraînement et droit d’auteur</h2>
+    <p>Les LLM sont entraînés sur des textes du Web, des livres et du code, souvent sans accord des auteurs. Les procès se multiplient.</p>
+    <ol class="timeline">
+      <li><span class="date">Décembre 2023</span><span class="what">New York Times c. OpenAI et Microsoft</span> : le journal attaque pour reproduction de ses articles. Au 8 novembre 2026, l’affaire est toujours en cours, sans date de procès.</li>
+      <li><span class="date">Juin 2025</span><span class="what">Bartz c. Anthropic</span> : un juge fédéral estime que l’entraînement sur des livres achetés légalement relève de l’usage loyal (<em>fair use</em>) américain, mais pas la constitution d’une bibliothèque de copies piratées.</li>
+      <li><span class="date">Septembre 2025 – juillet 2026</span><span class="what">Accord de 1,5 Md$</span> : Anthropic transige avec les auteurs, environ 3 000 $ par œuvre, pour près de 500 000 livres. L’accord, approuvé définitivement en juillet 2026, fait l’objet d’appels.</li>
+    </ol>
+    <p>Ces décisions sont américaines et propres à chaque cas. En Europe, le droit d’auteur prévoit une exception de fouille de textes et de données, avec une possibilité d’opposition des ayants droit.</p>
+
+    <h2 id="regulation">Énergie et régulation</h2>
+    <p><strong>Énergie.</strong> Entraîner et surtout faire tourner des LLM pour des centaines de millions d’utilisateurs consomme beaucoup d’électricité et d’eau de refroidissement. Les estimations par requête varient beaucoup selon les modèles et les centres de données, et les laboratoires publient peu de chiffres vérifiables. Les gains d’efficacité (chapitre 14) sont en partie absorbés par la hausse de l’usage.</p>
+    <p><strong>Régulation européenne.</strong> Le règlement européen sur l’IA (AI Act, règlement 2024/1689) est entré en vigueur le 1er août 2024. Les obligations des modèles d’IA à usage général (documentation, politique de droit d’auteur, évaluation des risques pour les plus puissants) s’appliquent depuis le <strong>2 août 2025</strong>, accompagnées d’un code de bonnes pratiques publié en juillet 2025. En 2026, un paquet de simplification (« omnibus numérique ») reporte surtout les obligations des systèmes à haut risque, pas celles des modèles à usage général.</p>
+
+    <div class="people" aria-label="Personnes citées">
+      <figure class="person">
+        <img src="../../assets/portraits/emily-m-bender.jpg" alt="Portrait de Emily M. Bender" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Emily M. Bender</span><span class="role">« Stochastic Parrots », 2021</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:Emily_M_Bender_CHM_Mountain_View_March_2025.jpg" target="_blank" rel="noopener noreferrer">Photo : King of Hearts, CC BY-SA 4.0</a></figcaption>
+      </figure>
+      <figure class="person">
+        <img src="../../assets/portraits/timnit-gebru.jpg" alt="Portrait de Timnit Gebru" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Timnit Gebru</span><span class="role">« Stochastic Parrots », 2021</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:Timnit_Gebru_crop.jpg" target="_blank" rel="noopener noreferrer">Photo : TechCrunch, CC BY 2.0</a></figcaption>
+      </figure>
+      <figure class="person">
+        <img src="../../assets/portraits/margaret-mitchell.jpg" alt="Portrait de Margaret Mitchell" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Margaret Mitchell</span><span class="role">« Stochastic Parrots », 2021</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:MargaretMitchell2022.jpg" target="_blank" rel="noopener noreferrer">Photo : AI4LAM, CC BY 3.0</a></figcaption>
+      </figure>
+    </div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Pourquoi un LLM peut-il inventer une référence bibliographique ?</legend>
+        <label><input type="radio" name="q1" value="a" data-correct> Parce qu’il génère une suite plausible, sans vérifier qu’elle existe.</label>
+        <label><input type="radio" name="q1" value="b"> Parce qu’il ment volontairement.</label>
+        <p class="explain" hidden>Le modèle n’a pas d’intention : il prolonge un motif. Une référence a un format très régulier, facile à imiter. Vérifiez toujours les sources citées.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Depuis quand les obligations de l’AI Act pour les modèles à usage général s’appliquent-elles ?</legend>
+        <label><input type="radio" name="q2" value="a"> Depuis le 1er août 2024.</label>
+        <label><input type="radio" name="q2" value="b" data-correct> Depuis le 2 août 2025.</label>
+        <p class="explain" hidden>Le règlement est entré en vigueur en 2024, mais ses obligations s’appliquent par étapes : les modèles à usage général sont concernés depuis le 2 août 2025.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Bender, Gebru, McMillan-Major, Mitchell, <a href="https://doi.org/10.1145/3442188.3445922" target="_blank" rel="noopener noreferrer">On the Dangers of Stochastic Parrots</a>, FAccT 2021.</li>
+        <li>Reuters, <a href="https://thestar.com.my/tech/tech-news/2023/06/23/new-york-lawyers-sanctioned-for-using-fake-chatgpt-cases-in-legal-brief" target="_blank" rel="noopener noreferrer">New York lawyers sanctioned for using fake ChatGPT cases in legal brief</a>, juin 2023 (dépêche reprise par The Star).</li>
+        <li>Xu et al., <a href="https://arxiv.org/abs/2402.15938" target="_blank" rel="noopener noreferrer">Benchmark Data Contamination of Large Language Models: A Survey</a>, 2024.</li>
+        <li>Dossier <a href="https://www.courtlistener.com/docket/68117049/the-new-york-times-company-v-microsoft-corporation/" target="_blank" rel="noopener noreferrer">NYT c. Microsoft et OpenAI</a> (CourtListener).</li>
+        <li>Association of American Publishers, <a href="https://publishers.org/news/aap-welcomes-courts-final-settlement-approval-in-bartz-v-anthropic/" target="_blank" rel="noopener noreferrer">approbation définitive de l’accord Bartz c. Anthropic</a>, juillet 2026.</li>
+        <li>Commission européenne, <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener noreferrer">cadre réglementaire de l’IA</a> ; <a href="https://digital-strategy.ec.europa.eu/en/news/general-purpose-ai-code-practice-now-available" target="_blank" rel="noopener noreferrer">code de bonnes pratiques GPAI</a>, juillet 2025.</li>
+        <li>Orrick, <a href="https://www.orrick.com/en/Insights/2026/07/EU-AI-Act-Update-Digital-Omnibus-Finalizes-8-Compliance-Changes" target="_blank" rel="noopener noreferrer">EU AI Act Update: Digital Omnibus</a>, juillet 2026.</li>
+        <li>Directive (UE) 2019/790, <a href="https://eur-lex.europa.eu/eli/dir/2019/790/oj" target="_blank" rel="noopener noreferrer">articles 3 et 4 (fouille de textes et de données)</a>.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

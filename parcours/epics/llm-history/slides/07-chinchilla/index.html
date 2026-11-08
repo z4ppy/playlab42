@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lois d’échelle et Chinchilla — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 7 · 2022</p>
+      <h1>Chinchilla : plus de données, moins de paramètres</h1>
+      <p class="lead">En 2022, DeepMind montre que les géants de l’époque étaient mal dimensionnés. Manipulez vous-même la règle qui a changé la façon d’entraîner les LLM.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#regle">1 · La règle</a></li>
+        <li><a href="#labo">2 · Expérimenter</a></li>
+        <li><a href="#emergence">3 · L’émergence en débat</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="regle">La règle des 20 tokens par paramètre</h2>
+    <p>Hoffmann et ses collègues de DeepMind entraînent plus de 400 modèles, de 70 M à 16 Md de paramètres, sur 5 à 500 Md de tokens. Question : pour un budget de calcul fixé, vaut-il mieux un gros modèle peu entraîné ou un petit modèle entraîné longtemps ?</p>
+    <p>Réponse : il faut augmenter <strong>taille et données dans les mêmes proportions</strong>, soit environ <strong>20 tokens d’entraînement par paramètre</strong>. Pour le prouver, ils entraînent <strong>Chinchilla</strong> : 70 Md de paramètres et 1,4 T de tokens, avec <em>le même budget de calcul que Gopher</em> (280 Md de paramètres, 300 Md de tokens). Chinchilla bat Gopher, GPT-3 et Megatron-Turing NLG sur la plupart des tâches, tout en demandant environ quatre fois moins de calcul par token généré.</p>
+    <div class="formula" aria-label="Règles utilisées par le calculateur">Calcul C ≈ 6 · N · D &nbsp;·&nbsp; optimum Chinchilla : D ≈ 20 · N, donc N ≈ √(C / 120)</div>
+
+    <section class="activity calculator" data-chinchilla id="labo" aria-labelledby="labo-title">
+      <h2 id="labo-title">Expérimenter : le calculateur Chinchilla</h2>
+      <p>Choisissez un budget de calcul, ou un modèle réel, et comparez ses choix à la règle des 20 tokens par paramètre.</p>
+      <label for="compute">Budget de calcul (puissance de 10, en FLOP)</label>
+      <input id="compute" type="range" min="18" max="26" step="0.1" value="23.5" aria-describedby="compute-help">
+      <p id="compute-help" class="updated">De 10<sup>18</sup> (un petit modèle d’étudiant) à 10<sup>26</sup> (ordre de grandeur des plus gros entraînements publiés).</p>
+      <dl class="stats" aria-live="polite">
+        <div class="stat"><dt>Budget</dt><dd><output data-out="compute">—</output></dd></div>
+        <div class="stat"><dt>Taille optimale</dt><dd><output data-out="params">—</output></dd></div>
+        <div class="stat"><dt>Données optimales</dt><dd><output data-out="tokens">—</output></dd></div>
+      </dl>
+      <p><strong>Comparer avec un modèle réel :</strong></p>
+      <div class="presets">
+        <button type="button" data-params="175e9" data-tokens="300e9">GPT-3 (2020)</button>
+        <button type="button" data-params="280e9" data-tokens="300e9">Gopher (2021)</button>
+        <button type="button" data-params="70e9" data-tokens="1.4e12">Chinchilla (2022)</button>
+        <button type="button" data-params="7e9" data-tokens="1e12">LLaMA 7B (2023)</button>
+        <button type="button" data-params="8e9" data-tokens="15e12">Llama 3 8B (2024)</button>
+      </div>
+      <p class="verdict" data-out="preset" aria-live="polite">Cliquez sur un modèle pour situer son entraînement.</p>
+      <noscript><p>Le calculateur nécessite JavaScript. Exemple : GPT-3 a vu 300 Md de tokens pour 175 Md de paramètres (1,7 token par paramètre) ; avec le même budget, la règle Chinchilla suggère environ 51 Md de paramètres et 1 T de tokens.</p></noscript>
+      <details>
+        <summary>Lire la correction</summary>
+        <ul>
+          <li><strong>GPT-3 et Gopher</strong> ont vu moins de 2 tokens par paramètre : ils étaient sous-entraînés.</li>
+          <li><strong>LLaMA 7B et Llama 3 8B</strong> dépassent de très loin la règle. Ce n’est pas une erreur : Chinchilla optimise le coût d’<em>entraînement</em>. Un petit modèle entraîné plus longtemps coûte plus cher à fabriquer, mais beaucoup moins cher à <em>utiliser</em> des milliards de fois. Depuis 2023, presque tous les modèles sont « sur-entraînés » volontairement.</li>
+        </ul>
+      </details>
+    </section>
+
+    <h2 id="emergence">Les capacités « émergentes » : un débat ouvert</h2>
+    <p>En 2022, Jason Wei et ses collègues décrivent des capacités <strong>émergentes</strong> : quasi nulles chez les petits modèles, elles apparaîtraient brusquement au-delà d’une certaine taille (arithmétique à plusieurs chiffres, certaines tâches de raisonnement du banc BIG-bench).</p>
+    <aside class="nuance" aria-label="Contrepoint">
+      <span class="box-label">Contrepoint</span>
+      <p>En 2023, Schaeffer, Miranda et Koyejo montrent qu’une partie de ces sauts vient de la <strong>métrique</strong> : avec un score « tout ou rien » (réponse exacte ou non), un progrès graduel ressemble à un saut. Avec une métrique continue, la courbe devient souvent régulière. Leur article, <em>Are Emergent Abilities of Large Language Models a Mirage?</em>, a reçu un prix du meilleur article à NeurIPS 2023. Le débat n’est pas clos : il est prudent de parler de capacités « difficiles à prévoir » plutôt que « magiques ».</p>
+    </aside>
+
+    <div class="people" aria-label="Personnes citées">
+      <figure class="person">
+        <img src="../../assets/portraits/demis-hassabis.jpg" alt="Portrait de Demis Hassabis" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Demis Hassabis</span><span class="role">Directeur de Google DeepMind</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:Demis_Hassabis,_2024_Nobel_Prize_Laureate_in_Chemistry_7_(cropped).jpg" target="_blank" rel="noopener noreferrer">Photo : John Sears, CC BY-SA 4.0</a></figcaption>
+      </figure>
+    </div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Avec le même budget de calcul que Gopher, qu’a fait Chinchilla ?</legend>
+        <label><input type="radio" name="q1" value="a"> Un modèle plus grand, entraîné sur moins de données.</label>
+        <label><input type="radio" name="q1" value="b" data-correct> Un modèle 4 fois plus petit, entraîné sur environ 4,7 fois plus de tokens.</label>
+        <p class="explain" hidden>70 Md au lieu de 280 Md de paramètres, 1,4 T au lieu de 300 Md de tokens : même calcul, meilleurs résultats.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Pourquoi Llama 3 8B a-t-il été entraîné sur 15 T de tokens, bien au-delà de la règle ?</legend>
+        <label><input type="radio" name="q2" value="a" data-correct> Pour obtenir un petit modèle plus performant, moins cher à faire tourner.</label>
+        <label><input type="radio" name="q2" value="b"> Par erreur de dimensionnement.</label>
+        <p class="explain" hidden>La règle Chinchilla minimise le coût d’entraînement seul. Quand un modèle sert des millions d’utilisateurs, c’est le coût d’utilisation qui domine.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Hoffmann et al., <a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener noreferrer">Training Compute-Optimal Large Language Models</a>, 2022.</li>
+        <li>Kaplan et al., <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener noreferrer">Scaling Laws for Neural Language Models</a>, 2020 (approximation C ≈ 6ND).</li>
+        <li>Touvron et al., <a href="https://arxiv.org/abs/2302.13971" target="_blank" rel="noopener noreferrer">LLaMA: Open and Efficient Foundation Language Models</a>, 2023 (7B sur 1 T de tokens).</li>
+        <li>Meta, <a href="https://ai.meta.com/blog/meta-llama-3/" target="_blank" rel="noopener noreferrer">Introducing Meta Llama 3</a>, avril 2024 (plus de 15 T de tokens).</li>
+        <li>Wei et al., <a href="https://arxiv.org/abs/2206.07682" target="_blank" rel="noopener noreferrer">Emergent Abilities of Large Language Models</a>, 2022.</li>
+        <li>Schaeffer, Miranda, Koyejo, <a href="https://arxiv.org/abs/2304.15004" target="_blank" rel="noopener noreferrer">Are Emergent Abilities of Large Language Models a Mirage?</a>, 2023 ; <a href="https://blog.neurips.cc/2023/12/11/announcing-the-neurips-2023-paper-awards/" target="_blank" rel="noopener noreferrer">prix NeurIPS 2023</a>.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

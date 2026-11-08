@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pré-entraîner puis adapter — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 5 · 2018–2019</p>
+      <h1>Pré-entraîner une fois, adapter partout</h1>
+      <p class="lead">2018 est l’année où le traitement des langues adopte la recette de la vision : apprendre d’abord sur une masse de textes sans annotation, puis spécialiser avec peu d’exemples.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#precurseurs">1 · Les précurseurs</a></li>
+        <li><a href="#deux-familles">2 · GPT et BERT</a></li>
+        <li><a href="#quiz">3 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="precurseurs">Les précurseurs de 2018</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>ULMFiT</h3>
+        <p class="meta">Jeremy Howard, Sebastian Ruder · janvier 2018</p>
+        <p>Un LSTM pré-entraîné sur Wikipédia, puis affiné par étapes pour classer des textes. Démontre que le <dfn data-term="transfer learning">transfert</dfn> marche en NLP avec quelques centaines d’exemples.</p>
+      </section>
+      <section class="card">
+        <h3>ELMo</h3>
+        <p class="meta">Peters et al., Allen Institute · février 2018</p>
+        <p>Des embeddings <strong>contextuels</strong> : le mot « avocat » reçoit un vecteur différent dans « l’avocat plaide » et « l’avocat est mûr ». Fin des vecteurs uniques façon word2vec.</p>
+      </section>
+      <section class="card">
+        <h3>Les sous-mots (BPE)</h3>
+        <p class="meta">Sennrich, Haddow, Birch · 2016</p>
+        <p>Découper les mots rares en morceaux fréquents (« anticonstitutionnellement » → plusieurs <dfn data-term="token">tokens</dfn>). Ce découpage, ou une variante, est utilisé par presque tous les LLM.</p>
+      </section>
+    </div>
+
+    <h2 id="deux-familles">Deux familles : prédire la suite ou deviner les trous</h2>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 210" role="img" aria-labelledby="mask-title mask-desc">
+        <title id="mask-title">Décodeur causal contre encodeur bidirectionnel</title>
+        <desc id="mask-desc">À gauche, GPT prédit le mot après « le chat » en ne regardant que les mots précédents. À droite, BERT devine le mot masqué entre « le » et « dort » en regardant des deux côtés.</desc>
+        <defs><marker id="arrow-mask" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <text class="svg-text-strong" x="150" y="24" text-anchor="middle">GPT · décodeur</text>
+        <rect class="svg-box-decoder" x="20" y="60" width="70" height="38" rx="6"/><text class="svg-text" x="55" y="84" text-anchor="middle">le</text>
+        <rect class="svg-box-decoder" x="105" y="60" width="70" height="38" rx="6"/><text class="svg-text" x="140" y="84" text-anchor="middle">chat</text>
+        <rect class="svg-box-accent" x="190" y="60" width="90" height="38" rx="6"/><text class="svg-text-accent" x="235" y="84" text-anchor="middle">? suivant</text>
+        <line class="svg-line" x1="55" y1="100" x2="230" y2="100" marker-end="url(#arrow-mask)"/>
+        <line class="svg-line" x1="140" y1="112" x2="230" y2="102" marker-end="url(#arrow-mask)"/>
+        <text class="svg-text-muted" x="150" y="150" text-anchor="middle">ne voit que le passé</text>
+        <text class="svg-text-muted" x="150" y="168" text-anchor="middle">→ excellent pour générer</text>
+
+        <text class="svg-text-strong" x="480" y="24" text-anchor="middle">BERT · encodeur</text>
+        <rect class="svg-box-encoder" x="360" y="60" width="70" height="38" rx="6"/><text class="svg-text" x="395" y="84" text-anchor="middle">le</text>
+        <rect class="svg-box-accent" x="445" y="60" width="90" height="38" rx="6"/><text class="svg-text-accent" x="490" y="84" text-anchor="middle">[MASK]</text>
+        <rect class="svg-box-encoder" x="550" y="60" width="70" height="38" rx="6"/><text class="svg-text" x="585" y="84" text-anchor="middle">dort</text>
+        <line class="svg-line" x1="395" y1="104" x2="480" y2="104" marker-end="url(#arrow-mask)"/>
+        <line class="svg-line" x1="585" y1="104" x2="500" y2="104" marker-end="url(#arrow-mask)"/>
+        <text class="svg-text-muted" x="490" y="150" text-anchor="middle">voit les deux côtés</text>
+        <text class="svg-text-muted" x="490" y="168" text-anchor="middle">→ excellent pour comprendre</text>
+      </svg>
+      <figcaption>Le choix de l’objectif d’entraînement détermine ce que le modèle sait bien faire.</figcaption>
+    </figure>
+
+    <div class="cards">
+      <section class="card">
+        <h3>GPT (OpenAI)</h3>
+        <p class="meta">Radford et al. · juin 2018 · 117 M paramètres</p>
+        <p>Un décodeur Transformer pré-entraîné à prédire le token suivant sur BooksCorpus (environ 7 000 livres non publiés), puis affiné pour chaque tâche. Le « G » de GPT signifie <em>Generative</em>, le « P » <em>Pre-trained</em>.</p>
+      </section>
+      <section class="card">
+        <h3>BERT (Google)</h3>
+        <p class="meta">Devlin et al. · octobre 2018 · 110 M et 340 M paramètres</p>
+        <p>Un encodeur entraîné à retrouver 15 % de tokens masqués. Bat l’état de l’art sur 11 tâches : 80,5 sur le banc d’essai GLUE (+7,7 points), F1 de 93,2 sur SQuAD 1.1. Fin 2019, BERT est intégré à la recherche Google.</p>
+      </section>
+      <section class="card">
+        <h3>T5 (Google)</h3>
+        <p class="meta">Raffel et al. · octobre 2019 · jusqu’à 11 Md paramètres</p>
+        <p>Toute tâche devient « texte vers texte » (« traduire en allemand : … », « résumer : … ») avec un encodeur-décodeur, entraîné sur C4, un grand nettoyage du Web.</p>
+      </section>
+    </div>
+
+    <aside class="takeaways" aria-label="À retenir">
+      <span class="box-label">À retenir</span>
+      <ul>
+        <li>Le paradigme de 2018 : <strong>pré-entraînement</strong> non supervisé coûteux, puis <strong>affinage</strong> (<em>fine-tuning</em>) léger et supervisé.</li>
+        <li>Jusqu’en 2020, BERT et ses variantes dominent les applications (recherche, classement, extraction d’entités). Ces encodeurs sont toujours très utilisés pour la recherche sémantique.</li>
+        <li>Aujourd’hui, on parle plutôt de pré-entraînement suivi d’un <strong>post-entraînement</strong> (instructions, préférences, apprentissage par renforcement), puis d’usage par simple consigne (<em>prompt</em>).</li>
+      </ul>
+    </aside>
+
+    <div class="people" aria-label="Personnes citées">
+      <figure class="person">
+        <img src="../../assets/portraits/jeremy-howard.jpg" alt="Portrait de Jeremy Howard" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Jeremy Howard</span><span class="role">ULMFiT, 2018</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:Jeremy_Howard.jpg" target="_blank" rel="noopener noreferrer">Photo : Hr0207, CC0</a></figcaption>
+      </figure>
+    </div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Quel modèle convient le mieux pour générer un texte long ?</legend>
+        <label><input type="radio" name="q1" value="a" data-correct> Un décodeur comme GPT, entraîné à prédire le token suivant.</label>
+        <label><input type="radio" name="q1" value="b"> Un encodeur comme BERT, entraîné à remplir des trous.</label>
+        <p class="explain" hidden>Un décodeur génère naturellement de gauche à droite. BERT voit les deux côtés mais n’a pas été entraîné à écrire une suite.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Qu’apporte ELMo par rapport à word2vec ?</legend>
+        <label><input type="radio" name="q2" value="a"> Des vecteurs plus petits.</label>
+        <label><input type="radio" name="q2" value="b" data-correct> Un vecteur qui dépend du contexte de la phrase.</label>
+        <p class="explain" hidden>Avec word2vec, « avocat » a un seul vecteur quel que soit le sens. ELMo, puis BERT et GPT, calculent une représentation en contexte.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Howard, Ruder, <a href="https://arxiv.org/abs/1801.06146" target="_blank" rel="noopener noreferrer">Universal Language Model Fine-tuning for Text Classification</a>, 2018.</li>
+        <li>Peters et al., <a href="https://arxiv.org/abs/1802.05365" target="_blank" rel="noopener noreferrer">Deep contextualized word representations</a>, 2018.</li>
+        <li>Sennrich, Haddow, Birch, <a href="https://arxiv.org/abs/1508.07909" target="_blank" rel="noopener noreferrer">Neural Machine Translation of Rare Words with Subword Units</a>, 2016.</li>
+        <li>Radford et al., <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" target="_blank" rel="noopener noreferrer">Improving Language Understanding by Generative Pre-Training</a>, OpenAI, 2018.</li>
+        <li>Devlin et al., <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener noreferrer">BERT: Pre-training of Deep Bidirectional Transformers</a>, 2018.</li>
+        <li>Google, <a href="https://blog.google/products/search/search-language-understanding-bert/" target="_blank" rel="noopener noreferrer">Understanding searches better than ever before</a>, octobre 2019.</li>
+        <li>Raffel et al., <a href="https://arxiv.org/abs/1910.10683" target="_blank" rel="noopener noreferrer">Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer</a>, 2019.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

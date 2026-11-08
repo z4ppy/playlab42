@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Histoire des LLM · Introduction</p>
+      <h1>De Shannon aux agents : une histoire en accéléré</h1>
+      <p class="lead">En 1948, on comptait des mots pour deviner le suivant. En 2026, des modèles écrivent du code, raisonnent sur plusieurs étapes et pilotent des outils. Ce parcours raconte comment, et qui l’a rendu possible.</p>
+      <img class="banner" src="../../assets/banner.jpg" alt="" width="1200" height="500">
+      <p class="banner-credit">Illustration d’ambiance générée avec FLUX.1 [schnell] (Black Forest Labs, licence Apache 2.0). Ce n’est pas un schéma technique.</p>
+    </header>
+
+    <h2 id="definition">Un LLM, en une phrase</h2>
+    <p>Un <dfn data-term="llm">grand modèle de langage</dfn> (<em>Large Language Model</em>) est un réseau de neurones entraîné sur un très grand corpus de textes à <strong>prédire le <dfn>token</dfn> suivant</strong>. Cette tâche simple, répétée des milliers de milliards de fois, oblige le modèle à capturer la grammaire, des faits, des styles et des régularités du raisonnement.</p>
+    <p>L’idée de prédire la suite d’un texte n’est pas nouvelle : elle date des débuts de la théorie de l’information. Ce qui a changé, ce sont trois ingrédients qui ont progressé ensemble : <strong>l’architecture</strong> (l’attention, puis le Transformer), <strong>les données</strong> (le Web) et <strong>le calcul</strong> (les GPU).</p>
+
+    <dl class="stats" aria-label="Quelques ordres de grandeur">
+      <div class="stat"><dt>Transformer de base</dt><dd>65 M</dd><dd>paramètres, 2017</dd></div>
+      <div class="stat"><dt>GPT-3</dt><dd>175 Md</dd><dd>paramètres, 2020</dd></div>
+      <div class="stat"><dt>Chinchilla</dt><dd>20</dd><dd>tokens par paramètre, la règle de 2022</dd></div>
+      <div class="stat"><dt>ChatGPT</dt><dd>~100 M</dd><dd>utilisateurs en 2 mois (estimation UBS, 2023)</dd></div>
+    </dl>
+
+    <h2 id="frise">Huit dates pour s’orienter</h2>
+    <ol class="timeline">
+      <li><span class="date">1948</span><span class="what">Shannon</span> modélise l’anglais comme une suite de probabilités.</li>
+      <li><span class="date">2003</span><span class="what">Bengio et al.</span> : premier modèle de langage neuronal, avec des mots représentés par des vecteurs.</li>
+      <li><span class="date">2014</span><span class="what">Bahdanau, Cho, Bengio</span> inventent l’attention pour la traduction.</li>
+      <li><span class="date">2017</span><span class="what">« Attention Is All You Need »</span> : le Transformer abandonne les réseaux récurrents.</li>
+      <li><span class="date">2018–2020</span><span class="what">BERT, GPT-2, GPT-3</span> : pré-entraîner une fois, réutiliser partout, puis grossir.</li>
+      <li><span class="date">2022</span><span class="what">InstructGPT puis ChatGPT</span> : l’alignement rend les modèles utilisables par tous.</li>
+      <li><span class="date">2023</span><span class="what">LLaMA, Mistral</span> : les poids ouverts démocratisent l’accès.</li>
+      <li><span class="date">2024–2026</span><span class="what">Modèles de raisonnement et agents</span> : le modèle « réfléchit » plus longtemps et utilise des outils.</li>
+    </ol>
+
+    <h2 id="plan">Le parcours</h2>
+    <div class="cards">
+      <section class="card"><h3>📜 Avant les LLM</h3><p>Shannon, ELIZA, les LSTM, word2vec : les idées qui précèdent.</p></section>
+      <section class="card"><h3>🔍 L’attention</h3><p>Bahdanau, puis le Transformer, et ses huit auteurs.</p></section>
+      <section class="card"><h3>📈 L’échelle</h3><p>BERT, GPT-3, les lois d’échelle, Chinchilla et l’alignement.</p></section>
+      <section class="card"><h3>💬 Le grand public</h3><p>ChatGPT, la vague des poids ouverts et la boîte à outils.</p></section>
+      <section class="card"><h3>🚀 Raisonner et agir</h3><p>o1, DeepSeek-R1, les agents de code, le panorama 2025–2026.</p></section>
+      <section class="card"><h3>🧭 Le recul</h3><p>Débats, limites, leçons, frise à reconstituer et sources.</p></section>
+    </div>
+
+    <aside class="anecdote" aria-label="Comment utiliser ce parcours">
+      <span class="box-label">Mode d’emploi</span>
+      <p>Ce parcours raconte <strong>qui, quand et pourquoi</strong>. Pour voir <strong>comment</strong> un LLM calcule (tokens, attention, échantillonnage), suivez le parcours <a href="../../../../../index.html#/parcours/anatomie-llm" target="_top">Anatomie d’un LLM</a>. Les bases des réseaux de neurones sont dans <a href="../../../../../index.html#/parcours/deep-learning-intro" target="_top">Deep Learning pour l’impatient</a>.</p>
+      <p>Chaque page se termine par ses sources et un petit quiz. Les termes soulignés en pointillé ouvrent une définition.</p>
+    </aside>
+
+    <aside class="nuance" aria-label="Avertissement sur les chiffres">
+      <span class="box-label">À lire avant de citer un chiffre</span>
+      <p>Les scores de benchmark, les prix et les classements de modèles vieillissent en quelques mois. Ils sont donnés ici comme des repères datés (état au 8 novembre 2026), avec leur source, jamais comme un classement définitif.</p>
+    </aside>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Vaswani et al., <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Attention Is All You Need</a>, 2017 (tableau 3 : 65 M de paramètres pour le modèle de base).</li>
+        <li>Brown et al., <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener noreferrer">Language Models are Few-Shot Learners</a>, 2020.</li>
+        <li>Hoffmann et al., <a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener noreferrer">Training Compute-Optimal Large Language Models</a>, 2022.</li>
+        <li>Reuters, <a href="https://www.thestar.com.my/tech/tech-news/2023/02/02/chatgpt-sets-record-for-fastest-growing-user-base---analyst-note" target="_blank" rel="noopener noreferrer">ChatGPT sets record for fastest-growing user base</a>, 1er février 2023 (dépêche reprise par The Star) (note d’analyste UBS, données Similarweb).</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le pari de l’échelle — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 6 · 2019–2022</p>
+      <h1>Le pari de l’échelle</h1>
+      <p class="lead">Et si, au lieu d’inventer de nouvelles architectures, on agrandissait simplement le modèle, les données et le calcul ? Entre 2019 et 2022, ce pari donne GPT-3, et des capacités que personne n’avait demandées.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#gpt2">1 · GPT-2</a></li>
+        <li><a href="#gpt3">2 · GPT-3</a></li>
+        <li><a href="#lois">3 · Les lois d’échelle</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="gpt2">2019 : GPT-2, « trop dangereux » ?</h2>
+    <p>En février 2019, OpenAI présente GPT-2 (1,5 Md de paramètres, entraîné sur WebText, 40 Go de pages liées depuis Reddit). L’article s’intitule <em>Language Models are Unsupervised Multitask Learners</em> : sans affinage, le modèle résume, traduit ou répond à des questions, médiocrement, mais simplement parce qu’on le lui demande dans le texte.</p>
+    <p>OpenAI ne publie d’abord qu’une petite version, par crainte d’usages malveillants (fausses informations, spam), puis des versions de plus en plus grandes. Le modèle complet est publié en <strong>novembre 2019</strong>. Cette publication progressive est l’un des premiers débats publics sur la diffusion des modèles.</p>
+
+    <h2 id="gpt3">2020 : GPT-3 et l’apprentissage en contexte</h2>
+    <dl class="stats" aria-label="GPT-3 en chiffres">
+      <div class="stat"><dt>Paramètres</dt><dd>175 Md</dd><dd>100 fois GPT-2</dd></div>
+      <div class="stat"><dt>Données</dt><dd>300 Md</dd><dd>tokens vus à l’entraînement</dd></div>
+      <div class="stat"><dt>Calcul</dt><dd>3,14 × 10<sup>23</sup></dd><dd>opérations (FLOP)</dd></div>
+      <div class="stat"><dt>Coût estimé</dt><dd>~4,6 M$</dd><dd>estimation externe (Lambda), non communiquée par OpenAI</dd></div>
+    </dl>
+    <p>Le titre de l’article (mai 2020) résume sa découverte : <em>Language Models are Few-Shot Learners</em>. Il suffit de montrer quelques exemples dans le prompt pour que le modèle reproduise la tâche, <strong>sans modifier ses poids</strong>. C’est l’<dfn data-term="apprentissage en contexte">apprentissage en contexte</dfn>.</p>
+    <div class="cards">
+      <section class="card"><h3>Zéro exemple</h3><pre><code>Traduire en français :
+cheese =&gt;</code></pre></section>
+      <section class="card"><h3>Un exemple</h3><pre><code>Traduire en français :
+sea otter =&gt; loutre de mer
+cheese =&gt;</code></pre></section>
+      <section class="card"><h3>Quelques exemples</h3><pre><code>sea otter =&gt; loutre de mer
+peppermint =&gt; menthe poivrée
+plush giraffe =&gt; girafe peluche
+cheese =&gt;</code></pre></section>
+    </div>
+    <p>GPT-3 n’est accessible que par une API payante. Un an plus tard, sa variante entraînée sur du code, <strong>Codex</strong> (2021), alimente la première version de <strong>GitHub Copilot</strong>. Voir le parcours <a href="../../../../../index.html#/parcours/github-copilot-guide" target="_top">GitHub Copilot</a>.</p>
+
+    <h2 id="lois">2020 : des lois d’échelle prévisibles</h2>
+    <p>En janvier 2020, Jared Kaplan et ses collègues d’OpenAI mesurent la perte (l’erreur de prédiction) de centaines de modèles. Résultat : elle diminue selon une <dfn data-term="loi de puissance">loi de puissance</dfn> du nombre de paramètres <em>N</em>, de la quantité de données <em>D</em> et du calcul <em>C</em>, sur plus de sept ordres de grandeur.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 640 250" role="img" aria-labelledby="scale-title scale-desc">
+        <title id="scale-title">Une loi de puissance en échelle log-log</title>
+        <desc id="scale-desc">Sur un graphique où les deux axes sont logarithmiques, la perte baisse en ligne droite quand le calcul augmente de 10 puissance 17 à 10 puissance 24 opérations. Les points sont illustratifs.</desc>
+        <line class="svg-line" x1="70" y1="210" x2="610" y2="210"/>
+        <line class="svg-line" x1="70" y1="20" x2="70" y2="210"/>
+        <text class="svg-text-muted" x="340" y="240" text-anchor="middle">Calcul d’entraînement (échelle logarithmique)</text>
+        <text class="svg-text-muted" x="20" y="115" text-anchor="middle" transform="rotate(-90 20 115)">Perte (log)</text>
+        <line class="svg-line-accent" x1="90" y1="45" x2="590" y2="185" stroke-width="2.5"/>
+        <circle class="svg-dot-muted" cx="110" cy="52" r="5"/><circle class="svg-dot-muted" cx="180" cy="69" r="5"/>
+        <circle class="svg-dot-muted" cx="250" cy="92" r="5"/><circle class="svg-dot-muted" cx="320" cy="108" r="5"/>
+        <circle class="svg-dot-muted" cx="390" cy="130" r="5"/><circle class="svg-dot-muted" cx="460" cy="146" r="5"/>
+        <circle class="svg-dot" cx="560" cy="177" r="7"/>
+        <text class="svg-text-accent" x="560" y="164" text-anchor="middle">GPT-3</text>
+        <text class="svg-text-muted" x="90" y="228">10<tspan baseline-shift="super">17</tspan></text>
+        <text class="svg-text-muted" x="570" y="228">10<tspan baseline-shift="super">24</tspan></text>
+      </svg>
+      <figcaption>Une droite en échelle log-log : multiplier le calcul par 10 réduit la perte d’un facteur constant. Points illustratifs.</figcaption>
+    </figure>
+    <div class="formula" aria-label="Lois d’échelle de Kaplan">L(N) ∝ N<sup>−0,076</sup> &nbsp;·&nbsp; L(D) ∝ D<sup>−0,095</sup> &nbsp;·&nbsp; L(C) ∝ C<sup>−0,050</sup></div>
+    <p>Conséquence stratégique : on peut <strong>prédire</strong> la qualité d’un modèle avant de payer son entraînement. Les laboratoires se lancent dans la course : Gopher (DeepMind, 280 Md, 2021), Megatron-Turing NLG (Microsoft et NVIDIA, 530 Md, 2021), PaLM (Google, 540 Md, 2022). Kaplan recommandait d’augmenter surtout la taille du modèle. Le chapitre suivant montre que c’était une erreur.</p>
+
+    <div class="people" aria-label="Personnes citées">
+      <figure class="person">
+        <img src="../../assets/portraits/jared-kaplan.jpg" alt="Portrait de Jared Kaplan" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Jared Kaplan</span><span class="role">Lois d’échelle, 2020</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:Jared_Kaplan_(cropped).jpg" target="_blank" rel="noopener noreferrer">Photo : TechCrunch, CC BY 2.0</a></figcaption>
+      </figure>
+      <figure class="person">
+        <img src="../../assets/portraits/dario-amodei.jpg" alt="Portrait de Dario Amodei" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Dario Amodei</span><span class="role">GPT-2, GPT-3 ; cofondateur d’Anthropic</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:Dario_Amodei_at_TechCrunch_Disrupt_2023_02_(cropped).jpg" target="_blank" rel="noopener noreferrer">Photo : TechCrunch, CC BY 2.0</a></figcaption>
+      </figure>
+      <figure class="person">
+        <img src="../../assets/portraits/ilya-sutskever.jpg" alt="Portrait de Ilya Sutskever" width="96" height="96" loading="lazy">
+        <figcaption><span class="name">Ilya Sutskever</span><span class="role">AlexNet, seq2seq ; cofondateur d’OpenAI</span><a class="credit" href="https://commons.wikimedia.org/wiki/File:Democratizing_Deep_Learning_with_Nervana_and_Google_Brain_(15105407149)_(cropped).jpg" target="_blank" rel="noopener noreferrer">Photo : Steve Jurvetson from Los Altos, USA, CC BY 2.0</a></figcaption>
+      </figure>
+    </div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Que signifie « apprentissage en contexte » ?</legend>
+        <label><input type="radio" name="q1" value="a"> Le modèle met à jour ses poids à chaque question.</label>
+        <label><input type="radio" name="q1" value="b" data-correct> Le modèle imite une tâche à partir d’exemples placés dans le prompt, sans changer ses poids.</label>
+        <p class="explain" hidden>Les poids restent figés. Les exemples orientent seulement le calcul pendant la génération : ils sont oubliés à la conversation suivante.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Pourquoi les lois d’échelle ont-elles changé la stratégie des laboratoires ?</legend>
+        <label><input type="radio" name="q2" value="a" data-correct> Elles permettent de prédire la qualité obtenue pour un budget de calcul donné.</label>
+        <label><input type="radio" name="q2" value="b"> Elles prouvent qu’un modèle plus grand est toujours plus sûr.</label>
+        <p class="explain" hidden>Elles prédisent la perte, pas la sécurité ni l’utilité. Mais elles ont rendu l’investissement dans le calcul beaucoup moins risqué.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Radford et al., <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" target="_blank" rel="noopener noreferrer">Language Models are Unsupervised Multitask Learners</a>, 2019 ; OpenAI, <a href="https://openai.com/index/gpt-2-1-5b-release/" target="_blank" rel="noopener noreferrer">GPT-2: 1.5B release</a>, novembre 2019.</li>
+        <li>Brown et al., <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener noreferrer">Language Models are Few-Shot Learners</a>, 2020 (exemples de traduction : figure 2.1).</li>
+        <li>Lambda, <a href="https://lambda.ai/blog/demystifying-gpt-3" target="_blank" rel="noopener noreferrer">OpenAI’s GPT-3 Language Model: A Technical Overview</a>, 2020 (estimation du coût).</li>
+        <li>Chen et al., <a href="https://arxiv.org/abs/2107.03374" target="_blank" rel="noopener noreferrer">Evaluating Large Language Models Trained on Code (Codex)</a>, 2021.</li>
+        <li>Kaplan et al., <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener noreferrer">Scaling Laws for Neural Language Models</a>, 2020.</li>
+        <li>Rae et al., <a href="https://arxiv.org/abs/2112.11446" target="_blank" rel="noopener noreferrer">Gopher</a>, 2021 ; Smith et al., <a href="https://arxiv.org/abs/2201.11990" target="_blank" rel="noopener noreferrer">Megatron-Turing NLG 530B</a>, 2022 ; Chowdhery et al., <a href="https://arxiv.org/abs/2204.02311" target="_blank" rel="noopener noreferrer">PaLM</a>, 2022.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

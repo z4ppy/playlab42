@@ -1,0 +1,79 @@
+{
+  "id": "llm-history",
+  "title": "Histoire des LLM : de Shannon aux agents",
+  "description": "Comment on est passé de la prédiction du mot suivant aux modèles qui raisonnent et agissent : les idées, les personnes, les chiffres et les débats, de 1948 à 2026. Sources citées, portraits libres, quiz et calculateur Chinchilla.",
+  "hierarchy": ["autres"],
+  "tags": ["ia", "llm", "histoire", "transformer", "deep-learning", "interactif"],
+  "metadata": {
+    "author": "Cyrille",
+    "created": "2025-12-15",
+    "updated": "2026-11-08",
+    "duration": "100 min",
+    "difficulty": "intermediate",
+    "language": "fr"
+  },
+  "icon": "🧠",
+  "thumbnail": "thumbnail.jpg",
+  "content": [
+    {
+      "id": "avant",
+      "title": "Avant les LLM (1948–2013)",
+      "icon": "📜",
+      "content": [
+        { "id": "01-introduction" },
+        { "id": "02-prehistoire" }
+      ]
+    },
+    {
+      "id": "attention",
+      "title": "L’attention change tout (2014–2017)",
+      "icon": "🔍",
+      "content": [
+        { "id": "03-attention" },
+        { "id": "04-transformer" }
+      ]
+    },
+    {
+      "id": "echelle",
+      "title": "Pré-entraîner, grandir, aligner (2018–2022)",
+      "icon": "📈",
+      "content": [
+        { "id": "05-pre-entrainement" },
+        { "id": "06-echelle" },
+        { "id": "07-chinchilla" },
+        { "id": "08-alignement" }
+      ]
+    },
+    {
+      "id": "grand-public",
+      "title": "L’IA grand public (2022–2023)",
+      "icon": "💬",
+      "content": [
+        { "id": "09-chatgpt" },
+        { "id": "10-poids-ouverts" },
+        { "id": "11-boite-a-outils" }
+      ]
+    },
+    {
+      "id": "raisonnement",
+      "title": "Raisonner et agir (2024–2026)",
+      "icon": "🚀",
+      "content": [
+        { "id": "12-raisonnement" },
+        { "id": "13-agents" },
+        { "id": "14-panorama" }
+      ]
+    },
+    {
+      "id": "recul",
+      "title": "Prendre du recul",
+      "icon": "🧭",
+      "content": [
+        { "id": "15-debats" },
+        { "id": "16-lecons" },
+        { "id": "17-sources" },
+        { "id": "18-glossaire", "type": "glossary", "optional": true }
+      ]
+    }
+  ]
+}

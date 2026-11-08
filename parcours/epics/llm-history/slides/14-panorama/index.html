@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama 2025–2026 — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 14 · 2025–2026</p>
+      <h1>Panorama 2025–2026</h1>
+      <p class="lead">Les sorties se succèdent désormais tous les quelques mois. Plutôt qu’un classement, qui serait périmé avant la fin de votre lecture, voici les tendances et quelques repères datés.</p>
+      <p class="updated">État au 8 novembre 2026. Les dates proviennent des annonces officielles citées en bas de page, ou de la presse lorsque c’est indiqué.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#tendances">1 · Tendances</a></li>
+        <li><a href="#reperes">2 · Repères</a></li>
+        <li><a href="#architectures">3 · Au-delà du Transformer ?</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="tendances">Cinq tendances</h2>
+    <div class="cards">
+      <section class="card"><h3>1 · Le prix s’effondre</h3><p>À performance égale, le prix d’usage d’un LLM baisse d’un facteur 9 à 900 par an selon la tâche (Epoch AI, 2025). Un niveau « GPT-4 » coûte aujourd’hui une petite fraction de son prix de 2023.</p></section>
+      <section class="card"><h3>2 · Raisonner par défaut</h3><p>La réflexion avant réponse, réglable en effort, devient la norme chez les modèles de pointe (chapitre 12).</p></section>
+      <section class="card"><h3>3 · Agir</h3><p>Agents de code, utilisation d’ordinateur, protocoles communs comme MCP (chapitre 13).</p></section>
+      <section class="card"><h3>4 · Ouverts et chinois</h3><p>DeepSeek, Qwen, Kimi et GLM publient des poids ouverts proches des meilleurs modèles fermés. Meta, pionnier des poids ouverts, lance en 2026 un modèle propriétaire.</p></section>
+      <section class="card"><h3>5 · Des accès gradués</h3><p>Les modèles les plus capables en cybersécurité sont d’abord réservés à des partenaires de confiance, avant une diffusion plus large.</p></section>
+    </div>
+
+    <h2 id="reperes">Quelques repères</h2>
+    <table>
+      <caption>Repères 2025–2026 par acteur (sélection, sans classement)</caption>
+      <thead><tr><th scope="col">Acteur</th><th scope="col">2025</th><th scope="col">2026</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">OpenAI</th><td>o3 public (avril), gpt-oss à poids ouverts et GPT-5 (août)</td><td>GPT-5.x, puis GPT-6 présenté en septembre (selon la presse)</td></tr>
+        <tr><th scope="row">Anthropic</th><td>Claude 3.7 Sonnet et Claude Code (février), Claude 4 (mai), Opus 4.5 (novembre)</td><td>Nouvelle constitution (janvier) ; Fable et Mythos 5.1, même modèle avec deux niveaux de protection, puis Opus 5.5 (septembre)</td></tr>
+        <tr><th scope="row">Google</th><td>Gemini 2.5 (mars), Gemini CLI (juin), Gemini 3 (novembre)</td><td>Gemini 4 Argon (30 septembre), ouvert d’abord à des défenseurs en cybersécurité</td></tr>
+        <tr><th scope="row">Meta</th><td>Llama 4 Scout et Maverick (avril) ; le géant Behemoth n’est jamais publié ; création de Meta Superintelligence Labs (juin)</td><td>Muse Spark (avril), premier grand modèle propriétaire de Meta (selon la presse)</td></tr>
+        <tr><th scope="row">DeepSeek</th><td>R1 (janvier), V3.1 raisonnement hybride (août), V3.2 avec attention parcimonieuse (septembre–décembre)</td><td>V4-Pro et V4-Flash à poids ouverts (avril), puis V4.1</td></tr>
+        <tr><th scope="row">Alibaba, Moonshot, Zhipu</th><td>Qwen3 (avril), Kimi K2, MoE de 1 000 Md de paramètres (juillet), GLM-4.5 (juillet)</td><td>Qwen 3.5 et suivants</td></tr>
+        <tr><th scope="row">Mistral AI</th><td>Magistral (juin) ; levée de 1,7 Md€ menée par ASML (septembre) ; Mistral Large 3 (décembre)</td><td>Mistral Large 4 à poids ouverts (octobre, selon la presse)</td></tr>
+      </tbody>
+    </table>
+    <aside class="nuance" aria-label="Classements">
+      <span class="box-label">Méfiez-vous des classements</span>
+      <p>En avril 2025, Llama 4 Maverick se classe 2e sur LMArena… avec une version « expérimentale » optimisée pour la conversation, différente du modèle publié, qui se classe bien plus bas. LMArena a ensuite durci ses règles. Un classement mesure une version, un protocole et une population de votants à une date donnée.</p>
+    </aside>
+
+    <h2 id="architectures">Au-delà du Transformer ?</h2>
+    <p>Le coût quadratique de l’attention (chapitre 4) motive des alternatives dont le coût croît linéairement avec la longueur du texte. Elles restent surtout utilisées <strong>en combinaison</strong> avec l’attention.</p>
+    <div class="cards">
+      <section class="card"><h3>Modèles à espace d’états</h3><p class="meta">Mamba, Gu et Dao, décembre 2023</p><p>Un état de taille fixe mis à jour de façon sélective. Jamba (AI21, 2024) mélange couches Mamba, attention et experts : contexte de 256 000 tokens, dont 140 000 tiennent sur un GPU de 80 Go avec des poids sur 8 bits.</p></section>
+      <section class="card"><h3>Attentions linéaires et parcimonieuses</h3><p class="meta">MiniMax-M1 2025, DeepSeek V3.2 2025</p><p>Calculer l’attention sur une partie seulement des tokens, ou avec une approximation linéaire. MiniMax-M1 annonce un contexte d’un million de tokens.</p></section>
+      <section class="card"><h3>LLM à diffusion</h3><p class="meta">Mercury (Inception Labs), Gemini Diffusion 2025</p><p>Générer tout un passage par raffinements successifs au lieu d’un token à la fois, comme les générateurs d’images. Très rapide, encore expérimental pour les tâches difficiles.</p></section>
+    </div>
+    <p>Bilan provisoire : en 2026, le Transformer reste dominant, mais il est de plus en plus souvent <strong>hybride</strong>.</p>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Pourquoi ce chapitre ne propose-t-il pas de classement des « meilleurs modèles » ?</legend>
+        <label><input type="radio" name="q1" value="a" data-correct> Parce qu’un classement dépend de la tâche, de la version testée et de la date, et se périme en quelques mois.</label>
+        <label><input type="radio" name="q1" value="b"> Parce que tous les modèles se valent.</label>
+        <p class="explain" hidden>Le bon réflexe : tester plusieurs modèles sur ses propres exemples, et noter la date de l’essai.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Que cherchent à corriger Mamba et les attentions linéaires ?</legend>
+        <label><input type="radio" name="q2" value="a"> Le manque de données d’entraînement.</label>
+        <label><input type="radio" name="q2" value="b" data-correct> Le coût de l’attention, qui croît avec le carré de la longueur du contexte.</label>
+        <p class="explain" hidden>Avec un coût linéaire, doubler la longueur du texte double le calcul au lieu de le quadrupler.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Epoch AI, <a href="https://epoch.ai/data-insights/llm-inference-price-trends" target="_blank" rel="noopener noreferrer">LLM inference prices have fallen rapidly but unequally across tasks</a>, mars 2025.</li>
+        <li>OpenAI, <a href="https://openai.com/index/introducing-gpt-5/" target="_blank" rel="noopener noreferrer">Introducing GPT-5</a>, août 2025 ; <a href="https://openai.com/index/introducing-gpt-oss/" target="_blank" rel="noopener noreferrer">gpt-oss</a>, août 2025 ; Fortune, <a href="https://fortune.com/2026/09/03/openai-debuts-gpt-6-astra-computer-use-greg-brockman-says-start-of-agi/" target="_blank" rel="noopener noreferrer">OpenAI debuts GPT-6 Astra</a>, septembre 2026.</li>
+        <li>Anthropic, <a href="https://www.anthropic.com/news/claude-opus-4-5" target="_blank" rel="noopener noreferrer">Claude Opus 4.5</a>, novembre 2025 ; <a href="https://www.anthropic.com/claude-fable-and-mythos-5-1" target="_blank" rel="noopener noreferrer">Claude Fable 5.1 et Mythos 5.1</a>, 2026 ; <a href="https://www.anthropic.com/claude-opus-5-5" target="_blank" rel="noopener noreferrer">Claude Opus 5.5</a>, septembre 2026.</li>
+        <li>Google, <a href="https://blog.google/products/gemini/gemini-3/" target="_blank" rel="noopener noreferrer">Gemini 3</a>, novembre 2025 ; <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/" target="_blank" rel="noopener noreferrer">Gemini 4 Argon</a>, septembre 2026.</li>
+        <li>Axios, <a href="https://www.axios.com/2025/05/15/meta-behemoth-llama-scaling-delays" target="_blank" rel="noopener noreferrer">Meta delays Behemoth</a>, mai 2025 ; Fortune, <a href="https://fortune.com/2026/04/08/meta-unveils-muse-spark-mark-zuckerberg-ai-push/" target="_blank" rel="noopener noreferrer">Meta unveils Muse Spark</a>, avril 2026.</li>
+        <li>DeepSeek, <a href="https://api-docs.deepseek.com/updates/" target="_blank" rel="noopener noreferrer">journal des versions de l’API</a> ; Kimi Team, <a href="https://arxiv.org/abs/2507.20534" target="_blank" rel="noopener noreferrer">Kimi K2: Open Agentic Intelligence</a>, 2025.</li>
+        <li>Mistral AI, <a href="https://mistral.ai/fr/news/mistral-ai-raises-1-7-b-to-accelerate-technological-progress-with-ai" target="_blank" rel="noopener noreferrer">levée de 1,7 Md€</a>, septembre 2025 ; TechCrunch, <a href="https://techcrunch.com/2026/10/06/mistrals-new-1t-model-aims-to-leapfrog-closed-and-open-rivals/" target="_blank" rel="noopener noreferrer">Mistral Large 4</a>, octobre 2026.</li>
+        <li>Gu, Dao, <a href="https://arxiv.org/abs/2312.00752" target="_blank" rel="noopener noreferrer">Mamba</a>, 2023 ; AI21, <a href="https://arxiv.org/abs/2403.19887" target="_blank" rel="noopener noreferrer">Jamba</a>, 2024 ; MiniMax, <a href="https://arxiv.org/abs/2506.13585" target="_blank" rel="noopener noreferrer">MiniMax-M1</a>, 2025 ; Inception Labs, <a href="https://arxiv.org/abs/2506.17298" target="_blank" rel="noopener noreferrer">Mercury</a>, 2025.</li>
+        <li>LMArena, <a href="https://dig.watch/updates/lmarena-tightens-rules-after-llama-4-incident" target="_blank" rel="noopener noreferrer">durcissement des règles après l’incident Llama 4</a>, avril 2025.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>
