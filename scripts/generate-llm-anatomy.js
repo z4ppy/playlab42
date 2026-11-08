@@ -131,7 +131,7 @@ await writeFile(new URL('epic.json', root), `${JSON.stringify({
   description: `Ouvrez la machine : ${chapters.length} étapes progressives, de vrais tokeniseurs et un mini-Transformer inspectable. Des premiers nombres aux comparaisons 3D.`,
   hierarchy: ['autres'], tags: ['ia', 'llm', 'transformer', 'deep-learning', 'interactif'],
   metadata: { author: 'Cyrille', created: '2026-10-12', duration: `${chapters.length * 5} min`, difficulty: 'intermediate', language: 'fr' },
-  icon: '◎', thumbnail: 'thumbnail.svg',
+  icon: '◎', thumbnail: 'thumbnail.jpg',
   content: [...sections, { id: '17-sources', optional: true }, { id: '18-glossaire', optional: true }],
 }, null, 2)}\n`);
 console.log(`Anatomie LLM : ${chapters.length} étapes, sources, glossaire et manifest générés.`);
