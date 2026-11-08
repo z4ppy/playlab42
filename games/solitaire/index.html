@@ -8,6 +8,7 @@
   <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../lib/theme.css">
   <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="../../lib/components.css">
   <link rel="stylesheet" href="../game-page.css">
   <link rel="stylesheet" href="style.css">
   <script type="module" src="main.js"></script>
@@ -35,18 +36,18 @@
     </header>
 
     <nav class="sol-toolbar" aria-label="Commandes de la partie">
-      <button type="button" class="sol-button sol-button-primary" id="btn-new">Nouvelle donne</button>
-      <button type="button" class="sol-button" id="btn-replay">Rejouer</button>
-      <button type="button" class="sol-button" id="btn-undo" aria-keyshortcuts="Z Control+Z">Annuler</button>
-      <button type="button" class="sol-button" id="btn-redo" aria-keyshortcuts="Y Control+Y">Refaire</button>
-      <button type="button" class="sol-button" id="btn-hint" aria-keyshortcuts="I">Indice</button>
-      <button type="button" class="sol-button" id="btn-watch" aria-pressed="false" aria-keyshortcuts="A">Regarder l’IA</button>
-      <button type="button" class="sol-button sol-button-accent" id="btn-finish" aria-keyshortcuts="T" hidden>Terminer</button>
-      <button type="button" class="sol-button" id="btn-options">Options</button>
-      <button type="button" class="sol-button" id="btn-help" aria-keyshortcuts="?">Aide</button>
+      <button type="button" class="ui-button ui-button-primary sol-button" id="btn-new">Nouvelle donne</button>
+      <button type="button" class="ui-button sol-button" id="btn-replay">Rejouer</button>
+      <button type="button" class="ui-button sol-button" id="btn-undo" aria-keyshortcuts="Z Control+Z">Annuler</button>
+      <button type="button" class="ui-button sol-button" id="btn-redo" aria-keyshortcuts="Y Control+Y">Refaire</button>
+      <button type="button" class="ui-button sol-button" id="btn-hint" aria-keyshortcuts="I">Indice</button>
+      <button type="button" class="ui-button sol-button" id="btn-watch" aria-pressed="false" aria-keyshortcuts="A">Regarder l’IA</button>
+      <button type="button" class="ui-button sol-button sol-button-accent" id="btn-finish" aria-keyshortcuts="T" hidden>Terminer</button>
+      <button type="button" class="ui-button sol-button" id="btn-options">Options</button>
+      <button type="button" class="ui-button sol-button" id="btn-help" aria-keyshortcuts="?">Aide</button>
     </nav>
 
-    <p class="sol-message" id="message" role="status" aria-live="polite">Cliquez ou glissez une carte pour la déplacer.</p>
+    <p class="ui-status sol-message" id="message" role="status" aria-live="polite">Cliquez ou glissez une carte pour la déplacer.</p>
 
     <section class="sol-table" id="table" aria-label="Table de jeu" aria-describedby="table-help"></section>
     <p class="sr-only" id="table-help">Flèches pour parcourir la table, Entrée pour déplacer automatiquement, Espace pour prendre puis poser, Échap pour annuler la prise. Point d’interrogation pour l’aide.</p>
@@ -59,25 +60,25 @@
       <h2 id="options-title">Options de partie</h2>
       <fieldset class="sol-field">
         <legend>Pioche</legend>
-        <label><input type="radio" name="draw" value="1" checked> 1 carte</label>
-        <label><input type="radio" name="draw" value="3"> 3 cartes</label>
+        <label class="ui-choice"><input type="radio" name="draw" value="1" checked> 1 carte</label>
+        <label class="ui-choice"><input type="radio" name="draw" value="3"> 3 cartes</label>
       </fieldset>
-      <label class="sol-check"><input type="checkbox" id="opt-winnable"> Donnes gagnables uniquement <small>(prouvées par le solveur)</small></label>
-      <label class="sol-check"><input type="checkbox" id="opt-autofinish" checked> Fin automatique quand tout est visible</label>
+      <label class="ui-choice sol-check"><input type="checkbox" id="opt-winnable"> Donnes gagnables uniquement <small>(prouvées par le solveur)</small></label>
+      <label class="ui-choice sol-check"><input type="checkbox" id="opt-autofinish" checked> Fin automatique quand tout est visible</label>
       <label class="sol-field" for="opt-theme">Thème
-        <select id="opt-theme">
+        <select class="ui-field" id="opt-theme">
           <option value="system">Automatique</option>
           <option value="light">Clair</option>
           <option value="dark">Sombre</option>
         </select>
       </label>
       <label class="sol-field" for="opt-deal">Donne n°
-        <input type="number" id="opt-deal" min="0" max="4294967295" step="1" inputmode="numeric" placeholder="au hasard">
+        <input class="ui-field" type="number" id="opt-deal" min="0" max="4294967295" step="1" inputmode="numeric" placeholder="au hasard">
       </label>
-      <p class="sol-small">Pioche et donnes gagnables s’appliquent à la prochaine donne.</p>
+      <p class="ui-help">Pioche et donnes gagnables s’appliquent à la prochaine donne.</p>
       <div class="sol-actions">
-        <button type="submit" class="sol-button sol-button-primary">Distribuer</button>
-        <button type="button" class="sol-button" id="options-close">Fermer</button>
+        <button type="submit" class="ui-button ui-button-primary sol-button">Distribuer</button>
+        <button type="button" class="ui-button sol-button" id="options-close">Fermer</button>
       </div>
     </form>
   </div>
@@ -101,9 +102,9 @@
         <div><dt><kbd>N</kbd></dt><dd>Nouvelle donne</dd></div>
         <div><dt><kbd>Échap</kbd></dt><dd>Annuler la prise ou fermer une fenêtre</dd></div>
       </dl>
-      <p class="sol-small" id="help-stats"></p>
+      <p class="ui-help" id="help-stats"></p>
       <div class="sol-actions">
-        <button type="button" class="sol-button sol-button-primary" id="help-close">Fermer</button>
+        <button type="button" class="ui-button ui-button-primary sol-button" id="help-close">Fermer</button>
       </div>
     </div>
   </div>
@@ -113,9 +114,9 @@
       <h2 id="victory-title">Bravo, donne réussie !</h2>
       <p id="victory-summary"></p>
       <div class="sol-actions">
-        <button type="button" class="sol-button sol-button-primary" id="victory-new">Nouvelle donne</button>
-        <button type="button" class="sol-button" id="victory-replay">Rejouer cette donne</button>
-        <button type="button" class="sol-button" id="victory-close">Admirer la table</button>
+        <button type="button" class="ui-button ui-button-primary sol-button" id="victory-new">Nouvelle donne</button>
+        <button type="button" class="ui-button sol-button" id="victory-replay">Rejouer cette donne</button>
+        <button type="button" class="ui-button sol-button" id="victory-close">Admirer la table</button>
       </div>
     </div>
   </div>

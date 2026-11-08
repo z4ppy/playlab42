@@ -83,35 +83,11 @@ body {
   gap: 6px;
 }
 
+/* Boutons et champs : primitives ui-* de lib/components.css, ici seulement resserrées. */
 .sol-button {
-  min-height: 38px;
-  padding: 0.4em 0.8em;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-secondary);
-  color: var(--color-text);
+  padding-inline: 0.8em;
   font-size: var(--font-size-sm);
   font-weight: 600;
-  cursor: pointer;
-}
-
-.sol-button:hover:not(:disabled) {
-  background: var(--color-bg-hover);
-}
-
-.sol-button:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.sol-button-primary {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-text-inverse);
-}
-
-.sol-button-primary:hover:not(:disabled) {
-  background: var(--color-accent-hover);
 }
 
 .sol-button-accent,
@@ -122,8 +98,7 @@ body {
 
 .sol-message {
   min-height: 2.8em;
-  padding: 0.55em 0.8em;
-  border-left: 4px solid var(--color-accent);
+  border-left-color: var(--color-accent);
   border-radius: var(--radius-sm);
   background: var(--color-bg-secondary);
   font-size: var(--font-size-sm);
@@ -428,23 +403,6 @@ body {
   margin-bottom: 4px;
 }
 
-.sol-field input,
-.sol-field select {
-  min-height: 36px;
-  padding: 0 8px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg);
-  color: var(--color-text);
-}
-
-.sol-check {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.sol-small,
 .sol-check small {
   color: var(--color-text-muted);
   font-size: var(--font-size-xs);
@@ -492,8 +450,7 @@ kbd {
 
   .sol-button {
     flex: 1 1 auto;
-    min-height: 40px;
-    padding: 0.3em 0.5em;
+    padding-inline: 0.5em;
     font-size: var(--font-size-xs);
   }
 }
