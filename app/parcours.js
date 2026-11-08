@@ -14,6 +14,7 @@ import { ParcoursViewer } from '../lib/parcours-viewer.js';
 import {
   appendThumbnailImage, authorName, matchesQuery, renderAuthor, renderTagFilters, setDiscoveryCount, setDiscoveryMessage,
 } from '../lib/catalogue-ui.js';
+import { attachThumbnailMotion } from '../lib/thumbnail-motion.js';
 
 let returnFocus = null;
 let returnFocusEpicId = null;
@@ -52,14 +53,16 @@ function visitedStepCount(epicId) {
 }
 
 /**
- * Place la vignette de l'epic : image si fournie, sinon emoji.
+ * Place la vignette de l'epic : image si fournie, sinon emoji ; anime la carte si une variante existe.
  * @param {HTMLElement} thumb - Conteneur de la vignette
  * @param {Object} epic - Données de l'epic
+ * @param {HTMLElement} card - Carte (lien) qui reçoit survol et focus
  */
-function renderEpicThumbnail(thumb, epic) {
+function renderEpicThumbnail(thumb, epic, card) {
   const defaultIcon = epic.icon || '📚';
   if (epic.thumbnail) {
-    appendThumbnailImage(thumb, { src: epic.thumbnail, alt: '', fallback: defaultIcon });
+    const img = appendThumbnailImage(thumb, { src: epic.thumbnail, alt: '', fallback: defaultIcon });
+    if (epic.thumbnailAnimated) {attachThumbnailMotion(card, img, epic.thumbnailAnimated);}
   } else {
     thumb.textContent = defaultIcon;
   }
@@ -135,7 +138,7 @@ export function createEpicCardElement(epic) {
   card.dataset.epicId = epic.id;
   card.dataset.path = epic.path;
   card.href = `#/parcours/${epic.id}`;
-  renderEpicThumbnail(fragment.querySelector('.epic-thumb'), epic);
+  renderEpicThumbnail(fragment.querySelector('.epic-thumb'), epic, card);
 
   title.textContent = epic.title;
   const instance = ++cardSequence;

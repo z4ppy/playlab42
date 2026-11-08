@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { readFileSync } from 'node:fs';
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 document.body.innerHTML = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
@@ -122,5 +122,34 @@ describe('collections pédagogiques éditoriales', () => {
     localStorage.setItem('parcours-progress', JSON.stringify({ algo: { visited: ['a'], current: 'a' } }));
     closeParcours();
     expect(el.parcoursCategoriesExpanded.querySelector('[data-collection="continue"]')).not.toBeNull();
+  });
+});
+
+describe('vignette animée des epics', () => {
+  // Faux Image : jsdom ne charge pas les images, on déclenche onload à la main
+  const preloads = [];
+  class FakeImage { constructor() {preloads.push(this);} }
+  const realImage = window.Image;
+  beforeEach(() => { preloads.length = 0; window.Image = FakeImage; });
+  afterEach(() => { window.Image = realImage; });
+
+  const withThumbnail = { ...epics[1], thumbnail: './parcours/epics/algo/thumbnail.jpg' };
+
+  it('anime la carte au focus quand le build a repéré une variante', () => {
+    const fragment = createEpicCardElement({ ...withThumbnail, thumbnailAnimated: './parcours/epics/algo/thumbnail.anim.webp' });
+    const card = fragment.querySelector('.epic-card');
+    const img = fragment.querySelector('.epic-thumb img');
+
+    card.dispatchEvent(new FocusEvent('focusin'));
+    expect(preloads).toHaveLength(1);
+    preloads[0].onload();
+    expect(img.getAttribute('src')).toBe('./parcours/epics/algo/thumbnail.anim.webp');
+  });
+
+  it('laisse la vignette fixe sans variante animée', () => {
+    const fragment = createEpicCardElement(withThumbnail);
+    fragment.querySelector('.epic-card').dispatchEvent(new FocusEvent('focusin'));
+    expect(preloads).toHaveLength(0);
+    expect(fragment.querySelector('.epic-thumb img').getAttribute('src')).toBe('./parcours/epics/algo/thumbnail.jpg');
   });
 });

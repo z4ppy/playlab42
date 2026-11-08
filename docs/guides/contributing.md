@@ -347,6 +347,19 @@ catalogue — ce qui dépasse le cadre d'une optimisation d'images.
 En attendant, respecter la limite de 50 Ko impose de quantiser la palette
 (`pngquant 128`, par exemple) plutôt que de flouter l'image.
 
+### Vignette animée (facultative)
+
+Une vignette peut avoir une **variante animée** : même nom, extension
+`.anim.webp` (par exemple `games/dames/thumb.anim.webp` ou
+`parcours/epics/mon-epic/thumbnail.anim.webp`). C'est un WebP animé en boucle,
+380x180px, de préférence sous 300 Ko.
+
+Les scripts de build la repèrent seuls et le signalent au portail, qui ne demande
+jamais un fichier absent. Le portail l'affiche au survol ou au focus clavier
+sur ordinateur, et pour la seule carte arrêtée au centre de l'écran sur téléphone.
+Il ne la charge qu'à ce moment-là, et jamais si le système demande de réduire les
+animations, en mode économie de données ou sur connexion lente.
+
 ---
 
 ## Besoin d'aide ?

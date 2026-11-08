@@ -9,9 +9,10 @@ import { state, setState } from './state.js';
 import { el } from './dom-cache.js';
 import { cloneTemplate } from '../lib/dom.js';
 import {
-  appendThumbnailImage, authorName, matchesQuery, renderAuthor, renderTagFilters, setDiscoveryCount, setDiscoveryMessage,
-  thumbnailPath,
+  animatedThumbnailPath, appendThumbnailImage, authorName, matchesQuery, renderAuthor, renderTagFilters,
+  setDiscoveryCount, setDiscoveryMessage, thumbnailPath,
 } from '../lib/catalogue-ui.js';
+import { attachThumbnailMotion } from '../lib/thumbnail-motion.js';
 
 let catalogueError = null;
 
@@ -98,7 +99,10 @@ export function createCardElement(item, type) {
 
   // Thumbnail
   const defaultIcon = type === 'game' ? '🎮' : '🔧';
-  appendThumbnailImage(thumb, { src: thumbnailPath(type, item), alt: item.name, fallback: item.icon || defaultIcon });
+  const thumbSrc = thumbnailPath(type, item);
+  const img = appendThumbnailImage(thumb, { src: thumbSrc, alt: item.name, fallback: item.icon || defaultIcon });
+  // Le lien reçoit survol et focus : c'est lui qui pilote l'animation éventuelle
+  if (item.animatedThumbnail) {attachThumbnailMotion(link, img, animatedThumbnailPath(thumbSrc));}
 
   // Info
   title.textContent = (item.icon ? `${item.icon} ` : '') + item.name;
