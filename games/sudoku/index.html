@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sudoku - Playlab42</title>
+  <meta name="description" content="Sudoku à solution unique : grilles classées par un solveur logique, indices expliqués et IA qui résout pas à pas.">
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="../../lib/components.css">
+  <link rel="stylesheet" href="../game-page.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module">
+    // Thème appliqué avant le premier rendu pour éviter un flash.
+    import { initTheme } from '../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <a class="ui-skip-link" href="#board">Aller à la grille</a>
+  <main class="sudoku" aria-labelledby="title">
+    <header class="sudoku-header">
+      <h1 id="title">Sudoku</h1>
+      <form class="new-game" id="new-game" aria-label="Nouvelle grille">
+        <label class="sr-only" for="level">Niveau</label>
+        <select class="ui-field" id="level" name="level">
+          <option value="easy">Facile</option>
+          <option value="medium" selected>Moyen</option>
+          <option value="hard">Difficile</option>
+          <option value="expert">Expert</option>
+        </select>
+        <button class="ui-button ui-button-primary" id="new-game-button" type="submit">Nouvelle grille</button>
+      </form>
+    </header>
+
+    <section class="status-bar" aria-label="Partie en cours">
+      <p class="puzzle-label" id="puzzle-label">Préparation de la grille…</p>
+      <div class="clock">
+        <span class="timer" id="timer" role="timer" aria-label="Temps écoulé : 0 seconde">00:00</span>
+        <button class="ui-button icon-button" id="pause" type="button" aria-pressed="false">Pause</button>
+      </div>
+    </section>
+
+    <div class="play-area">
+      <div class="board-zone">
+        <div class="board-frame">
+          <div class="board" id="board" role="group" aria-label="Grille de sudoku, 9 lignes et 9 colonnes" aria-describedby="board-help" tabindex="-1"></div>
+          <div class="pause-cover" id="pause-cover" hidden>
+            <p id="pause-text">Partie en pause : la grille est masquée.</p>
+            <button class="ui-button ui-button-primary" id="resume" type="button">Reprendre</button>
+          </div>
+        </div>
+        <p class="sr-only" id="board-help">Flèches pour se déplacer, chiffres 1 à 9 pour remplir, N pour le mode notes, Suppr pour effacer.</p>
+        <p class="message" id="message" role="status" aria-live="polite" aria-atomic="true"></p>
+      </div>
+
+      <div class="side">
+        <div class="pad" id="pad" role="group" aria-label="Pavé numérique"></div>
+
+        <div class="tools" role="group" aria-label="Édition">
+          <button class="tool" id="notes-mode" type="button" aria-pressed="false" aria-keyshortcuts="N"><span aria-hidden="true">✎</span> Notes</button>
+          <button class="tool" id="erase" type="button" aria-keyshortcuts="Delete"><span aria-hidden="true">⌫</span> Effacer</button>
+          <button class="tool" id="undo" type="button" aria-keyshortcuts="Control+Z"><span aria-hidden="true">↶</span> Annuler</button>
+          <button class="tool" id="redo" type="button" aria-keyshortcuts="Control+Y"><span aria-hidden="true">↷</span> Refaire</button>
+          <button class="tool" id="fill-notes" type="button"><span aria-hidden="true">✦</span> Notes auto</button>
+        </div>
+
+        <section class="panel coach" aria-labelledby="coach-title">
+          <h2 id="coach-title">Assistant</h2>
+          <div class="panel-actions">
+            <button class="ui-button" id="hint" type="button" aria-keyshortcuts="H">Indice</button>
+            <button class="ui-button" id="check" type="button">Vérifier</button>
+            <button class="ui-button ui-button-primary" id="apply-hint" type="button" hidden>Appliquer</button>
+          </div>
+          <p class="coach-text" id="coach-text" role="status" aria-live="polite">Besoin d’un coup de pouce ? L’indice montre d’abord où regarder, puis explique la déduction.</p>
+        </section>
+
+        <section class="panel ai" aria-labelledby="ai-title">
+          <h2 id="ai-title">Regarder l’IA résoudre</h2>
+          <div class="ai-settings">
+            <label class="ui-label" for="bot">Méthode</label>
+            <select class="ui-field" id="bot">
+              <option value="logic" selected>Logique</option>
+              <option value="backtracking">Retour sur trace</option>
+            </select>
+            <label class="ui-label" for="speed">Vitesse</label>
+            <select class="ui-field" id="speed">
+              <option value="1200">Lente</option>
+              <option value="600" selected>Normale</option>
+              <option value="150">Rapide</option>
+              <option value="40">Très rapide</option>
+            </select>
+          </div>
+          <div class="panel-actions">
+            <button class="ui-button ui-button-primary" id="ai-run" type="button" aria-pressed="false">Lancer l’IA</button>
+            <button class="ui-button" id="ai-step" type="button">Un coup</button>
+          </div>
+          <p class="ai-log" id="ai-log" aria-live="polite">« Logique » explique chaque déduction ; « Retour sur trace » essaie et revient en arrière. Chaque coup de l’IA peut être annulé.</p>
+        </section>
+      </div>
+    </div>
+
+    <details class="panel settings">
+      <summary>Réglages et partage</summary>
+      <div class="settings-body">
+        <fieldset class="ui-fieldset">
+          <legend>Aides visuelles</legend>
+          <label class="ui-choice"><input type="checkbox" id="opt-conflicts" checked> Signaler les conflits</label>
+          <label class="ui-choice"><input type="checkbox" id="opt-highlight" checked> Surligner ligne, colonne, boîte et chiffres identiques</label>
+        </fieldset>
+        <div class="setting">
+          <label class="ui-label" for="theme">Thème</label>
+          <select class="ui-field" id="theme">
+            <option value="system">Automatique</option>
+            <option value="light">Clair</option>
+            <option value="dark">Sombre</option>
+          </select>
+        </div>
+        <form class="setting" id="open-grid">
+          <label class="ui-label" for="grid-number">Ouvrir la grille n°</label>
+          <div class="inline-field">
+            <input class="ui-field" id="grid-number" inputmode="numeric" pattern="[0-9]{1,10}" maxlength="10" required aria-describedby="grid-number-help">
+            <button class="ui-button" type="submit">Ouvrir</button>
+          </div>
+          <p class="ui-help" id="grid-number-help">Avec le niveau choisi en haut, ce numéro redonne exactement la même grille.</p>
+        </form>
+        <div class="setting">
+          <button class="ui-button" id="share" type="button">Copier le lien de cette grille</button>
+          <p class="ui-help share-output" id="share-output" aria-live="polite"></p>
+        </div>
+        <button class="ui-button" id="restart" type="button">Recommencer cette grille</button>
+      </div>
+    </details>
+
+    <details class="panel help">
+      <summary>Règles et commandes</summary>
+      <div class="help-body">
+        <p>Remplissez la grille pour que chaque ligne, chaque colonne et chaque boîte 3 × 3 contienne une fois les chiffres 1 à 9. Chaque grille a une seule solution, que l’on trouve par déduction, sans deviner.</p>
+        <dl class="keys">
+          <dt><kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd></dt><dd>Se déplacer dans la grille (<kbd>Début</kbd>/<kbd>Fin</kbd> : bord de ligne)</dd>
+          <dt><kbd>1</kbd> à <kbd>9</kbd></dt><dd>Poser un chiffre (le retaper l’efface) ou une note en mode notes</dd>
+          <dt><kbd>N</kbd></dt><dd>Basculer le mode notes</dd>
+          <dt><kbd>Suppr</kbd> <kbd>⌫</kbd> <kbd>0</kbd></dt><dd>Effacer la case</dd>
+          <dt><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></dt><dd>Annuler / refaire</dd>
+          <dt><kbd>H</kbd> · <kbd>P</kbd></dt><dd>Indice · pause</dd>
+        </dl>
+        <p>Niveaux : <strong>Facile</strong> (singletons), <strong>Moyen</strong> (intersections boîte/ligne), <strong>Difficile</strong> (paires et triplets), <strong>Expert</strong> (X-Wing, XY-Wing, Swordfish). Le niveau est celui de la technique la plus avancée nécessaire.</p>
+      </div>
+    </details>
+  </main>
+
+  <dialog class="ui-dialog victory" id="victory" aria-labelledby="victory-title" aria-describedby="victory-summary">
+    <form method="dialog">
+      <h2 id="victory-title">Grille résolue !</h2>
+      <p id="victory-summary"></p>
+      <ul class="victory-stats" id="victory-stats"></ul>
+      <div class="panel-actions">
+        <button class="ui-button ui-button-primary" id="victory-new" value="new">Nouvelle grille</button>
+        <button class="ui-button" value="close">Fermer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <p class="sr-only" id="announcer" aria-live="polite" aria-atomic="true"></p>
+  <script type="module" src="ui/app.js"></script>
+</body>
+</html>

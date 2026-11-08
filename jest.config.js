@@ -183,6 +183,10 @@ export default {
     './games/sudoku/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/sudoku/engine/techniques/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/sudoku/bots/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/sudoku/ui/{board-view,pad-view,keyboard,clock,share,hint-coach,auto-player,progress-store,generation,generation-worker}.js':
+      { statements: 100, branches: 100, functions: 100, lines: 100 },
+    // Contrôleur DOM : Worker, reprise au chargement et erreurs de génération restent hors jsdom (e2e).
+    './games/sudoku/ui/app.js': { statements: 95, branches: 84, functions: 93, lines: 96 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)

@@ -1,0 +1,35 @@
+{
+  "id": "sudoku",
+  "name": "Sudoku",
+  "description": "Grilles à solution unique classées par un solveur logique, indices expliqués pas à pas et IA qui résout sous vos yeux.",
+  "players": {
+    "min": 1,
+    "max": 1
+  },
+  "type": "turn-based",
+  "tags": ["logic", "puzzle", "classic", "1-player", "ai"],
+  "author": "Cyrille",
+  "icon": "🔢",
+  "version": "1.0.0",
+  "controls": "keyboard",
+  "orientation": "any",
+  "minWidth": 320,
+  "minHeight": 560,
+  "bots": {
+    "default": "Logique",
+    "available": [
+      {
+        "name": "Logique",
+        "file": "bots/logic.js",
+        "difficulty": "expert",
+        "description": "Applique la prochaine déduction humaine (singletons, intersections, sous-ensembles, X-Wing, XY-Wing, Swordfish) et l'explique"
+      },
+      {
+        "name": "Retour sur trace",
+        "file": "bots/backtracking.js",
+        "difficulty": "expert",
+        "description": "Pose la valeur trouvée par un solveur exact par essais et retours en arrière, sans explication"
+      }
+    ]
+  }
+}
