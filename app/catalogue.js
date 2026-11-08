@@ -10,6 +10,7 @@ import { el } from './dom-cache.js';
 import { cloneTemplate } from '../lib/dom.js';
 import {
   appendThumbnailImage, authorName, matchesQuery, renderAuthor, renderTagFilters, setDiscoveryCount, setDiscoveryMessage,
+  thumbnailPath,
 } from '../lib/catalogue-ui.js';
 
 let catalogueError = null;
@@ -97,11 +98,7 @@ export function createCardElement(item, type) {
 
   // Thumbnail
   const defaultIcon = type === 'game' ? '🎮' : '🔧';
-  const thumbSrc = type === 'game'
-    ? item.path.replace('index.html', 'thumb.png')
-    : item.path.replace('.html', '-thumb.png');
-
-  appendThumbnailImage(thumb, { src: thumbSrc, alt: item.name, fallback: item.icon || defaultIcon });
+  appendThumbnailImage(thumb, { src: thumbnailPath(type, item), alt: item.name, fallback: item.icon || defaultIcon });
 
   // Info
   title.textContent = (item.icon ? `${item.icon} ` : '') + item.name;

@@ -6,6 +6,7 @@ import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getRootDir } from './lib/build-utils.js';
 import { assertLocalGpt2Assets } from './lib/gpt2-assets.js';
+import { addShareCards, resolveSiteUrl } from './lib/share-cards.js';
 
 const DIRECTORIES = ['app', 'assets', 'lib', 'tools', 'games', 'parcours', 'data', 'docs', 'bookmarks', 'openspec'];
 const FILES = ['index.html', 'app.js', 'style.css', 'README.md', 'AGENTS.md', 'LICENSE'];
@@ -70,18 +71,26 @@ function assertSitePrerequisites(output) {
 
 /**
  * Reconstruit le dossier généré site, avec le commit CI ou null en local.
- * @param {{root?: string, commit?: string|null}} options Racine des sources et SHA vérifiable.
+ * Les pages des jeux et outils reçoivent leur carte de partage, avec des URL absolues
+ * vers l'adresse publique (PLAYLAB_SITE_URL, ou l'adresse GitHub Pages par défaut).
+ * @param {{root?: string, commit?: string|null, siteUrl?: string}} options Racine des sources, SHA vérifiable et adresse publique.
  * @returns {string} Chemin du site préparé.
  */
-export function buildSite({ root = getRootDir(import.meta.url), commit = process.env.GITHUB_SHA || null } = {}) {
+export function buildSite({
+  root = getRootDir(import.meta.url),
+  commit = process.env.GITHUB_SHA || null,
+  siteUrl = process.env.PLAYLAB_SITE_URL,
+} = {}) {
   root = resolve(root);
   const identity = readBuildIdentity(root, commit);
+  const publicUrl = resolveSiteUrl(siteUrl);
   const images = referencedBookmarkImages(root);
   assertLocalGpt2Assets(root);
   const output = prepareSiteOutput(root);
   writeFileSync(join(output, 'build-info.json'), `${JSON.stringify(identity, null, 2)}\n`);
   copyPublicSources(root, output, publicSourceFilter(root, images));
   assertSitePrerequisites(output);
+  addShareCards(output, publicUrl);
   return output;
 }
 

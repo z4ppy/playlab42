@@ -352,6 +352,9 @@ jobs:
           npm run prepare:gpt2
 
       - name: Build
+        env:
+          # Adresse publique des cartes de partage ; vide = adresse GitHub Pages par défaut.
+          PLAYLAB_SITE_URL: ${{ vars.PLAYLAB_SITE_URL }}
         run: |
           export SOURCE_DATE_EPOCH="$(git show -s --format=%ct "$GITHUB_SHA")"
           npm run build
