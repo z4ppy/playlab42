@@ -19,7 +19,8 @@ const leaves = epic.content.flatMap(item => item.content || [item]);
 const pages = leaves.map(leaf => ({ ...leaf, html: read(`slides/${leaf.id}/index.html`) }));
 const contentPages = pages.filter(page => page.type !== 'glossary' && page.id !== '17-sources');
 
-const ALLOWED_LICENSES = /^(Domaine public|CC0 1\.0|CC BY(-SA)? [1-4]\.0)$/;
+// Licences libres acceptées, avec la variante nationale éventuelle (ex. « CC BY-SA 2.0 de »).
+const ALLOWED_LICENSES = /^(Domaine public|CC0( 1\.0)?|CC BY(-SA)? [1-4]\.0( [a-z]{2})?)$/;
 
 describe('Structure du parcours', () => {
   test('chaque feuille du manifeste correspond à une slide existante', () => {
@@ -103,7 +104,8 @@ describe('Rigueur éditoriale', () => {
 
   test.each(contentPages.map(page => [page.id, page.html]))('%s : chaque question de quiz a une seule bonne réponse et une explication', (id, html) => {
     const fieldsets = html.match(/<fieldset>[\s\S]*?<\/fieldset>/g) || [];
-    if (id !== '16-lecons') {
+    // L'introduction et la synthèse (frise) n'ont pas de quiz à choix.
+    if (!['01-introduction', '16-lecons'].includes(id)) {
       expect(fieldsets.length).toBeGreaterThanOrEqual(2);
     }
     for (const fieldset of fieldsets) {
