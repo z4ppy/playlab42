@@ -1,0 +1,931 @@
+/*
+ * Paint Studio - interface mobile d'abord.
+ *
+ * Trois dispositions :
+ * - portrait (défaut) : barre d'actions en haut, zone de dessin, options de
+ *   l'outil puis outils en bas (à portée du pouce) ; couleurs, calques et
+ *   menu Fichier s'ouvrent en tiroirs depuis le bas ;
+ * - paysage de téléphone : outils en colonne à gauche, tiroirs sur le côté ;
+ * - grand écran : couleurs et calques toujours visibles à droite.
+ * Seule la zone de dessin (et le carré de couleur) capte tous les gestes.
+ */
+
+/* === Couleurs propres à l'outil ===
+ * Dérivées des jetons du thème (clair et sombre couverts sans seconde palette).
+ * Déclarées comme <color> pour que le canvas lise une couleur déjà résolue. */
+@property --ps-stage {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #202938;
+}
+
+@property --ps-checker-a {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+@property --ps-checker-b {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d6dbe4;
+}
+
+@property --ps-grid {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(0, 0, 0, 0.2);
+}
+
+:root {
+  --ps-stage: color-mix(in srgb, var(--color-bg) 82%, var(--color-text) 18%);
+  --ps-checker-a: #ffffff;
+  --ps-checker-b: #d9dee7;
+  --ps-grid: color-mix(in srgb, var(--color-text) 30%, transparent);
+  --ps-glass: color-mix(in srgb, var(--color-bg-card) 88%, transparent);
+  --ps-checker-css: repeating-conic-gradient(#d9dee7 0 25%, #ffffff 0 50%) 0 0 / 10px 10px;
+  --ps-gap: 6px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: var(--font-family);
+}
+
+/* === Ossature (portrait) === */
+.ps-app {
+  display: grid;
+  height: 100vh;
+  height: 100dvh;
+  grid-template:
+    "top" auto
+    "stage" minmax(0, 1fr)
+    "options" auto
+    "tools" auto
+    / minmax(0, 1fr);
+  padding-top: env(safe-area-inset-top, 0);
+  padding-right: env(safe-area-inset-right, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+}
+
+/* === Boutons === */
+/* Socle commun de toutes les surfaces cliquables à bordure. */
+.ps-btn,
+.chip-btn,
+.layer-toggle,
+.layer-main,
+.ps-anchor-cell,
+.swatch-btn {
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.ps-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  font-size: 0.9375rem;
+}
+
+.ps-btn--icon {
+  width: 44px;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.ps-btn--primary,
+.ps-btn[aria-pressed="true"] {
+  color: var(--color-text-inverse);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.ps-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .ps-btn:not(:disabled):hover {
+    border-color: var(--color-accent);
+  }
+}
+
+/* === Barre du haut === */
+.ps-top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: var(--ps-gap);
+  min-height: 52px;
+  padding: 4px 8px;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ps-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 1rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ps-top-actions {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+/* Écran étroit : le titre reste lisible par les lecteurs d'écran, l'icône suffit. */
+@media (max-width: 400px) {
+  .ps-title-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+}
+
+/* Pastilles de couleur (principale devant, secondaire derrière). */
+.ps-chip {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  background: linear-gradient(var(--ps-swatch, transparent), var(--ps-swatch, transparent)), var(--ps-checker-css);
+  border: 2px solid var(--color-bg-card);
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+.ps-colors-btn {
+  position: relative;
+}
+
+.ps-colors-btn .ps-chip {
+  position: absolute;
+}
+
+.ps-chip--primary {
+  top: 7px;
+  left: 7px;
+}
+
+.ps-chip--secondary {
+  right: 7px;
+  bottom: 7px;
+}
+
+/* === Outils === */
+.ps-tools {
+  grid-area: tools;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(44px, 1fr));
+  gap: 4px;
+  padding: 6px 8px;
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+}
+
+.ps-tool {
+  min-width: 0;
+  padding: 0;
+}
+
+.ps-tool-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+@media (min-width: 600px) {
+  .ps-tools {
+    grid-template-columns: repeat(12, minmax(44px, 64px));
+    justify-content: center;
+  }
+}
+
+/* === Zone de dessin === */
+.ps-stage {
+  grid-area: stage;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--ps-stage);
+}
+
+.ps-view {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  /* Seule la zone de dessin capte tous les gestes (tracé, pincement). */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.ps-app[data-tool="hand"] .ps-view {
+  cursor: grab;
+}
+
+.ps-app[data-tool="move"] .ps-view {
+  cursor: move;
+}
+
+.ps-app[data-tool="text"] .ps-view {
+  cursor: text;
+}
+
+/* Le contour du pinceau est dessiné par le rendu : pas de second curseur. */
+.ps-app[data-tool="brush"] .ps-view,
+.ps-app[data-tool="eraser"] .ps-view {
+  cursor: none;
+}
+
+.ps-zoom {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--ps-glass);
+  border-radius: var(--radius-lg);
+}
+
+.ps-zoom-label {
+  min-width: 72px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ps-toast,
+.ps-drop {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px var(--color-shadow);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.ps-drop {
+  top: 50%;
+  border: 2px dashed var(--color-accent);
+  transform: translate(-50%, -50%);
+}
+
+.ps-toast[hidden],
+.ps-drop[hidden] {
+  display: none;
+}
+
+/* === Options de l'outil (défilent horizontalement à l'intérieur de la barre) === */
+.ps-options {
+  grid-area: options;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 4px 10px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Options hors champ : fondu au bord droit (la barre de défilement fine est invisible au doigt). */
+.ps-options--more {
+  mask-image: linear-gradient(to left, transparent, #000 48px);
+}
+
+.option {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+}
+
+.option--range {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  /* Les curseurs se partagent la largeur : tout tient dès la tablette, et
+     sur téléphone la barre défile horizontalement en interne. */
+  flex: 1 1 150px;
+  min-width: 110px;
+  max-width: 220px;
+}
+
+.option-label {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.option-value {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.option--toggle {
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.option--toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent);
+}
+
+.option--actions {
+  gap: 4px;
+}
+
+.options-hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.chip-btn {
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 0.875rem;
+  border-radius: var(--radius-full);
+}
+
+/* === Champs === */
+.range {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--color-accent);
+}
+
+/* 16 px : iOS ne zoome pas au focus d'un champ. */
+.input {
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 8px 12px;
+  color: var(--color-text);
+  font-size: 1rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.input--mono {
+  font-family: var(--font-mono);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.ps-field {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ps-field--grow {
+  flex: 1;
+}
+
+.ps-field-label {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.ps-hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+/* === Tiroirs (couleurs, calques, fichier) === */
+.ps-drawer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-dropdown);
+  display: none;
+  max-height: min(78dvh, 680px);
+  padding: 8px 12px calc(12px + env(safe-area-inset-bottom, 0));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: 0 -8px 28px var(--color-shadow);
+}
+
+.ps-app[data-drawer="color"] #drawer-color,
+.ps-app[data-drawer="layers"] #drawer-layers,
+.ps-app[data-drawer="file"] #drawer-file {
+  display: block;
+}
+
+.ps-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ps-drawer-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.ps-subtitle {
+  margin: 10px 0 4px;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* --- Couleurs --- */
+.ps-color-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ps-target {
+  /* Assez étroit pour que ⇄ et ◩ restent sur la même ligne dans le panneau latéral. */
+  flex: 1 1 80px;
+  gap: 4px;
+  padding: 0 6px;
+  font-size: 0.875rem;
+}
+
+.ps-target .ps-chip {
+  width: 18px;
+  height: 18px;
+}
+
+.ps-picker {
+  display: grid;
+  gap: 6px;
+  max-width: 420px;
+}
+
+.ps-sv {
+  position: relative;
+  width: min(100%, 230px);
+  aspect-ratio: 1;
+  justify-self: center;
+  /* Le repère déborde du carré aux bords : il ne doit pas recouvrir le libellé suivant. */
+  margin-block: 11px;
+}
+
+.ps-sv-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+  cursor: crosshair;
+  /* Manipulation directe en deux dimensions : le glisser choisit la couleur. */
+  touch-action: none;
+}
+
+.ps-sv-marker {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #000000, inset 0 0 0 1px #000000;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ps-hue {
+  background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00) center / 100% 10px no-repeat;
+  border-radius: var(--radius-sm);
+}
+
+.ps-alpha {
+  background: linear-gradient(90deg, transparent, var(--ps-alpha-color, #000)) center / 100% 10px no-repeat, var(--ps-checker-css);
+  background-clip: content-box, content-box;
+  padding: 17px 0;
+}
+
+.ps-hex-row {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
+.ps-preview {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  background: linear-gradient(var(--ps-preview, #000), var(--ps-preview, #000)), var(--ps-checker-css);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.ps-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 6px;
+}
+
+.swatch-btn {
+  height: 44px;
+  background: linear-gradient(var(--ps-swatch), var(--ps-swatch)), var(--ps-checker-css);
+}
+
+/* --- Calques --- */
+.ps-layer-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ps-layer-actions .ps-btn {
+  padding: 0 6px;
+  font-size: 0.875rem;
+}
+
+.ps-target .ps-chip {
+  width: 18px;
+  height: 18px;
+}
+
+.ps-layer-list {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.layer-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.layer-row[aria-current="true"] {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+}
+
+.layer-toggle,
+.layer-main {
+  min-height: 48px;
+}
+
+.layer-toggle {
+  font-size: 1.1rem;
+}
+
+.layer-toggle[aria-pressed="false"] {
+  opacity: 0.6;
+}
+
+.layer-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 3px 8px 3px 3px;
+  text-align: left;
+}
+
+.layer-thumb {
+  width: 56px;
+  height: 42px;
+  flex: none;
+  background: var(--ps-checker-css);
+  border-radius: var(--radius-sm);
+}
+
+.layer-text {
+  display: grid;
+  min-width: 0;
+}
+
+.layer-name {
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.layer-meta {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.ps-layer-props {
+  display: grid;
+  gap: 6px;
+}
+
+/* --- Menu Fichier --- */
+.ps-menu {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ps-menu .ps-btn {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* === Dialogues === */
+.ps-dialog {
+  width: min(440px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  padding: 0;
+  overflow: auto;
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.ps-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.ps-form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.ps-form h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.ps-size-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ps-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ps-textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.ps-anchor {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ps-anchor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.ps-anchor-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 48px;
+  font-size: 1.1rem;
+}
+
+.ps-anchor-cell input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ps-anchor-cell:has(input:checked) {
+  color: var(--color-text-inverse);
+  background: var(--color-accent);
+}
+
+.ps-anchor-cell:has(input:focus-visible) {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.ps-shortcuts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.ps-shortcuts dd {
+  margin: 0;
+}
+
+.ps-shortcuts kbd {
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+/* === Paysage de téléphone : outils en colonne, tiroirs sur le côté === */
+@media (orientation: landscape) and (max-height: 560px) {
+  .ps-app {
+    grid-template:
+      "top top" auto
+      "tools stage" minmax(0, 1fr)
+      "tools options" auto
+      / auto minmax(0, 1fr);
+  }
+
+  .ps-top {
+    min-height: 48px;
+    padding-block: 2px;
+  }
+
+  .ps-tools {
+    grid-template-columns: repeat(2, 44px);
+    align-content: start;
+    overflow-y: auto;
+    border-top: 0;
+    border-right: 1px solid var(--color-border);
+  }
+
+  .ps-tool {
+    height: 44px;
+  }
+
+  .ps-options {
+    min-height: 56px;
+  }
+
+  .ps-sv {
+    width: min(100%, 170px);
+  }
+
+  .ps-drawer {
+    /* Sous la barre du haut, qui reste utilisable pour changer de tiroir. */
+    top: calc(env(safe-area-inset-top, 0) + 48px);
+    left: auto;
+    width: min(400px, 60vw);
+    max-height: none;
+    padding-right: calc(12px + env(safe-area-inset-right, 0));
+    border-top: 0;
+    border-left: 1px solid var(--color-border);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  }
+}
+
+/* === Grand écran : couleurs et calques toujours visibles === */
+@media (min-width: 1100px) and (min-height: 600px) {
+  .ps-app {
+    grid-template:
+      "top top top" auto
+      "tools stage color" minmax(0, auto)
+      "tools stage layers" minmax(260px, 1fr)
+      "tools options layers" auto
+      / auto minmax(0, 1fr) 340px;
+  }
+
+  .ps-tools {
+    grid-template-columns: 52px;
+    grid-row: 2 / 5;
+    align-content: start;
+    justify-content: stretch;
+    /* Filet de sécurité : la barre défile plutôt que de sortir de l'écran. */
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-top: 0;
+    border-right: 1px solid var(--color-border);
+  }
+
+  .ps-tool {
+    height: 48px;
+  }
+
+  .ps-stage {
+    grid-row: 2 / 4;
+  }
+
+  #drawer-color,
+  #drawer-layers {
+    position: static;
+    display: block;
+    max-height: none;
+    box-shadow: none;
+    border-top: 0;
+    border-left: 1px solid var(--color-border);
+    border-radius: 0;
+  }
+
+  #drawer-color {
+    grid-area: color;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  #drawer-layers {
+    grid-area: layers;
+  }
+
+  #drawer-color .ps-drawer-close,
+  #drawer-layers .ps-drawer-close,
+  #btn-colors,
+  #btn-layers {
+    display: none;
+  }
+
+  /* Le carré rétrécit sur les écrans bas pour laisser la pile de calques visible. */
+  .ps-sv {
+    width: clamp(140px, 30dvh - 40px, 220px);
+  }
+
+  .ps-drawer--menu {
+    top: 60px;
+    right: 12px;
+    bottom: auto;
+    left: auto;
+    width: 360px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* Portable peu haut (1366x768 avec la barre du navigateur) : deux colonnes
+   d'outils, les douze restent visibles sans défilement ; la pile de calques
+   cède de la hauteur au panneau des couleurs pour que le carré reste entier. */
+@media (min-width: 1100px) and (min-height: 600px) and (max-height: 719px) {
+  .ps-app {
+    grid-template-rows: auto minmax(0, auto) minmax(200px, 1fr) auto;
+  }
+
+  .ps-tools {
+    grid-template-columns: repeat(2, 48px);
+  }
+}

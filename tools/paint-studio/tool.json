@@ -1,0 +1,9 @@
+{
+  "id": "paint-studio",
+  "name": "Paint Studio",
+  "description": "Logiciel de dessin local : calques et modes de fusion, pinceau sensible à la pression, formes, pot de peinture, sélection, annuler/rétablir, au doigt, au stylet ou à la souris",
+  "icon": "🎨",
+  "tags": ["dessin", "graphisme", "créativité", "canvas"],
+  "author": "Cyrille",
+  "version": "1.0.0"
+}
