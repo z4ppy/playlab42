@@ -97,8 +97,10 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 390, height: 844 }
       await touchDrag(page, dragPath(box, 0, 66));
       await expect(page.locator('#readout')).toHaveText('Angle 0,0° · 66 %');
       await expect(page.locator('#app')).toHaveAttribute('data-phase', 'aiming');
-      await page.locator('#btn-shoot').tap();
-      await waitLanding(page);
+      // Même source tactile (CDP) que le glissé : mélanger avec locator.tap() perd le clic sous Chromium complet.
+      const shoot = await page.locator('#btn-shoot').boundingBox();
+      await touchDrag(page, [{ x: shoot.x + shoot.width / 2, y: shoot.y + shoot.height / 2 }]);
+      await expect(page.locator('#app')).toHaveAttribute('data-phase', 'holed', { timeout: 20_000 });
       await expect(page.locator('#result-title')).toHaveText('Trou en un');
       await expectVisibleHitTarget(page.locator('#btn-next'));
       await expectNoOverflow(page);
