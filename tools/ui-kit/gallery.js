@@ -2,7 +2,6 @@ import { getTheme, initTheme, setTheme } from '../../lib/theme.js';
 
 initTheme();
 const theme = document.getElementById('theme');
-theme.value = getTheme();
 const token = document.getElementById('token');
 
 /** Affiche la valeur réelle du token pour le thème courant, sans la recopier. */
@@ -20,13 +19,21 @@ function inspectToken() {
   document.getElementById('token-code').textContent = `.contribution {\n  ${properties[token.value]}: var(${token.value});\n}`;
 }
 
-theme.addEventListener('change', () => {
-  setTheme(theme.value);
+/**
+ * Resynchronise le sélecteur et l'inspecteur. `themechange` est aussi émis
+ * quand le thème change ailleurs (portail parent, autre onglet via `storage`,
+ * préférence système) : le sélecteur ne doit pas afficher un choix périmé.
+ */
+function syncThemeControls() {
+  theme.value = getTheme();
   inspectToken();
-});
-window.addEventListener('themechange', inspectToken);
+}
+
+// setTheme émet themechange : l'inspecteur n'est rafraîchi qu'une fois.
+theme.addEventListener('change', () => setTheme(theme.value));
+window.addEventListener('themechange', syncThemeControls);
 token.addEventListener('change', inspectToken);
-inspectToken();
+syncThemeControls();
 
 document.getElementById('primary').addEventListener('click', () => {
   document.getElementById('button-status').textContent = 'Succès : action principale activée.';

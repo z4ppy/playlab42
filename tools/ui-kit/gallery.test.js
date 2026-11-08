@@ -5,8 +5,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const setTheme = jest.fn();
+const getTheme = jest.fn(() => 'system');
 jest.unstable_mockModule('../../lib/theme.js', () => ({
-  getTheme: () => 'system',
+  getTheme,
   initTheme: jest.fn(),
   setTheme,
 }));
@@ -14,6 +15,7 @@ jest.unstable_mockModule('../../lib/theme.js', () => ({
 beforeEach(async () => {
   jest.resetModules();
   setTheme.mockClear();
+  getTheme.mockReset().mockReturnValue('system');
   const html = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'index.html'), 'utf8');
   document.body.innerHTML = html.match(/<body\b[^>]*>([\s\S]*)<\/body>/)[1];
   document.documentElement.style.setProperty('--space-md', '1rem');
@@ -78,6 +80,17 @@ describe('Galerie UI interactive', () => {
     expect(document.getElementById('button-status').textContent).toContain('Succès');
     document.getElementById('secondary').click();
     expect(document.getElementById('button-status').textContent).toContain('Information');
+  });
+
+  test('le sélecteur de thème suit un changement venu d\'ailleurs (portail, autre onglet)', () => {
+    const theme = document.getElementById('theme');
+    expect(theme.value).toBe('system');
+    // lib/theme.js émet themechange après un événement storage ou une préférence système.
+    getTheme.mockReturnValue('dark');
+    document.documentElement.style.setProperty('--color-bg', '#000000');
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: 'dark' } }));
+    expect(theme.value).toBe('dark');
+    expect(document.getElementById('token-value').textContent).toBe('#000000');
   });
 
   test('emploie les composants partagés pour tous les boutons et champs', () => {

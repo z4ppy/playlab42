@@ -113,3 +113,16 @@ for (const { label, option, scheme } of THEME_MODES) {
     expect(accentColor).toBe(expected);
   });
 }
+
+test('Galerie UI: theme change a chaud depuis un autre document', async ({ page, context }) => {
+  await page.goto('/tools/ui-kit/index.html');
+  await expect(page.locator('#theme')).toHaveValue('system');
+  const other = await context.newPage();
+  await other.goto('/tools/ui-kit/index.html');
+  await other.locator('#theme').selectOption('light');
+  // L'événement storage resynchronise document, sélecteur et inspecteur de la première page.
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expect(page.locator('#theme')).toHaveValue('light');
+  await expect(page.locator('#token-value')).toHaveText('#f6f8fc');
+  await other.close();
+});
