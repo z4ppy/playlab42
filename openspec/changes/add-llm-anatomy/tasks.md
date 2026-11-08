@@ -304,3 +304,16 @@ sur ordinateur et mobile ; le sélecteur de situation a été élargi pour évit
 les libellés tronqués, puis son scénario navigateur a été rejoué avec succès.
 Sources générées synchronisées et prévisualisation actualisée ; archive de
 1 282 fichiers vérifiée. Aucun commit, merge ou déploiement en production.
+
+## 16. Refonte éditoriale pour néophytes et avertis
+
+Base : demande explicite de revue et d'amélioration de la clarté du parcours
+(novembre 2026). Changement éditorial sans nouvelle capability ni rupture de
+contrat : identifiants, expériences et données de Luciole inchangés.
+
+- [x] 16.1 Réécrire les 22 étapes selon un gabarit commun : question, intuition, mécanisme, exemple chiffré, « Dans Luciole », volet « Pour les avertis ».
+- [x] 16.2 Regrouper les mises en garde dans l'encadré des limites ; retirer les répétitions et le jargon d'implémentation du texte principal.
+- [x] 16.3 Ajouter les explications manquantes : rôle du MLP, pourquoi des sous-mots, intuition Q/K/V, pourquoi l'ordre manque à l'attention, origine de la logit lens.
+- [x] 16.4 Réordonner : chat template après le tirage, logit lens après le laboratoire ; carte du parcours dès la première étape.
+- [x] 16.5 Vérifier les sources ajoutées (logit lens 2020, Geva et al. 2021, min-p 2024) et corriger l'entrée top-k du glossaire.
+
