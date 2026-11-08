@@ -1,0 +1,9 @@
+{
+  "id": "10-glossaire",
+  "title": "Glossaire",
+  "icon": "📖",
+  "description": "Les termes clés du parcours, générés depuis glossary.json.",
+  "duration": "1 min",
+  "type": "page",
+  "optional": true
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La galaxie as-code — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="Les déclinaisons du paradigme as-code et le Policy-as-Code avec Open Policy Agent et Rego v1.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>La galaxie as-code</h1>
+            <p class="asc-kicker">Outils et pratiques</p>
+            <p class="asc-lead">
+                Définir plutôt qu'agir, versionner plutôt qu'oublier : la même philosophie appliquée à des
+                domaines de plus en plus variés.
+            </p>
+        </header>
+
+        <h2 id="taxonomie">Une même idée, six domaines</h2>
+        <p>
+            Chaque déclinaison applique les mêmes principes de description déclarative, de versionnement et
+            d'automatisation à un objet différent. Les outils cités sont des exemples, pas un palmarès.
+        </p>
+        <ul class="asc-grid">
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🏗️</span>Infrastructure</h3>
+                <p>Terraform, OpenTofu, Pulumi, CloudFormation, Crossplane.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">⚙️</span>Configuration</h3>
+                <p>Ansible, Salt, Chef, NixOS.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🛡️</span>Politiques</h3>
+                <p>OPA et Rego, Kyverno, Sentinel, Checkov.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">📝</span>Documentation</h3>
+                <p>Sphinx, MkDocs, Docusaurus.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🗺️</span>Diagrammes</h3>
+                <p>Mermaid, PlantUML, Structurizr, D2.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🚀</span>Pipelines</h3>
+                <p>GitHub Actions, GitLab CI, Tekton.</p>
+            </li>
+        </ul>
+
+        <h2 id="policy">Policy-as-Code : la gouvernance automatisée</h2>
+        <p>
+            Le Policy-as-Code transforme des règles d'organisation en code relu, testé et appliqué
+            automatiquement. <dfn data-term="OPA">Open Policy Agent</dfn> évalue des politiques écrites en
+            <dfn data-term="Rego">Rego</dfn>. Depuis OPA 1.0, publié le 20 décembre 2024, les mots-clés
+            <code>if</code> et <code>contains</code> sont obligatoires
+            <a class="asc-ref" href="../09-sources/index.html#src-25" data-asc-slide="09-sources" aria-label="Source 25">[25]</a>.
+        </p>
+        <figure class="asc-code">
+            <figcaption>Rego v1 · privileged.rego</figcaption>
+            <pre><code class="language-rego"><span class="asc-tok-com"># Interdire les conteneurs privilégiés dans un Pod</span>
+<span class="asc-tok-kw">package</span> kubernetes.admission
+
+deny <span class="asc-tok-kw">contains</span> msg <span class="asc-tok-kw">if</span> {
+  input.kind == <span class="asc-tok-str">"Pod"</span>
+  <span class="asc-tok-kw">some</span> container <span class="asc-tok-kw">in</span> input.spec.containers
+  container.securityContext.privileged
+  msg := sprintf(<span class="asc-tok-str">"Conteneur %q : le mode privilégié est interdit"</span>, [container.name])
+}
+
+<span class="asc-tok-com"># Même règle pour les conteneurs d'initialisation</span>
+deny <span class="asc-tok-kw">contains</span> msg <span class="asc-tok-kw">if</span> {
+  input.kind == <span class="asc-tok-str">"Pod"</span>
+  <span class="asc-tok-kw">some</span> container <span class="asc-tok-kw">in</span> input.spec.initContainers
+  container.securityContext.privileged
+  msg := sprintf(<span class="asc-tok-str">"Conteneur d'initialisation %q : mode privilégié interdit"</span>, [container.name])
+}</code></pre>
+        </figure>
+        <p>
+            Cet exemple valide un manifeste brut, par exemple en CI avec <code>opa eval</code> : chaque
+            message produit par <code>deny</code> signale une ressource refusée. Pour l'appliquer à
+            l'admission dans un cluster, OPA s'intègre à Kubernetes via Gatekeeper, mais la règle doit
+            alors être adaptée : Gatekeeper attend une règle <code>violation</code> qui lit l'objet dans
+            <code>input.review.object</code>, déclarée dans un ConstraintTemplate
+            <a class="asc-ref" href="../09-sources/index.html#src-26" data-asc-slide="09-sources" aria-label="Source 26">[26]</a>.
+            D'autres approches existent : Kyverno décrit ses politiques en YAML, et les
+            ValidatingAdmissionPolicy intégrées à Kubernetes, stables depuis la version 1.30, utilisent le
+            langage CEL
+            <a class="asc-ref" href="../09-sources/index.html#src-27" data-asc-slide="09-sources" aria-label="Source 27">[27]</a>.
+        </p>
+    </article>
+</body>
+</html>

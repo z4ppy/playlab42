@@ -1,0 +1,8 @@
+{
+  "id": "05-galaxie",
+  "title": "La galaxie as-code",
+  "icon": "🌌",
+  "description": "Les déclinaisons du paradigme et la gouvernance automatisée avec le Policy-as-Code et Rego v1.",
+  "duration": "2 min",
+  "type": "page"
+}

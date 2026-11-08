@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avantages, défis, anti-patterns — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="Bilan du paradigme as-code : bénéfices réels, défis persistants et anti-patterns fréquents.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>Avantages, défis, anti-patterns</h1>
+            <p class="asc-kicker">Bilan</p>
+            <p class="asc-lead">
+                La balance penche nettement du côté des bénéfices, mais ignorer les difficultés serait
+                une naïveté coûteuse.
+            </p>
+        </header>
+
+        <h2 id="avantages">Les avantages consolidés</h2>
+        <ul>
+            <li><strong>Traçabilité.</strong> Chaque changement est attribué, daté et expliqué dans l'historique Git.</li>
+            <li><strong>Collaboration.</strong> Les modifications passent par des <em>pull requests</em>, des revues et des discussions.</li>
+            <li><strong>Reproductibilité.</strong> Un environnement se reconstruit depuis sa description, sans mémoire individuelle.</li>
+            <li><strong>Automatisation.</strong> Tests, plans d'exécution et politiques détectent les erreurs avant le déploiement.</li>
+            <li>
+                <strong>Reprise après sinistre.</strong> Quand tout est décrit, le
+                temps de rétablissement, donc l'<dfn data-term="RTO">objectif de RTO</dfn> atteignable, dépend
+                surtout du temps de création des ressources.
+            </li>
+        </ul>
+
+        <h2 id="defis">Les défis persistants</h2>
+        <ul>
+            <li><strong>Courbe d'apprentissage.</strong> Git, YAML ou HCL et la pensée déclarative demandent du temps.</li>
+            <li><strong>Complexité d'outillage.</strong> Faire cohabiter Terraform, Ansible, un agent GitOps et OPA a un coût de maintenance.</li>
+            <li><strong>Dérive.</strong> Les modifications manuelles qui contournent le dépôt créent des écarts silencieux.</li>
+            <li><strong>Passage à l'échelle.</strong> Git n'est pas une base de données : des milliers de ressources modifiées en permanence s'y prêtent mal.</li>
+        </ul>
+
+        <h2 id="anti-patterns">Les anti-patterns à éviter</h2>
+        <dl class="asc-defs">
+            <dt>Prolifération de YAML</dt>
+            <dd>Des milliers de fichiers que plus personne ne relit ni ne supprime.</dd>
+            <dt>Sur-abstraction</dt>
+            <dd>Des modèles de modèles, jusqu'à ne plus savoir ce qui sera réellement créé.</dd>
+            <dt>Copier-coller</dt>
+            <dd>Des configurations dupliquées qui divergent à chaque correction oubliée.</dd>
+            <dt>État négligé</dt>
+            <dd>Un fichier d'état Terraform ou OpenTofu local, non verrouillé ou non sauvegardé.</dd>
+            <dt>Secrets en clair</dt>
+            <dd>Des mots de passe versionnés : l'historique Git les conserve même après suppression.</dd>
+        </dl>
+
+        <div class="callout callout-info">
+            <p>
+                <strong>En pratique.</strong> L'as-code est un investissement, pas une solution magique.
+                Commencez petit : un environnement, un outil, une revue systématique. Puis détectez, ou
+                interdisez, les modifications manuelles en production.
+            </p>
+        </div>
+    </article>
+</body>
+</html>

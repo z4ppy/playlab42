@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tendances actuelles et conclusion — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="Tendances du paradigme as-code depuis 2023 et conclusion : un marché en recomposition et une maturité inégale selon les domaines.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>Tendances actuelles et conclusion</h1>
+            <p class="asc-kicker">Bilan</p>
+            <p class="asc-lead">
+                Licences, fondations et propriétaires changent, les idées restent : où en est le paradigme
+                en novembre 2026 ?
+            </p>
+        </header>
+
+        <h2 id="marche">Un marché en recomposition</h2>
+        <p>
+            Depuis 2023, les outils phares ont changé de licence, de propriétaire ou de foyer. Terraform est
+            passé sous <dfn data-term="BUSL">BUSL</dfn> 1.1
+            <a class="asc-ref" href="../09-sources/index.html#src-17" data-asc-slide="09-sources" aria-label="Source 17">[17]</a>
+            et HashiCorp appartient désormais à IBM
+            <a class="asc-ref" href="../09-sources/index.html#src-20" data-asc-slide="09-sources" aria-label="Source 20">[20]</a>.
+            Son fork <dfn data-term="OpenTofu">OpenTofu</dfn> est devenu un projet CNCF
+            <a class="asc-ref" href="../09-sources/index.html#src-19" data-asc-slide="09-sources" aria-label="Source 19">[19]</a>.
+            Weaveworks, à l'origine du terme GitOps, a fermé
+            <a class="asc-ref" href="../09-sources/index.html#src-23" data-asc-slide="09-sources" aria-label="Source 23">[23]</a>.
+            Crossplane, qui pilote des ressources cloud depuis Kubernetes grâce à des
+            <dfn data-term="CRD">CRD</dfn>, a été gradué par la CNCF le 6 novembre 2025
+            <a class="asc-ref" href="../09-sources/index.html#src-28" data-asc-slide="09-sources" aria-label="Source 28">[28]</a>.
+            Le marché n'est donc pas stabilisé : avant d'adopter un outil, regardez sa licence et sa
+            gouvernance autant que ses fonctionnalités.
+        </p>
+
+        <h2 id="pistes">Quatre pistes à suivre</h2>
+        <ul class="asc-grid">
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🧭</span>Portails développeurs</h3>
+                <p>Backstage et ses équivalents deviennent le point d'entrée unifié vers la plateforme interne.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🎛️</span>Plans de contrôle</h3>
+                <p>L'infrastructure décrite comme des ressources Kubernetes, réconciliées en continu.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🤖</span>IA et métadonnées</h3>
+                <p>Des LLM proposent descriptions, étiquettes ou code d'infrastructure, que l'équipe relit avant fusion.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">✏️</span>Édition visuelle sur Git</h3>
+                <p>Des CMS comme Decap ou TinaCMS ouvrent les contenus versionnés aux non-développeurs.</p>
+            </li>
+        </ul>
+
+        <h2 id="conclusion">Conclusion : une maturité inégale</h2>
+        <p>
+            Plus de trois décennies après les débuts de CFEngine, le paradigme as-code a atteint une maturité
+            variable selon les domaines. L'Infrastructure as Code est la plus répandue, même si ses outils se
+            recomposent. GitOps et le Policy-as-Code se diffusent vite : 77 % des organisations interrogées
+            par la CNCF disent appliquer les principes GitOps
+            <a class="asc-ref" href="../09-sources/index.html#src-2" data-asc-slide="09-sources" aria-label="Source 2">[2]</a>.
+            Le Catalog-as-Code, lui, émerge à peine.
+        </p>
+        <p>
+            Ce n'est pas une solution universelle mais un choix contextuel. Avant de l'adopter, évaluez la
+            maturité Git de l'équipe, ses besoins de collaboration et sa tolérance à la complexité. Bien
+            mené, il offre un équilibre rare entre rigueur, reproductibilité et collaboration : ces mêmes
+            bénéfices qui transforment l'exploitation des systèmes depuis les travaux de Mark Burgess à Oslo.
+        </p>
+    </article>
+</body>
+</html>

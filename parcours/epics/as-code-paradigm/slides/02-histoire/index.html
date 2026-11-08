@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De CFEngine à DevOps (1993-2009) — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="Histoire du paradigme as-code : CFEngine, Puppet, la Promise Theory, Agile 2008, Velocity et les premiers DevOpsDays.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>De CFEngine à DevOps (1993-2009)</h1>
+            <p class="asc-kicker">Origines</p>
+            <p class="asc-lead">
+                Seize ans séparent CFEngine, l'un des premiers outils de configuration, de la conférence qui a donné
+                son nom au mouvement DevOps.
+            </p>
+        </header>
+
+        <h2 id="oslo">Un physicien face à un parc Unix</h2>
+        <p>
+            L'histoire commence en 1993 à l'université d'Oslo. Mark Burgess, alors chercheur en physique,
+            doit maintenir un parc hétérogène de stations Unix. Il lance CFEngine, un projet de recherche
+            destiné à résoudre les problèmes d'administration d'un grand réseau
+            <a class="asc-ref" href="../09-sources/index.html#src-3" data-asc-slide="09-sources" aria-label="Source 3">[3]</a>.
+            C'est l'un des premiers outils de gestion de configuration. L'idée est audacieuse pour l'époque :
+            et si l'on pouvait <em>décrire</em> l'état souhaité d'un système plutôt que les étapes pour y parvenir ?
+        </p>
+        <p>
+            Trois notions y prennent racine : l'abstraction des différences entre plateformes grâce à un
+            langage dédié, la <dfn data-term="Convergence">convergence</dfn> de chaque machine vers un
+            état conforme, et l'<dfn data-term="Idempotence">idempotence</dfn> des opérations.
+        </p>
+        <div class="callout callout-info">
+            <p>
+                <strong>En pratique.</strong> Une opération idempotente peut être rejouée sans danger :
+                appliquer dix fois la même description produit le même résultat qu'une seule fois.
+                C'est ce qui permet d'exécuter un outil de configuration à intervalles réguliers.
+            </p>
+        </div>
+
+        <h2 id="frise">Une frise de 1993 à 2009</h2>
+        <ol class="asc-timeline">
+            <li>
+                <span class="asc-year">1993</span>
+                <h3>CFEngine, l'un des premiers outils</h3>
+                <p>
+                    Projet de recherche de Mark Burgess à l'université d'Oslo
+                    <a class="asc-ref" href="../09-sources/index.html#src-3" data-asc-slide="09-sources" aria-label="Source 3">[3]</a>.
+                </p>
+            </li>
+            <li>
+                <span class="asc-year">2005</span>
+                <h3>Puppet, l'industrialisation</h3>
+                <p>
+                    Après un prototype écrit à l'été 2004, Luke Kanies fait de Puppet son activité à plein
+                    temps en février 2005
+                    <a class="asc-ref" href="../09-sources/index.html#src-9" data-asc-slide="09-sources" aria-label="Source 9">[9]</a> :
+                    un langage déclaratif et une architecture client-serveur.
+                </p>
+            </li>
+            <li>
+                <span class="asc-year">Août 2008</span>
+                <h3>Agile Infrastructure</h3>
+                <p>
+                    À la conférence Agile 2008 de Toronto, Patrick Debois présente « Agile Infrastructure and
+                    Operations »
+                    <a class="asc-ref" href="../09-sources/index.html#src-6" data-asc-slide="09-sources" aria-label="Source 6">[6]</a>.
+                    Avec Andrew Clay Shafer, il tente aussi d'y animer une session informelle « Agile
+                    Infrastructure », restée sans public
+                    <a class="asc-ref" href="../09-sources/index.html#src-10" data-asc-slide="09-sources" aria-label="Source 10">[10]</a>.
+                </p>
+            </li>
+            <li>
+                <span class="asc-year">Juin 2009</span>
+                <h3>« 10+ Deploys Per Day »</h3>
+                <p>
+                    À la conférence Velocity, John Allspaw et Paul Hammond présentent « 10+ Deploys Per Day:
+                    Dev and Ops Cooperation at Flickr » : la preuve que développement et exploitation peuvent
+                    coopérer
+                    <a class="asc-ref" href="../09-sources/index.html#src-7" data-asc-slide="09-sources" aria-label="Source 7">[7]</a>.
+                </p>
+            </li>
+            <li>
+                <span class="asc-year">Octobre 2009</span>
+                <h3>Les premiers DevOpsDays à Gand</h3>
+                <p>
+                    Patrick Debois organise les 30 et 31 octobre la première édition des DevOpsDays
+                    <a class="asc-ref" href="../09-sources/index.html#src-8" data-asc-slide="09-sources" aria-label="Source 8">[8]</a>.
+                    Le mot « DevOps » se diffuse avec la conférence.
+                </p>
+            </li>
+        </ol>
+
+        <h2 id="promesses">La Promise Theory</h2>
+        <p>
+            En 2005, Mark Burgess présente à la conférence DSOM de Barcelone un modèle de coopération entre
+            agents autonomes
+            <a class="asc-ref" href="../09-sources/index.html#src-4" data-asc-slide="09-sources" aria-label="Source 4">[4]</a> :
+            la <dfn data-term="Promise Theory">Promise Theory</dfn>. Plutôt que d'ordonner, on promet.
+            Chaque composant s'engage à maintenir un état, et le système résulte de l'ensemble de ces
+            engagements. Burgess a ensuite développé cette théorie avec Jan A. Bergstra
+            <a class="asc-ref" href="../09-sources/index.html#src-5" data-asc-slide="09-sources" aria-label="Source 5">[5]</a>.
+        </p>
+        <blockquote>
+            <p lang="en">« A theory of atomic policy units called ‘promises’ is therefore discussed. »</p>
+            <p>
+                Traduction : « Une théorie d'unités atomiques de politique, appelées “promesses”,
+                est donc discutée. » Mark Burgess, DSOM 2005
+                <a class="asc-ref" href="../09-sources/index.html#src-4" data-asc-slide="09-sources" aria-label="Source 4">[4]</a>.
+            </p>
+        </blockquote>
+        <p>
+            Ce renversement, où la machine converge d'elle-même vers l'état décrit, irrigue encore les outils
+            déclaratifs modernes, des boucles de <dfn data-term="Réconciliation">réconciliation</dfn> de
+            Kubernetes aux agents GitOps.
+        </p>
+    </article>
+</body>
+</html>

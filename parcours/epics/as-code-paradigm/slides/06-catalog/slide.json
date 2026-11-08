@@ -1,0 +1,8 @@
+{
+  "id": "06-catalog",
+  "title": "Catalog-as-Code et Backstage",
+  "icon": "📚",
+  "description": "Gérer des inventaires comme du code : Backstage, choix d'architecture et l'exemple de Playlab42.",
+  "duration": "3 min",
+  "type": "page"
+}

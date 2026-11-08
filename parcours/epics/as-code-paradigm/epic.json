@@ -1,27 +1,58 @@
 {
   "id": "as-code-paradigm",
   "title": "Le Paradigme As-Code",
-  "description": "De l'artisanat à l'automatisation : comment une idée née dans un département de physique d'Oslo a transformé la gestion des systèmes informatiques. Infrastructure, Configuration, Policy, GitOps et Catalog-as-Code.",
+  "description": "De CFEngine à GitOps : comment la gestion des systèmes est passée de gestes manuels à des descriptions versionnées. Infrastructure, configuration, politiques et catalogues as-code, avec leurs outils, leurs limites et leurs évolutions récentes.",
   "hierarchy": ["playlab42"],
   "order": 4,
   "tags": ["devops", "infrastructure", "gitops", "iac", "automation", "terraform", "kubernetes"],
   "metadata": {
     "author": "Cyrille",
     "created": "2025-12-26",
-    "duration": "15 min",
+    "updated": "2026-11-08",
+    "duration": "23 min",
     "difficulty": "beginner",
     "language": "fr"
   },
   "icon": "📜",
   "thumbnail": "thumbnail.jpg",
   "content": [
-    { "id": "01-article" }
+    {
+      "id": "origines",
+      "title": "Origines",
+      "icon": "🌱",
+      "content": [
+        { "id": "01-introduction" },
+        { "id": "02-histoire" }
+      ]
+    },
+    {
+      "id": "pratiques",
+      "title": "Outils et pratiques",
+      "icon": "🛠️",
+      "content": [
+        { "id": "03-infrastructure" },
+        { "id": "04-gitops" },
+        { "id": "05-galaxie" },
+        { "id": "06-catalog" }
+      ]
+    },
+    {
+      "id": "bilan",
+      "title": "Bilan",
+      "icon": "⚖️",
+      "content": [
+        { "id": "07-bilan" },
+        { "id": "08-tendances" },
+        { "id": "09-sources" },
+        { "id": "10-glossaire", "optional": true }
+      ]
+    }
   ],
   "bookmarks": [
     {
       "url": "https://cfengine.com/",
       "title": "CFEngine",
-      "description": "Premier outil de gestion de configuration (1993), créé par Mark Burgess",
+      "description": "L'un des premiers outils de gestion de configuration (1993), créé par Mark Burgess",
       "icon": "🔧",
       "tags": ["cfengine", "configuration", "historique"]
     },
@@ -40,9 +71,16 @@
       "tags": ["terraform", "documentation"]
     },
     {
-      "url": "https://www.ansible.com/",
+      "url": "https://opentofu.org/",
+      "title": "OpenTofu",
+      "description": "Fork open source de Terraform sous licence MPL 2.0, projet CNCF",
+      "icon": "🧈",
+      "tags": ["opentofu", "iac", "cncf"]
+    },
+    {
+      "url": "https://docs.ansible.com/",
       "title": "Ansible",
-      "description": "Automatisation IT agentless par Red Hat",
+      "description": "Documentation de l'automatisation IT sans agent, projet porté par Red Hat",
       "icon": "⚙️",
       "tags": ["ansible", "configuration", "redhat"]
     },
@@ -63,21 +101,21 @@
     {
       "url": "https://fluxcd.io/",
       "title": "Flux CD",
-      "description": "GitOps toolkit pour Kubernetes, projet CNCF Graduated",
+      "description": "Boîte à outils GitOps pour Kubernetes, projet CNCF gradué",
       "icon": "🌊",
       "tags": ["flux", "gitops", "cncf"]
     },
     {
       "url": "https://opengitops.dev/",
       "title": "OpenGitOps",
-      "description": "Définition officielle des 4 principes GitOps par la CNCF",
+      "description": "Les 4 principes GitOps v1.0.0 publiés par le GitOps Working Group de la CNCF",
       "icon": "📖",
       "tags": ["gitops", "cncf", "standards"]
     },
     {
       "url": "https://backstage.io/",
       "title": "Backstage",
-      "description": "Portail développeur open-source par Spotify, projet CNCF Incubating",
+      "description": "Portail développeur open source créé par Spotify, projet CNCF en incubation",
       "icon": "🎭",
       "tags": ["backstage", "catalog", "spotify"]
     },
@@ -98,7 +136,7 @@
     {
       "url": "https://www.cncf.io/reports/cncf-annual-survey-2024/",
       "title": "CNCF Annual Survey 2024",
-      "description": "Rapport officiel avec les statistiques d'adoption GitOps (77%)",
+      "description": "Rapport annuel de la CNCF (enquête de l'automne 2024, publiée en avril 2025)",
       "icon": "📊",
       "tags": ["cncf", "survey", "statistics"]
     },
@@ -110,9 +148,9 @@
       "tags": ["promise-theory", "burgess", "theory"]
     },
     {
-      "url": "https://www.weave.works/blog/gitops-operations-by-pull-request",
-      "title": "GitOps - Operations by Pull Request",
-      "description": "Article fondateur de GitOps par Weaveworks (2017)",
+      "url": "https://web.archive.org/web/20180107011605/https://www.weave.works/blog/gitops-operations-by-pull-request",
+      "title": "GitOps - Operations by Pull Request (archive, 2017)",
+      "description": "Article fondateur de GitOps par Alexis Richardson (Weaveworks), copie archivée",
       "icon": "📝",
       "tags": ["gitops", "weaveworks", "article"]
     }

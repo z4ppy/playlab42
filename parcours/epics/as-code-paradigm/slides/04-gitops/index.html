@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitOps : Git comme source de vérité — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="GitOps : la proposition Weaveworks de 2017, les quatre principes OpenGitOps v1.0, un Deployment Kubernetes, Argo CD et Flux.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>GitOps : Git comme source de vérité</h1>
+            <p class="asc-kicker">Outils et pratiques</p>
+            <p class="asc-lead">
+                Git ne garde plus seulement le code des applications : il devient le dépositaire de l'état
+                voulu de tout le système.
+            </p>
+        </header>
+
+        <h2 id="naissance">Une méthode née chez Weaveworks</h2>
+        <p>
+            Le 7 août 2017, Alexis Richardson, cofondateur et dirigeant de Weaveworks, publie
+            « GitOps - Operations by Pull Request »
+            <a class="asc-ref" href="../09-sources/index.html#src-21" data-asc-slide="09-sources" aria-label="Source 21">[21]</a>.
+            L'article décrit comment les équipes de Weaveworks exploitent leurs clusters Kubernetes à partir
+            de Git. Il résume la méthode en cinq points :
+        </p>
+        <ol>
+            <li>le provisionnement des ressources cloud et le déploiement Kubernetes sont déclaratifs ;</li>
+            <li>tout l'état du système est versionné et décrit dans un seul dépôt Git ;</li>
+            <li>les changements d'exploitation passent par des <em>pull requests</em>, suivies de pipelines de build et de release ;</li>
+            <li>des outils de comparaison détectent toute divergence et alertent l'équipe, des outils de synchronisation rétablissent la convergence ;</li>
+            <li>le retour arrière et l'historique d'audit sont fournis par Git.</li>
+        </ol>
+
+        <h2 id="principes">Les 4 principes OpenGitOps v1.0</h2>
+        <p>
+            Le 8 octobre 2021, le GitOps Working Group, rattaché à la CNCF, publie une définition neutre,
+            indépendante des outils
+            <a class="asc-ref" href="../09-sources/index.html#src-22" data-asc-slide="09-sources" aria-label="Source 22">[22]</a>.
+            Traduction des quatre principes :
+        </p>
+        <ul class="asc-grid">
+            <li class="slide-card">
+                <h3>Déclaratif</h3>
+                <p>Un système géré en GitOps doit avoir son état voulu exprimé de façon déclarative.</p>
+            </li>
+            <li class="slide-card">
+                <h3>Versionné et immuable</h3>
+                <p>L'état voulu est stocké d'une manière qui impose l'immuabilité et le versionnement, et conserve un historique complet des versions.</p>
+            </li>
+            <li class="slide-card">
+                <h3>Tiré automatiquement</h3>
+                <p>Des agents logiciels tirent automatiquement les déclarations d'état voulu depuis la source.</p>
+            </li>
+            <li class="slide-card">
+                <h3>Réconcilié en continu</h3>
+                <p>Des agents observent en continu l'état réel et tentent d'appliquer l'état voulu.</p>
+            </li>
+        </ul>
+        <p class="asc-meta">OpenGitOps, GitOps Working Group (CNCF), principes v1.0.0.</p>
+
+        <ol class="asc-flow" aria-label="Le cycle GitOps">
+            <li><span>Développeur</span></li>
+            <li><span>Pull request</span></li>
+            <li><span>Revue et fusion</span></li>
+            <li><span>Agent GitOps</span></li>
+            <li><span>Cluster Kubernetes</span></li>
+        </ol>
+
+        <h2 id="deploiement">Un déploiement décrit dans Git</h2>
+        <figure class="asc-code">
+            <figcaption>YAML · deployment.yaml</figcaption>
+            <pre><code class="language-yaml"><span class="asc-tok-com"># L'état voulu de l'application, versionné dans le dépôt</span>
+<span class="asc-tok-key">apiVersion</span>: apps/v1
+<span class="asc-tok-key">kind</span>: Deployment
+<span class="asc-tok-key">metadata</span>:
+  <span class="asc-tok-key">name</span>: my-app
+  <span class="asc-tok-key">labels</span>:
+    <span class="asc-tok-key">app</span>: my-app
+<span class="asc-tok-key">spec</span>:
+  <span class="asc-tok-key">replicas</span>: 3
+  <span class="asc-tok-key">selector</span>:
+    <span class="asc-tok-key">matchLabels</span>:
+      <span class="asc-tok-key">app</span>: my-app
+  <span class="asc-tok-key">template</span>:
+    <span class="asc-tok-key">metadata</span>:
+      <span class="asc-tok-key">labels</span>:
+        <span class="asc-tok-key">app</span>: my-app
+    <span class="asc-tok-key">spec</span>:
+      <span class="asc-tok-key">containers</span>:
+        - <span class="asc-tok-key">name</span>: my-app
+          <span class="asc-tok-key">image</span>: <span class="asc-tok-str">ghcr.io/example/my-app:1.2.3</span>
+          <span class="asc-tok-key">ports</span>:
+            - <span class="asc-tok-key">containerPort</span>: 8080</code></pre>
+        </figure>
+        <p>
+            L'agent compare en permanence ce fichier à ce qui tourne dans le cluster. Si quelqu'un passe à
+            la main de trois à cinq réplicas, la <dfn data-term="Drift">dérive</dfn> est détectée puis
+            corrigée : c'est la <dfn data-term="Réconciliation">réconciliation</dfn>. Pour changer le
+            nombre de réplicas, on modifie le fichier et on ouvre une <em>pull request</em>.
+        </p>
+
+        <h2 id="outils">Argo CD et Flux</h2>
+        <ul class="asc-grid">
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🐙</span>Argo CD</h3>
+                <p>Agent GitOps du projet Argo, avec une interface web pour suivre la synchronisation de chaque application.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🌊</span>Flux</h3>
+                <p>
+                    Boîte à outils née chez Weaveworks, projet CNCF gradué le 30 novembre 2022
+                    <a class="asc-ref" href="../09-sources/index.html#src-24" data-asc-slide="09-sources" aria-label="Source 24">[24]</a>.
+                </p>
+            </li>
+        </ul>
+        <div class="callout callout-warning">
+            <p>
+                <strong>Weaveworks a fermé en février 2024</strong>, après l'échec d'un rachat
+                <a class="asc-ref" href="../09-sources/index.html#src-23" data-asc-slide="09-sources" aria-label="Source 23">[23]</a>.
+                Flux, déjà confié à la CNCF, reste un projet gradué maintenu par sa communauté
+                <a class="asc-ref" href="../09-sources/index.html#src-24" data-asc-slide="09-sources" aria-label="Source 24">[24]</a>.
+                L'article fondateur n'est plus en ligne que sous forme d'archive.
+            </p>
+        </div>
+    </article>
+</body>
+</html>

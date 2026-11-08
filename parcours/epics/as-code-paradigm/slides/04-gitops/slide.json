@@ -1,0 +1,8 @@
+{
+  "id": "04-gitops",
+  "title": "GitOps : Git comme source de vérité",
+  "icon": "🔄",
+  "description": "Les principes OpenGitOps v1.0, la proposition Weaveworks de 2017, Argo CD et Flux.",
+  "duration": "3 min",
+  "type": "page"
+}
