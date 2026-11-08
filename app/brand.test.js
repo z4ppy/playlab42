@@ -276,3 +276,21 @@ describe('initBrand : déclencheurs', () => {
     expect(document.querySelector('.hero-flask').classList.contains('is-overflowing')).toBe(true);
   });
 });
+
+describe('jetons de marque en thème clair', () => {
+  const css = readFileSync(new URL('./brand.css', import.meta.url), 'utf8');
+  /** Déclarations `--nom: valeur` du premier bloc qui suit le sélecteur donné. */
+  const tokensAfter = selector => {
+    const start = css.indexOf(`${selector} {`);
+    const block = css.slice(start, css.indexOf('}', start));
+    return Object.fromEntries([...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map(match => [match[1], match[2]]));
+  };
+
+  it('applique en automatique sur système clair les mêmes jetons que le thème clair choisi', () => {
+    // Sans ce miroir, le titre et la fiole gardent les teintes sombres sur fond clair
+    const chosen = tokensAfter('[data-theme="light"]');
+    expect(Object.keys(chosen).length).toBeGreaterThan(5);
+    expect(css).toMatch(/@media \(prefers-color-scheme: light\) \{\s*:root:not\(\[data-theme\]\) \{/);
+    expect(tokensAfter(':root:not([data-theme])')).toEqual(chosen);
+  });
+});

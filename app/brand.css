@@ -38,6 +38,34 @@
   --flask-nebula-blend: normal;
 }
 
+/* Thème automatique sur un système clair : sans attribut data-theme, mêmes jetons
+   que le thème clair choisi (même convention que lib/theme.css). */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --brand-a: #0369a1;
+    --brand-b: #047857;
+    --brand-c: #4d7c0f;
+    --brand-nebula: #7c3aed;
+    --brand-glass: rgba(15, 40, 70, 0.55);
+    --brand-glass-shine: rgba(255, 255, 255, 0.85);
+    --brand-glow: rgba(4, 120, 87, 0.22);
+    --brand-star: #fefce8;
+    --brand-spotlight: rgba(3, 105, 161, 0.08);
+    /* Le liquide reste lumineux sur fond clair ; seul le verre se fonce. */
+    --flask-a: #06b6d4;
+    --flask-b: #84cc16;
+    --flask-nebula-blend: normal;
+  }
+
+  :root:not([data-theme]) .brand-mark {
+    color: #ffffff;
+  }
+
+  :root:not([data-theme]) .flask-nebula {
+    opacity: 0.3;
+  }
+}
+
 /* === En-tête : liseré dégradé et verre dépoli === */
 header {
   background: color-mix(in srgb, var(--color-bg) 82%, transparent);
