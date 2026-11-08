@@ -1,0 +1,9 @@
+{
+  "id": "l-systems",
+  "name": "L-systèmes",
+  "description": "Éditeur de L-systèmes : grammaires de réécriture, tortue graphique, courbes fractales et plantes de Lindenmayer, au doigt comme à la souris",
+  "icon": "🌿",
+  "tags": ["fractales", "mathématiques", "simulation", "education"],
+  "author": "Cyrille",
+  "version": "1.0.0"
+}

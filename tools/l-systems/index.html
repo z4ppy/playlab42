@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>L-systèmes - Playlab42</title>
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <script type="module">
+    import { initTheme } from '../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    /*
+     * Mise en page mobile d'abord :
+     * - portrait : barre de titre, dessin, barre rapide ; l'éditeur se déplie
+     *   sous le dessin (hauteur bornée, défilement interne) sans le masquer ;
+     * - paysage bas et grand écran : dessin à gauche, panneau à droite.
+     * La page elle-même ne défile jamais : seule la zone d'édition défile.
+     */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-family);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    .app {
+      display: grid;
+      grid-template-areas: "top" "stage" "panel";
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr);
+      height: 100vh;
+      height: 100dvh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    button, select, input { font: inherit; color: inherit; }
+
+    button {
+      touch-action: manipulation;
+      cursor: pointer;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* === Barre de titre === */
+    .topbar {
+      grid-area: top;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 6px 12px;
+      background: var(--color-bg-secondary);
+      border-bottom: 1px solid var(--color-border);
+      min-width: 0;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.05rem;
+      white-space: nowrap;
+    }
+
+    /* Hauteur, police et bordure partagées avec les champs (règle groupée plus bas). */
+    .preset-select {
+      flex: 1 1 auto;
+      min-width: 0;
+      border-radius: var(--radius-md);
+    }
+
+    .icon-btn {
+      flex: none;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      font-size: 1.25rem;
+      line-height: 1;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-card);
+    }
+
+    .icon-btn:hover, .btn:hover { background: var(--color-bg-hover); }
+
+    /* === Zone de dessin === */
+    .stage {
+      grid-area: stage;
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 40%, var(--color-accent-light), transparent 70%),
+        var(--color-bg);
+    }
+
+    .stage canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      /* Seule la surface de dessin capte les gestes ; le reste défile normalement. */
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .stage canvas:active { cursor: grabbing; }
+
+    /* Le canvas remplit exactement .stage (overflow: hidden) : un contour
+       extérieur serait rogné, on le dessine donc à l'intérieur. */
+    .stage canvas:focus-visible { outline-offset: -3px; }
+
+    .status {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      max-width: calc(100% - 72px);
+      margin: 0;
+      padding: 3px 8px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--color-text-muted);
+      background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+      border-radius: var(--radius-sm);
+      pointer-events: none;
+    }
+
+    .busy {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 14px;
+      font-size: 14px;
+      border-radius: var(--radius-full);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 2px 8px var(--color-shadow);
+      pointer-events: none;
+    }
+
+    .alert {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 60px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-error);
+      border-left-width: 4px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 12px var(--color-shadow);
+    }
+
+    .alert p { margin: 0; flex: 1 1 14em; }
+
+    [hidden] { display: none !important; }
+
+    .zoom-controls {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .zoom-controls .icon-btn {
+      background: color-mix(in srgb, var(--color-bg-card) 90%, transparent);
+      box-shadow: 0 1px 4px var(--color-shadow);
+    }
+
+    /* === Panneau : barre rapide + éditeur === */
+    .panel {
+      grid-area: panel;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      background: var(--color-bg-secondary);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .quickbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      min-width: 0;
+    }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+    }
+
+    .stepper button {
+      width: 44px;
+      height: 44px;
+      font-size: 1.3rem;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+    }
+
+    .stepper output {
+      min-width: 3.2em;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-card);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text-inverse);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover { background: var(--color-accent-hover); }
+
+    .quickbar .grow { flex: 1 1 auto; }
+
+    .editor {
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 0 12px 12px;
+      max-height: 46dvh;
+    }
+
+    .panel:not(.is-open) .editor { display: none; }
+
+    .preset-note {
+      margin: 0 0 8px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--color-text-muted);
+    }
+
+    fieldset {
+      margin: 0 0 12px;
+      padding: 8px 10px 10px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      min-width: 0;
+    }
+
+    legend {
+      padding: 0 4px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-text-muted);
+    }
+
+    .field { display: grid; gap: 4px; margin-bottom: 10px; }
+    .field:last-child { margin-bottom: 0; }
+
+    .field > label, .field-label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .hint { font-size: 13px; color: var(--color-text-muted); line-height: 1.4; }
+
+    .preset-select, input[type="text"], input[type="number"], select.input {
+      min-height: 44px;
+      padding: 0 10px;
+      font-size: 16px; /* ≥ 16px : pas de zoom automatique sur iOS */
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+    }
+
+    input[type="text"], input[type="number"], select.input {
+      width: 100%;
+      border-radius: var(--radius-sm);
+    }
+
+    .mono { font-family: var(--font-mono); }
+
+    input[aria-invalid="true"] { border-color: var(--color-error); }
+
+    /* Colonnes : symbole, flèche, remplacement, probabilité, suppression.
+       Les règles paramétrées « A(l,w) : l > 3 » élargissent la 1re colonne. */
+    .rules-block { --rule-columns: 3rem auto minmax(0, 1fr) 3rem 44px; }
+    .rules-block.is-parametric { --rule-columns: minmax(0, 0.8fr) auto minmax(0, 1fr) 3rem 44px; }
+
+    .rules { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+
+    .rule {
+      display: grid;
+      grid-template-columns: var(--rule-columns);
+      align-items: center;
+      gap: 4px;
+    }
+
+    .rule .arrow { color: var(--color-text-muted); }
+
+    .rule input[type="text"], .rule input[type="number"] { padding: 0 6px; }
+
+    .rule .remove {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      font-size: 1.1rem;
+    }
+
+    .rules-head {
+      display: grid;
+      grid-template-columns: var(--rule-columns);
+      gap: 4px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .rules-head span:nth-child(2) { visibility: hidden; }
+
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 5.5rem;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 44px;
+      margin: 0;
+      accent-color: var(--color-accent);
+      background: transparent;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      font-size: 15px;
+    }
+
+    .check input { width: 22px; height: 22px; accent-color: var(--color-accent); }
+
+    details { margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+
+    summary {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    details dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; margin: 0; }
+    details dt { font-family: var(--font-mono); font-weight: 700; }
+    details dd { margin: 0; }
+
+    .preview {
+      display: block;
+      padding: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      word-break: break-all;
+      background: var(--color-bg);
+      border-radius: var(--radius-sm);
+    }
+
+    /* === Paysage (téléphone couché) et grands écrans : deux colonnes === */
+    @media (orientation: landscape) and (max-height: 560px), (min-width: 960px) {
+      .app {
+        grid-template-areas: "stage top" "stage panel";
+        grid-template-columns: minmax(0, 1fr) min(380px, 46vw);
+        grid-template-rows: auto minmax(0, 1fr);
+      }
+
+      .topbar { border-left: 1px solid var(--color-border); }
+      .title-text { display: none; }
+
+      .panel {
+        border-top: none;
+        border-left: 1px solid var(--color-border);
+      }
+
+      .editor { max-height: none; flex: 1 1 auto; }
+      .panel:not(.is-open) .editor { display: block; }
+      #toggle-editor { display: none; }
+      .quickbar { flex-wrap: wrap; }
+    }
+
+    @media (orientation: landscape) and (max-height: 560px) {
+      .title { display: none; }
+      .topbar { padding: 4px 8px; }
+      .quickbar { padding: 6px 8px; }
+      .editor { padding: 0 8px 8px; }
+    }
+
+    @media (max-width: 400px) {
+      #replay .btn-label { display: none; }
+      #replay { min-width: 52px; }
+    }
+
+    @media (max-width: 380px) {
+      .title-text { display: none; }
+      .quickbar { gap: 6px; padding: 8px 10px; }
+      .btn { padding: 0 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1 class="title"><span aria-hidden="true">🌿</span><span class="title-text"> L-systèmes</span></h1>
+      <label class="sr-only" for="preset">Préréglage</label>
+      <select id="preset" class="preset-select"></select>
+      <button type="button" id="theme-toggle" class="icon-btn" aria-label="Basculer entre thème clair et sombre" title="Thème clair / sombre">◐</button>
+    </header>
+
+    <main class="stage" id="stage">
+      <canvas id="canvas" tabindex="0" role="img"
+        aria-label="Dessin du L-système. Glisser pour déplacer, pincer, molette ou double-tap pour zoomer ; au clavier : flèches, plus, moins, zéro pour recentrer."></canvas>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+      <p class="busy" id="busy" hidden>Calcul…</p>
+      <div class="alert" id="alert" role="alert" hidden>
+        <p id="alert-text"></p>
+        <button type="button" class="btn" id="alert-action" hidden></button>
+      </div>
+      <div class="zoom-controls">
+        <button type="button" class="icon-btn" id="zoom-in" aria-label="Zoomer" title="Zoomer">+</button>
+        <button type="button" class="icon-btn" id="zoom-out" aria-label="Dézoomer" title="Dézoomer">−</button>
+        <button type="button" class="icon-btn" id="recenter" aria-label="Recentrer le dessin" title="Recentrer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/><circle cx="12" cy="12" r="2.5"/></svg>
+        </button>
+      </div>
+    </main>
+
+    <section class="panel" id="panel" aria-label="Réglages">
+      <div class="quickbar">
+        <div class="stepper" role="group" aria-label="Nombre d’itérations">
+          <button type="button" id="iter-down" aria-label="Une itération de moins">−</button>
+          <output id="iter-value" aria-live="polite">n = 0</output>
+          <button type="button" id="iter-up" aria-label="Une itération de plus">+</button>
+        </div>
+        <button type="button" class="btn btn-primary" id="replay" aria-label="Rejouer la croissance"><span aria-hidden="true">▶</span><span class="btn-label"> Rejouer</span></button>
+        <span class="grow"></span>
+        <button type="button" class="btn" id="toggle-editor" aria-expanded="false" aria-controls="editor">✎ Éditer</button>
+      </div>
+
+      <div class="editor" id="editor">
+        <p class="preset-note" id="preset-note"></p>
+
+        <fieldset>
+          <legend>Grammaire</legend>
+          <div class="field">
+            <label for="axiom">Axiome (chaîne de départ)</label>
+            <input type="text" id="axiom" class="mono" maxlength="400" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="field rules-block" id="rules-block">
+            <span class="field-label" id="rules-label">Règles de réécriture</span>
+            <div class="rules-head" aria-hidden="true"><span>Symbole</span><span>→</span><span>Remplacement</span><span>Proba.</span><span></span></div>
+            <ul class="rules" id="rules" aria-labelledby="rules-label"></ul>
+            <div class="row">
+              <button type="button" class="btn" id="add-rule">+ Ajouter une règle</button>
+            </div>
+            <p class="hint" id="rules-hint">Plusieurs règles pour un même symbole : tirage au hasard selon la probabilité (L-système stochastique). Forme paramétrée : <code>A(l,w) : l &gt; 3</code> → <code>F(l)[+A(l*0.7,w)]</code>.</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Tortue</legend>
+          <div class="field">
+            <label for="angle">Angle δ (degrés)</label>
+            <div class="slider-row">
+              <input type="range" id="angle-range" min="1" max="180" step="0.1" aria-label="Angle δ">
+              <input type="number" id="angle" inputmode="decimal" min="-360" max="360" step="0.1">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="step">Longueur du pas</label>
+              <input type="number" id="step" inputmode="decimal" min="0.01" max="1000" step="0.5">
+            </div>
+            <div class="field">
+              <label for="heading">Cap initial (°)</label>
+              <input type="number" id="heading" inputmode="decimal" min="-360" max="360" step="5">
+            </div>
+          </div>
+          <div class="field">
+            <label for="seed">Graine du hasard (règles stochastiques)</label>
+            <div class="slider-row">
+              <input type="number" id="seed" inputmode="numeric" min="0" max="999999" step="1">
+              <button type="button" class="btn" id="reseed" aria-label="Tirer une nouvelle graine">🎲 Autre</button>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Apparence</legend>
+          <div class="field">
+            <label for="color-mode">Couleurs</label>
+            <select id="color-mode" class="input">
+              <option value="auto">Automatique</option>
+              <option value="depth">Selon la profondeur de pile</option>
+              <option value="gradient">Selon la progression du tracé</option>
+              <option value="solid">Couleur unie</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="line-width">Épaisseur du trait : <span id="line-width-value"></span></label>
+            <input type="range" id="line-width" min="0.25" max="16" step="0.25">
+          </div>
+          <div class="field">
+            <label for="width-decay">Amincissement par branche : <span id="width-decay-value"></span></label>
+            <input type="range" id="width-decay" min="0.3" max="1" step="0.02">
+          </div>
+          <label class="check"><input type="checkbox" id="animate"> Animer la croissance</label>
+          <p class="hint" id="motion-hint" hidden>Animation désactivée : votre système demande de réduire les animations.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Exporter et partager</legend>
+          <div class="row">
+            <button type="button" class="btn" id="export-png">⇩ PNG</button>
+            <button type="button" class="btn" id="export-svg">⇩ SVG</button>
+            <button type="button" class="btn" id="copy-link">🔗 Copier le lien</button>
+          </div>
+          <p class="hint">Le lien contient toute la grammaire : il reproduit exactement ce dessin.</p>
+        </fieldset>
+
+        <details>
+          <summary>Aide : les symboles de la tortue</summary>
+          <dl>
+            <dt>F G</dt><dd>avancer d’un pas en traçant (F(l) : de l)</dd>
+            <dt>f g</dt><dd>avancer sans tracer</dd>
+            <dt>+ −</dt><dd>tourner à gauche / à droite de δ (+(a) : de a degrés)</dd>
+            <dt>|</dt><dd>faire demi-tour</dd>
+            <dt>[ ]</dt><dd>mémoriser / restaurer position et cap (branches)</dd>
+            <dt>!</dt><dd>amincir le trait (!(w) : épaisseur w)</dd>
+            <dt>X Y A…</dt><dd>symboles de réécriture, sans effet sur le dessin</dd>
+          </dl>
+        </details>
+
+        <details>
+          <summary>Chaîne générée (début)</summary>
+          <code class="preview" id="preview"></code>
+        </details>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
