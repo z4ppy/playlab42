@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aligner les modèles — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 8 · 2017–2024</p>
+      <h1>Aligner les modèles : RLHF et ses suites</h1>
+      <p class="lead">Un modèle pré-entraîné continue des textes ; il ne suit pas des consignes. L’alignement transforme ce « compléteur » en assistant, et c’est lui, plus que la taille, qui rend ChatGPT possible.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#probleme">1 · Le problème</a></li>
+        <li><a href="#rlhf">2 · RLHF</a></li>
+        <li><a href="#suites">3 · Les suites</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="probleme">Un compléteur n’est pas un assistant</h2>
+    <p>Demandez « Explique la photosynthèse à un enfant de 6 ans » à GPT-3 brut : il peut très bien continuer par une liste d’autres consignes, comme dans un manuel d’exercices. Il a appris à <em>prolonger</em> des textes du Web, pas à <em>aider</em>. Il reproduit aussi leurs erreurs et leur toxicité.</p>
+
+    <h2 id="rlhf">Le RLHF, de 2017 à InstructGPT</h2>
+    <ol class="timeline">
+      <li><span class="date">2017</span><span class="what">Christiano et al. (OpenAI et DeepMind)</span> : apprendre une récompense à partir de comparaisons humaines. Un robot simulé apprend un salto arrière avec moins de 1 000 comparaisons.</li>
+      <li><span class="date">2020</span><span class="what">Stiennon et al. (OpenAI)</span> : la même méthode améliore les résumés de textes au-delà des résumés de référence écrits par des humains.</li>
+      <li><span class="date">Janvier 2022</span><span class="what">InstructGPT (Ouyang et al.)</span> : la recette est appliquée à GPT-3 pour suivre des instructions.</li>
+    </ol>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-labelledby="rlhf-title rlhf-desc">
+        <title id="rlhf-title">Les trois étapes du RLHF d’InstructGPT</title>
+        <desc id="rlhf-desc">Étape 1 : affinage supervisé sur environ 13 000 démonstrations. Étape 2 : des humains classent plusieurs réponses, on entraîne un modèle de récompense. Étape 3 : optimisation par renforcement (PPO) pour maximiser cette récompense, avec une pénalité pour ne pas trop s’éloigner du modèle de départ.</desc>
+        <defs><marker id="arrow-rlhf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="svg-box-encoder" x="10" y="40" width="185" height="120" rx="10"/>
+        <text class="svg-text-strong" x="102" y="68" text-anchor="middle">1 · SFT</text>
+        <text class="svg-text" x="102" y="96" text-anchor="middle">Des humains écrivent</text>
+        <text class="svg-text" x="102" y="114" text-anchor="middle">de bonnes réponses</text>
+        <text class="svg-text-muted" x="102" y="140" text-anchor="middle">~13 000 démonstrations</text>
+        <line class="svg-line" x1="195" y1="100" x2="223" y2="100" marker-end="url(#arrow-rlhf)"/>
+        <rect class="svg-box-accent" x="225" y="40" width="185" height="120" rx="10"/>
+        <text class="svg-text-strong" x="317" y="68" text-anchor="middle">2 · Récompense</text>
+        <text class="svg-text" x="317" y="96" text-anchor="middle">Des humains classent</text>
+        <text class="svg-text" x="317" y="114" text-anchor="middle">plusieurs réponses</text>
+        <text class="svg-text-muted" x="317" y="140" text-anchor="middle">→ modèle de récompense</text>
+        <line class="svg-line" x1="410" y1="100" x2="438" y2="100" marker-end="url(#arrow-rlhf)"/>
+        <rect class="svg-box-decoder" x="440" y="40" width="190" height="120" rx="10"/>
+        <text class="svg-text-strong" x="535" y="68" text-anchor="middle">3 · PPO</text>
+        <text class="svg-text" x="535" y="96" text-anchor="middle">Le modèle s’entraîne à</text>
+        <text class="svg-text" x="535" y="114" text-anchor="middle">maximiser la récompense</text>
+        <text class="svg-text-muted" x="535" y="140" text-anchor="middle">sans trop dériver (pénalité KL)</text>
+      </svg>
+      <figcaption>La recette d’InstructGPT. L’étape 2 rend le jugement humain réutilisable à grande échelle.</figcaption>
+    </figure>
+
+    <p><strong>Le résultat frappant :</strong> les réponses d’InstructGPT avec 1,3 Md de paramètres sont préférées par les évaluateurs à celles de GPT-3 avec 175 Md, plus de 100 fois plus grand. InstructGPT invente aussi moins souvent des faits sur des tâches fermées (21 % contre 41 % de réponses avec hallucination) et produit environ 25 % de sorties toxiques en moins quand on lui demande d’être respectueux.</p>
+    <p>Combien coûte une préférence humaine ? Les laboratoires ne publient pas ces coûts. L’ordre de grandeur va de moins d’un dollar par comparaison simple à bien davantage quand il faut un expert.</p>
+
+    <h2 id="suites">Après le RLHF : simplifier et automatiser</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>IA constitutionnelle</h3>
+        <p class="meta">Anthropic · décembre 2022</p>
+        <p>Une partie des jugements humains est remplacée par des jugements d’un modèle guidé par une liste de principes écrits (une « constitution »). C’est le <dfn data-term="rlaif">RLAIF</dfn>. La constitution publiée en mai 2023 contenait des principes inspirés notamment de la Déclaration universelle des droits de l’homme ; Anthropic l’a remplacée en janvier 2026 par un texte plus long qui explique ses raisons plutôt que d’énumérer des règles.</p>
+      </section>
+      <section class="card">
+        <h3>DPO</h3>
+        <p class="meta">Rafailov et al., Stanford · mai 2023</p>
+        <p>Plus besoin de modèle de récompense séparé ni de renforcement : une fonction de perte directe sur les paires « réponse préférée / rejetée ». Plus simple et plus stable. Adoptée par Zephyr, Mixtral Instruct puis Llama 3. <strong>Llama 2</strong>, lui, utilisait encore un RLHF classique (échantillonnage par rejet puis PPO).</p>
+      </section>
+      <section class="card">
+        <h3>Récompenses vérifiables</h3>
+        <p class="meta">2024–2025</p>
+        <p>Pour les maths ou le code, on peut vérifier automatiquement la réponse : la récompense vient d’un vérificateur, pas d’un humain. C’est le <dfn>RLVR</dfn>, moteur des modèles de raisonnement (chapitre 12).</p>
+      </section>
+    </div>
+
+    <aside class="nuance" aria-label="Limites">
+      <span class="box-label">Limites connues</span>
+      <p>Un modèle optimisé pour plaire peut devenir <strong>complaisant</strong> (il approuve l’utilisateur au lieu de le corriger) ou exploiter les failles de sa récompense (<em>reward hacking</em>). L’alignement est un problème de recherche ouvert, pas une case cochée.</p>
+    </aside>
+
+    <div class="people" data-people="paul-christiano"></div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>À quoi sert le modèle de récompense dans le RLHF ?</legend>
+        <label><input type="radio" name="q1" value="a" data-correct> À prédire quelle réponse un humain préférerait, pour noter des millions de réponses sans humain.</label>
+        <label><input type="radio" name="q1" value="b"> À générer les réponses finales.</label>
+        <p class="explain" hidden>Les humains ne notent qu’un échantillon. Le modèle de récompense généralise leurs préférences et sert de « juge » pendant le renforcement.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Quelle affirmation est exacte ?</legend>
+        <label><input type="radio" name="q2" value="a"> Llama 2 a été aligné avec DPO.</label>
+        <label><input type="radio" name="q2" value="b" data-correct> Llama 2 utilisait un RLHF classique ; Llama 3 est passé à DPO.</label>
+        <p class="explain" hidden>Le rapport de Llama 2 décrit un échantillonnage par rejet puis PPO. Celui de Llama 3 retient DPO, moins coûteux en calcul.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Christiano et al., <a href="https://arxiv.org/abs/1706.03741" target="_blank" rel="noopener noreferrer">Deep Reinforcement Learning from Human Preferences</a>, 2017.</li>
+        <li>Stiennon et al., <a href="https://arxiv.org/abs/2009.01325" target="_blank" rel="noopener noreferrer">Learning to summarize from human feedback</a>, 2020.</li>
+        <li>Ouyang et al., <a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener noreferrer">Training language models to follow instructions with human feedback</a>, 2022 (taux d’hallucination et de toxicité : section 4).</li>
+        <li>Lee et al., <a href="https://arxiv.org/abs/2309.00267" target="_blank" rel="noopener noreferrer">RLAIF: Scaling Reinforcement Learning from Human Feedback with AI Feedback</a>, 2023 (estimation de coût d’annotation).</li>
+        <li>Bai et al., <a href="https://arxiv.org/abs/2212.08073" target="_blank" rel="noopener noreferrer">Constitutional AI: Harmlessness from AI Feedback</a>, 2022 ; Anthropic, <a href="https://www.anthropic.com/news/claudes-constitution" target="_blank" rel="noopener noreferrer">Claude’s Constitution</a>, mai 2023 ; <a href="https://www.anthropic.com/constitution" target="_blank" rel="noopener noreferrer">nouvelle constitution</a>, janvier 2026.</li>
+        <li>Rafailov et al., <a href="https://arxiv.org/abs/2305.18290" target="_blank" rel="noopener noreferrer">Direct Preference Optimization</a>, 2023.</li>
+        <li>Touvron et al., <a href="https://arxiv.org/abs/2307.09288" target="_blank" rel="noopener noreferrer">Llama 2</a>, 2023 ; Llama Team, <a href="https://arxiv.org/abs/2407.21783" target="_blank" rel="noopener noreferrer">The Llama 3 Herd of Models</a>, 2024.</li>
+        <li>Lambert et al., <a href="https://arxiv.org/abs/2411.15124" target="_blank" rel="noopener noreferrer">Tülu 3</a>, 2024 (introduction du terme RLVR).</li>
+        <li>Sharma et al., <a href="https://arxiv.org/abs/2310.13548" target="_blank" rel="noopener noreferrer">Towards Understanding Sycophancy in Language Models</a>, 2023.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

@@ -1,0 +1,143 @@
+{
+  "terms": {
+    "llm": {
+      "short": "Grand modèle de langage (Large Language Model) : réseau de neurones entraîné sur un très grand corpus à prédire le token suivant.",
+      "long": "On parle de « grand » modèle à partir de plusieurs milliards de paramètres. Après le pré-entraînement, un post-entraînement (instructions, préférences, renforcement) en fait un assistant.",
+      "see": ["token", "transformer"],
+      "category": "Notions de base"
+    },
+    "token": {
+      "short": "Unité de texte manipulée par le modèle : un mot, un morceau de mot, un signe ou un octet.",
+      "long": "Un tokenizer découpe le texte en tokens et les remplace par des numéros. En français, un token correspond en moyenne à un peu moins d’un mot.",
+      "see": ["llm"],
+      "category": "Notions de base"
+    },
+    "modèle n-gramme": {
+      "short": "Modèle statistique qui prédit un mot à partir des n−1 mots précédents, en comptant les fréquences observées.",
+      "long": "Introduit dans l’esprit de Shannon (1948), dominant jusqu’aux années 2000. Il ne généralise pas aux suites jamais vues, d’où l’intérêt des embeddings.",
+      "see": ["embedding"],
+      "category": "Notions de base"
+    },
+    "embedding": {
+      "short": "Vecteur de nombres qui représente un mot ou un token ; des sens proches donnent des vecteurs proches.",
+      "long": "Popularisés par Bengio et al. (2003) puis word2vec (2013). Depuis ELMo et BERT, les représentations dépendent du contexte de la phrase.",
+      "see": ["modèle n-gramme"],
+      "category": "Notions de base"
+    },
+    "rnn": {
+      "short": "Réseau de neurones récurrent : lit une séquence élément par élément en mettant à jour un état interne.",
+      "long": "Les LSTM (1997) améliorent leur mémoire. Leur traitement séquentiel empêche de paralléliser l’entraînement, limite levée par le Transformer.",
+      "see": ["transformer"],
+      "category": "Architectures"
+    },
+    "encodeur": {
+      "short": "Partie d’un modèle qui lit toute l’entrée et en calcule une représentation.",
+      "long": "BERT est un encodeur seul : il voit les mots des deux côtés et excelle en compréhension (classement, recherche sémantique).",
+      "see": ["décodeur"],
+      "category": "Architectures"
+    },
+    "décodeur": {
+      "short": "Partie d’un modèle qui génère une séquence un token à la fois, en ne voyant que ce qui précède.",
+      "long": "Les LLM génératifs (GPT, Llama, Claude, Gemini…) sont des décodeurs seuls.",
+      "see": ["encodeur"],
+      "category": "Architectures"
+    },
+    "goulot d’étranglement": {
+      "short": "Limite des traducteurs seq2seq de 2014 : toute la phrase source devait tenir dans un seul vecteur de taille fixe.",
+      "see": ["attention"],
+      "category": "Architectures"
+    },
+    "attention": {
+      "short": "Mécanisme qui calcule, pour chaque position, une moyenne pondérée des autres positions selon leur pertinence.",
+      "long": "Inventée pour la traduction par Bahdanau, Cho et Bengio (2014), généralisée par le Transformer (2017).",
+      "see": ["self-attention", "multi-têtes"],
+      "category": "Architectures"
+    },
+    "self-attention": {
+      "short": "Auto-attention : les positions d’une même séquence se regardent entre elles.",
+      "long": "Proposée en 2016 (« intra-attention »), elle est le cœur du Transformer. Son coût croît avec le carré de la longueur du texte.",
+      "see": ["attention"],
+      "category": "Architectures"
+    },
+    "multi-têtes": {
+      "short": "Plusieurs calculs d’attention en parallèle, avec des projections différentes, dont les résultats sont combinés.",
+      "see": ["attention"],
+      "category": "Architectures"
+    },
+    "encodage positionnel": {
+      "short": "Information ajoutée aux embeddings pour indiquer la position de chaque token, que l’attention seule ignore.",
+      "long": "Sinusoïdes dans le Transformer de 2017 ; aujourd’hui souvent des positions rotatives (RoPE).",
+      "category": "Architectures"
+    },
+    "transformer": {
+      "short": "Architecture de 2017 fondée uniquement sur l’attention, sans récurrence. Base de presque tous les LLM.",
+      "see": ["attention", "rnn"],
+      "category": "Architectures"
+    },
+    "moe": {
+      "short": "Mélange d’experts (Mixture of Experts) : un routeur n’active que quelques sous-réseaux par token.",
+      "long": "Beaucoup de paramètres stockés, peu calculés à chaque token. Idée de 1991, rendue praticable par Shazeer et al. (2017).",
+      "category": "Architectures"
+    },
+    "transfer learning": {
+      "short": "Transfert d’apprentissage : réutiliser un modèle pré-entraîné sur une tâche générale pour une tâche spécifique.",
+      "see": ["llm"],
+      "category": "Entraînement"
+    },
+    "loi de puissance": {
+      "short": "Relation de la forme y ∝ x^a ; elle apparaît comme une droite sur un graphique en échelle log-log.",
+      "long": "Kaplan et al. (2020) montrent que la perte des LLM suit des lois de puissance du nombre de paramètres, des données et du calcul.",
+      "category": "Entraînement"
+    },
+    "apprentissage en contexte": {
+      "short": "Capacité d’un modèle à imiter une tâche à partir d’exemples placés dans le prompt, sans modifier ses poids.",
+      "long": "Mise en évidence à grande échelle par GPT-3 (2020).",
+      "category": "Entraînement"
+    },
+    "rlhf": {
+      "short": "Apprentissage par renforcement à partir de préférences humaines : un modèle de récompense imite les jugements humains et guide l’entraînement.",
+      "see": ["rlaif", "dpo"],
+      "category": "Alignement"
+    },
+    "rlaif": {
+      "short": "Variante du RLHF où une partie des jugements est produite par un modèle guidé par des principes écrits.",
+      "see": ["rlhf"],
+      "category": "Alignement"
+    },
+    "dpo": {
+      "short": "Direct Preference Optimization (2023) : apprend directement des paires de réponses préférée/rejetée, sans modèle de récompense séparé.",
+      "see": ["rlhf"],
+      "category": "Alignement"
+    },
+    "rlvr": {
+      "short": "Renforcement avec récompenses vérifiables : la récompense vient d’un vérificateur automatique (réponse juste, tests qui passent).",
+      "long": "Terme introduit par Tülu 3 (2024), généralisé par DeepSeek-R1 pour entraîner le raisonnement.",
+      "see": ["rlhf"],
+      "category": "Alignement"
+    },
+    "chaîne de pensée": {
+      "short": "Raisonnement intermédiaire, étape par étape, produit avant la réponse finale.",
+      "long": "D’abord une technique de prompt (2022), puis un comportement entraîné par renforcement dans les modèles de raisonnement (2024).",
+      "see": ["calcul à l’inférence"],
+      "category": "Raisonnement"
+    },
+    "calcul à l’inférence": {
+      "short": "Calcul dépensé au moment de répondre (test-time compute), par exemple en générant plus de tokens de réflexion.",
+      "see": ["chaîne de pensée"],
+      "category": "Raisonnement"
+    },
+    "quantification": {
+      "short": "Stocker les poids avec moins de bits (8 ou 4 au lieu de 16) pour réduire la mémoire et accélérer le calcul.",
+      "category": "Usage"
+    },
+    "rag": {
+      "short": "Retrieval-Augmented Generation : chercher des documents pertinents et les fournir au modèle avant qu’il réponde.",
+      "category": "Usage"
+    },
+    "poids ouverts": {
+      "short": "Modèle dont les poids sont téléchargeables (open weights), sans forcément publier données et code d’entraînement.",
+      "long": "À distinguer de l’open source au sens de l’Open Source Initiative (définition de 2024), plus exigeante.",
+      "category": "Usage"
+    }
+  }
+}

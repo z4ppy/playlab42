@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leçons et frise — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 16 · Synthèse</p>
+      <h1>Ce que cette histoire nous apprend</h1>
+      <p class="lead">Soixante-dix-huit ans de recherche, dont dix d’accélération brutale. Avant de refermer le parcours, reconstituez la frise, puis gardez cinq leçons utiles pour travailler avec ces modèles.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#frise">1 · Reconstituer la frise</a></li>
+        <li><a href="#lecons">2 · Cinq leçons</a></li>
+      </ol>
+    </header>
+
+    <section class="activity" data-order-game data-seed="2026" id="frise" aria-labelledby="frise-title">
+      <h2 id="frise-title">Reconstituer la frise</h2>
+      <p>Remettez ces événements dans l’ordre chronologique avec les boutons ↑ et ↓, puis vérifiez. Les dates s’affichent une fois la frise correcte.</p>
+      <ol class="order-list">
+        <li data-id="shannon"><span class="label">Shannon génère des « approximations de l’anglais » mot à mot</span> <span class="date">1948</span></li>
+        <li data-id="eliza"><span class="label">ELIZA imite un psychothérapeute avec des règles</span> <span class="date">1966</span></li>
+        <li data-id="lstm"><span class="label">Invention des LSTM</span> <span class="date">1997</span></li>
+        <li data-id="word2vec"><span class="label">word2vec : roi − homme + femme ≈ reine</span> <span class="date">2013</span></li>
+        <li data-id="bahdanau"><span class="label">Bahdanau, Cho et Bengio inventent l’attention</span> <span class="date">2014</span></li>
+        <li data-id="transformer"><span class="label">« Attention Is All You Need »</span> <span class="date">2017</span></li>
+        <li data-id="bert"><span class="label">BERT bat l’état de l’art sur 11 tâches</span> <span class="date">2018</span></li>
+        <li data-id="gpt3"><span class="label">GPT-3 et l’apprentissage en contexte</span> <span class="date">2020</span></li>
+        <li data-id="chatgpt"><span class="label">Lancement de ChatGPT</span> <span class="date">2022</span></li>
+        <li data-id="r1"><span class="label">DeepSeek-R1 publie sa recette de raisonnement</span> <span class="date">2025</span></li>
+      </ol>
+      <div class="activity-actions">
+        <button type="button" class="slide-button-primary" data-action="check">Vérifier l’ordre</button>
+        <button type="button" data-action="reveal">Afficher la solution</button>
+      </div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+      <noscript><p>Sans JavaScript, la liste ci-dessus est déjà dans l’ordre chronologique.</p></noscript>
+    </section>
+
+    <h2 id="lecons">Cinq leçons pour les praticiens</h2>
+    <div class="cards">
+      <section class="card"><h3>1 · Les idées sont plus vieilles qu’on ne croit</h3><p>Prédire le mot suivant (1948), les embeddings (2003), l’attention (2014), les experts (1991) : les ruptures viennent souvent de la rencontre d’une vieille idée avec assez de données et de calcul.</p></section>
+      <section class="card"><h3>2 · L’échelle compte, mais pas seule</h3><p>InstructGPT 1,3 Md battait GPT-3 175 Md ; Chinchilla battait Gopher ; DeepSeek a surpris par son efficacité. L’alignement, les données et la recette d’entraînement pèsent autant que la taille.</p></section>
+      <section class="card"><h3>3 · Un chiffre sans contexte ne vaut rien</h3><p>« 90e centile », « 87,5 % », « 5,6 M$ » : chaque fois, la population de référence, la version testée ou le périmètre changeait le sens du chiffre. Demandez toujours : mesuré comment, sur quoi, et par qui ?</p></section>
+      <section class="card"><h3>4 · Testez sur vos propres cas</h3><p>Il n’existe pas de « meilleur LLM » universel. Le bon modèle dépend de la tâche, du coût, de la latence, de la confidentialité. Gardez un petit jeu d’exemples maison et datez vos essais.</p></section>
+      <section class="card"><h3>5 · Plausible n’est pas vrai</h3><p>De l’effet ELIZA aux hallucinations, la fluidité du texte trompe. Vérifiez les faits, les sources et le code, et donnez aux agents le minimum de droits nécessaire.</p></section>
+    </div>
+
+    <aside class="takeaways" aria-label="En une phrase">
+      <span class="box-label">En une phrase</span>
+      <p>Un LLM est un prédicteur de tokens, rendu puissant par le Transformer et l’échelle, rendu utile par l’alignement, et rendu actif par le raisonnement et les outils. Ses limites viennent de ce même principe.</p>
+    </aside>
+
+    <p class="see-also">Pour poursuivre : <a href="../../../../../index.html#/parcours/anatomie-llm" target="_top">Anatomie d’un LLM</a> (comment ça calcule), <a href="../../../../../index.html#/parcours/coding-agents-2025" target="_top">Coding Agents en 2025</a> (comment travailler avec des agents).</p>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <p>Les faits de cette synthèse sont sourcés dans les chapitres précédents et rassemblés dans la page <a href="../../../../../index.html#/parcours/llm-history/17-sources" target="_top">Sources et crédits</a>.</p>
+    </details>
+  </article>
+</body>
+</html>

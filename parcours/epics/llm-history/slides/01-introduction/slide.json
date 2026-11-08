@@ -1,8 +1,6 @@
 {
   "id": "01-introduction",
-  "title": "Introduction",
-  "description": "Présentation du parcours sur l'histoire des LLM",
-  "type": "page",
+  "title": "Introduction : une histoire en accéléré",
   "icon": "🚀",
-  "duration": "3 min"
+  "duration": "4 min"
 }

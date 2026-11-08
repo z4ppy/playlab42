@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La vague des poids ouverts — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 10 · 2022–2025</p>
+      <h1>La vague des poids ouverts</h1>
+      <p class="lead">En 2023, des modèles téléchargeables rattrapent une partie de leur retard sur les modèles accessibles seulement par API. Des chercheurs, des passionnés et des entreprises européennes et chinoises s’en emparent.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#llama">1 · LLaMA</a></li>
+        <li><a href="#europe">2 · L’Europe</a></li>
+        <li><a href="#vocabulaire">3 · « Ouvert » ?</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="llama">2023 : LLaMA, la fuite et l’explosion</h2>
+    <ol class="timeline">
+      <li><span class="date">24 février 2023</span><span class="what">LLaMA (Meta)</span> : modèles de 7 à 65 Md de paramètres, entraînés uniquement sur des données publiques. LLaMA-13B dépasse GPT-3 (175 Md) sur la plupart des bancs d’essai. Accès réservé aux chercheurs, sur demande.</li>
+      <li><span class="date">Début mars 2023</span><span class="what">La fuite</span> : les poids circulent sur 4chan via BitTorrent. Impossible de revenir en arrière.</li>
+      <li><span class="date">Mars 2023</span><span class="what">llama.cpp</span> (Georgi Gerganov) fait tourner LLaMA sur un ordinateur portable grâce à la <dfn>quantification</dfn>. <strong>Alpaca</strong> (Stanford) affine LLaMA 7B en suivant des instructions pour moins de 600 $. <strong>Vicuna</strong> (LMSYS) suit, pour environ 300 $.</li>
+      <li><span class="date">Mai 2023</span><span class="what">« We Have No Moat »</span> : un mémo d’un chercheur de Google, divulgué, affirme que ni Google ni OpenAI n’ont d’avantage durable face à l’open source.</li>
+      <li><span class="date">18 juillet 2023</span><span class="what">Llama 2</span> : 7 à 70 Md, 2 T de tokens, usage commercial autorisé, sauf pour les services de plus de 700 millions d’utilisateurs mensuels.</li>
+    </ol>
+    <aside class="nuance" aria-label="Évaluations par un autre modèle">
+      <span class="box-label">Méfiance sur les évaluations</span>
+      <p>Vicuna annonçait « 90 % de la qualité de ChatGPT », mais ce score était attribué par GPT-4 sur 80 questions. Juger un modèle avec un autre modèle (<em>LLM-as-a-judge</em>) est pratique, mais biaisé : c’est un signal, pas une mesure.</p>
+    </aside>
+
+    <h2 id="europe">L’Europe et la France dans la course</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>BLOOM</h3>
+        <p class="meta">BigScience, coordonné par Hugging Face · juillet 2022</p>
+        <p>176 Md de paramètres, 46 langues naturelles, entraîné sur le supercalculateur public Jean Zay (France) par plus de 1 000 chercheurs. Un modèle ouvert et documenté, avant LLaMA.</p>
+      </section>
+      <section class="card">
+        <h3>Mistral AI</h3>
+        <p class="meta">Paris · fondée en avril 2023</p>
+        <p>Par Arthur Mensch (ex-DeepMind), Guillaume Lample et Timothée Lacroix (ex-Meta, coauteurs de LLaMA). Levée d’amorçage record de 105 M€ en juin 2023. <strong>Mistral 7B</strong> (septembre 2023, Apache 2.0, publié via un simple lien torrent) bat Llama 2 13B. <strong>Mixtral 8x7B</strong> (décembre 2023) popularise les experts en open source.</p>
+      </section>
+      <section class="card">
+        <h3>Et ailleurs</h3>
+        <p class="meta">2023–2025</p>
+        <p>Falcon (Émirats), Qwen (Alibaba, à partir d’août 2023), DeepSeek, Yi… En 2025, les familles chinoises Qwen, DeepSeek et Kimi comptent parmi les poids ouverts les plus performants (chapitre 14). Même OpenAI publie des poids ouverts en août 2025 (gpt-oss), pour la première fois depuis GPT-2.</p>
+      </section>
+    </div>
+
+    <h2 id="vocabulaire">« Open source » ou « poids ouverts » ?</h2>
+    <p>Publier les <strong>poids</strong> d’un modèle, c’est donner le résultat de l’entraînement, pas sa recette. En octobre 2024, l’Open Source Initiative publie sa définition de l’IA open source : elle exige aussi l’accès au code d’entraînement et une information suffisante sur les données. La licence de Llama, qui limite certains usages, n’est pas reconnue comme open source par l’OSI. On parle donc plus justement de <dfn data-term="poids ouverts">modèles à poids ouverts</dfn> (<em>open weights</em>).</p>
+    <table>
+      <caption>Trois niveaux d’ouverture (exemples)</caption>
+      <thead><tr><th scope="col">Niveau</th><th scope="col">Ce qui est publié</th><th scope="col">Exemples</th></tr></thead>
+      <tbody>
+        <tr><td>Fermé (API)</td><td>Un service payant, rien à télécharger</td><td>GPT-4, Claude, Gemini</td></tr>
+        <tr><td>Poids ouverts</td><td>Les poids, sous une licence plus ou moins permissive</td><td>Llama, Mistral 7B (Apache 2.0), Qwen, gpt-oss</td></tr>
+        <tr><td>Ouvert de bout en bout</td><td>Poids, code, données d’entraînement, journaux</td><td>OLMo (Ai2), Pythia (EleutherAI)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="people" data-people="yann-lecun,arthur-mensch,clement-delangue,thomas-wolf"></div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Pourquoi parle-t-on de « poids ouverts » plutôt que d’« open source » pour Llama ?</legend>
+        <label><input type="radio" name="q1" value="a" data-correct> Parce que seuls les poids sont publiés, sous une licence qui restreint certains usages.</label>
+        <label><input type="radio" name="q1" value="b"> Parce que Llama est payant.</label>
+        <p class="explain" hidden>Les données et la recette complète ne sont pas publiées, et la licence comporte des restrictions : cela ne répond pas à la définition de l’OSI.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Qu’a permis llama.cpp en 2023 ?</legend>
+        <label><input type="radio" name="q2" value="a"> D’entraîner LLaMA à partir de zéro sur un portable.</label>
+        <label><input type="radio" name="q2" value="b" data-correct> De faire tourner LLaMA sur un ordinateur personnel grâce à des poids quantifiés.</label>
+        <p class="explain" hidden>La quantification stocke les poids sur 4 ou 8 bits au lieu de 16 : le modèle tient en mémoire, avec une perte de qualité modérée. L’entraînement reste hors de portée d’un portable.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Touvron et al., <a href="https://arxiv.org/abs/2302.13971" target="_blank" rel="noopener noreferrer">LLaMA: Open and Efficient Foundation Language Models</a>, 2023.</li>
+        <li>The Verge, <a href="https://www.theverge.com/2023/3/8/23629362/meta-ai-language-model-llama-leak-online-misuse" target="_blank" rel="noopener noreferrer">Meta’s powerful AI language model has leaked online</a>, 8 mars 2023.</li>
+        <li>G. Gerganov, <a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener noreferrer">llama.cpp</a>, 2023.</li>
+        <li>Stanford CRFM, <a href="https://crfm.stanford.edu/2023/03/13/alpaca.html" target="_blank" rel="noopener noreferrer">Alpaca</a>, mars 2023 ; LMSYS, <a href="https://lmsys.org/blog/2023-03-30-vicuna/" target="_blank" rel="noopener noreferrer">Vicuna</a>, mars 2023.</li>
+        <li>SemiAnalysis, <a href="https://newsletter.semianalysis.com/p/google-we-have-no-moat-and-neither" target="_blank" rel="noopener noreferrer">Google “We Have No Moat, And Neither Does OpenAI”</a>, mai 2023.</li>
+        <li>Meta, <a href="https://ai.meta.com/llama/license/" target="_blank" rel="noopener noreferrer">Llama 2 Community License</a>, juillet 2023.</li>
+        <li>BigScience, <a href="https://arxiv.org/abs/2211.05100" target="_blank" rel="noopener noreferrer">BLOOM: A 176B-Parameter Open-Access Multilingual Language Model</a>, 2022.</li>
+        <li>Mistral AI, <a href="https://mistral.ai/news/announcing-mistral-7b" target="_blank" rel="noopener noreferrer">Mistral 7B</a>, septembre 2023 ; <a href="https://mistral.ai/news/mixtral-of-experts" target="_blank" rel="noopener noreferrer">Mixtral of experts</a>, décembre 2023.</li>
+        <li>OpenAI, <a href="https://openai.com/index/introducing-gpt-oss/" target="_blank" rel="noopener noreferrer">Introducing gpt-oss</a>, août 2025.</li>
+        <li>Open Source Initiative, <a href="https://opensource.org/ai/open-source-ai-definition" target="_blank" rel="noopener noreferrer">The Open Source AI Definition 1.0</a>, octobre 2024.</li>
+        <li>Groeneveld et al., <a href="https://arxiv.org/abs/2402.00838" target="_blank" rel="noopener noreferrer">OLMo</a>, 2024 ; Biderman et al., <a href="https://arxiv.org/abs/2304.01373" target="_blank" rel="noopener noreferrer">Pythia</a>, 2023.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

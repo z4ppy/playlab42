@@ -1,8 +1,0 @@
-{
-  "id": "07-techniques-cles",
-  "title": "Les techniques clés",
-  "description": "RLHF, DPO, MoE, LoRA, RAG et Chain-of-Thought",
-  "type": "page",
-  "icon": "🔧",
-  "duration": "10 min"
-}

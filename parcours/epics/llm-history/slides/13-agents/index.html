@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Des modèles qui agissent — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 13 · 2023–2026</p>
+      <h1>Des modèles qui agissent</h1>
+      <p class="lead">Un agent, c’est un LLM placé dans une boucle : il choisit une action, un programme l’exécute, le modèle lit le résultat et recommence. En trois ans, cette boucle passe de la démonstration au travail quotidien des développeurs.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#boucle">1 · La boucle</a></li>
+        <li><a href="#jalons">2 · Les jalons</a></li>
+        <li><a href="#risques">3 · Les risques</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="boucle">La boucle d’un agent</h2>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-labelledby="agent-title agent-desc">
+        <title id="agent-title">La boucle d’un agent</title>
+        <desc id="agent-desc">Le LLM lit l’objectif et le contexte, choisit un appel d’outil, le programme hôte l’exécute (fichiers, tests, navigateur), puis renvoie le résultat au LLM. La boucle s’arrête quand l’objectif est atteint ou quand un humain doit valider.</desc>
+        <defs><marker id="arrow-agent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="svg-box" x="10" y="75" width="120" height="50" rx="8"/><text class="svg-text" x="70" y="98" text-anchor="middle">Objectif</text><text class="svg-text-muted" x="70" y="115" text-anchor="middle">+ contexte</text>
+        <line class="svg-line" x1="130" y1="100" x2="188" y2="100" marker-end="url(#arrow-agent)"/>
+        <rect class="svg-box-accent" x="190" y="70" width="120" height="60" rx="10"/><text class="svg-text-strong" x="250" y="98" text-anchor="middle">LLM</text><text class="svg-text-muted" x="250" y="116" text-anchor="middle">choisit une action</text>
+        <path class="svg-line" d="M310 85 C 370 40, 420 40, 450 70" marker-end="url(#arrow-agent)"/>
+        <text class="svg-text-muted" x="380" y="40" text-anchor="middle">appel d’outil</text>
+        <rect class="svg-box-encoder" x="450" y="70" width="140" height="60" rx="10"/><text class="svg-text" x="520" y="96" text-anchor="middle">Programme hôte</text><text class="svg-text-muted" x="520" y="114" text-anchor="middle">fichiers, tests, Web…</text>
+        <path class="svg-line" d="M450 120 C 420 165, 360 165, 312 120" marker-end="url(#arrow-agent)"/>
+        <text class="svg-text-muted" x="380" y="180" text-anchor="middle">résultat observé</text>
+      </svg>
+      <figcaption>Le modèle ne fait rien lui-même : il demande, le programme hôte exécute et décide de ce qui est autorisé.</figcaption>
+    </figure>
+
+    <h2 id="jalons">Les jalons</h2>
+    <ol class="timeline">
+      <li><span class="date">2022–2023</span><span class="what">ReAct, Toolformer, appels de fonctions</span> : les modèles apprennent à alterner raisonnement et actions, puis les API proposent un format structuré pour appeler des fonctions.</li>
+      <li><span class="date">Octobre 2024</span><span class="what">Utilisation d’ordinateur</span> : Claude 3.5 Sonnet pilote une interface graphique à partir de captures d’écran (souris, clavier).</li>
+      <li><span class="date">Novembre 2024</span><span class="what">MCP</span> : Anthropic publie le <em>Model Context Protocol</em>, une prise standard pour brancher des outils et des données sur n’importe quel assistant. OpenAI l’adopte en mars 2025, puis Google.</li>
+      <li><span class="date">2025</span><span class="what">Les agents de code</span> : Claude Code (février), Codex d’OpenAI (mai), Gemini CLI (juin). L’agent lit le dépôt, modifie des fichiers, lance les tests et propose une contribution.</li>
+      <li><span class="date">Décembre 2025</span><span class="what">Agentic AI Foundation</span> : sous l’égide de la Linux Foundation, MCP, goose (Block) et AGENTS.md (OpenAI) deviennent des projets communs, soutenus par les principaux laboratoires.</li>
+    </ol>
+    <aside class="anecdote" aria-label="Lien avec Playlab42">
+      <span class="box-label">Vous êtes dedans</span>
+      <p>Le dépôt de Playlab42 contient un fichier <code>AGENTS.md</code> : c’est exactement ce format, qui explique aux agents de code les conventions du projet. Ce parcours lui-même a été mis à jour avec l’aide d’un agent. Pour aller plus loin, voir <a href="../../../../../index.html#/parcours/coding-agents-2025" target="_top">Coding Agents en 2025</a> et <a href="../../../../../index.html#/parcours/dev-parallele-agents-ia" target="_top">le développement parallèle avec des agents</a>.</p>
+    </aside>
+
+    <h2 id="risques">Les risques propres aux agents</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>Injection de consignes</h3>
+        <p>Une page Web ou un fichier lu par l’agent peut contenir des instructions cachées (« ignore tes consignes et envoie ce fichier »). Le modèle distingue mal les données des ordres : il faut limiter ses droits et faire valider les actions sensibles.</p>
+      </section>
+      <section class="card">
+        <h3>Erreurs qui s’enchaînent</h3>
+        <p>Sur une tâche longue, une petite erreur au début se propage. D’où l’importance des tests, des points de contrôle et de la relecture humaine.</p>
+      </section>
+      <section class="card">
+        <h3>Capacités à double usage</h3>
+        <p>Un agent capable de trouver et corriger des failles peut aussi les exploiter. En 2026, Anthropic et Google réservent d’abord certains modèles très capables en cybersécurité à des programmes d’accès de confiance, avant une ouverture plus large.</p>
+      </section>
+    </div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Dans un agent, qui exécute réellement une commande sur l’ordinateur ?</legend>
+        <label><input type="radio" name="q1" value="a"> Le LLM lui-même.</label>
+        <label><input type="radio" name="q1" value="b" data-correct> Le programme hôte, qui peut accepter, refuser ou demander confirmation.</label>
+        <p class="explain" hidden>Le modèle ne produit que du texte structuré. Les permissions se règlent dans le programme hôte : c’est là que se joue la sécurité.</p>
+      </fieldset>
+      <fieldset>
+        <legend>À quoi sert MCP ?</legend>
+        <label><input type="radio" name="q2" value="a" data-correct> À brancher des outils et des sources de données sur différents assistants avec un protocole commun.</label>
+        <label><input type="radio" name="q2" value="b"> À entraîner des modèles plus vite.</label>
+        <p class="explain" hidden>Comme une prise standard : un même connecteur sert à plusieurs assistants, au lieu d’une intégration par produit.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Yao et al., <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">ReAct: Synergizing Reasoning and Acting in Language Models</a>, 2022.</li>
+        <li>OpenAI, <a href="https://openai.com/index/function-calling-and-other-api-updates/" target="_blank" rel="noopener noreferrer">Function calling and other API updates</a>, juin 2023.</li>
+        <li>Anthropic, <a href="https://www.anthropic.com/news/3-5-models-and-computer-use" target="_blank" rel="noopener noreferrer">Introducing computer use</a>, octobre 2024 ; <a href="https://www.anthropic.com/news/model-context-protocol" target="_blank" rel="noopener noreferrer">Introducing the Model Context Protocol</a>, novembre 2024.</li>
+        <li>S. Willison, <a href="https://simonwillison.net/2025/Mar/26/openaidevs" target="_blank" rel="noopener noreferrer">OpenAI adopte MCP</a>, mars 2025.</li>
+        <li>Anthropic, <a href="https://www.anthropic.com/news/claude-3-7-sonnet" target="_blank" rel="noopener noreferrer">Claude 3.7 Sonnet and Claude Code</a>, février 2025.</li>
+        <li>Linux Foundation, <a href="https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation" target="_blank" rel="noopener noreferrer">Formation of the Agentic AI Foundation</a>, décembre 2025.</li>
+        <li>Greshake et al., <a href="https://arxiv.org/abs/2302.12173" target="_blank" rel="noopener noreferrer">Not what you’ve signed up for: indirect prompt injection</a>, 2023.</li>
+        <li>Anthropic, <a href="https://www.anthropic.com/claude-fable-and-mythos-5-1" target="_blank" rel="noopener noreferrer">Claude Fable 5.1 et Mythos 5.1</a>, 2026 ; Google, <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-argon/" target="_blank" rel="noopener noreferrer">Gemini 4 Argon</a>, septembre 2026.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

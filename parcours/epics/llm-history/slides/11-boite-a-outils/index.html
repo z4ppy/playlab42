@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La boîte à outils — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 11 · 1991–2023</p>
+      <h1>La boîte à outils des LLM</h1>
+      <p class="lead">Derrière chaque modèle célèbre, une poignée de techniques plus discrètes. Chacune répond à une contrainte précise : la mémoire, le coût, la fraîcheur des connaissances ou la qualité du raisonnement.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#efficacite">1 · Moins cher</a></li>
+        <li><a href="#connaissances">2 · Mieux informé</a></li>
+        <li><a href="#quiz">3 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="efficacite">Rendre les modèles moins chers</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>🧩 Mélange d’experts (MoE)</h3>
+        <p class="meta">Jacobs, Jordan, Nowlan, Hinton 1991 · Shazeer et al. 2017 · Switch Transformer 2021</p>
+        <p>Remplacer un grand bloc par plusieurs « experts » et un <strong>routeur</strong> qui n’en active que quelques-uns par token. Le modèle stocke beaucoup de paramètres mais n’en calcule qu’une partie. L’article de Shazeer (2017) le rend praticable à grande échelle. Exemple : Mixtral 8x7B compte 46,7 Md de paramètres, dont 12,9 Md actifs par token.</p>
+        <p><a href="../../../../../index.html#/parcours/anatomie-llm/08-experts" target="_top">Voir le routeur fonctionner dans Anatomie d’un LLM</a></p>
+      </section>
+      <section class="card">
+        <h3>🔬 LoRA et QLoRA</h3>
+        <p class="meta">Hu et al. (Microsoft) 2021 · Dettmers et al. 2023</p>
+        <p>Pour affiner un modèle, on gèle ses poids <em>W</em> et on apprend seulement une petite correction de faible rang : <em>W′ = W + B·A</em>. Sur GPT-3, LoRA divise par 10 000 le nombre de paramètres entraînables et par 3 la mémoire GPU. QLoRA affine un modèle de 65 Md sur un seul GPU de 48 Go.</p>
+      </section>
+      <section class="card">
+        <h3>📉 Quantification</h3>
+        <p class="meta">GPTQ 2022 · llama.cpp et GGUF 2023</p>
+        <p>Stocker les poids sur 8 ou 4 bits au lieu de 16. Un modèle de 7 Md de paramètres passe d’environ 14 Go à environ 4 Go : il tient sur un ordinateur portable, avec une perte de qualité modérée.</p>
+      </section>
+      <section class="card">
+        <h3>⚡ FlashAttention</h3>
+        <p class="meta">Dao et al. 2022</p>
+        <p>Même calcul d’attention, mais organisé pour limiter les allers-retours avec la mémoire du GPU. Résultat exact, nettement plus rapide : une des clés des longs contextes.</p>
+      </section>
+    </div>
+
+    <h2 id="connaissances">Rendre les réponses meilleures</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>📚 RAG</h3>
+        <p class="meta">Lewis et al. (Facebook AI) 2020</p>
+        <p><em>Retrieval-Augmented Generation</em> : avant de répondre, on cherche des documents pertinents et on les place dans le prompt. Le modèle s’appuie sur des sources à jour et citables, sans réentraînement. Cela réduit les inventions sans les supprimer.</p>
+      </section>
+      <section class="card">
+        <h3>💭 Chaîne de pensée</h3>
+        <p class="meta">Wei et al. (Google) janvier 2022 · Kojima et al. mai 2022</p>
+        <p>Montrer dans les exemples un raisonnement étape par étape améliore fortement les résultats en arithmétique et en logique. Kojima et al. montrent que la phrase « <em>Let’s think step by step</em> » suffit souvent. Cette idée deviendra, entraînée par renforcement, le cœur des modèles de raisonnement.</p>
+      </section>
+      <section class="card">
+        <h3>🛠️ Appel d’outils</h3>
+        <p class="meta">Toolformer 2023 · API de fonctions 2023</p>
+        <p>Le modèle produit une demande structurée (« appeler la calculatrice avec 37 × 41 ») que le programme exécute, puis lit le résultat. C’est la brique de base des agents (chapitre 13).</p>
+      </section>
+    </div>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 640 140" role="img" aria-labelledby="rag-title rag-desc">
+        <title id="rag-title">Le principe du RAG</title>
+        <desc id="rag-desc">La question part vers un moteur de recherche, qui renvoie des extraits de documents. La question et les extraits sont donnés ensemble au LLM, qui produit une réponse citant ses sources.</desc>
+        <defs><marker id="arrow-rag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="svg-box" x="10" y="45" width="110" height="50" rx="8"/><text class="svg-text" x="65" y="75" text-anchor="middle">Question</text>
+        <line class="svg-line" x1="120" y1="70" x2="158" y2="70" marker-end="url(#arrow-rag)"/>
+        <rect class="svg-box-encoder" x="160" y="45" width="130" height="50" rx="8"/><text class="svg-text" x="225" y="75" text-anchor="middle">Recherche</text>
+        <line class="svg-line" x1="290" y1="70" x2="328" y2="70" marker-end="url(#arrow-rag)"/>
+        <rect class="svg-box" x="330" y="30" width="120" height="80" rx="8"/><text class="svg-text" x="390" y="62" text-anchor="middle">Extraits</text><text class="svg-text-muted" x="390" y="82" text-anchor="middle">+ question</text>
+        <line class="svg-line" x1="450" y1="70" x2="488" y2="70" marker-end="url(#arrow-rag)"/>
+        <rect class="svg-box-decoder" x="490" y="45" width="140" height="50" rx="8"/><text class="svg-text" x="560" y="68" text-anchor="middle">LLM</text><text class="svg-text-muted" x="560" y="85" text-anchor="middle">réponse + sources</text>
+      </svg>
+      <figcaption>Le RAG change ce que le modèle lit, pas ce qu’il sait : la qualité dépend d’abord de la recherche.</figcaption>
+    </figure>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Une entreprise veut qu’un assistant réponde à partir de sa documentation interne, mise à jour chaque semaine. Quelle technique choisir d’abord ?</legend>
+        <label><input type="radio" name="q1" value="a" data-correct> Le RAG.</label>
+        <label><input type="radio" name="q1" value="b"> Un réentraînement complet chaque semaine.</label>
+        <label><input type="radio" name="q1" value="c"> Un mélange d’experts.</label>
+        <p class="explain" hidden>Le RAG lit la documentation à jour au moment de la question, et permet de citer la source. Le réentraînement serait coûteux et toujours en retard.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Dans un modèle MoE, que fait le routeur ?</legend>
+        <label><input type="radio" name="q2" value="a"> Il choisit le modèle le moins cher pour chaque utilisateur.</label>
+        <label><input type="radio" name="q2" value="b" data-correct> Il choisit, pour chaque token, les quelques experts qui vont le traiter.</label>
+        <p class="explain" hidden>Le routage se fait token par token, à l’intérieur du modèle. Il ne faut pas le confondre avec un service qui aiguille les requêtes entre plusieurs modèles.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Jacobs et al., <a href="https://doi.org/10.1162/neco.1991.3.1.79" target="_blank" rel="noopener noreferrer">Adaptive Mixtures of Local Experts</a>, 1991 ; Shazeer et al., <a href="https://arxiv.org/abs/1701.06538" target="_blank" rel="noopener noreferrer">Outrageously Large Neural Networks: The Sparsely-Gated MoE Layer</a>, 2017 ; Fedus et al., <a href="https://arxiv.org/abs/2101.03961" target="_blank" rel="noopener noreferrer">Switch Transformers</a>, 2021 ; Jiang et al., <a href="https://arxiv.org/abs/2401.04088" target="_blank" rel="noopener noreferrer">Mixtral of Experts</a>, 2024.</li>
+        <li>Hu et al., <a href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener noreferrer">LoRA</a>, 2021 ; Dettmers et al., <a href="https://arxiv.org/abs/2305.14314" target="_blank" rel="noopener noreferrer">QLoRA</a>, 2023.</li>
+        <li>Frantar et al., <a href="https://arxiv.org/abs/2210.17323" target="_blank" rel="noopener noreferrer">GPTQ</a>, 2022.</li>
+        <li>Dao et al., <a href="https://arxiv.org/abs/2205.14135" target="_blank" rel="noopener noreferrer">FlashAttention</a>, 2022.</li>
+        <li>Lewis et al., <a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener noreferrer">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</a>, 2020.</li>
+        <li>Wei et al., <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noopener noreferrer">Chain-of-Thought Prompting Elicits Reasoning</a>, 2022 ; Kojima et al., <a href="https://arxiv.org/abs/2205.11916" target="_blank" rel="noopener noreferrer">Large Language Models are Zero-Shot Reasoners</a>, 2022.</li>
+        <li>Schick et al., <a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener noreferrer">Toolformer</a>, 2023.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

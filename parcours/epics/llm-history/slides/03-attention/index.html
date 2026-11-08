@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>L’invention de l’attention — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 3 · 2014–2016</p>
+      <h1>L’invention de l’attention</h1>
+      <p class="lead">L’attention n’est pas née avec le Transformer : elle apparaît trois ans plus tôt, pour corriger un défaut précis de la traduction automatique.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#goulot">1 · Le problème</a></li>
+        <li><a href="#bahdanau">2 · La solution</a></li>
+        <li><a href="#quiz">3 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <aside class="myth" aria-label="Idée reçue">
+      <span class="box-label">Idée reçue</span>
+      <p>« L’attention a été inventée par <em>Attention Is All You Need</em> en 2017. » Non : l’article de 2017 cite explicitement les travaux de 2014–2016. Son apport est d’avoir gardé l’attention <strong>et supprimé tout le reste</strong>.</p>
+    </aside>
+
+    <h2 id="goulot">Le problème : tout faire tenir dans un vecteur</h2>
+    <p>Dans un traducteur seq2seq de 2014, l’encodeur lit la phrase mot à mot puis la résume en un <strong>unique vecteur de taille fixe</strong>. Le décodeur doit écrire toute la traduction à partir de ce seul résumé. Sur les phrases longues, la qualité s’effondre : c’est le <dfn data-term="goulot d’étranglement">goulot d’étranglement</dfn>.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 640 190" role="img" aria-labelledby="goulot-title goulot-desc">
+        <title id="goulot-title">Le goulot d’étranglement du seq2seq</title>
+        <desc id="goulot-desc">Les états de l’encodeur pour « le chat mange » convergent vers un seul vecteur de contexte, qui alimente seul le décodeur produisant « the cat eats ».</desc>
+        <defs><marker id="arrow-goulot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <text class="svg-text-muted" x="120" y="20" text-anchor="middle">ENCODEUR</text>
+        <rect class="svg-box-encoder" x="20" y="40" width="60" height="36" rx="6"/><text class="svg-text" x="50" y="63" text-anchor="middle">le</text>
+        <rect class="svg-box-encoder" x="90" y="40" width="60" height="36" rx="6"/><text class="svg-text" x="120" y="63" text-anchor="middle">chat</text>
+        <rect class="svg-box-encoder" x="160" y="40" width="60" height="36" rx="6"/><text class="svg-text" x="190" y="63" text-anchor="middle">mange</text>
+        <line class="svg-line" x1="50" y1="76" x2="300" y2="120" marker-end="url(#arrow-goulot)"/>
+        <line class="svg-line" x1="120" y1="76" x2="300" y2="120" marker-end="url(#arrow-goulot)"/>
+        <line class="svg-line" x1="190" y1="76" x2="300" y2="120" marker-end="url(#arrow-goulot)"/>
+        <rect class="svg-box-alert" x="290" y="102" width="70" height="40" rx="8"/>
+        <text class="svg-text-strong" x="325" y="127" text-anchor="middle">c</text>
+        <text class="svg-text-muted" x="325" y="165" text-anchor="middle">un seul vecteur</text>
+        <line class="svg-line" x1="360" y1="122" x2="430" y2="76" marker-end="url(#arrow-goulot)"/>
+        <text class="svg-text-muted" x="520" y="20" text-anchor="middle">DÉCODEUR</text>
+        <rect class="svg-box-decoder" x="430" y="40" width="60" height="36" rx="6"/><text class="svg-text" x="460" y="63" text-anchor="middle">the</text>
+        <rect class="svg-box-decoder" x="500" y="40" width="60" height="36" rx="6"/><text class="svg-text" x="530" y="63" text-anchor="middle">cat</text>
+        <rect class="svg-box-decoder" x="570" y="40" width="60" height="36" rx="6"/><text class="svg-text" x="600" y="63" text-anchor="middle">eats</text>
+      </svg>
+      <figcaption>Avant l’attention, le décodeur ne voit que le résumé <code>c</code>, quelle que soit la longueur de la phrase.</figcaption>
+    </figure>
+
+    <h2 id="bahdanau">Septembre 2014 : Bahdanau, Cho et Bengio</h2>
+    <p>Dans <em>Neural Machine Translation by Jointly Learning to Align and Translate</em> (arXiv, septembre 2014 ; ICLR 2015), Dzmitry Bahdanau, alors stagiaire à Montréal, propose de garder <strong>tous</strong> les états de l’encodeur. À chaque mot qu’il écrit, le décodeur calcule un score pour chaque mot source, transforme ces scores en poids qui somment à 1, puis fait une moyenne pondérée : c’est l’<dfn>attention</dfn>.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 640 200" role="img" aria-labelledby="att-title att-desc">
+        <title id="att-title">L’attention pendant la génération du mot « cat »</title>
+        <desc id="att-desc">Pour écrire « cat », le décodeur donne un poids de 0,1 à « le », 0,8 à « chat » et 0,1 à « mange ». L’épaisseur des liens est proportionnelle au poids.</desc>
+        <defs><marker id="arrow-att" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="svg-box-encoder" x="40" y="130" width="80" height="40" rx="6"/><text class="svg-text" x="80" y="155" text-anchor="middle">le</text>
+        <rect class="svg-box-encoder" x="140" y="130" width="80" height="40" rx="6"/><text class="svg-text" x="180" y="155" text-anchor="middle">chat</text>
+        <rect class="svg-box-encoder" x="240" y="130" width="80" height="40" rx="6"/><text class="svg-text" x="280" y="155" text-anchor="middle">mange</text>
+        <line class="svg-line-accent" x1="80" y1="130" x2="460" y2="62" stroke-width="1.5"/>
+        <line class="svg-line-accent" x1="180" y1="130" x2="460" y2="62" stroke-width="7"/>
+        <line class="svg-line-accent" x1="280" y1="130" x2="460" y2="62" stroke-width="1.5"/>
+        <text class="svg-text-muted" x="80" y="190" text-anchor="middle">α = 0,1</text>
+        <text class="svg-text-accent" x="180" y="190" text-anchor="middle">α = 0,8</text>
+        <text class="svg-text-muted" x="280" y="190" text-anchor="middle">α = 0,1</text>
+        <rect class="svg-box-decoder" x="460" y="40" width="120" height="44" rx="8"/>
+        <text class="svg-text-strong" x="520" y="67" text-anchor="middle">→ « cat »</text>
+        <text class="svg-text-muted" x="520" y="104" text-anchor="middle">contexte recalculé</text>
+        <text class="svg-text-muted" x="520" y="120" text-anchor="middle">à chaque mot</text>
+      </svg>
+      <figcaption>Les poids sont recalculés à chaque mot généré. Les valeurs sont illustratives.</figcaption>
+    </figure>
+
+    <div class="formula" aria-label="Formule de l’attention additive">
+      e<sub>ij</sub> = v<sup>⊤</sup> tanh(W s<sub>i−1</sub> + U h<sub>j</sub>) &nbsp;·&nbsp; α<sub>ij</sub> = softmax<sub>j</sub>(e<sub>ij</sub>) &nbsp;·&nbsp; c<sub>i</sub> = Σ<sub>j</sub> α<sub>ij</sub> h<sub>j</sub>
+    </div>
+    <p>Bonus inattendu : les poids α se lisent comme un <strong>alignement</strong> entre mots source et mots traduits. Pour la première fois, on peut « voir » ce que regarde un réseau de traduction.</p>
+
+    <aside class="anecdote" aria-label="Anecdote">
+      <span class="box-label">D’où vient le mot « attention » ?</span>
+      <p>Bahdanau a raconté qu’il appelait d’abord son mécanisme « RNNSearch ». C’est Yoshua Bengio qui aurait proposé le mot <em>attention</em> lors d’une relecture finale. L’anecdote vient d’un courriel de Bahdanau publié par Andrej Karpathy en décembre 2024.</p>
+    </aside>
+
+    <h2 id="variantes">2015–2016 : variantes et auto-attention</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>Luong, Pham, Manning (2015)</h3>
+        <p class="meta">Stanford · EMNLP 2015</p>
+        <p>Simplifient le calcul du score : un simple <strong>produit scalaire</strong> entre états (attention « multiplicative »), et une attention <em>locale</em> limitée à une fenêtre. Le produit scalaire deviendra celui du Transformer.</p>
+      </section>
+      <section class="card">
+        <h3>Cheng, Dong, Lapata (2016)</h3>
+        <p class="meta">Édimbourg · EMNLP 2016</p>
+        <p>Appliquent l’attention <strong>à l’intérieur d’une même phrase</strong> (« intra-attention ») : chaque mot regarde les autres mots de sa propre phrase. C’est l’<dfn data-term="self-attention">auto-attention</dfn>.</p>
+      </section>
+      <section class="card">
+        <h3>Parikh et al. (2016)</h3>
+        <p class="meta">Google · EMNLP 2016</p>
+        <p>Montrent qu’un modèle fondé sur l’attention, sans réseau récurrent, rivalise sur l’inférence textuelle avec bien moins de paramètres. Un indice de ce qui va suivre.</p>
+      </section>
+    </div>
+    <p>Mais jusqu’en 2017, l’attention reste un <strong>complément</strong> des réseaux récurrents. Ceux-ci traitent toujours les mots un par un, ce qui empêche de paralléliser l’entraînement sur GPU.</p>
+
+    <div class="people" data-people="dzmitry-bahdanau,kyunghyun-cho,yoshua-bengio,christopher-manning"></div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Quel problème l’attention de Bahdanau résout-elle d’abord ?</legend>
+        <label><input type="radio" name="q1" value="a"> La lenteur des GPU.</label>
+        <label><input type="radio" name="q1" value="b" data-correct> Le résumé de toute la phrase source en un seul vecteur fixe.</label>
+        <label><input type="radio" name="q1" value="c"> Le manque de données de traduction.</label>
+        <p class="explain" hidden>Avec l’attention, le décodeur consulte tous les états de l’encodeur à chaque mot, au lieu d’un résumé unique.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Qu’est-ce qui distingue l’auto-attention de l’attention de 2014 ?</legend>
+        <label><input type="radio" name="q2" value="a" data-correct> Les mots d’une même séquence se regardent entre eux, au lieu de relier une phrase source et une phrase cible.</label>
+        <label><input type="radio" name="q2" value="b"> Elle n’utilise plus de poids.</label>
+        <p class="explain" hidden>L’attention de 2014 relie deux séquences (attention croisée). L’auto-attention relie les positions d’une même séquence : c’est le cœur du Transformer.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <p class="see-also">Pour manipuler l’attention pas à pas, voir l’étape « L’attention causale » du parcours <a href="../../../../../index.html#/parcours/anatomie-llm/07-attention" target="_top">Anatomie d’un LLM</a>.</p>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Bahdanau, Cho, Bengio, <a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noopener noreferrer">Neural Machine Translation by Jointly Learning to Align and Translate</a>, 2014.</li>
+        <li>Luong, Pham, Manning, <a href="https://arxiv.org/abs/1508.04025" target="_blank" rel="noopener noreferrer">Effective Approaches to Attention-based Neural Machine Translation</a>, 2015.</li>
+        <li>Cheng, Dong, Lapata, <a href="https://arxiv.org/abs/1601.06733" target="_blank" rel="noopener noreferrer">Long Short-Term Memory-Networks for Machine Reading</a>, 2016.</li>
+        <li>Parikh et al., <a href="https://arxiv.org/abs/1606.01933" target="_blank" rel="noopener noreferrer">A Decomposable Attention Model for Natural Language Inference</a>, 2016.</li>
+        <li>A. Karpathy, <a href="https://x.com/karpathy/status/1864023344435380613" target="_blank" rel="noopener noreferrer">publication du courriel de D. Bahdanau sur l’origine du terme « attention »</a>, décembre 2024.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

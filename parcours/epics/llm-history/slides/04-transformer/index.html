@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Transformer — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 4 · 2017</p>
+      <h1>Le Transformer : l’attention, et rien d’autre</h1>
+      <p class="lead">En juin 2017, huit chercheurs de Google publient une architecture qui supprime les réseaux récurrents. Presque tous les LLM actuels en descendent.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#pourquoi">1 · Pourquoi</a></li>
+        <li><a href="#architecture">2 · L’architecture</a></li>
+        <li><a href="#auteurs">3 · Les auteurs</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="pourquoi">Le pari : se passer de la récurrence</h2>
+    <p>Un réseau récurrent calcule l’état du mot <em>t</em> à partir de celui du mot <em>t</em>−1. Il faut donc 100 étapes successives pour une phrase de 100 mots, ce qui exploite mal les GPU, conçus pour faire beaucoup de calculs <strong>en même temps</strong>. Et l’information du premier mot doit traverser toutes ces étapes pour atteindre le dernier.</p>
+    <p><em>Attention Is All You Need</em> (arXiv, 12 juin 2017 ; NeurIPS 2017) propose de n’utiliser que l’<dfn data-term="self-attention">auto-attention</dfn> : chaque position regarde directement toutes les autres, et toutes les positions sont calculées en parallèle.</p>
+
+    <div class="cards">
+      <section class="card"><h3>✅ Gagné</h3><ul><li>Entraînement parallèle sur GPU.</li><li>Deux mots quelconques sont reliés en une seule étape.</li><li>Base : 12 heures sur 8 GPU P100.</li></ul></section>
+      <section class="card"><h3>⚠️ Le prix à payer</h3><ul><li>Chaque mot se compare à tous les autres : le coût de l’attention croît avec le <strong>carré</strong> de la longueur du texte.</li><li>Aucune notion d’ordre : il faut l’ajouter avec un <dfn data-term="encodage positionnel">encodage positionnel</dfn>.</li></ul></section>
+    </div>
+
+    <dl class="stats" aria-label="Le Transformer de 2017 en chiffres">
+      <div class="stat"><dt>Modèle de base</dt><dd>65 M</dd><dd>paramètres, 6 couches, 8 têtes</dd></div>
+      <div class="stat"><dt>Grand modèle</dt><dd>213 M</dd><dd>paramètres, 3,5 jours sur 8 GPU</dd></div>
+      <div class="stat"><dt>Anglais → allemand</dt><dd>28,4</dd><dd>BLEU sur WMT 2014, record de l’époque</dd></div>
+    </dl>
+
+    <h2 id="architecture">L’architecture d’origine</h2>
+    <p>Le Transformer de 2017 est un traducteur : un <strong>encodeur</strong> lit la phrase source, un <strong>décodeur</strong> écrit la traduction en consultant l’encodeur. Chaque bloc alterne attention et petit réseau « feed-forward », avec des connexions résiduelles et une normalisation.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 700 330" role="img" aria-labelledby="tf-title tf-desc">
+        <title id="tf-title">Architecture encodeur-décodeur du Transformer de 2017</title>
+        <desc id="tf-desc">À gauche, l’encodeur répété six fois : auto-attention multi-têtes puis feed-forward. À droite, le décodeur répété six fois : auto-attention masquée, attention croisée vers l’encodeur, puis feed-forward, et enfin une couche qui donne les probabilités du mot suivant.</desc>
+        <defs><marker id="arrow-tf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="svg-box-encoder" x="40" y="60" width="230" height="170" rx="12"/>
+        <text class="svg-text-strong" x="155" y="45" text-anchor="middle">ENCODEUR × 6</text>
+        <rect class="svg-box" x="60" y="80" width="190" height="50" rx="8"/><text class="svg-text" x="155" y="110" text-anchor="middle">Auto-attention multi-têtes</text>
+        <rect class="svg-box" x="60" y="160" width="190" height="50" rx="8"/><text class="svg-text" x="155" y="190" text-anchor="middle">Feed-forward</text>
+        <line class="svg-line" x1="155" y1="130" x2="155" y2="158" marker-end="url(#arrow-tf)"/>
+        <rect class="svg-box" x="60" y="260" width="190" height="40" rx="8"/><text class="svg-text" x="155" y="285" text-anchor="middle">Embeddings + positions</text>
+        <line class="svg-line" x1="155" y1="260" x2="155" y2="232" marker-end="url(#arrow-tf)"/>
+        <text class="svg-text-muted" x="155" y="320" text-anchor="middle">« le chat mange »</text>
+
+        <rect class="svg-box-decoder" x="370" y="20" width="230" height="230" rx="12"/>
+        <text class="svg-text-strong" x="485" y="12" text-anchor="middle">DÉCODEUR × 6</text>
+        <rect class="svg-box" x="390" y="185" width="190" height="45" rx="8"/><text class="svg-text" x="485" y="212" text-anchor="middle">Auto-attention masquée</text>
+        <rect class="svg-box-accent" x="390" y="115" width="190" height="45" rx="8"/><text class="svg-text" x="485" y="142" text-anchor="middle">Attention croisée</text>
+        <rect class="svg-box" x="390" y="45" width="190" height="45" rx="8"/><text class="svg-text" x="485" y="72" text-anchor="middle">Feed-forward</text>
+        <line class="svg-line" x1="485" y1="185" x2="485" y2="162" marker-end="url(#arrow-tf)"/>
+        <line class="svg-line" x1="485" y1="115" x2="485" y2="92" marker-end="url(#arrow-tf)"/>
+        <path class="svg-line-dashed" d="M270 145 C 320 145, 340 137, 388 137" marker-end="url(#arrow-tf)"/>
+        <text class="svg-text-muted" x="330" y="128" text-anchor="middle">K, V</text>
+        <rect class="svg-box" x="390" y="270" width="190" height="40" rx="8"/><text class="svg-text" x="485" y="295" text-anchor="middle">« the cat » (déjà écrit)</text>
+        <line class="svg-line" x1="485" y1="270" x2="485" y2="232" marker-end="url(#arrow-tf)"/>
+        <line class="svg-line" x1="580" y1="67" x2="612" y2="67" marker-end="url(#arrow-tf)"/>
+        <text class="svg-text-accent" x="618" y="63">mot</text>
+        <text class="svg-text-accent" x="618" y="80">suivant</text>
+      </svg>
+      <figcaption>Le décodeur ne voit que les mots déjà écrits (attention masquée) et consulte l’encodeur via l’attention croisée.</figcaption>
+    </figure>
+
+    <p>Le calcul central, l’attention par produit scalaire mis à l’échelle, tient en une ligne. Chaque position produit une requête <em>Q</em> (« ce que je cherche »), une clé <em>K</em> (« ce que je contiens ») et une valeur <em>V</em> (« ce que je transmets ») :</p>
+    <div class="formula" aria-label="Formule de l’attention">Attention(Q, K, V) = softmax(Q K<sup>⊤</sup> / √d<sub>k</sub>) · V</div>
+    <p>L’attention <dfn data-term="multi-têtes">multi-têtes</dfn> répète ce calcul huit fois en parallèle avec des projections différentes. Les têtes ne sont pas programmées pour un rôle (syntaxe, coréférence…) : certaines spécialisations <em>émergent</em> de l’entraînement et ne sont observées qu’après coup.</p>
+
+    <aside class="anecdote" aria-label="Ce qui a changé depuis">
+      <span class="box-label">Ce qui a changé depuis 2017</span>
+      <p>Les LLM génératifs (GPT, Llama, Claude…) ne gardent que le <strong>décodeur</strong>. La plupart remplacent aussi des pièces : normalisation avant chaque bloc, positions rotatives (RoPE), activations SwiGLU, têtes qui partagent leurs clés (GQA), experts (MoE). Le principe reste celui de 2017. Pour voir ces pièces fonctionner, suivez l’étape <a href="../../../../../index.html#/parcours/anatomie-llm/05-transformer" target="_top">La carte du modèle</a> d’Anatomie d’un LLM.</p>
+    </aside>
+
+    <h2 id="auteurs">Huit auteurs, huit trajectoires</h2>
+    <p>L’article liste huit auteurs à « contribution égale », dans un ordre aléatoire : Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan Gomez (stagiaire, étudiant à Toronto), Łukasz Kaiser et Illia Polosukhin. Selon <em>Wired</em>, Uszkoreit a choisi le nom « Transformer » et Llion Jones a proposé le titre, clin d’œil à la chanson des Beatles <em>All You Need Is Love</em>.</p>
+    <p>Tous ont ensuite quitté Google pour fonder ou rejoindre d’autres entreprises : Cohere (Gomez), Character.AI (Shazeer, revenu chez Google en 2024), Sakana AI (Jones), NEAR (Polosukhin), Inceptive (Uszkoreit), Essential AI (Vaswani et Parmar), OpenAI (Kaiser).</p>
+
+    <div class="people" data-people="ashish-vaswani,noam-shazeer,aidan-gomez,illia-polosukhin,lukasz-kaiser,llion-jones,jakob-uszkoreit"></div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Pourquoi le Transformer s’entraîne-t-il beaucoup plus vite qu’un LSTM ?</legend>
+        <label><input type="radio" name="q1" value="a"> Il a moins de paramètres.</label>
+        <label><input type="radio" name="q1" value="b" data-correct> Toutes les positions d’une phrase sont calculées en parallèle, ce qui exploite les GPU.</label>
+        <label><input type="radio" name="q1" value="c"> Il n’utilise pas de GPU.</label>
+        <p class="explain" hidden>Sans récurrence, plus besoin d’attendre le mot précédent : la phrase entière est traitée d’un coup pendant l’entraînement.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Quel est le principal coût de l’auto-attention ?</legend>
+        <label><input type="radio" name="q2" value="a" data-correct> Il croît avec le carré de la longueur du texte.</label>
+        <label><input type="radio" name="q2" value="b"> Il impose de traiter les mots un par un.</label>
+        <p class="explain" hidden>Chaque position est comparée à toutes les autres : n positions donnent n² scores. C’est pourquoi les longs contextes restent coûteux, et pourquoi des architectures alternatives sont étudiées (chapitre 14).</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>Vaswani et al., <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener noreferrer">Attention Is All You Need</a>, 2017 (tableaux 2 et 3 : coûts, BLEU, tailles).</li>
+        <li>S. Levy, <a href="https://www.wired.com/story/eight-google-employees-invented-modern-ai-transformers-paper/" target="_blank" rel="noopener noreferrer">8 Google Employees Invented Modern AI. Here’s the Inside Story</a>, Wired, mars 2024.</li>
+        <li>Clark et al., <a href="https://arxiv.org/abs/1906.04341" target="_blank" rel="noopener noreferrer">What Does BERT Look At? An Analysis of BERT’s Attention</a>, 2019 (spécialisations observées des têtes).</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

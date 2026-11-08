@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT et l’onde de choc — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 9 · 2022–2023</p>
+      <h1>ChatGPT et l’onde de choc</h1>
+      <p class="lead">Le 30 novembre 2022, OpenAI ouvre gratuitement une « préversion de recherche ». Techniquement, peu de nouveauté. En pratique, l’IA générative devient un sujet de conversation mondial en quelques semaines.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#lancement">1 · Le lancement</a></li>
+        <li><a href="#reactions">2 · Les réactions</a></li>
+        <li><a href="#gpt4">3 · GPT-4</a></li>
+        <li><a href="#quiz">4 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="lancement">Une interface, pas une révolution technique</h2>
+    <p>ChatGPT repose sur un modèle de la série GPT-3.5, affiné pour le dialogue avec la recette d’InstructGPT (chapitre 8). La nouveauté est ailleurs : une <strong>interface de discussion gratuite</strong>, où l’on peut reformuler, corriger et enchaîner les questions.</p>
+    <dl class="stats" aria-label="Adoption de ChatGPT">
+      <div class="stat"><dt>1 million</dt><dd>5 jours</dd><dd>d’utilisateurs selon Sam Altman (5 décembre 2022)</dd></div>
+      <div class="stat"><dt>100 millions</dt><dd>~2 mois</dd><dd>d’utilisateurs actifs mensuels, estimation UBS / Similarweb</dd></div>
+      <div class="stat"><dt>Pour comparer</dt><dd>9 mois</dd><dd>pour TikTok, 2,5 ans pour Instagram (même note UBS)</dd></div>
+    </dl>
+    <aside class="nuance" aria-label="Chiffre à manier avec prudence">
+      <span class="box-label">Ce chiffre est une estimation</span>
+      <p>Les « 100 millions en deux mois » viennent d’une estimation d’analystes fondée sur le trafic Web, pas d’un chiffre publié par OpenAI. Elle est néanmoins largement reprise comme ordre de grandeur.</p>
+    </aside>
+
+    <h2 id="reactions">Les réactions de l’industrie</h2>
+    <div class="cards">
+      <section class="card">
+        <h3>Google</h3>
+        <p class="meta">décembre 2022 – février 2023</p>
+        <p>Selon le <em>New York Times</em>, la direction déclare une « alerte rouge » interne. Google présente <strong>Bard</strong> le 6 février 2023. Une réponse fausse sur le télescope James Webb, dans une vidéo de démonstration, coïncide avec une chute d’environ 100 Md$ de la valeur boursière d’Alphabet le 8 février.</p>
+      </section>
+      <section class="card">
+        <h3>Microsoft</h3>
+        <p class="meta">janvier – mars 2023</p>
+        <p>Annonce en janvier 2023 un investissement pluriannuel dans OpenAI, évalué par la presse à 10 Md$. Un nouveau Bing fondé sur GPT-4 est lancé en février, puis Microsoft 365 Copilot est annoncé en mars.</p>
+      </section>
+      <section class="card">
+        <h3>Anthropic</h3>
+        <p class="meta">mars – juillet 2023</p>
+        <p>Fondée en 2021 par d’anciens membres d’OpenAI, dont Dario et Daniela Amodei, l’entreprise lance <strong>Claude</strong> en mars 2023, puis Claude 2 en juillet.</p>
+      </section>
+    </div>
+
+    <h2 id="gpt4">Mars 2023 : GPT-4</h2>
+    <p>Le 14 mars 2023, OpenAI présente GPT-4, capable de lire des images en plus du texte. Le rapport technique annonce que GPT-4 répond 82 % moins souvent que GPT-3.5 aux demandes interdites et donne 40 % plus souvent des réponses factuelles sur les évaluations internes d’OpenAI. Il <strong>ne publie ni la taille, ni l’architecture, ni les données</strong> : une rupture avec la transparence des articles GPT-2 et GPT-3.</p>
+    <aside class="nuance" aria-label="Le chiffre du barreau">
+      <span class="box-label">Le « 90e centile » à l’examen du barreau</span>
+      <p>OpenAI situait GPT-4 vers le 90e centile à l’examen du barreau américain (UBE). En 2024, Eric Martínez montre que ce chiffre repose sur une session de février de l’Illinois, où passent beaucoup de candidats qui repassent l’examen. Comparé à la session de juillet, GPT-4 se situe plutôt vers le 68e centile, et vers le 48e parmi les seuls candidats reçus. Moralité : un score n’a de sens qu’avec sa population de référence.</p>
+    </aside>
+    <p>Fin 2023, la course à la longueur de contexte s’accélère : <strong>GPT-4 Turbo</strong> (novembre 2023) lit 128 000 tokens, environ 300 pages, à un prix trois fois plus bas en entrée que GPT-4. Google présente <strong>Gemini</strong> en décembre 2023.</p>
+
+    <div class="people" data-people="sam-altman,mira-murati,dario-amodei,daniela-amodei,sundar-pichai,satya-nadella"></div>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Qu’est-ce qui était nouveau avec ChatGPT ?</legend>
+        <label><input type="radio" name="q1" value="a"> Une architecture inédite, très différente de GPT-3.</label>
+        <label><input type="radio" name="q1" value="b" data-correct> Un accès gratuit, sous forme de conversation, à un modèle aligné avec la recette d’InstructGPT.</label>
+        <p class="explain" hidden>Le modèle descend de GPT-3.5 et de la recette RLHF. C’est l’accès et l’ergonomie qui ont changé l’échelle d’adoption.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Pourquoi le « 90e centile au barreau » est-il discuté ?</legend>
+        <label><input type="radio" name="q2" value="a" data-correct> Parce que la population de comparaison choisie gonflait le classement.</label>
+        <label><input type="radio" name="q2" value="b"> Parce que GPT-4 n’a jamais passé l’examen.</label>
+        <p class="explain" hidden>Le score brut n’est pas en cause : c’est la comparaison avec une session atypique qui donnait un centile flatteur.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>OpenAI, <a href="https://openai.com/index/chatgpt/" target="_blank" rel="noopener noreferrer">Introducing ChatGPT</a>, 30 novembre 2022.</li>
+        <li>Reuters, <a href="https://www.thestar.com.my/tech/tech-news/2023/02/02/chatgpt-sets-record-for-fastest-growing-user-base---analyst-note" target="_blank" rel="noopener noreferrer">ChatGPT sets record for fastest-growing user base</a>, 1er février 2023 (dépêche reprise par The Star).</li>
+        <li>The New York Times, « A New Chat Bot Is a ‘Code Red’ for Google’s Search Business », 21 décembre 2022, résumé par <a href="https://siliconangle.com/2022/12/22/reports-say-google-panicking-threat-posed-openais-chatbot" target="_blank" rel="noopener noreferrer">SiliconANGLE</a>.</li>
+        <li>Reuters, <a href="https://thestar.com.my/tech/tech-news/2023/02/08/google-ai-chatbot-bard-offers-inaccurate-information-in-company-ad" target="_blank" rel="noopener noreferrer">Google AI chatbot Bard offers inaccurate information in company ad</a>, 8 février 2023 (dépêche reprise par The Star).</li>
+        <li>Microsoft, <a href="https://blogs.microsoft.com/blog/2023/01/23/microsoftandopenaiextendpartnership/" target="_blank" rel="noopener noreferrer">Microsoft and OpenAI extend partnership</a>, 23 janvier 2023.</li>
+        <li>OpenAI, <a href="https://arxiv.org/abs/2303.08774" target="_blank" rel="noopener noreferrer">GPT-4 Technical Report</a>, mars 2023.</li>
+        <li>E. Martínez, <a href="https://link.springer.com/article/10.1007/s10506-024-09396-9" target="_blank" rel="noopener noreferrer">Re-evaluating GPT-4’s bar exam performance</a>, Artificial Intelligence and Law, 2024.</li>
+        <li>Anthropic, <a href="https://www.anthropic.com/news/introducing-claude" target="_blank" rel="noopener noreferrer">Introducing Claude</a>, mars 2023 ; OpenAI, <a href="https://openai.com/index/new-models-and-developer-products-announced-at-devday/" target="_blank" rel="noopener noreferrer">DevDay : GPT-4 Turbo</a>, novembre 2023.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>

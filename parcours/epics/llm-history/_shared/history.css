@@ -1,0 +1,521 @@
+/*
+ * Styles partagés du parcours « Histoire des LLM ».
+ *
+ * Complète parcours/_shared/slide-base.css sans le recopier : toutes les
+ * couleurs dérivent des variables de lib/theme.css pour suivre le thème
+ * clair/sombre. Aucune slide ne doit embarquer son propre bloc <style>.
+ */
+
+:root {
+  /* Couleurs des familles d'idées, dérivées du thème (lisibles en clair et en sombre). */
+  --history-accent: var(--color-accent);
+  --history-soft: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --history-line: color-mix(in srgb, var(--color-text-muted) 45%, transparent);
+  --history-encoder: var(--color-info);
+  --history-decoder: var(--color-warning);
+  --history-ok: var(--color-success);
+  --history-ko: var(--color-error);
+}
+
+.slide {
+  max-width: 920px;
+}
+
+/* Listes décorées : on neutralise la numérotation par défaut de slide-base.css. */
+.slide .lesson-steps,
+.slide .timeline,
+.slide .order-list {
+  padding-left: 0;
+}
+
+.slide .lesson-steps li,
+.slide .timeline li,
+.slide .order-list li {
+  list-style-type: none;
+}
+
+/* ---------- En-tête de chapitre ---------- */
+
+.chapter-hero {
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.chapter-hero .eyebrow {
+  margin: 0 0 var(--space-xs);
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chapter-hero .lead {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
+}
+
+.chapter-hero .banner {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 12 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  margin: var(--space-md) 0 0;
+}
+
+.banner-credit {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* Fil « Comprendre / Expérimenter / Vérifier » commun aux pages. */
+.lesson-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slide .lesson-steps li {
+  margin: 0;
+  padding: 0;
+}
+
+.slide .lesson-steps li::before {
+  content: none;
+}
+
+.lesson-steps a {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+/* ---------- Encadrés éditoriaux ---------- */
+
+.myth,
+.anecdote,
+.takeaways,
+.nuance {
+  margin: var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.myth { border-left-color: var(--color-warning); }
+.anecdote { border-left-color: var(--color-info); }
+.nuance { border-left-color: var(--color-error); }
+.takeaways { border-left-color: var(--color-success); }
+
+.myth > :first-child,
+.anecdote > :first-child,
+.takeaways > :first-child,
+.nuance > :first-child {
+  margin-top: 0;
+}
+
+.myth > :last-child,
+.anecdote > :last-child,
+.takeaways > :last-child,
+.nuance > :last-child {
+  margin-bottom: 0;
+}
+
+.box-label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Frise chronologique ---------- */
+
+.timeline {
+  position: relative;
+  margin: var(--space-lg) 0;
+  list-style: none;
+  border-left: 2px solid var(--history-line);
+}
+
+.slide .timeline li {
+  position: relative;
+  margin: 0 0 var(--space-md);
+  padding: 0 0 0 var(--space-lg);
+}
+
+.slide .timeline li::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 0.45em;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 3px solid var(--color-accent);
+}
+
+.timeline time,
+.timeline .date {
+  display: block;
+  font-weight: 700;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline .what {
+  font-weight: 600;
+}
+
+/* ---------- Chiffres clés ---------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+
+.stat {
+  margin: 0;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.stat dt {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.stat dd {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat dd + dd {
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Cartes ---------- */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+
+.card {
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.card .meta {
+  margin-top: calc(-1 * var(--space-xs));
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Portraits ---------- */
+
+.people {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+
+.slide figure.person {
+  margin: 0;
+  text-align: center;
+}
+
+.slide .person img {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto var(--space-xs);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--history-soft);
+}
+
+.slide .person figcaption {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.35;
+  text-align: center;
+}
+
+.person .name {
+  display: block;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.person .role {
+  display: block;
+  color: var(--color-text-muted);
+}
+
+.person .credit {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Schémas SVG ---------- */
+
+.diagram {
+  margin: var(--space-lg) 0;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+}
+
+.diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  font-family: var(--font-family);
+}
+
+.diagram figcaption {
+  margin-top: var(--space-sm);
+}
+
+/* Classes utilisées à l'intérieur des SVG : jamais de couleur codée en dur. */
+.svg-box { fill: var(--color-bg-secondary); stroke: var(--color-border); stroke-width: 1.5; }
+.svg-box-accent { fill: var(--history-soft); stroke: var(--color-accent); stroke-width: 2; }
+.svg-box-encoder { fill: color-mix(in srgb, var(--history-encoder) 14%, transparent); stroke: var(--history-encoder); stroke-width: 2; }
+.svg-box-decoder { fill: color-mix(in srgb, var(--history-decoder) 16%, transparent); stroke: var(--history-decoder); stroke-width: 2; }
+.svg-box-alert { fill: color-mix(in srgb, var(--history-ko) 14%, transparent); stroke: var(--history-ko); stroke-width: 2; }
+.svg-line { stroke: var(--color-text-muted); stroke-width: 1.5; fill: none; }
+.svg-line-accent { stroke: var(--color-accent); fill: none; }
+.svg-line-dashed { stroke: var(--color-text-muted); stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+.svg-dot { fill: var(--color-accent); }
+.svg-dot-muted { fill: var(--color-text-muted); }
+.svg-text { fill: var(--color-text); font-size: 13px; }
+.svg-text-strong { fill: var(--color-text); font-size: 14px; font-weight: 700; }
+.svg-text-muted { fill: var(--color-text-muted); font-size: 11px; }
+.svg-text-accent { fill: var(--color-accent); font-size: 13px; font-weight: 700; }
+.svg-arrowhead { fill: var(--color-text-muted); }
+
+/* ---------- Formules ---------- */
+
+.formula {
+  margin: var(--space-md) 0;
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  font-family: var(--font-mono);
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* ---------- Activités (quiz, frise, calculateur) ---------- */
+
+.activity {
+  margin: var(--space-xl) 0;
+  padding: var(--space-lg);
+  border: 2px solid var(--history-soft);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+}
+
+.activity > h2:first-child,
+.activity > h3:first-child {
+  margin-top: 0;
+}
+
+.quiz fieldset {
+  margin: 0 0 var(--space-md);
+  padding: 0;
+  border: 0;
+}
+
+.quiz legend {
+  margin-bottom: var(--space-sm);
+  font-weight: 600;
+}
+
+.quiz label {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  margin: var(--space-xs) 0;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.quiz label:has(input:checked) {
+  border-color: var(--color-accent);
+  background: var(--history-soft);
+}
+
+.feedback {
+  margin: var(--space-sm) 0 0;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+}
+
+.feedback:empty {
+  display: none;
+}
+
+.feedback[data-state='ok'] {
+  background: var(--color-success-light);
+  color: var(--color-text);
+}
+
+.feedback[data-state='ko'] {
+  background: var(--color-error-light);
+  color: var(--color-text);
+}
+
+.order-list {
+  margin: var(--space-md) 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: order;
+}
+
+.slide .order-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-xs) 0;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  counter-increment: order;
+}
+
+.slide .order-list li::before {
+  content: counter(order);
+  position: static;
+  min-width: 1.5em;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.order-list li[data-state='ok'] { border-color: var(--history-ok); }
+.order-list li[data-state='ko'] { border-color: var(--history-ko); }
+
+.order-list .label {
+  flex: 1;
+}
+
+.order-list button {
+  min-width: 2.5rem;
+  padding: var(--space-xs) var(--space-sm);
+}
+
+.activity-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.calculator label {
+  display: block;
+  font-weight: 600;
+}
+
+.calculator input[type='range'] {
+  width: 100%;
+  margin: var(--space-sm) 0;
+}
+
+.calculator output {
+  font-variant-numeric: tabular-nums;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: var(--space-sm) 0 var(--space-md);
+}
+
+.verdict {
+  font-weight: 700;
+}
+
+/* ---------- Navigation entre parcours ---------- */
+
+.see-also {
+  margin: var(--space-xl) 0 0;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+}
+
+/* ---------- Sources ---------- */
+
+.refs {
+  font-size: var(--font-size-sm);
+}
+
+.refs li {
+  margin-bottom: var(--space-xs);
+}
+
+.page-sources {
+  margin-top: var(--space-xl);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.page-sources summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.updated {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 640px) {
+  .people {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .slide .person img {
+    width: 80px;
+    height: 80px;
+  }
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La préhistoire — Histoire des LLM</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <link rel="stylesheet" href="../../_shared/history.css">
+  <script type="module" src="../../_shared/history.js"></script>
+</head>
+<body>
+  <article class="slide">
+    <header class="chapter-hero">
+      <p class="eyebrow">Chapitre 2 · 1948–2014</p>
+      <h1>La préhistoire : prédire le mot suivant</h1>
+      <p class="lead">Soixante-dix ans avant ChatGPT, l’objectif était déjà là : estimer la probabilité du mot qui vient. Il manquait la bonne représentation des mots, assez de données et assez de calcul.</p>
+      <ol class="lesson-steps" aria-label="Étapes de la page">
+        <li><a href="#statistique">1 · Les statistiques</a></li>
+        <li><a href="#neurones">2 · Les neurones</a></li>
+        <li><a href="#quiz">3 · Vérifier</a></li>
+      </ol>
+    </header>
+
+    <h2 id="statistique">1948–2000 : compter pour deviner</h2>
+    <p>Dans <em>A Mathematical Theory of Communication</em> (1948), <strong>Claude Shannon</strong> génère des « approximations de l’anglais » : il tire chaque mot selon sa fréquence après le mot précédent. C’est un <dfn>modèle n-gramme</dfn> : la probabilité d’un mot ne dépend que des <em>n</em>−1 mots qui le précèdent. Plus <em>n</em> grandit, plus le texte devient plausible, mais plus il faut de données pour avoir vu chaque combinaison.</p>
+    <p>En 1966, au MIT, <strong>Joseph Weizenbaum</strong> crée <strong>ELIZA</strong>, un programme qui imite un psychothérapeute avec des règles de réécriture (« Je suis triste » → « Pourquoi êtes-vous triste ? »). Aucun apprentissage, aucune compréhension : pourtant des utilisateurs lui prêtent des sentiments. Weizenbaum en tire une critique durable, aujourd’hui appelée l’<strong>effet ELIZA</strong>.</p>
+    <p>Des années 1980 aux années 2000, le traitement automatique des langues devient statistique : reconnaissance vocale, puis traduction automatique (les modèles d’IBM, puis Google Traduction en 2006) reposent sur des n-grammes estimés sur de grands corpus.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 640 170" role="img" aria-labelledby="ngram-title ngram-desc">
+        <title id="ngram-title">Un modèle bigramme</title>
+        <desc id="ngram-desc">Après le mot « le », le modèle choisit le mot suivant d’après les fréquences observées : chat 40 %, chien 35 %, train 25 %. Il ignore tout ce qui précède « le ».</desc>
+        <defs><marker id="arrow-ngram" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="svg-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect class="svg-box" x="10" y="60" width="150" height="44" rx="8"/>
+        <text class="svg-text-muted" x="85" y="52" text-anchor="middle">contexte ignoré</text>
+        <text class="svg-text" x="85" y="87" text-anchor="middle">« Hier soir, … »</text>
+        <rect class="svg-box-accent" x="190" y="60" width="90" height="44" rx="8"/>
+        <text class="svg-text-strong" x="235" y="87" text-anchor="middle">le</text>
+        <line class="svg-line" x1="280" y1="82" x2="400" y2="30" marker-end="url(#arrow-ngram)"/>
+        <line class="svg-line" x1="280" y1="82" x2="400" y2="82" marker-end="url(#arrow-ngram)"/>
+        <line class="svg-line" x1="280" y1="82" x2="400" y2="134" marker-end="url(#arrow-ngram)"/>
+        <text class="svg-text" x="410" y="35">chat · 40 %</text>
+        <text class="svg-text" x="410" y="87">chien · 35 %</text>
+        <text class="svg-text" x="410" y="139">train · 25 %</text>
+      </svg>
+      <figcaption>Un bigramme ne regarde qu’un mot en arrière. Les pourcentages sont illustratifs.</figcaption>
+    </figure>
+
+    <h2 id="neurones">1986–2014 : les mots deviennent des vecteurs</h2>
+    <ol class="timeline">
+      <li><span class="date">1986</span><span class="what">Rétropropagation</span> : Rumelhart, Hinton et Williams popularisent l’entraînement des réseaux multicouches.</li>
+      <li><span class="date">1997</span><span class="what">LSTM</span> : Hochreiter et Schmidhuber ajoutent une « mémoire » contrôlée par des portes aux <dfn data-term="rnn">réseaux récurrents</dfn>, qui oubliaient vite.</li>
+      <li><span class="date">2003</span><span class="what">Modèle de langage neuronal</span> : Bengio, Ducharme, Vincent et Jauvin apprennent en même temps un vecteur par mot (un <dfn>embedding</dfn>) et la prédiction du mot suivant. Deux mots proches en sens obtiennent des vecteurs proches : le modèle généralise à des phrases jamais vues.</li>
+      <li><span class="date">2010</span><span class="what">RNNLM</span> : Tomáš Mikolov montre qu’un réseau récurrent bat les n-grammes en reconnaissance vocale.</li>
+      <li><span class="date">2012</span><span class="what">AlexNet</span> : Krizhevsky, Sutskever et Hinton gagnent ImageNet avec un réseau entraîné sur deux GPU. Le <em>deep learning</em> décolle, et avec lui l’usage des GPU.</li>
+      <li><span class="date">2013</span><span class="what">word2vec</span> : Mikolov et al. (Google) entraînent des embeddings sur des milliards de mots. Célèbre exemple : vecteur(roi) − vecteur(homme) + vecteur(femme) ≈ vecteur(reine).</li>
+      <li><span class="date">2014</span><span class="what">seq2seq</span> : Sutskever, Vinyals et Le (Google) traduisent avec deux LSTM, un <dfn>encodeur</dfn> qui lit la phrase et un <dfn>décodeur</dfn> qui écrit la traduction. Cho et al. proposent la même année une architecture encodeur-décodeur proche.</li>
+    </ol>
+
+    <div class="people" data-people="claude-shannon,joseph-weizenbaum,sepp-hochreiter,jurgen-schmidhuber,yoshua-bengio,geoffrey-hinton,fei-fei-li,tomas-mikolov,ilya-sutskever"></div>
+
+    <aside class="takeaways" aria-label="À retenir">
+      <span class="box-label">À retenir</span>
+      <ul>
+        <li>Prédire le mot suivant est une idée de 1948. Ce qui change ensuite, c’est la façon de représenter le contexte.</li>
+        <li>Les embeddings (2003, puis 2013) remplacent le comptage de mots identiques par une notion de proximité de sens.</li>
+        <li>En 2014, la traduction neuronale encodeur-décodeur fonctionne, mais tout le sens de la phrase doit tenir dans un seul vecteur. Le chapitre suivant raconte comment on a levé cette limite.</li>
+      </ul>
+    </aside>
+
+    <form class="activity quiz" data-quiz id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Vérifier</h2>
+      <fieldset>
+        <legend>Qu’apporte le modèle de Bengio et al. (2003) par rapport à un n-gramme ?</legend>
+        <label><input type="radio" name="q1" value="a"> Il compte les mots plus vite.</label>
+        <label><input type="radio" name="q1" value="b" data-correct> Il représente chaque mot par un vecteur appris, ce qui permet de généraliser à des suites jamais observées.</label>
+        <label><input type="radio" name="q1" value="c"> Il comprend le sens des phrases comme un humain.</label>
+        <p class="explain" hidden>Un n-gramme ne sait rien d’une suite qu’il n’a pas vue. Avec des embeddings, « le chat dort » aide à prédire « le chien dort » parce que chat et chien ont des vecteurs proches.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Que montre l’effet ELIZA ?</legend>
+        <label><input type="radio" name="q2" value="a" data-correct> Qu’on prête facilement de la compréhension à un programme qui produit un texte plausible.</label>
+        <label><input type="radio" name="q2" value="b"> Que les règles écrites à la main suffisent pour comprendre une conversation.</label>
+        <p class="explain" hidden>ELIZA n’apprend rien et ne comprend rien. L’effet ELIZA reste une mise en garde utile face aux LLM, beaucoup plus convaincants.</p>
+      </fieldset>
+      <div class="activity-actions"><button type="button" class="slide-button-primary" data-action="check-quiz">Vérifier mes réponses</button></div>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </form>
+
+    <details class="page-sources">
+      <summary>Sources de cette page</summary>
+      <ul class="refs">
+        <li>C. E. Shannon, <a href="https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf" target="_blank" rel="noopener noreferrer">A Mathematical Theory of Communication</a>, Bell System Technical Journal, 1948 (section 3).</li>
+        <li>J. Weizenbaum, <a href="https://doi.org/10.1145/365153.365168" target="_blank" rel="noopener noreferrer">ELIZA — A Computer Program for the Study of Natural Language Communication</a>, CACM, 1966.</li>
+        <li>Rumelhart, Hinton, Williams, <a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener noreferrer">Learning representations by back-propagating errors</a>, Nature, 1986.</li>
+        <li>Hochreiter, Schmidhuber, <a href="https://doi.org/10.1162/neco.1997.9.8.1735" target="_blank" rel="noopener noreferrer">Long Short-Term Memory</a>, Neural Computation, 1997.</li>
+        <li>Bengio et al., <a href="https://www.jmlr.org/papers/v3/bengio03a.html" target="_blank" rel="noopener noreferrer">A Neural Probabilistic Language Model</a>, JMLR, 2003.</li>
+        <li>Mikolov et al., <a href="https://www.isca-archive.org/interspeech_2010/mikolov10_interspeech.html" target="_blank" rel="noopener noreferrer">Recurrent neural network based language model</a>, Interspeech, 2010.</li>
+        <li>Krizhevsky, Sutskever, Hinton, <a href="https://doi.org/10.1145/3065386" target="_blank" rel="noopener noreferrer">ImageNet Classification with Deep CNNs</a>, NeurIPS 2012 (version CACM 2017).</li>
+        <li>Mikolov et al., <a href="https://arxiv.org/abs/1301.3781" target="_blank" rel="noopener noreferrer">Efficient Estimation of Word Representations in Vector Space</a>, 2013.</li>
+        <li>Sutskever, Vinyals, Le, <a href="https://arxiv.org/abs/1409.3215" target="_blank" rel="noopener noreferrer">Sequence to Sequence Learning with Neural Networks</a>, 2014 ; Cho et al., <a href="https://arxiv.org/abs/1406.1078" target="_blank" rel="noopener noreferrer">Learning Phrase Representations using RNN Encoder–Decoder</a>, 2014.</li>
+      </ul>
+    </details>
+  </article>
+</body>
+</html>
