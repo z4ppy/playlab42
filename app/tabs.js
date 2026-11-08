@@ -58,6 +58,8 @@ export function switchTab(tab) {
   savePreferences();
   updateTabUI();
   renderActiveTab(tab);
+  // Signal découplé : l'identité animée (app/brand.js) y réagit sans dépendance directe.
+  document.dispatchEvent(new CustomEvent('playlab:tabchange', { detail: { tab } }));
 }
 
 /**
