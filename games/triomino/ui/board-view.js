@@ -44,12 +44,12 @@ function distinctDropZones(legalPositions, selectedPlacement) {
   return [...zones.values()];
 }
 
-function createDropZone({ pos, placed }, onPlace) {
+function createDropZone({ pos, placed }, chosen, onPlace) {
   const zone = svgElement('polygon', {
     points: trianglePoints(pos),
     fill: 'rgba(249,115,22,0.18)',
     stroke: '#f97316',
-    'stroke-width': '2',
+    'stroke-width': chosen ? '4' : '2',
     'stroke-dasharray': '4 3',
     'aria-hidden': 'true',
   });
@@ -58,7 +58,7 @@ function createDropZone({ pos, placed }, onPlace) {
   return zone;
 }
 
-function createCornerValue(value, corner, center) {
+function createCornerValue(value, corner, center, style = { fill: '#7c1d0e' }) {
   const text = svgElement('text', {
     x: corner[0] + (center[0] - corner[0]) * CORNER_INSET,
     y: corner[1] + (center[1] - corner[1]) * CORNER_INSET,
@@ -66,10 +66,22 @@ function createCornerValue(value, corner, center) {
     'dominant-baseline': 'central',
     'font-size': '13',
     'font-weight': '800',
-    fill: '#7c1d0e',
+    ...style,
   });
   text.textContent = value;
   return text;
+}
+
+// Valeurs que posera un toucher sur la zone : sans elles, la rotation n'est lisible que dans la liste (tronquée sur téléphone).
+function createZonePreview({ pos, placed }, chosen) {
+  const corners = triangleCorners(pos);
+  const center = triangleCenter(pos);
+  // Halo clair : lisible sur le fond du plateau en thème clair comme sombre.
+  const style = {
+    fill: '#c2410c', stroke: '#fff7ed', 'stroke-width': '3', 'paint-order': 'stroke',
+    opacity: chosen ? '1' : '0.75', 'pointer-events': 'none', 'aria-hidden': 'true',
+  };
+  return placed.map((value, index) => createCornerValue(value, corners[index], center, style));
 }
 
 function createTileOutline(position, isLast) {
@@ -99,7 +111,8 @@ function createPlacedTile({ position, placed }, isLast) {
 }
 
 /**
- * Redessine le plateau : défs, zones de dépôt, puis tuiles dans l'ordre des clés.
+ * Redessine le plateau : défs, zones de dépôt avec l'aperçu des sommets qu'elles posent,
+ * puis tuiles dans l'ordre des clés.
  * @param {SVGElement} svg Plateau SVG.
  * @param {BoardView} view État affiché.
  * @param {(pos: object, placed: number[]) => void} onPlace Dépôt demandé par clic sur une zone.
@@ -113,7 +126,9 @@ export function renderTriominoBoard(svg, view, onPlace) {
     svg.setAttribute('viewBox', viewBox);
   }
   for (const placement of distinctDropZones(legalPositions, selectedPlacement)) {
-    svg.appendChild(createDropZone(placement, onPlace));
+    const chosen = isChosenPlacement(placement, selectedPlacement);
+    svg.appendChild(createDropZone(placement, chosen, onPlace));
+    svg.append(...createZonePreview(placement, chosen));
   }
   for (const key of cells) {
     svg.appendChild(createPlacedTile(board[key], key === lastPlacedKey));

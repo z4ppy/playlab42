@@ -11,8 +11,10 @@
       body {
         flex-direction: column;
         align-items: center;
-        padding: 16px;
+        min-height: 100dvh;
+        padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
       }
+      button, select, #board-svg { touch-action: manipulation; }
 
       h1 { color: var(--color-text); font-size: 2em; margin-bottom: 4px; }
       .subtitle { color: var(--color-text-muted); font-size: 0.9em; margin-bottom: 16px; text-align: center; }
@@ -34,7 +36,7 @@
       .field { margin-bottom: 16px; }
       .field label { display: block; font-size: 0.85em; color: var(--color-text-muted); margin-bottom: 6px; font-weight: 600; }
       .field select, .field input {
-        width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0;
+        width: 100%; min-height: 44px; padding: 10px 12px; border: 2px solid #e2e8f0;
         border-radius: 10px; font-size: 1em; color: var(--color-text); background: var(--color-bg);
         transition: border-color 0.2s;
       }
@@ -100,6 +102,11 @@
         flex: 1; min-width: min(320px, 100%);
       }
       #board-svg { display: block; width: 100%; height: 480px; cursor: default; }
+      /* Chiffres du plateau : taille en unités SVG, agrandie par fitBoard() quand le plateau est rendu petit. */
+      #board-svg text { font-size: var(--board-font, 13px); }
+      /* Plateau trop grand pour rester lisible : il garde une échelle minimale et défile au doigt. */
+      #board-container.board-scroll { height: 480px; overflow: auto; overscroll-behavior: contain; }
+      #board-container.board-scroll #board-svg { max-width: none; }
 
       /* Panneau latéral */
       #side-panel {
@@ -112,27 +119,31 @@
       .rack-button[aria-pressed="true"] { border-color: var(--color-accent); background: var(--color-bg-secondary); }
       #placement-controls { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
       #placement-controls select, #placement-controls button {
-        width: 100%; padding: 10px; border-radius: var(--radius-md);
+        width: 100%; min-height: 44px; padding: 10px; border-radius: var(--radius-md);
         border: 1px solid var(--color-border); background: var(--color-bg-secondary); color: var(--color-text);
       }
       #placement-controls button:not(:disabled) { cursor: pointer; }
       #placement-controls :disabled { opacity: 0.6; }
       #hint, #end-subtitle { color: var(--color-text-muted); }
+      #hint { margin-top: 12px; font-size: 0.875em; min-height: 40px; }
+      #setup-error { color: var(--color-error); font-weight: 600; margin-bottom: 12px; }
 
       /* Réglette */
       #rack-container { margin-bottom: 16px; }
-      #rack { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+      #rack { position: relative; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
       .rack-tile {
         cursor: pointer; transition: transform 0.15s, filter 0.15s;
       }
-      .rack-tile:hover { transform: scale(1.08); }
+      @media (hover: hover) {
+        .rack-tile:hover { transform: scale(1.08); }
+      }
       .rack-tile.selected { filter: drop-shadow(0 0 6px #f97316); }
       .rack-tile.drawn { filter: drop-shadow(0 0 6px #3b82f6); }
 
       /* Boutons d'action */
       #actions { display: flex; flex-direction: column; gap: 8px; }
       .btn-action {
-        padding: 10px 14px; border: none; border-radius: 10px;
+        min-height: 44px; padding: 10px 14px; border: none; border-radius: 10px;
         font-size: 0.95em; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
       }
       .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -189,11 +200,11 @@
       #confirm-dialog p { color: var(--color-text); font-size: 1.1em; font-weight: 600; margin-bottom: 20px; }
       #confirm-dialog .confirm-buttons { display: flex; gap: 10px; justify-content: center; }
       #confirm-dialog .btn-confirm-yes {
-        padding: 10px 24px; background: #dc2626; color: white; border: none;
+        min-height: 44px; padding: 10px 24px; background: #dc2626; color: white; border: none;
         border-radius: 10px; font-size: 0.95em; font-weight: 600; cursor: pointer;
       }
       #confirm-dialog .btn-confirm-no {
-        padding: 10px 24px; background: #6b7280; color: white; border: none;
+        min-height: 44px; padding: 10px 24px; background: #6b7280; color: white; border: none;
         border-radius: 10px; font-size: 0.95em; font-weight: 600; cursor: pointer;
       }
       #confirm-dialog .btn-confirm-yes:hover, #confirm-dialog .btn-confirm-no:hover { opacity: 0.85; }
@@ -203,7 +214,96 @@
       @media (max-width: 480px) {
         #setup-screen, #end-screen { padding: 20px; }
         #board-svg { height: 320px; }
+        #board-container.board-scroll { height: 320px; }
         #side-panel { max-width: none; min-width: 0; }
+      }
+
+      /*
+       * Téléphone et paysage bas : pendant la partie, plateau, réglette et commandes
+       * tiennent ensemble dans la hauteur visible (100dvh), sans défilement de page.
+       */
+      @media (max-width: 700px), (orientation: landscape) and (max-height: 500px) {
+        body {
+          padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+        }
+        h1 { font-size: 1.6em; }
+        .subtitle { margin-bottom: 10px; }
+        body:has(#game-screen.active) > h1,
+        body:has(#game-screen.active) > .subtitle,
+        #side-panel h3:not(#rack-title),
+        #placement-controls label {
+          position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden;
+          clip-path: inset(50%); white-space: nowrap;
+        }
+        #game-screen.active {
+          display: flex; flex-direction: column; gap: 6px;
+          height: calc(100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)));
+        }
+        .status-bar {
+          flex: none; margin: 0; padding: 4px 8px; gap: 6px 10px;
+          flex-wrap: nowrap; justify-content: space-around; border-radius: 10px;
+        }
+        .status-label { font-size: 11px; white-space: nowrap; }
+        .status-value { font-size: 15px; white-space: nowrap; }
+        /* safe center : centrée quand tout tient, alignée au début (donc atteignable en défilant) sinon. */
+        #scores-bar {
+          flex: none; margin: 0; gap: 6px; flex-wrap: nowrap; overflow-x: auto;
+          justify-content: flex-start; justify-content: safe center; overscroll-behavior-x: contain;
+        }
+        .score-card { flex: none; display: flex; align-items: baseline; gap: 6px; padding: 2px 10px; border-radius: 10px; }
+        .score-card .player-name { font-size: 12px; }
+        .score-card .player-score { font-size: 15px; }
+        #main-area { flex: 1 1 auto; min-height: 0; flex-direction: column; flex-wrap: nowrap; align-items: stretch; gap: 6px; }
+        /* contain: size : la taille du plateau ne dépend jamais du SVG, même agrandi pour défiler. */
+        #board-container { flex: 1 1 0; min-width: 0; min-height: 140px; border-radius: 12px; contain: size; }
+        #board-container.board-scroll { height: auto; }
+        #board-svg { height: 100%; }
+        #side-panel { flex: none; max-width: none; min-width: 0; padding: 8px; border-radius: 12px; }
+        #side-panel h3 { font-size: 11px; margin-bottom: 4px; }
+        #rack-container { margin-bottom: 6px; }
+        /* Une seule rangée qui défile au doigt : la réglette peut dépasser 20 tuiles. */
+        #rack {
+          flex-wrap: nowrap; justify-content: flex-start; gap: 6px; padding: 2px;
+          overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin;
+        }
+        .rack-button { flex: none; padding: 1px; }
+        .rack-tile { width: 48px; height: 48px; display: block; }
+        /* Tuile réduite à 48px : chiffres agrandis pour rester au-dessus de 11px affichés. */
+        .rack-tile text { font-size: 13px; }
+        #placement-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+        #placement-controls select { grid-column: 1 / -1; padding: 6px 8px; font-size: 16px; }
+        #placement-controls button { padding: 4px 6px; font-size: 13px; line-height: 1.2; }
+        #actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+        .btn-action { padding: 4px; font-size: 13px; line-height: 1.15; }
+        .btn-quit, .btn-rules { margin-top: 0; }
+        .btn-rules { display: block; }
+        #hint {
+          margin-top: 6px; min-height: 0; font-size: 12px; line-height: 1.3;
+          display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+        }
+        #bonus-notif { padding: 16px 24px; max-width: calc(100vw - 32px); }
+        #confirm-dialog { padding: 24px 20px; }
+        #confirm-dialog .confirm-buttons button { flex: 1; }
+      }
+
+      /* Paysage bas : plateau à gauche sur toute la hauteur, informations et commandes à droite. */
+      @media (orientation: landscape) and (max-height: 500px) {
+        #game-screen.active {
+          display: grid; max-width: none; gap: 6px 8px;
+          grid-template-columns: minmax(0, 1fr) clamp(280px, 46vw, 360px);
+          grid-template-rows: auto auto minmax(0, 1fr);
+        }
+        #main-area { display: contents; }
+        #board-container { grid-column: 1; grid-row: 1 / -1; min-height: 0; }
+        .status-bar { grid-column: 2; grid-row: 1; gap: 4px 6px; padding: 4px 6px; }
+        .status-item { min-width: 0; }
+        .status-label { white-space: normal; line-height: 1.1; }
+        .btn-action { font-size: 12px; padding: 2px; }
+        #scores-bar { grid-column: 2; grid-row: 2; justify-content: flex-start; }
+        #side-panel { grid-column: 2; grid-row: 3; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+        #setup-screen, #end-screen { padding: 16px 20px; }
+        #setup-screen h2 { margin-bottom: 12px; }
+        .field { margin-bottom: 10px; }
       }
     </style>
   </head>
@@ -249,6 +349,7 @@
         <input type="number" id="seed-input" placeholder="ex: 42" min="0" />
       </div>
 
+      <p id="setup-error" role="alert" hidden></p>
       <button class="btn-primary" id="start-btn">Démarrer la partie</button>
       <button class="btn-secondary" id="btn-rules-setup">📖 Règles du jeu</button>
       <button class="btn-secondary" id="back-btn">↩ Retour au menu principal</button>
@@ -305,7 +406,7 @@
             </button>
           </div>
 
-          <div id="hint" role="status" aria-live="polite" style="margin-top:12px; font-size:0.875em; min-height:40px;"></div>
+          <div id="hint" role="status" aria-live="polite"></div>
         </div>
       </div>
     </div>
@@ -363,6 +464,7 @@
       const gameScreen = document.getElementById('game-screen');
       const endScreen = document.getElementById('end-screen');
       const boardSvg = document.getElementById('board-svg');
+      const boardContainer = document.getElementById('board-container');
       const rackEl = document.getElementById('rack');
       const scoresBar = document.getElementById('scores-bar');
       const btnDraw = document.getElementById('btn-draw');
@@ -458,10 +560,14 @@
         const botIds = Array.from({ length: numBots }, (_, i) => `Bot ${i + 1}`);
         const allPlayerIds = [...humanPlayerIds, ...botIds];
 
+        // Message dans la page plutôt qu'une alerte native, bloquante sur téléphone.
+        const setupError = document.getElementById('setup-error');
         if (allPlayerIds.length < 1 || allPlayerIds.length > 4) {
-          alert('Le nombre total de joueurs doit être entre 1 et 4.');
+          setupError.textContent = `Le nombre total de joueurs doit être entre 1 et 4 (ici ${allPlayerIds.length}).`;
+          setupError.hidden = false;
           return;
         }
+        setupError.hidden = true;
 
         botPlayers = botIds.map((id) => ({ id, bot: new GreedyBot() }));
         rng = new SeededRandom(seed);
@@ -496,7 +602,7 @@
         renderActions();
         if (focusedTile) {
           const button = [...rackEl.querySelectorAll('button')].find(item => item.dataset.tileId === focusedTile);
-          (button || btnDraw).focus();
+          (button || btnDraw).focus({ preventScroll: true });
         }
       }
 
@@ -516,6 +622,17 @@
           card.innerHTML = `<div class="player-name">${p.id}</div><div class="player-score">${p.score} pts</div>`;
           scoresBar.appendChild(card);
         });
+        revealActiveScore();
+      }
+
+      // La barre des scores défile sur téléphone (3 ou 4 joueurs) : la carte du joueur actif reste visible.
+      function revealActiveScore() {
+        const card = scoresBar.querySelector('.score-card.active');
+        if (!card || scoresBar.scrollWidth <= scoresBar.clientWidth) {return;}
+        const start = card.offsetLeft - scoresBar.offsetLeft - 8;
+        const end = start + card.offsetWidth + 16 - scoresBar.clientWidth;
+        if (start < scoresBar.scrollLeft) {scoresBar.scrollLeft = start;}
+        else if (end > scoresBar.scrollLeft) {scoresBar.scrollLeft = end;}
       }
 
       function renderBoard() {
@@ -525,6 +642,72 @@
           selectedPlacement: placementControls.getSelected(),
           lastPlacedKey: lastPlacedPositionKey,
         }, placeTile);
+        fitBoard();
+      }
+
+      // Lisibilité du plateau : chiffres affichés à BOARD_TEXT_PX au moins, quelle que soit la taille de l'écran.
+      const BOARD_TEXT_PX = 11.5;
+      const BOARD_FONT = { base: 13, max: 16 }; // en unités SVG ; au-delà de max, les chiffres déborderaient des triangles
+      const BOARD_PAD = 12; // marge en unités SVG autour des tuiles et des zones (le viewBox du rendu en prévoit 60)
+      let lastRevealedKey = null;
+      // Rotation, barre d'adresse, clavier virtuel : le plateau se réajuste à sa nouvelle taille.
+      if (typeof ResizeObserver === 'function') {
+        new ResizeObserver(() => { if (gameState && gameScreen.classList.contains('active')) {renderBoard();} }).observe(boardContainer);
+      }
+
+      // Recadre le viewBox du rendu (marge de 60) sur les tuiles et zones, et rend la boîte retenue.
+      function tightBoardViewBox(viewBox) {
+        const box = boardSvg.getBBox();
+        const vb = { x: box.x - BOARD_PAD, y: box.y - BOARD_PAD, w: box.width + 2 * BOARD_PAD, h: box.height + 2 * BOARD_PAD };
+        if (vb.w >= viewBox.width || vb.h >= viewBox.height) {
+          return { x: viewBox.x, y: viewBox.y, w: viewBox.width, h: viewBox.height };
+        }
+        boardSvg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+        return vb;
+      }
+
+      function fitBoard() {
+        const width = boardContainer.clientWidth;
+        const height = boardContainer.clientHeight;
+        const viewBox = boardSvg.viewBox.baseVal;
+        if (!width || !height || !viewBox?.width) {return;} // pas de mise en page (masqué, jsdom)
+        const scaleOf = (w, h) => Math.min(width / w, height / h);
+        let font = BOARD_FONT.base;
+        let size = null;
+        if (scaleOf(viewBox.width, viewBox.height) * BOARD_FONT.base < BOARD_TEXT_PX) {
+          // Recadrer, puis agrandir les chiffres, puis, en dernier recours, laisser défiler à échelle minimale.
+          const vb = tightBoardViewBox(viewBox);
+          const scale = scaleOf(vb.w, vb.h);
+          font = Math.min(BOARD_FONT.max, Math.max(BOARD_FONT.base, BOARD_TEXT_PX / scale));
+          if (scale * font < BOARD_TEXT_PX) {
+            const minScale = BOARD_TEXT_PX / BOARD_FONT.max;
+            size = [Math.max(width, Math.ceil(vb.w * minScale)), Math.max(height, Math.ceil(vb.h * minScale))];
+          }
+        }
+        boardSvg.style.setProperty('--board-font', `${font.toFixed(2)}px`);
+        boardContainer.classList.toggle('board-scroll', size !== null);
+        boardSvg.style.width = size ? `${size[0]}px` : '';
+        boardSvg.style.height = size ? `${size[1]}px` : '';
+        if (size) {revealOnBoard();}
+      }
+
+      // Plateau défilant : amène dans la vue la zone choisie, sinon la tuile qui vient d'être posée.
+      function revealOnBoard() {
+        let target = boardSvg.querySelector('polygon[stroke-width="4"]');
+        if (!target && lastPlacedPositionKey !== lastRevealedKey) {
+          target = boardSvg.querySelector('g[filter="url(#last-tile-glow)"]');
+          lastRevealedKey = lastPlacedPositionKey;
+        }
+        if (!target) {return;}
+        const zone = target.getBoundingClientRect();
+        const view = boardContainer.getBoundingClientRect();
+        const margin = 24;
+        if (zone.left < view.left + margin || zone.right > view.right - margin) {
+          boardContainer.scrollLeft += (zone.left + zone.right) / 2 - (view.left + view.right) / 2;
+        }
+        if (zone.top < view.top + margin || zone.bottom > view.bottom - margin) {
+          boardContainer.scrollTop += (zone.top + zone.bottom) / 2 - (view.top + view.bottom) / 2;
+        }
       }
 
       function renderRack() {
@@ -534,6 +717,8 @@
         document.getElementById('rack-title').textContent =
           isHuman ? `Ma réglette (${currentPlayer.rack.length} tuiles)` : `${currentPlayer.id} joue...`;
 
+        // La réglette défile horizontalement sur téléphone : la reconstruire ne doit pas la ramener au début.
+        const rackScroll = rackEl.scrollLeft;
         rackEl.innerHTML = '';
         if (!isHuman) {return;}
 
@@ -604,6 +789,18 @@
           button.appendChild(svg);
           rackEl.appendChild(button);
         });
+        rackEl.scrollLeft = rackScroll;
+        revealSelectedTile();
+      }
+
+      // Garde visible la tuile choisie ou piochée dans la réglette qui défile.
+      function revealSelectedTile() {
+        const button = rackEl.querySelector('[aria-pressed="true"]');
+        if (!button || rackEl.scrollWidth <= rackEl.clientWidth) {return;}
+        const start = button.offsetLeft - 8;
+        const end = button.offsetLeft + button.offsetWidth + 8 - rackEl.clientWidth;
+        if (start < rackEl.scrollLeft) {rackEl.scrollLeft = start;}
+        else if (end > rackEl.scrollLeft) {rackEl.scrollLeft = end;}
       }
 
       function renderActions() {

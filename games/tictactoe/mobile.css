@@ -1,0 +1,157 @@
+/*
+ * Morpion : adaptations téléphone et tablette.
+ * Feuille séparée, chargée après le <style> de la page : celui-ci reste
+ * identique au socle figé par e2e/dedup-game-styles.spec.js, et cette feuille
+ * s'applique de la même façon aux deux mesures de ce test.
+ */
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding:
+    max(var(--space-md), env(safe-area-inset-top))
+    max(var(--space-md), env(safe-area-inset-right))
+    max(var(--space-md), env(safe-area-inset-bottom))
+    max(var(--space-md), env(safe-area-inset-left));
+}
+
+/* Taper ne doit ni zoomer ni attendre le double-tap. */
+.cell,
+.btn,
+.btn-secondary,
+.config-group select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Cibles tactiles : au moins 44px, y compris au bureau (42px auparavant). */
+.btn-secondary {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Sans souris, le survol reste collé après un tap : on le neutralise. */
+@media (hover: none) {
+  .btn-secondary:hover {
+    background: transparent;
+    color: var(--color-accent);
+  }
+
+  .cell:hover:not(.taken):not(.game-over) {
+    background: var(--color-bg-card);
+  }
+}
+
+/* Téléphone en portrait : grille à la largeur disponible, tout tient sans défiler. */
+@media (max-width: 700px) {
+  .game-screen {
+    --cell: clamp(64px, min(calc((100vw - 4rem) / 3), calc((100dvh - 19rem) / 3)), 120px);
+    gap: var(--space-md);
+    width: 100%;
+  }
+
+  .cell {
+    width: var(--cell);
+    height: var(--cell);
+    font-size: calc(var(--cell) * 0.45);
+  }
+
+  .scores {
+    gap: var(--space-lg);
+    text-align: center;
+  }
+
+  .controls {
+    width: 100%;
+    max-width: 22rem;
+    justify-content: center;
+  }
+
+  .controls .btn-secondary {
+    flex: 1;
+    min-height: 48px;
+    font-size: var(--font-size-md);
+  }
+}
+
+/* Paysage sur téléphone : grille à gauche, état, scores et boutons à droite. */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding-top: max(var(--space-sm), env(safe-area-inset-top));
+    padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+  }
+
+  h1 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-sm);
+  }
+
+  .config-screen {
+    max-width: 560px;
+    padding: var(--space-md) var(--space-lg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-md);
+  }
+
+  .config-screen.hidden {
+    display: none;
+  }
+
+  .config-screen h1,
+  .config-screen .btn {
+    grid-column: 1 / -1;
+  }
+
+  .config-group {
+    margin-bottom: var(--space-md);
+  }
+
+  .game-screen.active {
+    --cell: clamp(56px, calc((100dvh - 3.5rem) / 3), 120px);
+    display: grid;
+    grid-template-columns: auto minmax(0, 15rem);
+    grid-template-areas:
+      "board status"
+      "board scores"
+      "board controls";
+    align-items: center;
+    justify-items: center;
+    column-gap: var(--space-xl);
+    row-gap: var(--space-md);
+  }
+
+  .status {
+    grid-area: status;
+    align-self: end;
+  }
+
+  .board {
+    grid-area: board;
+  }
+
+  .cell {
+    width: var(--cell);
+    height: var(--cell);
+    font-size: calc(var(--cell) * 0.45);
+  }
+
+  .scores {
+    grid-area: scores;
+    gap: var(--space-md);
+    text-align: center;
+  }
+
+  .controls {
+    grid-area: controls;
+    align-self: start;
+    width: 100%;
+  }
+
+  .controls .btn-secondary {
+    flex: 1;
+    min-height: 48px;
+    padding-inline: var(--space-sm);
+    font-size: var(--font-size-md);
+  }
+}

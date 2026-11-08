@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Mastermind - Playlab42</title>
     <link rel="stylesheet" href="../../lib/theme.css" />
     <link rel="stylesheet" href="../../lib/ui.css" />
@@ -12,6 +12,7 @@
         justify-content: center;
         align-items: center;
         padding: 20px;
+        min-height: 100dvh;
       }
 
       .container {
@@ -101,9 +102,11 @@
         background: white;
       }
 
-      .peg:hover {
-        transform: scale(1.1);
-        border-color: #999;
+      @media (hover: hover) {
+        .peg:hover {
+          transform: scale(1.1);
+          border-color: #999;
+        }
       }
 
       .peg.R, .color-button.R {
@@ -148,6 +151,8 @@
 
       .feedback-peg.black {
         background: #333;
+        /* Lisible aussi sur le fond sombre du thème dark. */
+        box-shadow: 0 0 0 1px var(--color-text-muted);
       }
 
       .feedback-peg.white {
@@ -187,9 +192,11 @@
       .attempt-row { flex-wrap: wrap; gap: 6px; }
       .pegs-container { min-width: 0; }
 
-      .color-button:hover {
-        transform: scale(1.15);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      @media (hover: hover) {
+        .color-button:hover {
+          transform: scale(1.15);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
       }
 
       .color-button:active {
@@ -217,14 +224,50 @@
         color: var(--color-text-inverse);
       }
 
-      .btn-primary:hover:not(:disabled) {
-        background: var(--color-accent-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+      @media (hover: hover) {
+        .btn-primary:hover:not(:disabled) {
+          background: var(--color-accent-hover);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary:hover {
+          background: var(--color-bg-hover);
+        }
       }
 
-      .btn-secondary:hover {
-        background: var(--color-bg-hover);
+      button {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Effacer la dernière couleur posée (sans devoir faire défiler les 6 couleurs). */
+      .erase-btn {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        margin-left: auto;
+        font-size: 1.25rem;
+        line-height: 1;
+        background: var(--color-bg-card);
+        color: var(--color-text);
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+      }
+
+      /* Nouvelle partie en deux temps (remplace confirm() natif). */
+      #reset-btn.confirming {
+        background: var(--color-error);
+        color: #fff;
+        border-color: var(--color-error);
+      }
+
+      /* Partie finie : la palette inutile laisse la place au résultat. */
+      .is-over .color-palette,
+      .is-over .hint,
+      .is-over #submit-btn {
+        display: none;
       }
 
       button:disabled {
@@ -236,7 +279,7 @@
       .game-over {
         text-align: center;
         padding: 20px;
-        margin-top: 20px;
+        margin-bottom: 20px;
         border-radius: 10px;
         animation: fadeIn 0.5s;
       }
@@ -291,6 +334,7 @@
 
       .legend-symbol.black {
         background: #333;
+        box-shadow: 0 0 0 1px var(--color-text-muted);
       }
 
       .legend-symbol.white {
@@ -309,23 +353,279 @@
         }
       }
 
-      @media (max-width: 600px) {
+      /*
+       * Téléphone et tablette : page à hauteur d'écran. L'historique défile
+       * seul ; tentative en cours, palette et boutons restent visibles ensemble.
+       */
+      @media (max-width: 820px), (max-height: 500px) and (orientation: landscape) {
+        body {
+          padding: 0;
+          align-items: stretch;
+        }
+
         .container {
-          padding: 15px;
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          height: 100dvh;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+            max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+          border-radius: 0;
+          box-shadow: none;
         }
 
         h1 {
-          font-size: 1.5em;
+          font-size: 1.25em;
+          margin-bottom: 6px;
         }
 
-        .peg {
-          width: 35px;
-          height: 35px;
+        .subtitle {
+          display: none;
+        }
+
+        .game-info {
+          flex-wrap: nowrap;
+          margin-bottom: 6px;
+          padding: 6px 12px;
+        }
+
+        .info-item {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+        }
+
+        .info-label {
+          font-size: 0.8125rem;
+        }
+
+        .info-value {
+          font-size: 1rem;
+        }
+
+        .legend {
+          order: 1;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 4px 14px;
+          margin: 0 0 6px;
+          padding: 0;
+          background: none;
+          font-size: 0.75rem;
+          color: var(--color-text-muted);
+        }
+
+        .legend-title {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
+        }
+
+        .legend-item {
+          margin: 0;
+        }
+
+        .legend-symbol {
+          width: 12px;
+          height: 12px;
+          margin-right: 6px;
+        }
+
+        .attempts-grid {
+          order: 2;
+          flex: 1 1 auto;
+          min-height: 0;
+          margin-bottom: 6px;
+          overflow-y: auto;
+          overscroll-behavior: contain;
+        }
+
+        .attempts-grid:empty::before {
+          content: "Vos tentatives s’afficheront ici.";
+          display: block;
+          padding: 16px 8px;
+          text-align: center;
+          font-size: 0.875rem;
+          color: var(--color-text-muted);
+        }
+
+        .attempts-grid .attempt-row {
+          flex-wrap: nowrap;
+          min-height: 0;
+          margin-bottom: 4px;
+          padding: 4px 10px;
+        }
+
+        .attempts-grid .attempt-number {
+          width: 26px;
+          font-size: 0.875rem;
+        }
+
+        .attempts-grid .peg {
+          width: 28px;
+          height: 28px;
+          border-width: 2px;
+        }
+
+        .feedback-container {
+          gap: 3px;
+          width: auto;
+        }
+
+        .feedback-peg {
+          width: 11px;
+          height: 11px;
+        }
+
+        .feedback-peg.white {
+          border-width: 1px;
+        }
+
+        .dock {
+          order: 3;
+          flex: none;
+        }
+
+        #current-attempt {
+          flex-wrap: nowrap;
+          min-height: 0;
+          margin-bottom: 6px;
+          padding: 4px 8px;
+        }
+
+        #current-attempt .attempt-number {
+          width: 22px;
+        }
+
+        #current-pegs .peg {
+          width: 44px;
+          height: 44px;
+        }
+
+        .hint {
+          margin-bottom: 6px;
+          font-size: 0.8125rem;
+          line-height: 1.3;
+          color: var(--color-text-muted);
+        }
+
+        .color-palette {
+          flex-wrap: nowrap;
+          justify-content: space-between;
+          gap: 4px;
+          margin-bottom: 8px;
+          padding: 6px 8px;
         }
 
         .color-button {
-          width: 45px;
-          height: 45px;
+          width: clamp(44px, calc((100vw - 92px) / 6), 54px);
+          height: clamp(44px, calc((100vw - 92px) / 6), 54px);
+        }
+
+        .controls {
+          flex-wrap: nowrap;
+          gap: 8px;
+        }
+
+        .controls button {
+          flex: 1 1 0;
+          min-height: 48px;
+          padding: 10px 12px;
+          font-size: 1rem;
+        }
+
+        .game-over {
+          margin: 0 0 8px;
+          padding: 10px;
+        }
+
+        .game-over h2 {
+          font-size: 1.2em;
+          margin-bottom: 4px;
+        }
+
+        .game-over p {
+          font-size: 0.875rem;
+        }
+
+        .secret-code-reveal {
+          margin-top: 6px;
+        }
+
+        .secret-code-reveal .peg {
+          width: 32px;
+          height: 32px;
+        }
+      }
+
+      /*
+       * Paysage téléphone : historique à gauche, commandes à droite, sans
+       * défilement de page.
+       */
+      @media (max-height: 500px) and (orientation: landscape) {
+        body {
+          padding: 0;
+          align-items: stretch;
+        }
+
+        .container {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
+          grid-template-rows: auto auto auto minmax(0, 1fr);
+          grid-template-areas:
+            "title dock"
+            "info dock"
+            "legend dock"
+            "history dock";
+          column-gap: 16px;
+          height: 100vh;
+          height: 100dvh;
+          max-width: 900px;
+          margin: 0 auto;
+          padding: max(6px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+            max(6px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+        }
+
+        h1 {
+          grid-area: title;
+          font-size: 1.1em;
+          margin-bottom: 4px;
+        }
+
+        .game-info {
+          grid-area: info;
+          margin-bottom: 4px;
+          padding: 4px 12px;
+        }
+
+        .legend {
+          grid-area: legend;
+          margin-bottom: 4px;
+        }
+
+        .attempts-grid {
+          grid-area: history;
+          margin-bottom: 0;
+        }
+
+        .dock {
+          grid-area: dock;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: 0;
+          overflow-y: auto;
+        }
+
+        .color-button {
+          width: 44px;
+          height: 44px;
         }
       }
     </style>
@@ -352,33 +652,36 @@
         <!-- Les tentatives précédentes apparaîtront ici -->
       </div>
 
-      <!-- Tentative en cours -->
-      <div class="attempt-row active" id="current-attempt">
-        <div class="attempt-number">➜</div>
-        <div class="pegs-container" id="current-pegs">
-          <button type="button" class="peg" data-index="0" aria-label="Position 1, vide"></button>
-          <button type="button" class="peg" data-index="1" aria-label="Position 2, vide"></button>
-          <button type="button" class="peg" data-index="2" aria-label="Position 3, vide"></button>
-          <button type="button" class="peg" data-index="3" aria-label="Position 4, vide"></button>
+      <div class="dock">
+        <!-- Tentative en cours -->
+        <div class="attempt-row active" id="current-attempt">
+          <div class="attempt-number">➜</div>
+          <div class="pegs-container" id="current-pegs">
+            <button type="button" class="peg" data-index="0" aria-label="Position 1, vide"></button>
+            <button type="button" class="peg" data-index="1" aria-label="Position 2, vide"></button>
+            <button type="button" class="peg" data-index="2" aria-label="Position 3, vide"></button>
+            <button type="button" class="peg" data-index="3" aria-label="Position 4, vide"></button>
+          </div>
+          <button type="button" class="erase-btn" id="erase-btn" aria-label="Effacer la dernière couleur" disabled>⌫</button>
+        </div>
+
+        <p class="hint">Choisissez une couleur pour la première position vide. Activez une position pour changer sa couleur.</p>
+        <div class="color-palette" role="group" aria-label="Palette des couleurs">
+          <button type="button" class="color-button R" data-color="R" aria-label="Ajouter rouge"><span>R</span></button>
+          <button type="button" class="color-button B" data-color="B" aria-label="Ajouter bleu"><span>B</span></button>
+          <button type="button" class="color-button G" data-color="G" aria-label="Ajouter vert"><span>Ve</span></button>
+          <button type="button" class="color-button Y" data-color="Y" aria-label="Ajouter jaune"><span>J</span></button>
+          <button type="button" class="color-button O" data-color="O" aria-label="Ajouter orange"><span>O</span></button>
+          <button type="button" class="color-button V" data-color="V" aria-label="Ajouter violet"><span>Vi</span></button>
+        </div>
+
+        <div id="game-over" role="status" aria-live="polite" style="display: none"></div>
+
+        <div class="controls">
+          <button type="button" class="btn-primary" id="submit-btn" disabled>Valider</button>
+          <button type="button" class="btn-secondary" id="reset-btn">Nouvelle partie</button>
         </div>
       </div>
-
-      <p>Choisissez une couleur pour la première position vide. Activez une position pour changer sa couleur.</p>
-      <div class="color-palette" role="group" aria-label="Palette des couleurs">
-        <button type="button" class="color-button R" data-color="R" aria-label="Ajouter rouge"><span>R</span></button>
-        <button type="button" class="color-button B" data-color="B" aria-label="Ajouter bleu"><span>B</span></button>
-        <button type="button" class="color-button G" data-color="G" aria-label="Ajouter vert"><span>Ve</span></button>
-        <button type="button" class="color-button Y" data-color="Y" aria-label="Ajouter jaune"><span>J</span></button>
-        <button type="button" class="color-button O" data-color="O" aria-label="Ajouter orange"><span>O</span></button>
-        <button type="button" class="color-button V" data-color="V" aria-label="Ajouter violet"><span>Vi</span></button>
-      </div>
-
-      <div class="controls">
-        <button class="btn-primary" id="submit-btn" disabled>Valider</button>
-        <button class="btn-secondary" id="reset-btn">Nouvelle partie</button>
-      </div>
-
-      <div id="game-over" role="status" aria-live="polite" style="display: none"></div>
 
       <div class="legend">
         <div class="legend-title">📖 Légende des indices</div>
@@ -403,6 +706,7 @@
       const COLOR_NAMES = { R: 'rouge', B: 'bleu', G: 'vert', Y: 'jaune', O: 'orange', V: 'violet' };
       let state = null;
       let currentCode = ['', '', '', ''];
+      let resetPending = false;
 
       // Éléments DOM
       const attemptsGrid = document.getElementById('attempts-grid');
@@ -410,6 +714,7 @@
       const currentPegs = document.getElementById('current-pegs');
       const submitBtn = document.getElementById('submit-btn');
       const resetBtn = document.getElementById('reset-btn');
+      const eraseBtn = document.getElementById('erase-btn');
       const attemptCount = document.getElementById('attempt-count');
       const gameStatus = document.getElementById('game-status');
       const gameOverDiv = document.getElementById('game-over');
@@ -429,7 +734,9 @@
 
       // Mettre à jour l'interface
       function updateUI() {
+        setResetPending(false);
         const view = engine.getPlayerView(state, 'human');
+        document.body.classList.toggle('is-over', view.gameOver);
         attemptCount.textContent = `${view.attempts.length} / ${view.maxAttempts}`;
 
         // Mettre à jour le statut
@@ -459,13 +766,19 @@
         // Bouton submit
         const isComplete = currentCode.every((c) => c !== '');
         submitBtn.disabled = !isComplete || view.gameOver;
+        eraseBtn.disabled = view.gameOver || currentCode.every((c) => c === '');
         document.querySelectorAll('.color-button').forEach(button => { button.disabled = view.gameOver || isComplete; });
 
         // Afficher le game over si nécessaire
         if (view.gameOver) {
           showGameOver(view);
-          resetBtn.focus();
+          resetBtn.focus({ preventScroll: true });
+          gameOverDiv.scrollIntoView?.({ block: 'nearest' });
         }
+
+        // Garder la dernière tentative visible dans l'historique qui défile.
+        // Après showGameOver() : l'encart de résultat réduit la hauteur de l'historique.
+        attemptsGrid.scrollTop = attemptsGrid.scrollHeight;
       }
 
       // Créer une ligne de tentative
@@ -575,12 +888,38 @@
         }
       });
 
-      // Bouton reset
-      resetBtn.addEventListener('click', () => {
-        if (confirm('Voulez-vous vraiment recommencer une nouvelle partie ?')) {
-          initGame();
+      // Effacer la dernière couleur posée
+      eraseBtn.addEventListener('click', () => {
+        const lastIndex = currentCode.findLastIndex((c) => c !== '');
+        if (lastIndex !== -1) {
+          currentCode[lastIndex] = '';
+          updateUI();
         }
       });
+
+      // Nouvelle partie : confirmation en deux temps dans la page (pas de confirm() natif,
+      // bloquant et peu lisible sur téléphone), seulement si une partie en cours serait perdue.
+      function setResetPending(pending) {
+        resetPending = pending;
+        resetBtn.classList.toggle('confirming', pending);
+        resetBtn.textContent = pending ? 'Confirmer ?' : 'Nouvelle partie';
+        if (pending) {
+          resetBtn.setAttribute('aria-label', 'Confirmer : abandonner la partie en cours et recommencer');
+        } else {
+          resetBtn.removeAttribute('aria-label');
+        }
+      }
+
+      resetBtn.addEventListener('click', () => {
+        const view = engine.getPlayerView(state, 'human');
+        const hasProgress = view.attempts.length > 0 || currentCode.some((c) => c !== '');
+        if (!view.gameOver && hasProgress && !resetPending) {
+          setResetPending(true);
+          return;
+        }
+        initGame();
+      });
+      resetBtn.addEventListener('blur', () => setResetPending(false));
 
       // Afficher le game over
       function showGameOver(view) {

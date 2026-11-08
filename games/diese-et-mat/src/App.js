@@ -34,6 +34,9 @@ import { isDevHostname, isUnlockedByProgress } from './app-unlock.js';
 /** Délai entre une réponse et la question suivante (ms). */
 const NEXT_QUESTION_DELAY_MS = 1500;
 
+/** Délai pendant lequel le bouton de réinitialisation reste armé. */
+const RESET_CONFIRM_DELAY_MS = 5000;
+
 /** Identifiants des éléments DOM mis en cache, par clé de `App.elements`. */
 const ELEMENT_IDS = {
   loading: 'loading',
@@ -1227,14 +1230,34 @@ export class App {
   }
 
   /**
-   * Réinitialise la progression (avec confirmation utilisateur).
+   * Réinitialise la progression après une confirmation en deux temps.
+   *
+   * Pas de `confirm()` natif : il est bloqué dans l'iframe sandboxée du portail
+   * (sans `allow-modals`) et peu pratique sur mobile. Le premier appui arme le
+   * bouton, le second (dans les 5 secondes) efface la progression.
    */
   resetProgress() {
-    if (confirm('Voulez-vous vraiment réinitialiser votre progression ?')) {
-      this.dataManager.resetProgress();
-      this.updateLevelBadge();
-      this.showView('menu');
+    const button = document.getElementById('btn-reset-progress');
+    if (!button) {return;}
+
+    if (button.dataset.confirming !== 'true') {
+      button.dataset.confirming = 'true';
+      button.dataset.label = button.textContent.trim();
+      button.textContent = 'Appuyer encore pour tout effacer';
+      button.setAttribute('aria-label', 'Confirmer la réinitialisation de toute la progression');
+      clearTimeout(this._resetConfirmTimer);
+      this._resetConfirmTimer = setTimeout(() => {
+        button.dataset.confirming = 'false';
+        button.textContent = button.dataset.label;
+        button.setAttribute('aria-label', 'Réinitialiser toute la progression (action irréversible)');
+      }, RESET_CONFIRM_DELAY_MS);
+      return;
     }
+
+    clearTimeout(this._resetConfirmTimer);
+    this.dataManager.resetProgress();
+    this.updateLevelBadge();
+    this.showView('menu');
   }
 
   /**
@@ -1245,6 +1268,7 @@ export class App {
     this.dataManager.saveProgress();
 
     this._cancelPendingTimers();
+    clearTimeout(this._resetConfirmTimer);
     this._removeFirstGestureHandler();
 
     // Nettoyer les event listeners globaux
