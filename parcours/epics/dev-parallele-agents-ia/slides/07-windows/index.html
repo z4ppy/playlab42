@@ -10,184 +10,93 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .section-card {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-    }
-    .section-card h3 {
-      margin-top: 0;
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-    .code-block {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      margin: var(--space-md) 0;
-    }
-    .code-block-header {
-      background: var(--color-bg-tertiary);
-      padding: var(--space-sm) var(--space-md);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .code-block pre {
-      margin: 0;
-      padding: var(--space-md);
-      overflow-x: auto;
-      font-size: var(--font-size-sm);
-    }
-    .shortcuts-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: var(--space-md) 0;
-      font-size: var(--font-size-sm);
-    }
-    .shortcuts-table td, .shortcuts-table th {
-      padding: var(--space-sm);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .shortcuts-table th {
-      text-align: left;
-      background: var(--color-bg-tertiary);
-    }
-    .shortcuts-table code {
-      background: var(--color-bg-code);
-      padding: 2px 6px;
-      border-radius: var(--radius-sm);
-    }
-    .callout {
-      background: var(--color-bg-primary);
-      border-left: 4px solid var(--color-info);
-      padding: var(--space-md) var(--space-lg);
-      margin: var(--space-md) 0;
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    }
-    .callout.warning {
-      border-left-color: var(--color-warning);
-    }
-    .callout.critical {
-      border-left-color: var(--color-error);
-    }
-    .agents-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--space-md);
-      margin: var(--space-lg) 0;
-    }
-    .agent-card {
-      background: var(--color-bg-primary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-accent);
-    }
-    .agent-card h4 {
-      margin: 0 0 var(--space-xs);
-    }
-    .agent-card code {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .comment { color: var(--color-text-muted); }
-  </style>
 </head>
 <body>
   <article class="slide">
     <h1>🪟 Spécificités Windows</h1>
 
-    <div class="section-card">
-      <h3>💻 Windows Terminal remplace tmux</h3>
-      <p>Windows Terminal supporte nativement les panes et onglets :</p>
-
-      <table class="shortcuts-table">
-        <tr><th>Raccourci</th><th>Action</th></tr>
-        <tr><td><code>Alt+Shift++</code></td><td>Split vertical</td></tr>
-        <tr><td><code>Alt+Shift+-</code></td><td>Split horizontal</td></tr>
-        <tr><td><code>Alt+flèches</code></td><td>Navigation</td></tr>
+    <h2>💻 Windows Terminal remplace tmux</h2>
+    <p>Windows Terminal gère nativement les panneaux et les onglets :</p>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Raccourcis Windows Terminal">
+      <table>
+        <thead><tr><th>Raccourci</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Alt+Shift++</kbd></td><td>Nouveau panneau à droite</td></tr>
+          <tr><td><kbd>Alt+Shift+-</kbd></td><td>Nouveau panneau en dessous</td></tr>
+          <tr><td><kbd>Alt+Shift+D</kbd></td><td>Dupliquer le panneau courant (sens automatique)</td></tr>
+          <tr><td><kbd>Alt</kbd> + flèches</td><td>Changer de panneau</td></tr>
+          <tr><td><kbd>Ctrl+Shift+W</kbd></td><td>Fermer le panneau</td></tr>
+        </tbody>
       </table>
-
-      <p>Ou lancez directement un layout :</p>
-
-      <div class="code-block">
-        <div class="code-block-header">powershell</div>
-        <pre><code>wt -p "PowerShell" ; split-pane -H ; split-pane -V</code></pre>
-      </div>
     </div>
+    <p>Pour ouvrir directement trois panneaux depuis PowerShell, le <code>;</code> destiné à <code>wt</code> doit être échappé par un accent grave :</p>
+<pre><code class="language-powershell">wt -p "Windows PowerShell" `; split-pane -H `; split-pane -V</code></pre>
+    <p>Remplacez <code>"Windows PowerShell"</code> par le nom exact de votre profil.</p>
 
-    <div class="section-card">
-      <h3>⚙️ Git sur Windows : configuration critique</h3>
-
-      <div class="code-block">
-        <div class="code-block-header">bash</div>
-        <pre><code><span class="comment"># Désactiver la conversion automatique des fins de ligne</span>
+    <h2>⚙️ Git sur Windows</h2>
+<pre><code class="language-bash"># Fins de ligne : un choix d'équipe, à fixer aussi dans .gitattributes
 git config --global core.autocrlf false
-git config --global core.eol lf
 
-<span class="comment"># Activer les symlinks (nécessaire pour certains projets)</span>
+# Liens symboliques (désactivés par défaut dans Git for Windows)
 git config --global core.symlinks true
 
-<span class="comment"># Activer les chemins longs</span>
+# Chemins de plus de 260 caractères (quelques limites dans l'Explorateur et cmd.exe)
 git config --system core.longpaths true</code></pre>
-      </div>
+    <p>
+      Créer des liens symboliques demande un privilège réservé par défaut aux administrateurs ;
+      depuis Windows 10 version 1703, activer le <strong>mode développeur</strong> lève cette restriction.
+    </p>
 
-      <div class="callout">
-        Pour les symlinks, activez aussi le <strong>Developer Mode</strong> dans Windows Settings.
-      </div>
+    <h2>🛡️ Antivirus et performances : préférer Dev Drive</h2>
+    <p>
+      L'analyse en temps réel de Microsoft Defender ralentit les opérations Git et Node sur des milliers de petits fichiers.
+      Microsoft recommande un <strong>Dev Drive</strong> (Windows 11) pour les dépôts, caches de paquets et sorties de build :
+      son « mode performance » est présenté comme une alternative plus sûre aux exclusions de dossiers.
+    </p>
+    <p>Si vous gardez des exclusions, limitez-les à vos projets (PowerShell administrateur) :</p>
+<pre><code class="language-powershell">Add-MpPreference -ExclusionPath "$env:USERPROFILE\Projects"</code></pre>
+    <p>
+      Évitez les exclusions par processus (<code>node.exe</code>, <code>git.exe</code>) : elles excluent tous les fichiers
+      ouverts par ces programmes, où qu'ils soient.
+    </p>
+
+    <h2>🐧 WSL2 : une option solide</h2>
+    <div class="callout callout-info">
+      <p>
+        <strong>Règle importante :</strong> si vous travaillez dans le terminal Linux, gardez vos projets dans le système de fichiers
+        Linux (<code>/home/&lt;utilisateur&gt;/projets</code>) et non sous <code>/mnt/c/</code>. Microsoft déconseille de
+        travailler à cheval entre les deux systèmes de fichiers et recommande, pour de meilleures performances,
+        de stocker les fichiers du côté de l'outil qui les utilise.
+      </p>
     </div>
+    <p>VS Code se connecte à WSL avec l'extension WSL ; les worktrees, tmux et les agents fonctionnent comme sous Linux.</p>
 
-    <div class="section-card">
-      <h3>🛡️ Exclusions antivirus</h3>
-
-      <p>Windows Defender ralentit significativement les opérations Git et Node. Ajoutez des exclusions :</p>
-
-      <div class="code-block">
-        <div class="code-block-header">PowerShell (administrateur)</div>
-        <pre><code>Add-MpPreference -ExclusionPath "$env:USERPROFILE\Projects"
-Add-MpPreference -ExclusionProcess "node.exe"
-Add-MpPreference -ExclusionProcess "git.exe"</code></pre>
-      </div>
+    <h2>🤖 Installer les agents sous Windows</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Installation des agents sous Windows">
+      <table>
+        <thead><tr><th>Agent</th><th>Installation documentée</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td><code>irm https://claude.ai/install.ps1 | iex</code> (PowerShell) ou <code>winget install Anthropic.ClaudeCode</code></td></tr>
+          <tr><td>Codex CLI</td><td><code>powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"</code> ; fonctionne nativement avec un bac à sable Windows, WSL reste possible</td></tr>
+          <tr><td>Aider</td><td><code>python -m pip install aider-install</code> puis <code>aider-install</code></td></tr>
+          <tr><td>Cline</td><td>Extension VS Code</td></tr>
+        </tbody>
+      </table>
     </div>
+    <p>Lisez toujours un script avant de l'exécuter avec <code>irm … | iex</code> : la commande lance du code téléchargé.</p>
 
-    <div class="section-card">
-      <h3>🐧 WSL2 : une option solide</h3>
-
-      <p>Si vous préférez un environnement Unix, WSL2 fonctionne très bien.</p>
-
-      <div class="callout critical">
-        <strong>Règle importante</strong> : Gardez vos projets dans le filesystem Linux (<code>/home/user/</code>)
-        et pas dans <code>/mnt/c/</code> — la différence de performance est massive (<strong>50-70%</strong>).
-      </div>
-
-      <p>VS Code avec l'extension <strong>Remote - WSL</strong> se connecte seamlessly.</p>
-    </div>
-
-    <div class="section-card">
-      <h3>🤖 Agents sous Windows</h3>
-
-      <div class="agents-grid">
-        <div class="agent-card">
-          <h4>Claude Code</h4>
-          <code>irm https://claude.ai/install.ps1 | iex</code>
-        </div>
-        <div class="agent-card">
-          <h4>Aider</h4>
-          <code>pip install aider-install</code>
-        </div>
-        <div class="agent-card">
-          <h4>Cline</h4>
-          <code>Extension VS Code</code>
-        </div>
-        <div class="agent-card">
-          <h4>Codex CLI</h4>
-          <code>WSL2 recommandé</code>
-        </div>
-      </div>
-    </div>
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://learn.microsoft.com/en-us/windows/terminal/panes" target="_blank" rel="noopener noreferrer">panneaux Windows Terminal</a>,
+      <a href="https://learn.microsoft.com/en-us/windows/terminal/command-line-arguments" target="_blank" rel="noopener noreferrer">arguments de wt</a>,
+      <a href="https://gitforwindows.org/symbolic-links" target="_blank" rel="noopener noreferrer">liens symboliques Git for Windows</a>,
+      <a href="https://learn.microsoft.com/en-us/windows/dev-drive/" target="_blank" rel="noopener noreferrer">Dev Drive</a>,
+      <a href="https://learn.microsoft.com/en-us/powershell/module/defender/add-mppreference" target="_blank" rel="noopener noreferrer">Add-MpPreference</a>,
+      <a href="https://learn.microsoft.com/en-us/windows/wsl/filesystems" target="_blank" rel="noopener noreferrer">WSL et systèmes de fichiers</a>,
+      <a href="https://code.claude.com/docs/en/setup" target="_blank" rel="noopener noreferrer">installation Claude Code</a>,
+      <a href="https://learn.chatgpt.com/docs/windows/windows-sandbox" target="_blank" rel="noopener noreferrer">Codex sous Windows</a>,
+      <a href="https://aider.chat/docs/install.html" target="_blank" rel="noopener noreferrer">installation Aider</a>.
+    </p>
   </article>
 </body>
 </html>

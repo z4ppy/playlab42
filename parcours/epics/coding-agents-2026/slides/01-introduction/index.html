@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction - Coding Agents en 2026</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <link rel="stylesheet" href="../../assets/diagrams.css">
+</head>
+<body>
+  <article class="slide">
+    <h1>🤖 Les Coding Agents en 2026</h1>
+    <p><em>État des lieux au 8 novembre 2026 : outils, fonctionnement, mesures, risques et perspectives.</em></p>
+
+    <figure class="illustration">
+      <img src="../../assets/hero-coding-agents.webp" width="940" height="560"
+        alt="Illustration : un robot au centre d'une boucle reliant des fenêtres de code, un nuage et une coche de validation ; à droite, une personne examine le travail à la loupe.">
+      <figcaption>Illustration générée avec FLUX.1 [schnell] via Replicate.</figcaption>
+    </figure>
+
+    <h2>De quoi parle-t-on ?</h2>
+    <p>
+      Un <dfn>coding agent</dfn> est un modèle de langage placé dans une boucle et doté d'outils : il lit le code,
+      modifie des fichiers, lance des commandes et des tests, observe le résultat et recommence jusqu'à atteindre
+      l'objectif. La différence avec un assistant d'autocomplétion : l'agent <strong>agit</strong> sur plusieurs étapes,
+      et un humain fixe l'objectif, les limites et relit le résultat.
+    </p>
+
+    <h2>Une année en cinq faits</h2>
+    <ul>
+      <li><strong>L'usage s'est généralisé</strong> : selon JetBrains, 90 % des développeurs professionnels interrogés de mai à juillet 2026 utilisent des agents de code au moins chaque semaine, 68 % chaque jour.</li>
+      <li><strong>Les agents sont partout</strong> : terminal, éditeur, application de bureau et cloud, souvent chez le même éditeur.</li>
+      <li><strong>Les standards se sont ouverts</strong> : MCP, AGENTS.md puis Agent Skills sont gérés par l'Agentic AI Foundation, sous l'égide de la Linux Foundation.</li>
+      <li><strong>Le marché s'est consolidé</strong> : rachats et arrêts en série, et passage général à la facturation à l'usage.</li>
+      <li><strong>La mesure est devenue difficile</strong> : SWE-bench Verified a été délaissé pour cause de contamination, et les nouveaux benchmarks changent de version tous les quelques mois.</li>
+    </ul>
+
+    <h2>Les modèles phares à cette date</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Modèles phares">
+      <table>
+        <thead><tr><th>Éditeur</th><th>Modèles récents</th></tr></thead>
+        <tbody>
+          <tr><td>Anthropic</td><td>Claude Opus 5.5 (22 septembre 2026), Claude Sonnet 5.5 (28 septembre 2026)</td></tr>
+          <tr><td>OpenAI</td><td>GPT-6 Astra (3 septembre 2026), GPT-6.1 Sol (29 septembre 2026)</td></tr>
+          <tr><td>Google</td><td>Gemini 4 Argon (13 octobre 2026), Gemini 4 Carbon (28 octobre 2026)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Ces noms changeront vite. Le parcours s'attache surtout à ce qui dure : la mécanique, la mesure et les bonnes pratiques.</p>
+
+    <h2>📑 Plan</h2>
+    <ol>
+      <li>Ce qu'on prévoyait pour 2026, et ce qui s'est passé</li>
+      <li>Panorama des outils</li>
+      <li>Comment fonctionne un coding agent</li>
+      <li>Mesurer les agents : benchmarks et terrain</li>
+      <li>Sécurité et gouvernance</li>
+      <li>Perspectives</li>
+      <li>Références</li>
+    </ol>
+
+    <div class="callout callout-info">
+      <p>
+        Ce parcours remplace <a href="../../../../../index.html#/parcours/coding-agents-2025" target="_top">Coding Agents en 2025</a>, conservé en archive. Chaque chiffre renvoie à une source
+        primaire consultée le 8 novembre 2026 ; les affirmations qui n'ont pas pu être vérifiées ont été retirées.
+      </p>
+    </div>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://blog.jetbrains.com/research/2026/08/ai-coding-agent-adoption-2026/" target="_blank" rel="noopener noreferrer">JetBrains 2026</a>,
+      <a href="https://www.linuxfoundation.org/press/agentic-ai-foundation-announces-four-new-projects-agent-skills-open-responses-openenv-and-opensandbox" target="_blank" rel="noopener noreferrer">Agentic AI Foundation</a>,
+      <a href="https://www.anthropic.com/news" target="_blank" rel="noopener noreferrer">actualités Anthropic</a>,
+      <a href="https://openai.com/news/rss.xml" target="_blank" rel="noopener noreferrer">flux d'actualités OpenAI</a>,
+      <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/" target="_blank" rel="noopener noreferrer">Gemini 4 Argon</a>,
+      <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" target="_blank" rel="noopener noreferrer">Gemini 4 Carbon</a>.
+    </p>
+  </article>
+</body>
+</html>

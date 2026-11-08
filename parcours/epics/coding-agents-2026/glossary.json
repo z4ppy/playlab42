@@ -1,0 +1,77 @@
+{
+  "$schema": "../../glossary.schema.json",
+  "terms": {
+    "coding agent": {
+      "short": "Modèle de langage placé dans une boucle, avec des outils pour lire, modifier et exécuter du code",
+      "long": "Programme qui combine un modèle de langage et des outils (fichiers, terminal, recherche, Git, serveurs MCP). Le modèle choisit une action, le programme l'exécute, le résultat revient dans le contexte, et la boucle continue jusqu'à l'objectif. Un humain fixe l'objectif et relit le résultat.",
+      "see": ["harness"],
+      "category": "IA"
+    },
+    "harness": {
+      "short": "Programme qui entoure le modèle : outils, contexte, permissions et vérifications",
+      "long": "Partie logicielle d'un agent, autour du modèle de langage : elle propose les outils, construit le contexte, applique les permissions et exécute les actions. Le même modèle obtient des scores très différents selon le harness utilisé.",
+      "see": ["coding agent"],
+      "category": "IA"
+    },
+    "MCP": {
+      "short": "Model Context Protocol : protocole ouvert qui relie un agent à des outils et données externes",
+      "long": "Protocole lancé par Anthropic en novembre 2024 et confié à l'Agentic AI Foundation (Linux Foundation) en décembre 2025. Un serveur MCP expose des outils ou des données (tickets, bases, navigateur…) que n'importe quel agent compatible peut utiliser. Version courante au 8 novembre 2026 : 2026-07-28.",
+      "see": ["Agent Skills", "AGENTS.md"],
+      "category": "Standards"
+    },
+    "AGENTS.md": {
+      "short": "Format ouvert de fichier d'instructions pour agents de code",
+      "long": "Fichier Markdown à la racine d'un projet qui décrit stack, conventions et commandes pour les agents. Projet fondateur de l'Agentic AI Foundation, lu par la plupart des agents.",
+      "see": ["MCP"],
+      "category": "Standards"
+    },
+    "Agent Skills": {
+      "short": "Format ouvert de dossiers de savoir-faire (SKILL.md) chargés à la demande par un agent",
+      "long": "Une skill est un dossier contenant un fichier SKILL.md (nom, description, instructions) et éventuellement des scripts ou ressources. L'agent ne charge d'abord que le nom et la description, puis le reste si besoin. Format créé par Anthropic en octobre 2025 et confié à l'Agentic AI Foundation en octobre 2026.",
+      "see": ["AGENTS.md", "MCP"],
+      "category": "Standards"
+    },
+    "ACP": {
+      "short": "Agent Client Protocol : protocole entre éditeurs de code et agents",
+      "long": "Protocole qui standardise la communication entre un éditeur ou IDE et un coding agent, en local comme à distance. Il permet par exemple d'utiliser un agent externe dans Zed.",
+      "see": ["MCP"],
+      "category": "Standards"
+    },
+    "SWE-bench": {
+      "short": "Benchmark de correction de vraies issues GitHub, validée par les tests du projet",
+      "long": "Créé en 2023 (Jimenez et al.). Sa variante Verified (500 tâches validées par des humains, 2024) a servi de référence avant d'être délaissée en 2026 pour cause de contamination. SWE-bench Pro (Scale AI) cherche à limiter ce problème.",
+      "see": ["contamination", "Terminal-Bench"],
+      "category": "Mesure"
+    },
+    "Terminal-Bench": {
+      "short": "Benchmark de tâches réalistes réalisées par un agent dans un terminal",
+      "long": "Mesure la capacité d'un agent à accomplir des tâches en ligne de commande (compiler, configurer, déboguer). Les versions 2.0, 2.1 et 4.0 se sont succédé entre novembre 2025 et août 2026 ; leurs scores ne se comparent pas entre eux.",
+      "see": ["SWE-bench"],
+      "category": "Mesure"
+    },
+    "horizon de temps": {
+      "short": "Durée des tâches, en temps humain, qu'un modèle réussit une fois sur deux (METR)",
+      "long": "Mesure proposée par METR en 2025 : le temps qu'il faut habituellement à un humain pour des tâches que le modèle réussit avec 50 % de probabilité. Cet horizon doublait environ tous les sept mois depuis 2019, plus vite depuis 2023.",
+      "see": ["SWE-bench"],
+      "category": "Mesure"
+    },
+    "contamination": {
+      "short": "Présence des tâches d'un benchmark dans les données d'entraînement d'un modèle",
+      "long": "Quand un modèle a vu les tâches ou leurs solutions pendant son entraînement, son score surestime ses capacités réelles. C'est la raison invoquée par OpenAI en 2026 pour abandonner SWE-bench Verified.",
+      "see": ["SWE-bench"],
+      "category": "Mesure"
+    },
+    "injection de prompt": {
+      "short": "Instructions malveillantes cachées dans un contenu lu par l'agent",
+      "long": "Un texte lu par l'agent (issue, page web, fichier, réponse d'outil) peut contenir des instructions qui détournent sa tâche. C'est le premier risque des référentiels OWASP pour les LLM et les applications agentiques ; les défenses reposent sur les permissions, l'isolation et la relecture.",
+      "see": ["slopsquatting"],
+      "category": "Sécurité"
+    },
+    "slopsquatting": {
+      "short": "Publication de paquets malveillants sous des noms inventés par les modèles",
+      "long": "Les modèles suggèrent parfois des paquets inexistants, et souvent les mêmes. Un attaquant peut publier un paquet malveillant sous un de ces noms. Spracklen et al. (2025) ont mesuré 19,7 % de paquets inexistants parmi 2,23 millions de suggestions.",
+      "see": ["injection de prompt"],
+      "category": "Sécurité"
+    }
+  }
+}

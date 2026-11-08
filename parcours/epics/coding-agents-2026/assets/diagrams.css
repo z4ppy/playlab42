@@ -1,0 +1,88 @@
+/*
+ * Schémas SVG du parcours « Coding Agents en 2026 ».
+ * Les couleurs viennent des tokens du thème : les schémas suivent donc
+ * automatiquement les modes clair et sombre, sans image à dupliquer.
+ */
+.slide .diagram {
+  margin: 1.75rem 0;
+  padding: 1rem;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.slide .diagram {
+  /* Sur petit écran, on fait défiler le schéma plutôt que de rendre son texte illisible. */
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.slide .diagram svg {
+  display: block;
+  width: 100%;
+  min-width: 560px;
+  height: auto;
+  font-family: inherit;
+}
+
+.slide .diagram figcaption {
+  margin-top: .75rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: .9rem;
+}
+
+.slide .illustration img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+.slide .illustration figcaption {
+  margin-top: .5rem;
+  color: var(--color-text-muted);
+  font-size: .8rem;
+  text-align: right;
+}
+
+.d-boite {
+  fill: var(--color-bg);
+  stroke: var(--color-border);
+  stroke-width: 1.5;
+}
+
+.d-accent {
+  stroke: var(--color-accent);
+  stroke-width: 2.5;
+}
+
+.d-alerte {
+  stroke: var(--color-warning);
+  stroke-width: 2.5;
+}
+
+.d-titre {
+  fill: var(--color-text);
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.d-texte {
+  fill: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.d-lien {
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-width: 1.75;
+}
+
+.d-fleche {
+  fill: var(--color-text-muted);
+}
+
+.d-goulot {
+  fill: var(--color-warning);
+  opacity: .18;
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sécurité et gouvernance - Coding Agents en 2026</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <article class="slide">
+    <h1>🛡️ Sécurité et gouvernance</h1>
+
+    <p>
+      Un coding agent lit du contenu (code, issues, pages web, réponses d'outils) et agit avec vos droits
+      (fichiers, terminal, jetons d'accès). Tout texte qu'il lit peut donc devenir une instruction :
+      c'est l'<dfn>injection de prompt</dfn>. En 2025-2026, ce risque est passé de la théorie aux CVE.
+    </p>
+
+    <h2>Le référentiel : OWASP Top 10 des applications agentiques</h2>
+    <p>Publié par l'OWASP GenAI Security Project le 9 décembre 2025, il complète le Top 10 des applications LLM :</p>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="OWASP Top 10 des applications agentiques">
+      <table>
+        <thead><tr><th>Code</th><th>Risque</th><th>Illustration possible pour un coding agent</th></tr></thead>
+        <tbody>
+          <tr><td>ASI01</td><td>Agent Goal Hijack</td><td>Une issue piégée détourne la tâche de l'agent</td></tr>
+          <tr><td>ASI02</td><td>Tool Misuse</td><td>L'agent utilise le terminal pour exfiltrer des secrets</td></tr>
+          <tr><td>ASI03</td><td>Identity &amp; Privilege Abuse</td><td>L'agent agit avec un jeton aux droits trop larges</td></tr>
+          <tr><td>ASI04</td><td>Agentic Supply Chain</td><td>Un serveur MCP ou un paquet compromis</td></tr>
+          <tr><td>ASI05</td><td>Unexpected Code Execution</td><td>Un fichier de configuration modifié lance une commande</td></tr>
+          <tr><td>ASI06</td><td>Memory &amp; Context Poisoning</td><td>Des instructions malveillantes glissées dans un fichier de contexte</td></tr>
+          <tr><td>ASI07 à ASI10</td><td colspan="2">Communication inter-agents non sécurisée, défaillances en cascade, exploitation de la confiance humaine, agents incontrôlés</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Ce qui est arrivé</h2>
+    <ul>
+      <li>
+        <strong>Nx « s1ngularity » (26-27 août 2025)</strong> : des versions piégées du paquet npm <code>nx</code> exécutaient un script
+        à l'installation qui cherchait des secrets sur le disque et tentait d'utiliser les outils d'IA installés localement
+        (Claude, Gemini) avec un prompt du type « You are a file-search agent… ».
+      </li>
+      <li>
+        <strong>Extension Amazon Q Developer pour VS Code 1.84.0 (juillet 2025, CVE-2025-8217)</strong> : un jeton GitHub mal
+        cadré dans la chaîne de build a permis d'injecter du code destiné à appeler la CLI de l'agent. Il ne s'est pas exécuté
+        à cause d'une erreur de syntaxe ; correctif en 1.85.0.
+      </li>
+      <li>
+        <strong>CVE d'août 2025 sur les agents eux-mêmes</strong> :
+        Cursor (CVE-2025-54135, création d'une configuration MCP par injection de prompt indirecte menant à une exécution de code ;
+        CVE-2025-54136, remplacement d'une configuration MCP déjà approuvée),
+        Claude Code (CVE-2025-54795, contournement de la confirmation avant commande à partir de contenu non fiable),
+        GitHub Copilot et Visual Studio (CVE-2025-53773, injection de commande permettant une exécution de code locale).
+        Les avis de Cursor et de Claude Code indiquent des versions corrigées : gardez vos agents à jour.
+      </li>
+    </ul>
+
+    <h2>Les paquets hallucinés (« slopsquatting »)</h2>
+    <p>
+      Spracklen et al. (USENIX Security 2025) ont généré 576 000 échantillons de code avec 16 modèles.
+      Sur 2,23 millions de paquets suggérés, <strong>19,7 % n'existaient pas</strong> (au moins 5,2 % pour les modèles commerciaux,
+      21,7 % pour les modèles open source), soit 205 474 noms inventés différents. Relancés dix fois, 43 % de ces noms
+      réapparaissaient à chaque fois : un attaquant peut donc les prévoir et publier un paquet malveillant sous ce nom.
+    </p>
+
+    <h2>Les bonnes pratiques de l'ANSSI et du BSI</h2>
+    <p>Dans leur publication commune <em>AI Coding Assistants</em> (octobre 2024), les agences française et allemande recommandent notamment :</p>
+    <ul>
+      <li>de ne pas considérer ces outils comme un substitut à des développeurs expérimentés ;</li>
+      <li>de mener une analyse de risque avant leur introduction, y compris sur la confiance accordée aux fournisseurs ;</li>
+      <li>de faire relire et comprendre le code généré par les développeurs ;</li>
+      <li>de vérifier la plausibilité des bibliothèques inconnues ;</li>
+      <li>de renforcer l'assurance qualité (AppSec, DevSecOps) à proportion du gain de productivité.</li>
+    </ul>
+    <div class="callout callout-info">
+      <p><strong>En pratique :</strong> permissions minimales et confirmation des commandes sensibles, bac à sable ou machine
+        dédiée pour l'autonomie, secrets hors de portée de l'agent, serveurs MCP et skills installés seulement depuis des sources
+        connues, dépendances vérifiées, et relecture humaine avant intégration.</p>
+    </div>
+
+    <h2>AI Act : où en est-on ?</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Calendrier de l'AI Act">
+      <table>
+        <thead><tr><th>Date</th><th>Ce qui s'applique</th></tr></thead>
+        <tbody>
+          <tr><td>1<sup>er</sup> août 2024</td><td>Entrée en vigueur</td></tr>
+          <tr><td>2 février 2025</td><td>Pratiques interdites et obligation de <strong>maîtrise de l'IA</strong> (former le personnel qui utilise ces outils)</td></tr>
+          <tr><td>Août 2025</td><td>Règles pour les fournisseurs de modèles d'IA à usage général</td></tr>
+          <tr><td>2 août 2026</td><td>Application générale, dont les règles de transparence</td></tr>
+          <tr><td>2 décembre 2027</td><td>Systèmes à haut risque des domaines sensibles (reporté par l'AI Omnibus, entré en vigueur en juillet 2026)</td></tr>
+          <tr><td>2 août 2028</td><td>Systèmes à haut risque intégrés à des produits réglementés</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Les domaines « à haut risque » listés par la Commission (biométrie, infrastructures critiques, éducation, emploi, services
+      essentiels, police, migration, justice) ne visent pas le développement logiciel en tant que tel. Pour une équipe de développement,
+      l'enjeu immédiat est donc surtout la <strong>maîtrise de l'IA</strong> par les personnes, et la conformité du logiciel produit
+      s'il relève lui-même d'un de ces domaines.
+    </p>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/" target="_blank" rel="noopener noreferrer">OWASP Top 10 for Agentic Applications</a>,
+      <a href="https://genai.owasp.org/llm-top-10/" target="_blank" rel="noopener noreferrer">OWASP Top 10 for LLM Applications 2025</a>,
+      <a href="https://github.com/nrwl/nx/security/advisories/GHSA-cxm3-wv7p-598c" target="_blank" rel="noopener noreferrer">avis de sécurité Nx</a>,
+      <a href="https://nx.dev/blog/s1ngularity-postmortem" target="_blank" rel="noopener noreferrer">post-mortem Nx</a>,
+      <a href="https://aws.amazon.com/security/security-bulletins/AWS-2025-015/" target="_blank" rel="noopener noreferrer">bulletin AWS-2025-015</a>,
+      NVD (<a href="https://nvd.nist.gov/vuln/detail/CVE-2025-54135" target="_blank" rel="noopener noreferrer">CVE-2025-54135</a>,
+      <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-54136" target="_blank" rel="noopener noreferrer">CVE-2025-54136</a>,
+      <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-54795" target="_blank" rel="noopener noreferrer">CVE-2025-54795</a>,
+      <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-53773" target="_blank" rel="noopener noreferrer">CVE-2025-53773</a>),
+      <a href="https://www.usenix.org/conference/usenixsecurity25/presentation/spracklen" target="_blank" rel="noopener noreferrer">Spracklen et al., USENIX Security 2025</a>,
+      <a href="https://cyber.gouv.fr/nous-connaitre/publications/publications-internationales/ai-coding-assistants/" target="_blank" rel="noopener noreferrer">ANSSI/BSI, AI Coding Assistants</a>,
+      <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener noreferrer">Commission européenne, cadre réglementaire de l'IA</a>,
+      <a href="https://digital-strategy.ec.europa.eu/en/news/ai-omnibus-enters-force" target="_blank" rel="noopener noreferrer">entrée en vigueur de l'AI Omnibus</a>.
+    </p>
+  </article>
+</body>
+</html>

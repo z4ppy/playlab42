@@ -10,268 +10,131 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .links-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-    }
-    .links-section h3 {
-      margin-top: 0;
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-    .links-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--space-sm);
-    }
-    .link-card {
-      background: var(--color-bg-primary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-accent);
-    }
-    .link-card a {
-      color: var(--color-accent);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .link-card a:hover {
-      text-decoration: underline;
-    }
-    .link-card p {
-      margin: var(--space-xs) 0 0;
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .annexe-section {
-      margin: var(--space-xl) 0;
-    }
-    .annexe-section h2 {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-    .code-block {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      margin: var(--space-md) 0;
-    }
-    .code-block-header {
-      background: var(--color-bg-secondary);
-      padding: var(--space-sm) var(--space-md);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .code-block pre {
-      margin: 0;
-      padding: var(--space-md);
-      overflow-x: auto;
-      font-size: 0.75rem;
-      line-height: 1.5;
-      max-height: 400px;
-    }
-    .footer-note {
-      text-align: center;
-      font-style: italic;
-      color: var(--color-text-muted);
-      margin-top: var(--space-xl);
-      padding-top: var(--space-lg);
-      border-top: 1px solid var(--color-border);
-    }
-    .comment { color: var(--color-text-muted); }
-  </style>
 </head>
 <body>
   <article class="slide">
     <h1>📚 Références et annexes</h1>
+    <p>Liens vérifiés le 8 novembre 2026.</p>
 
-    <div class="links-section">
-      <h3>📖 Documentation officielle</h3>
-      <div class="links-grid">
-        <div class="link-card">
-          <a href="https://git-scm.com/docs/git-worktree" target="_blank" rel="noopener">Git Worktree</a>
-          <p>Documentation officielle</p>
-        </div>
-        <div class="link-card">
-          <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">Claude Code</a>
-          <p>Documentation Anthropic</p>
-        </div>
-        <div class="link-card">
-          <a href="https://aider.chat/" target="_blank" rel="noopener">Aider</a>
-          <p>Pair programming IA</p>
-        </div>
-        <div class="link-card">
-          <a href="https://github.com/tmux/tmux/wiki" target="_blank" rel="noopener">tmux</a>
-          <p>Wiki et guides</p>
-        </div>
-      </div>
-    </div>
+    <h2>📖 Documentation officielle</h2>
+    <ul>
+      <li><a href="https://git-scm.com/docs/git-worktree" target="_blank" rel="noopener noreferrer">git-worktree</a> : référence de la commande</li>
+      <li><a href="https://code.claude.com/docs/en/worktrees" target="_blank" rel="noopener noreferrer">Claude Code : sessions parallèles avec worktrees</a></li>
+      <li><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener noreferrer">Claude Code : sous-agents</a> et <a href="https://code.claude.com/docs/en/claude-code-on-the-web" target="_blank" rel="noopener noreferrer">Claude Code dans le cloud</a></li>
+      <li><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">Claude Code : bonnes pratiques</a> (section « Run sessions in parallel »)</li>
+      <li><a href="https://learn.chatgpt.com/docs/environments/git-worktrees" target="_blank" rel="noopener noreferrer">Codex : worktrees</a> et <a href="https://learn.chatgpt.com/docs/cloud" target="_blank" rel="noopener noreferrer">Codex cloud</a></li>
+      <li><a href="https://cursor.com/docs/configuration/worktrees" target="_blank" rel="noopener noreferrer">Cursor : worktrees</a> et <a href="https://cursor.com/docs/cloud-agent" target="_blank" rel="noopener noreferrer">Cloud Agents</a></li>
+      <li><a href="https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/delegate-tasks-to-cca" target="_blank" rel="noopener noreferrer">Copilot CLI : déléguer au cloud agent</a></li>
+      <li><a href="https://aider.chat/" target="_blank" rel="noopener noreferrer">Aider</a> · <a href="https://github.com/tmux/tmux/wiki" target="_blank" rel="noopener noreferrer">wiki tmux</a> · <a href="https://zellij.dev/documentation/" target="_blank" rel="noopener noreferrer">Zellij</a></li>
+    </ul>
 
-    <div class="links-section">
-      <h3>📋 Spec-driven development</h3>
-      <div class="links-grid">
-        <div class="link-card">
-          <a href="https://github.com/Fission-AI/OpenSpec" target="_blank" rel="noopener">OpenSpec</a>
-          <p>Framework léger, multi-outils</p>
-        </div>
-        <div class="link-card">
-          <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener">Spec Kit</a>
-          <p>Par GitHub, workflow 4 phases</p>
-        </div>
-        <div class="link-card">
-          <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/" target="_blank" rel="noopener">Article GitHub Blog</a>
-          <p>Spec-driven development with AI</p>
-        </div>
-      </div>
-    </div>
+    <h2>📋 Conventions et spec-driven development</h2>
+    <ul>
+      <li><a href="https://agents.md" target="_blank" rel="noopener noreferrer">AGENTS.md</a> : format ouvert d'instructions pour agents</li>
+      <li><a href="https://github.com/Fission-AI/OpenSpec" target="_blank" rel="noopener noreferrer">OpenSpec</a> : workflow OPSX (voir aussi le parcours OpenSpec de Playlab42)</li>
+      <li><a href="https://github.com/github/spec-kit" target="_blank" rel="noopener noreferrer">Spec Kit</a> et <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/" target="_blank" rel="noopener noreferrer">l'article de présentation sur le blog GitHub</a></li>
+    </ul>
 
-    <div class="links-section">
-      <h3>🎮 Outils d'orchestration</h3>
-      <div class="links-grid">
-        <div class="link-card">
-          <a href="https://github.com/smtg-ai/claude-squad" target="_blank" rel="noopener">Claude Squad</a>
-          <p>TUI tmux + worktrees</p>
-        </div>
-        <div class="link-card">
-          <a href="https://github.com/coderabbitai/git-worktree-runner" target="_blank" rel="noopener">git-worktree-runner</a>
-          <p>Automatisation CodeRabbit</p>
-        </div>
-        <div class="link-card">
-          <a href="https://github.com/kbwo/ccmanager" target="_blank" rel="noopener">CCManager</a>
-          <p>Gestionnaire multi-instances</p>
-        </div>
-      </div>
-    </div>
+    <h2>🎮 Outils d'orchestration</h2>
+    <ul>
+      <li><a href="https://github.com/smtg-ai/claude-squad" target="_blank" rel="noopener noreferrer">Claude Squad</a> : tmux + worktrees, plusieurs agents</li>
+      <li><a href="https://github.com/coderabbitai/git-worktree-runner" target="_blank" rel="noopener noreferrer">git-worktree-runner</a> : commande <code>git gtr</code> (CodeRabbit)</li>
+      <li><a href="https://github.com/kbwo/ccmanager" target="_blank" rel="noopener noreferrer">CCManager</a> : sessions d'agents par worktree, sans tmux</li>
+      <li><a href="https://www.conductor.build/" target="_blank" rel="noopener noreferrer">Conductor</a> : application macOS d'orchestration</li>
+    </ul>
 
-    <div class="links-section">
-      <h3>📝 Articles et retours d'expérience</h3>
-      <div class="links-grid">
-        <div class="link-card">
-          <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank" rel="noopener">Claude Code Best Practices</a>
-          <p>Anthropic Engineering</p>
-        </div>
-        <div class="link-card">
-          <a href="https://docs.agentinterviews.com/blog/parallel-ai-coding-with-gitworktrees/" target="_blank" rel="noopener">Parallel AI Coding</a>
-          <p>Agent Interviews</p>
-        </div>
-        <div class="link-card">
-          <a href="https://www.ywian.com/blog/the-git-worktree-claude-code-playbook" target="_blank" rel="noopener">Git Worktree + Claude Code Playbook</a>
-          <p>Guide complet</p>
-        </div>
-      </div>
-    </div>
+    <h2>📎 Annexe A : script de démarrage</h2>
+    <p>
+      Crée un worktree et une fenêtre tmux par spec, puis lance Claude Code. Les specs doivent être
+      <strong>commitées</strong> : c'est le commit, pas votre dossier de travail, que reçoivent les worktrees.
+    </p>
+<pre><code class="language-bash">#!/usr/bin/env bash
+# start-agents.sh &lt;projet&gt; &lt;spec1&gt; [spec2] ...
+# Exemple : start-agents.sh mon-projet auth-oauth api-notifications
+set -euo pipefail
 
-    <div class="annexe-section">
-      <h2>📎 Annexe A : Script de démarrage automatisé</h2>
-      <div class="code-block">
-        <div class="code-block-header">
-          <span>start-agents.sh</span>
-        </div>
-        <pre><code>#!/bin/bash
-<span class="comment"># start-agents.sh &lt;project&gt; &lt;spec1&gt; [spec2] [spec3] ...</span>
-<span class="comment"># Exemple : start-agents.sh myapp auth-oauth api-notifications fix-tests</span>
-
-set -e
-
-PROJECT="$1"
+PROJECT="${1:?Usage: start-agents.sh &lt;projet&gt; &lt;spec1&gt; [spec2] ...}"
 shift
-SPECS=("$@")
-
-if [ ${#SPECS[@]} -eq 0 ]; then
-    echo "Usage: start-agents.sh &lt;project&gt; &lt;spec1&gt; [spec2] ..."
-    echo "Les specs doivent exister dans specs/&lt;name&gt;.md"
-    exit 1
+if [[ $# -eq 0 ]]; then
+  echo "Indiquez au moins une spec (fichier specs/&lt;nom&gt;.md commité)." &gt;&amp;2
+  exit 1
 fi
 
+PROJECT_ROOT="$HOME/projets/$PROJECT"
+WORKTREES_DIR="$PROJECT_ROOT-worktrees"
 SESSION="agents-$PROJECT"
-PROJECT_ROOT="$HOME/projects/$PROJECT"
 
-if [[ ! -d "$PROJECT_ROOT/.git" ]] && [[ ! -d "$PROJECT_ROOT/.bare" ]]; then
-    echo "❌ Projet Git non trouvé: $PROJECT_ROOT"
-    exit 1
+git -C "$PROJECT_ROOT" rev-parse --git-dir &gt;/dev/null   # échoue si ce n'est pas un dépôt
+if tmux has-session -t "$SESSION" 2&gt;/dev/null; then
+  echo "La session tmux $SESSION existe déjà : tmux attach -t $SESSION" &gt;&amp;2
+  exit 1
 fi
 
-<span class="comment"># Session tmux</span>
-tmux new-session -d -s "$SESSION" -n main -c "$PROJECT_ROOT"
+tmux new-session -d -s "$SESSION" -n suivi -c "$PROJECT_ROOT"
+tmux send-keys -t "$SESSION:suivi" "watch -n 5 git worktree list" C-m
 
-for i in "${!SPECS[@]}"; do
-    SPEC="${SPECS[$i]}"
-    BRANCH="agent-$((i+1))-$SPEC"
-    WORKTREE="$PROJECT_ROOT-worktrees/$BRANCH"
+index=0
+for spec in "$@"; do
+  index=$((index + 1))
+  # La spec doit exister dans le commit courant, sinon le worktree ne la contiendra pas
+  if ! git -C "$PROJECT_ROOT" cat-file -e "HEAD:specs/$spec.md" 2&gt;/dev/null; then
+    echo "⚠️  specs/$spec.md absent du commit courant : ignoré" &gt;&amp;2
+    continue
+  fi
 
-    <span class="comment"># Vérifier que la spec existe</span>
-    if [[ ! -f "$PROJECT_ROOT/specs/$SPEC.md" ]]; then
-        echo "⚠️  Spec non trouvée: specs/$SPEC.md — skip"
-        continue
-    fi
+  branch="agent-$index-$spec"
+  worktree="$WORKTREES_DIR/$branch"
+  git -C "$PROJECT_ROOT" worktree add -b "$branch" "$worktree" HEAD
 
-    cd "$PROJECT_ROOT"
-    git worktree add -b "$BRANCH" "$WORKTREE" HEAD
+  # Les fichiers ignorés par Git (comme .env) ne sont pas copiés par worktree add
+  if [[ -f "$PROJECT_ROOT/.env" ]]; then
+    cp "$PROJECT_ROOT/.env" "$worktree/"
+  fi
 
-    <span class="comment"># Copier .env si présent</span>
-    [[ -f "$PROJECT_ROOT/.env.development" ]] && cp "$PROJECT_ROOT/.env.development" "$WORKTREE/"
-
-    tmux new-window -t "$SESSION" -n "agent-$((i+1))" -c "$WORKTREE"
-    tmux send-keys -t "$SESSION:agent-$((i+1))" "claude \"Implémente @specs/$SPEC.md\"" C-m
-
-    echo "✅ Agent $((i+1)) sur specs/$SPEC.md dans $WORKTREE"
+  tmux new-window -t "$SESSION" -n "agent-$index" -c "$worktree"
+  tmux send-keys -t "$SESSION:agent-$index" "claude \"Implémente @specs/$spec.md\"" C-m
+  echo "✅ Agent $index : specs/$spec.md dans $worktree"
 done
 
-tmux new-window -t "$SESSION" -n "monitor" -c "$PROJECT_ROOT"
-tmux send-keys -t "$SESSION:monitor" "watch -n 5 'git worktree list'" C-m
-
-echo "🚀 Attacher avec: tmux attach -t $SESSION"
 tmux attach-session -t "$SESSION"</code></pre>
-      </div>
-    </div>
+    <p>
+      Pensez aussi à installer les dépendances dans chaque worktree (<code>npm ci</code>, etc.) et à décaler les ports
+      dans chaque <code>.env</code> si vos tests lancent des services. Le <code>.env</code> doit être listé dans
+      <code>.gitignore</code> : un fichier ignoré n'empêche pas <code>git worktree remove</code>, un fichier simplement non suivi, si.
+    </p>
 
-    <div class="annexe-section">
-      <h2>📎 Annexe B : Script de nettoyage</h2>
-      <div class="code-block">
-        <div class="code-block-header">
-          <span>cleanup-agents.sh</span>
-        </div>
-        <pre><code>#!/bin/bash
-<span class="comment"># cleanup-agents.sh &lt;project&gt;</span>
+    <h2>📎 Annexe B : script de nettoyage</h2>
+    <p>Supprime les worktrees propres et signale les autres, sans jamais forcer : un worktree « sale » contient du travail non commité.</p>
+<pre><code class="language-bash">#!/usr/bin/env bash
+# cleanup-agents.sh &lt;projet&gt;
+set -euo pipefail
 
-PROJECT="$1"
-PROJECT_ROOT="$HOME/projects/$PROJECT"
+PROJECT="${1:?Usage: cleanup-agents.sh &lt;projet&gt;}"
+PROJECT_ROOT="$HOME/projets/$PROJECT"
 WORKTREES_DIR="$PROJECT_ROOT-worktrees"
 
-[[ ! -d "$WORKTREES_DIR" ]] && echo "Rien à nettoyer" && exit 0
+if [[ ! -d "$WORKTREES_DIR" ]]; then
+  echo "Rien à nettoyer"
+  exit 0
+fi
 
-read -p "Supprimer tous les worktrees de $PROJECT ? (y/N) " -n 1 -r
-echo
+shopt -s nullglob   # aucun tour de boucle si le dossier est vide
+for worktree in "$WORKTREES_DIR"/*/; do
+  worktree="${worktree%/}"
+  if git -C "$PROJECT_ROOT" worktree remove "$worktree"; then
+    echo "🧹 Supprimé : $worktree"
+  else
+    echo "⚠️  Conservé (modifications non commitées) : $worktree" &gt;&amp;2
+  fi
+done
 
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    cd "$PROJECT_ROOT"
-    for wt in "$WORKTREES_DIR"/*; do
-        [[ -d "$wt" ]] && git worktree remove --force "$wt" 2>/dev/null
-    done
-    git worktree prune
-    rmdir "$WORKTREES_DIR" 2>/dev/null || true
-    echo "🧹 Nettoyé"
-fi</code></pre>
-      </div>
-    </div>
+git -C "$PROJECT_ROOT" worktree prune
+rmdir "$WORKTREES_DIR" 2&gt;/dev/null &amp;&amp; echo "Dossier $WORKTREES_DIR supprimé"
+echo "Branches restantes : git -C $PROJECT_ROOT branch --list 'agent-*'"</code></pre>
 
-    <div class="annexe-section">
-      <h2>📎 Annexe C : Templates</h2>
-
-      <div class="code-block">
-        <div class="code-block-header">
-          <span>CLAUDE.md (template)</span>
-        </div>
-        <pre><code><span class="comment"># CLAUDE.md</span>
+    <h2>📎 Annexe C : modèles</h2>
+    <h3>AGENTS.md</h3>
+<pre><code class="language-markdown"># AGENTS.md
 
 ## Stack
 - [Langage, framework, versions]
@@ -281,43 +144,43 @@ fi</code></pre>
 ## Conventions
 - [Style de commits]
 - [Règles de code]
-- [Ce qui nécessite validation humaine]
+- [Ce qui nécessite une validation humaine]
+
+## Commandes
+- Tests : [commande]
+- Lint : [commande]
 
 ## Structure du projet
-- src/[dossier]/ — [description]
-- tests/ — [description]</code></pre>
-      </div>
+- src/[dossier]/ : [description]
+- tests/ : [description]</code></pre>
+    <h3>CLAUDE.md (si vous utilisez Claude Code)</h3>
+<pre><code class="language-markdown">@AGENTS.md
 
-      <div class="code-block">
-        <div class="code-block-header">
-          <span>specs/[feature].md (template)</span>
-        </div>
-        <pre><code><span class="comment"># Spec: [Nom de la feature/fix]</span>
+## Spécifique à Claude Code
+- [Consignes propres à cet outil, s'il y en a]</code></pre>
+    <h3>specs/[feature].md</h3>
+<pre><code class="language-markdown"># Spec : [nom de la feature ou du correctif]
 
 ## Objectif
-[Ce qu'on veut accomplir en 1-2 phrases]
+[Ce qu'on veut obtenir, en une ou deux phrases]
 
-## Scope
-- Fichiers à créer/modifier : [liste]
+## Périmètre
+- Fichiers à créer ou modifier : [liste]
 - Tests : [fichiers de test]
 
-## Hors scope
+## Hors périmètre
 - Ne PAS modifier [fichiers]
 - Ne PAS toucher à [composants]
 
-## Critères de succès
+## Critères de réussite
 - [ ] [Critère mesurable 1]
 - [ ] [Critère mesurable 2]
-- [ ] Tests passent
+- [ ] Tests et lint au vert
 
 ## Ressources
-- [Liens vers docs, exemples existants]</code></pre>
-      </div>
-    </div>
+- [Liens vers la documentation, exemples existants]</code></pre>
 
-    <p class="footer-note">
-      Guide rédigé en décembre 2025. Testé avec Claude Code, Aider et Cline sur des projets Node.js et Python.
-    </p>
+    <p><small>Guide écrit en décembre 2025 et mis à jour le 8 novembre 2026 : outils, commandes et sources vérifiés sur la documentation officielle à cette date.</small></p>
   </article>
 </body>
 </html>
