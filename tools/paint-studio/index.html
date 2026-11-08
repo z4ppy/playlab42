@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Logiciel de dessin local : calques, modes de fusion, pinceau sensible à la pression, formes, pot de peinture, sélection, historique.">
+  <title>Paint Studio - Playlab42</title>
+  <!-- main.js applique le thème avant le premier rendu (module différé). -->
+  <script type="module" src="./src/main.js"></script>
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="ps-app" id="app" data-drawer="none">
+    <header class="ps-top">
+      <h1 class="ps-title"><span class="ps-title-icon" aria-hidden="true">🎨</span> <span class="ps-title-text">Paint Studio</span></h1>
+      <div class="ps-top-actions" role="toolbar" aria-label="Actions principales">
+        <button type="button" class="ps-btn ps-btn--icon" id="btn-undo" aria-label="Annuler" title="Annuler (Ctrl+Z)" disabled><span aria-hidden="true">↶</span></button>
+        <button type="button" class="ps-btn ps-btn--icon" id="btn-redo" aria-label="Rétablir" title="Rétablir (Ctrl+Maj+Z)" disabled><span aria-hidden="true">↷</span></button>
+        <button type="button" class="ps-btn ps-btn--icon ps-colors-btn" id="btn-colors" aria-expanded="false" aria-controls="drawer-color" aria-label="Couleurs" title="Couleurs">
+          <span class="ps-chip ps-chip--secondary" id="chip-secondary" aria-hidden="true"></span>
+          <span class="ps-chip ps-chip--primary" id="chip-primary" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="ps-btn ps-btn--icon" id="btn-layers" aria-expanded="false" aria-controls="drawer-layers" aria-label="Calques" title="Calques"><span aria-hidden="true">🗂️</span></button>
+        <button type="button" class="ps-btn ps-btn--icon" id="btn-file" aria-expanded="false" aria-controls="drawer-file" aria-label="Fichier et document" title="Fichier"><span aria-hidden="true">☰</span></button>
+        <button type="button" class="ps-btn ps-btn--icon" id="theme-toggle" aria-label="Basculer entre thème clair et sombre" title="Thème clair / sombre"><span aria-hidden="true">◐</span></button>
+      </div>
+    </header>
+
+    <nav class="ps-tools" id="toolbar" role="toolbar" aria-label="Outils"></nav>
+
+    <main class="ps-stage" id="stage">
+      <canvas class="ps-view" id="view" role="img" aria-label="Zone de dessin" aria-describedby="view-help"></canvas>
+      <p class="sr-only" id="view-help">Dessinez au doigt, au stylet ou à la souris. Deux doigts : zoomer et déplacer la vue. Les commandes sont aussi au clavier, voir l'aide des raccourcis dans le menu Fichier.</p>
+      <div class="ps-zoom" role="group" aria-label="Zoom">
+        <button type="button" class="ps-btn ps-btn--icon" id="zoom-out" aria-label="Dézoomer" title="Dézoomer (−)"><span aria-hidden="true">−</span></button>
+        <button type="button" class="ps-btn ps-zoom-label" id="zoom-fit" aria-label="Ajuster à l'écran" title="Ajuster à l'écran (Ctrl+0)"><span id="zoom-value">100 %</span></button>
+        <button type="button" class="ps-btn ps-btn--icon" id="zoom-in" aria-label="Zoomer" title="Zoomer (+)"><span aria-hidden="true">+</span></button>
+      </div>
+      <p class="ps-drop" id="drop-hint" hidden>Déposez l'image pour l'ajouter en calque, ou un projet .paint.json pour l'ouvrir</p>
+      <p class="ps-toast" id="toast" role="status" aria-live="polite" hidden></p>
+    </main>
+
+    <section class="ps-options" id="tool-options" aria-label="Options de l'outil"></section>
+
+    <!-- ===== Tiroir des couleurs ===== -->
+    <aside class="ps-drawer" id="drawer-color" aria-labelledby="color-title">
+      <div class="ps-drawer-head">
+        <h2 class="ps-drawer-title" id="color-title">Couleurs</h2>
+        <button type="button" class="ps-btn ps-btn--icon ps-drawer-close" data-close-drawer aria-label="Fermer les couleurs"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="ps-color-targets" role="group" aria-label="Couleur modifiée">
+        <button type="button" class="ps-btn ps-target" id="target-primary" aria-pressed="true"><span class="ps-chip" id="target-primary-chip" aria-hidden="true"></span>Principale</button>
+        <button type="button" class="ps-btn ps-target" id="target-secondary" aria-pressed="false"><span class="ps-chip" id="target-secondary-chip" aria-hidden="true"></span>Secondaire</button>
+        <button type="button" class="ps-btn ps-btn--icon" id="btn-swap" aria-label="Inverser principale et secondaire (X)" title="Inverser (X)"><span aria-hidden="true">⇄</span></button>
+        <button type="button" class="ps-btn ps-btn--icon" id="btn-default-colors" aria-label="Noir et blanc par défaut (D)" title="Noir / blanc (D)"><span aria-hidden="true">◩</span></button>
+      </div>
+      <div class="ps-picker">
+        <div class="ps-sv">
+          <canvas class="ps-sv-canvas" id="sv-canvas" tabindex="0" role="slider" aria-label="Saturation et valeur" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></canvas>
+          <span class="ps-sv-marker" id="sv-marker" aria-hidden="true"></span>
+        </div>
+        <label class="ps-field">
+          <span class="ps-field-label">Teinte</span>
+          <input type="range" class="range ps-hue" id="hue-range" min="0" max="360" step="1" value="0">
+        </label>
+        <label class="ps-field">
+          <span class="ps-field-label">Opacité de la couleur</span>
+          <input type="range" class="range ps-alpha" id="alpha-range" min="0" max="100" step="1" value="100">
+        </label>
+        <div class="ps-hex-row">
+          <span class="ps-preview" id="color-preview" aria-hidden="true"></span>
+          <label class="ps-field ps-field--grow">
+            <span class="ps-field-label">Hexadécimal</span>
+            <input type="text" class="input input--mono" id="hex-input" maxlength="9" autocomplete="off" autocapitalize="off" spellcheck="false" value="#000000">
+          </label>
+        </div>
+        <h3 class="ps-subtitle">Récentes</h3>
+        <div class="ps-swatches" id="recent-colors" role="group" aria-label="Couleurs récentes"></div>
+      </div>
+    </aside>
+
+    <!-- ===== Tiroir des calques ===== -->
+    <aside class="ps-drawer" id="drawer-layers" aria-labelledby="layers-title">
+      <div class="ps-drawer-head">
+        <h2 class="ps-drawer-title" id="layers-title">Calques</h2>
+        <button type="button" class="ps-btn ps-btn--icon ps-drawer-close" data-close-drawer aria-label="Fermer les calques"><span aria-hidden="true">×</span></button>
+      </div>
+      <ol class="ps-layer-list" id="layer-list" aria-label="Pile des calques, du haut vers le bas"></ol>
+      <div class="ps-layer-actions" id="layer-actions" role="group" aria-label="Actions sur les calques">
+        <button type="button" class="ps-btn" data-layer-action="add" title="Nouveau calque (Ctrl+Maj+N)">+ Nouveau</button>
+        <button type="button" class="ps-btn" data-layer-action="duplicate">Dupliquer</button>
+        <button type="button" class="ps-btn" data-layer-action="delete">Supprimer</button>
+        <button type="button" class="ps-btn" data-layer-action="up">↑ Monter</button>
+        <button type="button" class="ps-btn" data-layer-action="down">↓ Descendre</button>
+        <button type="button" class="ps-btn" data-layer-action="merge">Fusionner ↓</button>
+        <button type="button" class="ps-btn" data-layer-action="flatten">Aplatir</button>
+      </div>
+      <div class="ps-layer-props">
+        <label class="ps-field">
+          <span class="ps-field-label">Nom du calque actif</span>
+          <input type="text" class="input" id="layer-name" maxlength="64" autocomplete="off">
+        </label>
+        <label class="ps-field">
+          <span class="ps-field-label">Opacité <output id="layer-opacity-value" for="layer-opacity">100 %</output></span>
+          <input type="range" class="range" id="layer-opacity" aria-label="Opacité du calque" min="0" max="100" step="1" value="100">
+        </label>
+        <label class="ps-field">
+          <span class="ps-field-label">Mode de fusion</span>
+          <select class="input" id="layer-blend"></select>
+        </label>
+      </div>
+    </aside>
+
+    <!-- ===== Tiroir fichier et document ===== -->
+    <aside class="ps-drawer ps-drawer--menu" id="drawer-file" aria-labelledby="file-title">
+      <div class="ps-drawer-head">
+        <h2 class="ps-drawer-title" id="file-title">Fichier</h2>
+        <button type="button" class="ps-btn ps-btn--icon ps-drawer-close" data-close-drawer aria-label="Fermer le menu Fichier"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="ps-menu" role="group" aria-label="Commandes du document">
+        <button type="button" class="ps-btn" data-command="new">📄 Nouveau document…</button>
+        <button type="button" class="ps-btn" data-command="open">📂 Ouvrir un projet ou une image…</button>
+        <button type="button" class="ps-btn" data-command="save">💾 Enregistrer le projet (.paint.json)</button>
+        <button type="button" class="ps-btn" data-command="import">🖼️ Importer une image en calque…</button>
+        <button type="button" class="ps-btn" data-command="export">⬇️ Exporter PNG, JPEG ou WebP…</button>
+        <button type="button" class="ps-btn" data-command="resize">⤡ Taille du canevas…</button>
+        <button type="button" class="ps-btn" data-command="toggle-grid" id="btn-grid" aria-pressed="true">▦ Grille de pixels au fort zoom</button>
+        <button type="button" class="ps-btn" data-command="help">⌨️ Raccourcis clavier</button>
+      </div>
+      <p class="ps-hint" id="autosave-status" aria-live="polite">Sauvegarde automatique locale (IndexedDB).</p>
+    </aside>
+
+    <input type="file" id="file-open" accept=".json,application/json,image/*" hidden>
+    <input type="file" id="file-import" accept="image/*" hidden>
+
+    <!-- ===== Dialogues ===== -->
+    <dialog class="ps-dialog" id="dialog-new" aria-labelledby="new-title">
+      <form method="dialog" class="ps-form">
+        <h2 id="new-title">Nouveau document</h2>
+        <p class="ps-hint">Le document actuel sera remplacé (l'historique est vidé) : enregistrez-le d'abord si besoin.</p>
+        <label class="ps-field">
+          <span class="ps-field-label">Format</span>
+          <select class="input" id="new-preset">
+            <option value="1200x900">Paysage 1200 × 900</option>
+            <option value="900x1200">Portrait 900 × 1200</option>
+            <option value="1920x1080">HD 1920 × 1080</option>
+            <option value="1080x1080">Carré 1080 × 1080</option>
+            <option value="64x64">Pixel art 64 × 64</option>
+            <option value="32x32">Pixel art 32 × 32</option>
+            <option value="custom">Personnalisé</option>
+          </select>
+        </label>
+        <div class="ps-size-row">
+          <label class="ps-field"><span class="ps-field-label">Largeur (px)</span><input class="input" type="number" id="new-width" min="1" max="4096" step="1" inputmode="numeric" value="1200" required></label>
+          <label class="ps-field"><span class="ps-field-label">Hauteur (px)</span><input class="input" type="number" id="new-height" min="1" max="4096" step="1" inputmode="numeric" value="900" required></label>
+        </div>
+        <label class="ps-field">
+          <span class="ps-field-label">Fond</span>
+          <select class="input" id="new-background">
+            <option value="white">Blanc</option>
+            <option value="transparent">Transparent</option>
+          </select>
+        </label>
+        <div class="ps-form-actions">
+          <button type="submit" class="ps-btn" value="cancel" formnovalidate>Annuler</button>
+          <button type="submit" class="ps-btn ps-btn--primary" value="ok">Créer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="ps-dialog" id="dialog-resize" aria-labelledby="resize-title">
+      <form method="dialog" class="ps-form">
+        <h2 id="resize-title">Taille du canevas</h2>
+        <p class="ps-hint">Agrandit ou recadre la zone de dessin sans mettre l'image à l'échelle.</p>
+        <div class="ps-size-row">
+          <label class="ps-field"><span class="ps-field-label">Largeur (px)</span><input class="input" type="number" id="resize-width" min="1" max="4096" step="1" inputmode="numeric" required></label>
+          <label class="ps-field"><span class="ps-field-label">Hauteur (px)</span><input class="input" type="number" id="resize-height" min="1" max="4096" step="1" inputmode="numeric" required></label>
+        </div>
+        <fieldset class="ps-anchor">
+          <legend class="ps-field-label">Ancrage du contenu</legend>
+          <div class="ps-anchor-grid" id="resize-anchor"></div>
+        </fieldset>
+        <div class="ps-form-actions">
+          <button type="submit" class="ps-btn" value="cancel" formnovalidate>Annuler</button>
+          <button type="submit" class="ps-btn ps-btn--primary" value="ok">Appliquer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="ps-dialog" id="dialog-export" aria-labelledby="export-title">
+      <form method="dialog" class="ps-form">
+        <h2 id="export-title">Exporter l'image</h2>
+        <label class="ps-field">
+          <span class="ps-field-label">Format</span>
+          <select class="input" id="export-format">
+            <option value="png">PNG (sans perte, transparence)</option>
+            <option value="jpeg">JPEG (photo, fond blanc)</option>
+            <option value="webp">WebP (compact, transparence)</option>
+          </select>
+        </label>
+        <label class="ps-field">
+          <span class="ps-field-label">Qualité <output id="export-quality-value" for="export-quality">90 %</output></span>
+          <input type="range" class="range" id="export-quality" aria-label="Qualité" min="10" max="100" step="5" value="90">
+        </label>
+        <div class="ps-form-actions">
+          <button type="submit" class="ps-btn" value="cancel" formnovalidate>Annuler</button>
+          <button type="submit" class="ps-btn ps-btn--primary" value="ok">Exporter</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="ps-dialog" id="dialog-text" aria-labelledby="text-title">
+      <form method="dialog" class="ps-form">
+        <h2 id="text-title">Ajouter du texte</h2>
+        <label class="ps-field">
+          <span class="ps-field-label">Texte (plusieurs lignes possibles)</span>
+          <textarea class="input ps-textarea" id="text-input" rows="3" maxlength="2000"></textarea>
+        </label>
+        <p class="ps-hint">Couleur principale ; police, corps et gras dans les options de l'outil Texte.</p>
+        <div class="ps-form-actions">
+          <button type="submit" class="ps-btn" value="cancel" formnovalidate>Annuler</button>
+          <button type="submit" class="ps-btn ps-btn--primary" value="ok">Placer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="ps-dialog" id="dialog-help" aria-labelledby="help-title">
+      <form method="dialog" class="ps-form">
+        <h2 id="help-title">Raccourcis clavier</h2>
+        <p class="ps-hint">Tout est aussi accessible au doigt : barre d'outils, options, tiroirs. Deux doigts pour zoomer et déplacer la vue ; bouton droit de la souris pour la couleur secondaire.</p>
+        <dl class="ps-shortcuts" id="shortcut-list"></dl>
+        <div class="ps-form-actions">
+          <button type="submit" class="ps-btn ps-btn--primary" value="ok">Fermer</button>
+        </div>
+      </form>
+    </dialog>
+  </div>
+</body>
+</html>
