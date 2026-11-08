@@ -8,6 +8,11 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [Unreleased]
 
 ### Added
+- Jeu « Solitaire » (`games/solitaire/`) : Klondike pioche 1 ou 3, donnes
+  numérotées et partageables, option « donnes gagnables » prouvée par un
+  solveur, glisser-déposer souris/tactile, clavier complet, annuler illimité,
+  fin automatique, indices expliqués et bots Aléatoire/Heuristique ne lisant
+  que la vue du joueur (44 % de victoires en pioche 1 sur 1 000 donnes).
 - Jeu « Golf orbital » (`games/orbital-golf/`) : moteur physique pur à pas fixe,
   9 trous d'initiation, trou du jour et parcours libre générés puis prouvés
   jouables par un solveur, visée au doigt (lance-pierre) ou au clavier.
