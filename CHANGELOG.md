@@ -8,6 +8,9 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [Unreleased]
 
 ### Added
+- Jeu « Golf orbital » (`games/orbital-golf/`) : moteur physique pur à pas fixe,
+  9 trous d'initiation, trou du jour et parcours libre générés puis prouvés
+  jouables par un solveur, visée au doigt (lance-pierre) ou au clavier.
 - Snapshot OG éditorial et refresh explicite, SOURCE_DATE_EPOCH pour les
   catalogues, SBOM CycloneDX de fabrication, manifeste public SHA-256,
   vérification de l'archive et exercice local de reprise tar.

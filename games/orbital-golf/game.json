@@ -1,0 +1,14 @@
+{
+  "id": "orbital-golf",
+  "name": "Golf orbital",
+  "description": "Courbe tes tirs avec la gravité : contourne les planètes, rebondis sur les lunes, évite les trous noirs et pose la balle sur le green. Initiation en 9 trous, trou du jour et parcours générés, au doigt ou au clavier.",
+  "author": "Cyrille",
+  "players": { "min": 1, "max": 1 },
+  "type": "turn-based",
+  "tags": ["physics", "puzzle", "skill", "1-player"],
+  "icon": "🪐",
+  "version": "1.0.0",
+  "controls": "touch",
+  "orientation": "any",
+  "minWidth": 320
+}

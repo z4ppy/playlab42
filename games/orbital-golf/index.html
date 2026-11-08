@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Golf orbital · Playlab42</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Golf orbital : courbe tes tirs avec la gravité des planètes, évite les trous noirs et pose la balle sur le green.">
+<link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+<link rel="stylesheet" href="../../lib/theme.css">
+<link rel="stylesheet" href="style.css">
+<script type="module" src="./main.js"></script>
+</head>
+<body>
+<div class="golf" id="app" data-phase="menu">
+  <header class="topbar">
+    <a class="tool" id="quit" href="../../index.html" aria-label="Retour au catalogue Playlab42"><span aria-hidden="true">‹</span></a>
+    <h1 class="brand">Golf <span>orbital</span></h1>
+    <div class="tools">
+      <button type="button" class="tool" id="btn-menu" aria-label="Choisir un parcours"><span aria-hidden="true">☰</span></button>
+      <button type="button" class="tool" id="btn-pause" aria-label="Mettre en pause" disabled><span aria-hidden="true">❚❚</span></button>
+      <button type="button" class="tool" id="btn-help" aria-label="Aide et commandes" aria-haspopup="dialog"><span aria-hidden="true">?</span></button>
+      <button type="button" class="tool" id="btn-sound" aria-pressed="false" aria-label="Son"><span aria-hidden="true">♪</span></button>
+    </div>
+  </header>
+
+  <p class="hud" id="hud" aria-label="Partie en cours">
+    <span id="hud-hole">Trou –</span><span id="hud-par">Par –</span><span id="hud-strokes">Coups 0</span><span id="hud-total">Total –</span>
+  </p>
+
+  <main class="stage" id="stage">
+    <canvas id="field" tabindex="0" aria-roledescription="terrain de golf orbital" aria-label="Terrain : la balle, le trou et les corps célestes." aria-describedby="field-help"></canvas>
+    <p class="readout" id="readout" aria-hidden="true">Angle 0,0° · 40 %</p>
+    <p class="toast" id="toast" hidden></p>
+    <p class="toast" id="busy" aria-hidden="true" hidden></p>
+
+    <section class="panel" id="panel-menu" aria-labelledby="menu-title">
+      <h2 id="menu-title">Choisis ton parcours</h2>
+      <fieldset class="modes">
+        <legend class="sr-only">Mode de jeu</legend>
+        <label class="mode"><input type="radio" name="mode" value="course" checked><span><b>Initiation</b><small>9 trous pour apprendre la gravité</small></span></label>
+        <label class="mode"><input type="radio" name="mode" value="daily"><span><b>Trou du jour</b><small>Le même trou pour tous, chaque jour</small></span></label>
+        <label class="mode"><input type="radio" name="mode" value="free"><span><b>Parcours libre</b><small>9 trous générés par une graine</small></span></label>
+      </fieldset>
+      <div class="options">
+        <label class="seed" for="seed-input">Graine <input id="seed-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="10" autocomplete="off" placeholder="au hasard"></label>
+        <label class="check"><input type="checkbox" id="confirm-shot"> Confirmer chaque tir</label>
+      </div>
+      <div class="row">
+        <button type="button" class="primary" id="btn-start">Jouer</button>
+        <button type="button" class="secondary" id="btn-continue" hidden>Continuer</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-pause" aria-labelledby="pause-title" hidden>
+      <h2 id="pause-title">Pause</h2>
+      <p>La balle et les lunes sont figées.</p>
+      <button type="button" class="primary" id="btn-resume">Reprendre</button>
+    </section>
+
+    <section class="panel panel-sheet" id="panel-result" aria-labelledby="result-title" hidden>
+      <h2 id="result-title">Dans le trou</h2>
+      <p id="result-detail"></p>
+      <button type="button" class="primary" id="btn-next">Trou suivant</button>
+    </section>
+
+    <section class="panel" id="panel-final" aria-labelledby="final-title" hidden>
+      <h2 id="final-title">Parcours terminé</h2>
+      <p id="final-detail"></p>
+      <div class="card-scroll"><table class="card" id="final-card"></table></div>
+      <div class="row">
+        <button type="button" class="primary" id="btn-replay">Rejouer</button>
+        <button type="button" class="secondary" id="btn-final-menu">Menu</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="actions" aria-label="Commandes de tir">
+    <button type="button" class="act" id="btn-restart" aria-label="Recommencer le trou" disabled><span aria-hidden="true">↺</span></button>
+    <button type="button" class="act" data-nudge="angle" data-step="-5" aria-label="Tourner de 0,5 degré vers la gauche" disabled><span aria-hidden="true">⟲</span></button>
+    <button type="button" class="act" data-nudge="angle" data-step="5" aria-label="Tourner de 0,5 degré vers la droite" disabled><span aria-hidden="true">⟳</span></button>
+    <button type="button" class="act" data-nudge="power" data-step="-1" aria-label="Puissance moins 1 %" disabled><span aria-hidden="true">−</span></button>
+    <button type="button" class="act" data-nudge="power" data-step="1" aria-label="Puissance plus 1 %" disabled><span aria-hidden="true">+</span></button>
+    <button type="button" class="act shoot" id="btn-shoot" disabled>Tirer</button>
+  </nav>
+
+  <aside class="side" aria-label="Carte et records">
+    <section>
+      <h2>Carte de score</h2>
+      <div class="card-scroll"><table class="card" id="card"></table></div>
+    </section>
+    <section>
+      <h2>Records</h2>
+      <dl class="records" id="records"></dl>
+    </section>
+    <section class="keys" id="field-help">
+      <h2>Commandes</h2>
+      <p>Glisse n’importe où sur le terrain puis relâche : la balle part à l’opposé, comme un lance-pierre. Plus tu tires loin, plus le coup est fort.</p>
+      <p><kbd>←</kbd> <kbd>→</kbd> angle, <kbd>↑</kbd> <kbd>↓</kbd> puissance (<kbd>Maj</kbd> pour affiner ou accélérer), <kbd>Entrée</kbd> tirer, <kbd>Échap</kbd> annuler, <kbd>P</kbd> pause, <kbd>R</kbd> recommencer, <kbd>?</kbd> aide.</p>
+    </section>
+  </aside>
+
+  <p class="notice" id="storage-notice" role="status" hidden></p>
+  <p class="sr-only" id="status" role="status" aria-live="polite" aria-atomic="true"></p>
+</div>
+
+<dialog class="sheet" id="help-dialog" aria-labelledby="help-title">
+  <h2 id="help-title">Comment jouer</h2>
+  <ul>
+    <li>Mets la balle dans le trou en un minimum de coups. Le disque vert est le green : il freine la balle.</li>
+    <li>Les planètes attirent la balle ; on peut rebondir dessus ou s’y poser puis repartir de là.</li>
+    <li>Hors limites, avalée par un trou noir ou perdue en orbite : le coup compte et la balle revient au point de tir.</li>
+    <li>Les lunes ne bougent que pendant les vols : la scène est figée pendant la visée.</li>
+    <li>Au 8<sup>e</sup> coup manqué, le trou est ramassé et compte 9.</li>
+    <li>Pendant un vol, touche le terrain ou appuie sur <kbd>Espace</kbd> pour accélérer.</li>
+    <li>Le trou du jour suit la date de ton appareil : selon le fuseau horaire, deux joueurs peuvent avoir des trous différents au même instant.</li>
+    <li>Un record exige une partie sans « recommencer » ni indice.</li>
+  </ul>
+  <div class="row">
+    <button type="button" class="secondary" id="btn-hint">Montrer un tir qui marche</button>
+    <button type="button" class="primary" id="btn-help-close" autofocus>Fermer</button>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="restart-dialog" aria-labelledby="restart-title">
+  <h2 id="restart-title">Recommencer le trou ?</h2>
+  <p>Les coups de ce trou seront effacés et la partie ne pourra plus établir de record.</p>
+  <div class="row">
+    <button type="button" class="secondary" id="btn-restart-cancel" autofocus>Annuler</button>
+    <button type="button" class="primary" id="btn-restart-confirm">Recommencer</button>
+  </div>
+</dialog>
+</body>
+</html>

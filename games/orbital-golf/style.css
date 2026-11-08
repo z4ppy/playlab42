@@ -1,0 +1,329 @@
+/*
+ * Golf orbital : mise en page mobile d'abord.
+ * Une seule grille ; les formats ne changent que ses zones et la variable
+ * --canvas (côté du terrain carré), pour que terrain et commandes tiennent
+ * ensemble à l'écran sans défilement. Les couleurs d'interface viennent de
+ * lib/theme.css ; le terrain reste un ciel sombre dans les deux thèmes.
+ */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  container-type: inline-size;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.golf {
+  --gap: 8px;
+  --bar: 52px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --vw: 100vw;
+  --vh: 100vh;
+  /* Bandeaux du portrait : barre 48, HUD 32, actions 52, quatre espacements. */
+  --chrome: calc(48px + 32px + var(--bar) + 5 * var(--gap) + var(--safe-top) + var(--safe-bottom));
+  --canvas: min(640px, calc(var(--vw) - 2 * var(--gap) - var(--safe-left) - var(--safe-right)), calc(var(--vh) - var(--chrome)));
+  --golf-space-top: #0b1226;
+  --golf-space-bottom: #04060d;
+  --golf-aim: #ffd166;
+  --golf-hint: #7dd3fc;
+  display: grid;
+  grid-template-columns: var(--canvas);
+  grid-template-areas: "top" "hud" "stage" "actions" "side";
+  justify-content: center;
+  align-content: start;
+  gap: var(--gap);
+  padding: var(--safe-top) calc(var(--gap) + var(--safe-right)) calc(var(--gap) + var(--safe-bottom)) calc(var(--gap) + var(--safe-left));
+  box-sizing: border-box;
+}
+
+@supports (width: 100cqw) { .golf { --vw: 100cqw; } }
+@supports (height: 100dvh) { .golf { --vh: 100dvh; } }
+[data-theme="light"] .golf { --golf-space-top: #18234a; --golf-space-bottom: #0a1024; }
+@media (prefers-color-scheme: light) { :root:not([data-theme]) .golf { --golf-space-top: #18234a; } }
+
+.golf *, .sheet * { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Barre du haut : retour, titre, menu, pause, aide, son. */
+.topbar {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 48px;
+  min-width: 0;
+}
+
+.brand {
+  flex: 1;
+  min-width: 0;
+  margin: 0 4px;
+  overflow: hidden;
+  font-size: clamp(0.9rem, 4vw, 1.1rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brand span { color: var(--color-accent); }
+.tools { display: flex; gap: 4px; }
+
+.tool, .act, .primary, .secondary {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tool {
+  display: inline-grid;
+  place-items: center;
+  text-decoration: none;
+}
+
+.tool:hover, .act:hover:not(:disabled), .secondary:hover { background: var(--color-bg-hover); }
+button:disabled { cursor: default; opacity: 0.45; }
+
+:is(button, a, input, canvas):focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.primary {
+  padding: 0 18px;
+  border-color: transparent;
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  font-weight: 700;
+}
+
+.primary:hover { background: var(--color-accent-hover); }
+.secondary { padding: 0 14px; }
+
+/* Bandeau d'état de la partie. */
+.hud {
+  grid-area: hud;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 32px;
+  margin: 0;
+  align-items: center;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.hud span:first-child { color: var(--color-text); font-weight: 700; }
+
+/* Terrain carré ; seuls le canvas et ses panneaux s'y superposent. */
+.stage {
+  grid-area: stage;
+  position: relative;
+  width: var(--canvas);
+  height: var(--canvas);
+  margin: 0;
+  border-radius: var(--radius-lg);
+  background: var(--golf-space-bottom);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+#field {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.readout, .toast {
+  position: absolute;
+  margin: 0;
+  pointer-events: none;
+  border-radius: var(--radius-sm);
+  background: rgba(4, 6, 13, 0.72);
+  color: #f5f7ff;
+}
+
+/* Indicateur de visée masqué sous les voiles (menu, pause) et pendant la génération. */
+.golf:is([data-phase="menu"], [data-phase="paused"], [data-phase="loading"]) .readout { visibility: hidden; }
+
+.readout {
+  top: 6px;
+  left: 6px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.toast {
+  top: 38%;
+  left: 50%;
+  width: max-content;
+  max-width: 86%;
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  text-align: center;
+  font-weight: 600;
+}
+
+.panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: color-mix(in srgb, var(--color-bg) 90%, transparent);
+}
+
+.panel h2, .sheet h2 { margin: 0; font-size: 1.15rem; }
+.panel p { margin: 0; color: var(--color-text-muted); }
+.panel-sheet { inset: auto 0 0; padding-bottom: 14px; border-top: 1px solid var(--color-border); }
+
+.modes { display: grid; gap: 6px; margin: 0; padding: 0; border: 0; }
+
+.mode {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  cursor: pointer;
+}
+
+.mode:has(input:checked) { border-color: var(--color-accent); background: var(--color-accent-light); }
+.mode input, .check input { width: 20px; height: 20px; margin: 0; accent-color: var(--color-accent); }
+.mode span { display: grid; }
+.mode small { color: var(--color-text-muted); font-size: 0.8rem; }
+
+.options, .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.row .primary { flex: 1 1 auto; }
+.golf:not(:has(input[value="free"]:checked)) .seed { display: none; }
+.seed, .check { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+
+/* 16 px minimum : en dessous, iOS zoome sur le champ au toucher. */
+#seed-input {
+  width: 9.5em;
+  min-height: 44px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 10px;
+}
+
+/* Commandes de tir : recommencer, réglage fin, tirer. */
+.actions {
+  grid-area: actions;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(44px, 1fr)) minmax(44px, 1.5fr);
+  gap: 5px;
+}
+
+.act { min-height: var(--bar); padding: 0; }
+.shoot { background: var(--color-accent); color: var(--color-text-inverse); font-weight: 700; border-color: transparent; }
+
+.side { grid-area: side; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.side h2 { margin: 0 0 6px; font-size: 0.95rem; }
+.side p { margin: 0 0 6px; color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.45; }
+.card-scroll { overflow-x: auto; }
+.card { border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.card :is(th, td) { min-width: 26px; padding: 3px 4px; border: 1px solid var(--color-border); text-align: center; }
+.records { display: grid; grid-template-columns: auto auto; justify-content: start; gap: 2px 14px; margin: 0; }
+.records dd { margin: 0; font-weight: 700; }
+
+kbd {
+  padding: 0 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+}
+
+.notice { grid-column: 1 / -1; margin: 0; color: var(--color-warning); }
+
+.sheet {
+  width: min(30rem, calc(100% - 24px));
+  max-height: calc(100dvh - 24px);
+  padding: 16px 16px 0;
+  overflow-y: auto;
+  font-size: 0.95rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.sheet::backdrop { background: rgba(0, 0, 0, 0.55); }
+.sheet .row { position: sticky; bottom: 0; padding: 10px 0 16px; background: var(--color-bg-secondary); }
+.sheet ul { margin: 12px 0; padding-left: 1.1em; line-height: 1.5; }
+.sheet p { color: var(--color-text-muted); }
+
+/* Paysage bas (téléphone couché) : terrain à gauche, colonne de commandes à droite. */
+@media (orientation: landscape) and (max-height: 540px) {
+  .golf {
+    --canvas: calc(var(--vh) - 2 * var(--gap) - var(--safe-top) - var(--safe-bottom));
+    grid-template-columns: var(--canvas) minmax(0, 380px);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    grid-template-areas: "stage top" "stage hud" "stage side" "stage actions";
+    height: var(--vh);
+    padding-top: calc(var(--gap) + var(--safe-top));
+  }
+
+  .hud { flex-wrap: wrap; }
+  .side { overflow-y: auto; }
+  .actions { grid-template-columns: repeat(3, 1fr); --bar: 44px; }
+  .keys { display: none; }
+}
+
+/* Bureau et grande tablette couchée : panneau latéral de 300 px. */
+@media (min-width: 960px) and (min-height: 600px) {
+  .golf {
+    --canvas: min(760px, calc(var(--vh) - 180px - var(--safe-top) - var(--safe-bottom)));
+    grid-template-columns: var(--canvas) 300px;
+    grid-template-areas: "top top" "hud side" "stage side" "actions side";
+    column-gap: 24px;
+    padding-top: calc(var(--gap) + var(--safe-top));
+  }
+
+  .brand { font-size: 1.25rem; }
+}
+
+/* Très petit téléphone : le titre se réduit pour laisser place aux boutons. */
+@media (max-width: 340px) { .brand span, .shoot { font-size: 0.85rem; } .brand span { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .golf *, .sheet { transition: none !important; animation: none !important; }
+}
