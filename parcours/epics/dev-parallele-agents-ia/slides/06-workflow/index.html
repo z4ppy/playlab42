@@ -116,8 +116,8 @@ cd ../notif-frontend &amp;&amp; claude "Implémente @specs/notif-frontend.md"</c
       <li>Demander des corrections, ou jeter et relancer avec une spec plus précise.</li>
     </ol>
     <p>
-      Une partie du travail sera à reprendre, voire à refaire : c'est normal. Si une même tâche échoue
-      deux fois, le problème vient souvent de la spec ou du découpage, pas de l'agent.
+      Une partie du travail peut être à reprendre, voire à refaire. Si une même tâche échoue deux fois,
+      réexaminez la spec et le découpage avant de relancer.
     </p>
 
     <h2>5. Intégrer</h2>
@@ -133,8 +133,8 @@ git merge --no-ff feature/notif-backend
 git merge --no-ff feature/notif-api
 git merge --no-ff feature/notif-frontend</code></pre>
     <p>
-      <strong>En cas de conflit</strong>, c'est souvent le signe d'un découpage pas assez disjoint : résolvez, puis notez-le
-      pour mieux découper la prochaine fois. <code>git config rerere.enabled true</code> fait mémoriser à Git
+      <strong>En cas de conflit</strong>, deux branches ont modifié les mêmes lignes : le découpage n'était pas complètement
+      disjoint. Résolvez, puis notez-le pour mieux découper la prochaine fois. <code>git config rerere.enabled true</code> fait mémoriser à Git
       les résolutions de conflits pour les rejouer.
     </p>
 
