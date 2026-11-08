@@ -1,0 +1,315 @@
+{
+  "format": "playlab42-digit-cnn",
+  "version": 1,
+  "description": "CNN 2 convolutions + 2 couches denses entraîné sur MNIST par scripts/train-digit-recognizer.js",
+  "weights": {
+    "file": "weights.bin",
+    "bytes": 110760,
+    "sha256": "9e81f0ebea3002a4861eb8c183b16d2b409530f23ed72b7555567f0efb6d8266",
+    "dtype": "float32",
+    "endianness": "little"
+  },
+  "parameters": 27690,
+  "layers": {
+    "conv1": {
+      "type": "conv",
+      "inChannels": 1,
+      "outChannels": 8,
+      "kernel": 5,
+      "weights": {
+        "offset": 0,
+        "length": 200
+      },
+      "bias": {
+        "offset": 200,
+        "length": 8
+      }
+    },
+    "conv2": {
+      "type": "conv",
+      "inChannels": 8,
+      "outChannels": 16,
+      "kernel": 3,
+      "weights": {
+        "offset": 208,
+        "length": 1152
+      },
+      "bias": {
+        "offset": 1360,
+        "length": 16
+      }
+    },
+    "dense1": {
+      "type": "dense",
+      "inputs": 400,
+      "outputs": 64,
+      "weights": {
+        "offset": 1376,
+        "length": 25600
+      },
+      "bias": {
+        "offset": 26976,
+        "length": 64
+      }
+    },
+    "dense2": {
+      "type": "dense",
+      "inputs": 64,
+      "outputs": 10,
+      "weights": {
+        "offset": 27040,
+        "length": 640
+      },
+      "bias": {
+        "offset": 27680,
+        "length": 10
+      }
+    }
+  },
+  "dataset": {
+    "name": "MNIST",
+    "authors": "Yann LeCun, Corinna Cortes, Christopher J.C. Burges",
+    "homepage": "https://yann.lecun.com/exdb/mnist/",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "mirror": "https://ossci-datasets.s3.amazonaws.com/mnist/",
+    "files": [
+      {
+        "name": "train-images-idx3-ubyte.gz",
+        "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+      },
+      {
+        "name": "train-labels-idx1-ubyte.gz",
+        "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+      },
+      {
+        "name": "t10k-images-idx3-ubyte.gz",
+        "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+      },
+      {
+        "name": "t10k-labels-idx1-ubyte.gz",
+        "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+      }
+    ]
+  },
+  "training": {
+    "script": "scripts/train-digit-recognizer.js",
+    "seed": 42,
+    "epochs": 12,
+    "batchSize": 32,
+    "learningRate": 0.002,
+    "finalLearningRate": 0.00005,
+    "validationSize": 5000,
+    "augmentation": {
+      "rotation": 0.21,
+      "scale": 0.12,
+      "shear": 0.15,
+      "shift": 2.5
+    },
+    "augmentationProbability": 0.85,
+    "trainSize": 55000,
+    "optimizer": "Adam",
+    "history": [
+      {
+        "epoch": 1,
+        "loss": 0.283082,
+        "trainAccuracy": 0.910964,
+        "validationAccuracy": 0.9804
+      },
+      {
+        "epoch": 2,
+        "loss": 0.113677,
+        "trainAccuracy": 0.964891,
+        "validationAccuracy": 0.9854
+      },
+      {
+        "epoch": 3,
+        "loss": 0.088251,
+        "trainAccuracy": 0.973236,
+        "validationAccuracy": 0.9846
+      },
+      {
+        "epoch": 4,
+        "loss": 0.07368,
+        "trainAccuracy": 0.977582,
+        "validationAccuracy": 0.9872
+      },
+      {
+        "epoch": 5,
+        "loss": 0.062358,
+        "trainAccuracy": 0.98,
+        "validationAccuracy": 0.991
+      },
+      {
+        "epoch": 6,
+        "loss": 0.056334,
+        "trainAccuracy": 0.982909,
+        "validationAccuracy": 0.9912
+      },
+      {
+        "epoch": 7,
+        "loss": 0.047619,
+        "trainAccuracy": 0.985436,
+        "validationAccuracy": 0.9898
+      },
+      {
+        "epoch": 8,
+        "loss": 0.04491,
+        "trainAccuracy": 0.986273,
+        "validationAccuracy": 0.992
+      },
+      {
+        "epoch": 9,
+        "loss": 0.03967,
+        "trainAccuracy": 0.9878,
+        "validationAccuracy": 0.9922
+      },
+      {
+        "epoch": 10,
+        "loss": 0.03622,
+        "trainAccuracy": 0.988964,
+        "validationAccuracy": 0.9942
+      },
+      {
+        "epoch": 11,
+        "loss": 0.032869,
+        "trainAccuracy": 0.989891,
+        "validationAccuracy": 0.9936
+      },
+      {
+        "epoch": 12,
+        "loss": 0.033561,
+        "trainAccuracy": 0.989636,
+        "validationAccuracy": 0.993
+      }
+    ]
+  },
+  "evaluation": {
+    "split": "test (t10k)",
+    "testAccuracy": 0.9931,
+    "correct": 9931,
+    "total": 10000,
+    "confusion": [
+      [
+        977,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1129,
+        1,
+        1,
+        1,
+        0,
+        2,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1027,
+        1,
+        0,
+        0,
+        0,
+        2,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        1005,
+        0,
+        2,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        977,
+        0,
+        0,
+        0,
+        1,
+        4
+      ],
+      [
+        1,
+        1,
+        0,
+        5,
+        0,
+        884,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        0,
+        1,
+        2,
+        951,
+        0,
+        2,
+        0
+      ],
+      [
+        0,
+        1,
+        6,
+        0,
+        1,
+        0,
+        0,
+        1019,
+        1,
+        0
+      ],
+      [
+        0,
+        1,
+        2,
+        1,
+        1,
+        2,
+        0,
+        0,
+        967,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        5,
+        2,
+        0,
+        3,
+        3,
+        995
+      ]
+    ]
+  }
+}

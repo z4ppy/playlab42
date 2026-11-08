@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Reconnaissance de chiffres - Playlab42</title>
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <script type="module">
+    import { initTheme } from '../../lib/theme.js';
+    initTheme();
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    /*
+     * Mise en page mobile d'abord : en portrait, le bloc .play occupe au moins
+     * toute la hauteur visible (dvh, donc aussi la hauteur de l'iframe du
+     * portail). L'en-tête, les boutons et la prédiction gardent leur hauteur
+     * naturelle ; la zone de dessin prend la hauteur restante (sans dépasser
+     * sa largeur) et reste carrée grâce aux unités de conteneur. Aucune hauteur « réservée » codée
+     * en dur : tout tient ensemble quelle que soit la barre du navigateur.
+     * La partie pédagogique suit en dessous et se lit en faisant défiler.
+     */
+    .app {
+      --gutter: 16px;
+      --play-max: 460px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding:
+        0
+        max(var(--gutter), env(safe-area-inset-right))
+        max(16px, env(safe-area-inset-bottom))
+        max(var(--gutter), env(safe-area-inset-left));
+    }
+
+    .play {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      min-height: 100dvh;
+      padding: max(10px, env(safe-area-inset-top)) 0 max(10px, env(safe-area-inset-bottom));
+    }
+
+    .play > * { width: 100%; max-width: var(--play-max); }
+
+    .app-header { grid-area: header; }
+
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.25;
+    }
+
+    .tagline {
+      margin: 2px 0 0;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+
+    /* --- Zone de dessin --------------------------------------------- */
+    .pad-area {
+      grid-area: pad;
+      /* Hauteur restante, plafonnée à la largeur : l'espace en trop va sous la prédiction. */
+      flex: 1 1 0;
+      min-height: 160px;
+      max-height: min(100vw - 2 * var(--gutter), var(--play-max));
+      /* Conteneur dimensionné par la mise en page : son contenu ne l'agrandit pas. */
+      container-type: size;
+      display: grid;
+      place-items: center;
+    }
+
+    .toolbar, .result { flex: none; }
+
+    .pad-frame {
+      position: relative;
+      width: min(100cqw, 100cqh, var(--play-max));
+      aspect-ratio: 1;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle, var(--color-border) 1px, transparent 1.5px) 0 0 / 10% 10%,
+        var(--color-bg-card);
+      overflow: hidden;
+    }
+
+    #pad {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      /* Seule la surface de dessin bloque défilement et zoom tactiles. */
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    .pad-hint {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      text-align: center;
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+
+    .pad-hint[hidden], .pad-box[hidden], .pad-com[hidden] { display: none; }
+
+    /* Boîte englobante et centre de masse calculés par le prétraitement. */
+    .pad-box {
+      position: absolute;
+      border: 2px dashed var(--color-info);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .pad-com {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      margin: -7px 0 0 -7px;
+      border: 2px solid var(--color-info);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* --- Boutons ----------------------------------------------------- */
+    .toolbar {
+      grid-area: toolbar;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 8px;
+      white-space: nowrap;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg-secondary);
+      color: var(--color-text);
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .btn-primary {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text-inverse);
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid var(--color-info);
+      outline-offset: 2px;
+    }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    @media (hover: hover) {
+      .btn:hover:not(:disabled) { background: var(--color-bg-hover); }
+      .btn-primary:hover:not(:disabled) { background: var(--color-accent-hover); }
+    }
+
+    /* --- Prédiction -------------------------------------------------- */
+    .result {
+      grid-area: result;
+      display: grid;
+      gap: 6px;
+      padding: 8px 10px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-bg-secondary);
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .seen {
+      margin: 0;
+      display: grid;
+      justify-items: center;
+      gap: 1px;
+      font-size: 0.6875rem;
+      color: var(--color-text-muted);
+    }
+
+    .pixelated {
+      image-rendering: pixelated;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      background: var(--color-bg);
+    }
+
+    #seen28 { width: 46px; height: 46px; }
+
+    .top-digit {
+      min-width: 1.4ch;
+      font-size: 2.6rem;
+      font-weight: 800;
+      line-height: 1;
+      text-align: center;
+      color: var(--color-accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .top-text { min-width: 0; }
+
+    .top-text strong { display: block; font-size: 1rem; }
+
+    .top-text span {
+      display: block;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+    }
+
+    .bars {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 3px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .bar {
+      display: grid;
+      grid-template-rows: 28px auto auto;
+      justify-items: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bar-track {
+      position: relative;
+      width: 100%;
+      max-width: 28px;
+      height: 28px;
+      border-radius: 4px 4px 0 0;
+      background: var(--color-bg-hover);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute;
+      inset: auto 0 0;
+      height: 0;
+      background: var(--color-text-muted);
+      transition: height 0.12s ease-out;
+    }
+
+    .bar.is-top .bar-fill { background: var(--color-accent); }
+
+    .bar-digit { font-size: 0.9375rem; font-weight: 700; line-height: 1.2; }
+
+    .bar.is-top .bar-digit { color: var(--color-accent); }
+
+    .bar-pct { font-size: 0.6875rem; color: var(--color-text-muted); line-height: 1.1; }
+
+    .bars-caption {
+      margin: -2px 0 0;
+      font-size: 0.6875rem;
+      text-align: center;
+      color: var(--color-text-muted);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bar-fill { transition: none; }
+    }
+
+    /* --- Pédagogie --------------------------------------------------- */
+    .learn {
+      margin-top: 12px;
+    }
+
+    .learn h2 { font-size: 1.1rem; margin: 0 0 4px; }
+
+    .learn > p { margin: 0 0 12px; color: var(--color-text-muted); font-size: 0.9375rem; }
+
+    .stages {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .stage {
+      padding: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: var(--color-bg-secondary);
+      min-width: 0;
+    }
+
+    .stage h3 { margin: 0 0 4px; font-size: 1rem; }
+
+    .stage p { margin: 8px 0 0; font-size: 0.9375rem; }
+
+    .stage .muted { color: var(--color-text-muted); font-size: 0.8125rem; }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+    }
+
+    .flow figure { margin: 0; display: grid; gap: 2px; justify-items: center; }
+
+    .flow figcaption, .maps figcaption { font-size: 0.75rem; color: var(--color-text-muted); }
+
+    .flow-arrow { color: var(--color-text-muted); font-size: 1.2rem; }
+
+    #stageScaled { width: 100px; height: 100px; }
+
+    .seen-large { position: relative; width: 140px; height: 140px; }
+
+    #stageSeen { width: 140px; height: 140px; }
+
+    .seen-com {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      margin: -6px 0 0 -6px;
+      border: 2px solid var(--color-info);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .seen-com[hidden] { display: none; }
+
+    .maps {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .maps.small { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); }
+
+    .maps figure { margin: 0; display: grid; gap: 3px; justify-items: center; }
+
+    .maps canvas { width: 100%; aspect-ratio: 1; }
+
+    .kernel-pair { display: grid; grid-template-columns: 1fr 2fr; gap: 3px; width: 100%; }
+
+    #hiddenGrid { width: min(100%, 200px); aspect-ratio: 1; }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px;
+      margin: 0;
+    }
+
+    .facts div { padding: 8px; border-radius: var(--radius-md); background: var(--color-bg); }
+
+    .facts dt { font-size: 0.75rem; color: var(--color-text-muted); }
+
+    .facts dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* Texte en couleur normale (contraste AA dans les deux thèmes), signal d'erreur par la bordure. */
+    .result.has-error { border-color: var(--color-error); border-left-width: 4px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* Écrans peu hauts en portrait : l'accroche cède la place au dessin, barres plus basses. */
+    @media (max-height: 680px) and (orientation: portrait) {
+      .tagline { display: none; }
+      .bar { grid-template-rows: 22px auto auto; }
+      .bar-track { height: 22px; }
+      #seen28 { width: 40px; height: 40px; }
+      .top-digit { font-size: 2.3rem; }
+    }
+
+    /*
+     * Paysage (téléphone couché) et grands écrans : dessin à gauche,
+     * commandes et prédiction à droite, toujours visibles ensemble.
+     * Le côté du dessin découle de la hauteur visible moins les marges.
+     */
+    @media (orientation: landscape) and (max-height: 620px), (min-width: 720px) {
+      .play {
+        --pad-top: max(8px, env(safe-area-inset-top));
+        --pad-bottom: max(8px, env(safe-area-inset-bottom));
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto 1fr;
+        grid-template-areas:
+          "pad header"
+          "pad toolbar"
+          "pad result";
+        column-gap: 20px;
+        justify-items: stretch;
+        align-items: start;
+        min-height: 0;
+        padding: var(--pad-top) 0 var(--pad-bottom);
+      }
+
+      .play > * { max-width: none; }
+
+      .pad-area { width: var(--pad-size); height: var(--pad-size); max-height: none; }
+    }
+
+    @media (orientation: landscape) and (max-height: 620px) {
+      .play { --pad-size: clamp(180px, min(100dvh - var(--pad-top) - var(--pad-bottom), 50vw), 460px); }
+      .tagline { display: none; }
+    }
+
+    @media (min-width: 720px) {
+      .play { --pad-size: clamp(260px, min(48vw, 100dvh - var(--pad-top) - var(--pad-bottom)), 460px); }
+      .app-header h1 { font-size: 1.4rem; }
+      .bar { grid-template-rows: 60px auto auto; }
+      .bar-track { height: 60px; max-width: 36px; }
+      .top-digit { font-size: 3.4rem; }
+      #seen28 { width: 64px; height: 64px; }
+    }
+
+    @media (min-width: 1000px) {
+      .stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stage-wide { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="play">
+    <header class="app-header">
+      <h1>Reconnaissance de chiffres</h1>
+      <p class="tagline">Un petit réseau de neurones lit votre dessin, entièrement dans ce navigateur.</p>
+    </header>
+
+    <section class="pad-area" aria-label="Zone de dessin">
+      <div class="pad-frame">
+        <canvas id="pad" width="320" height="320" role="img" aria-label="Zone de dessin : tracez un chiffre au doigt ou à la souris ; au clavier, utilisez le bouton Exemple MNIST"></canvas>
+        <div class="pad-hint" id="padHint" aria-hidden="true">Dessinez un chiffre de 0 à 9 avec le doigt ou la souris</div>
+        <div class="pad-box" id="padBox" hidden></div>
+        <div class="pad-com" id="padCom" hidden></div>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <button type="button" class="btn btn-primary" id="clearBtn">Effacer</button>
+      <button type="button" class="btn" id="sampleBtn" disabled>Exemple MNIST</button>
+    </div>
+
+    <section class="result" aria-label="Prédiction du réseau">
+      <div class="top">
+        <figure class="seen">
+          <canvas id="seen28" class="pixelated" role="img" width="28" height="28" aria-label="Image 28 × 28 vue par le modèle"></canvas>
+          <figcaption>vu en 28×28</figcaption>
+        </figure>
+        <div class="top-digit" id="topDigit" aria-hidden="true">?</div>
+        <div class="top-text">
+          <strong id="topLabel">Chargement du modèle…</strong>
+          <span id="topDetail">Poids lus depuis le dépôt, aucun serveur d’inférence.</span>
+        </div>
+      </div>
+      <ol class="bars" id="bars" aria-label="Probabilité de chaque chiffre"></ol>
+      <p class="bars-caption" aria-hidden="true">probabilité de chaque chiffre, en %</p>
+      <p class="sr-only" id="liveVerdict" aria-live="polite" aria-atomic="true"></p>
+    </section>
+    </div>
+
+    <section class="learn" aria-labelledby="learnTitle">
+      <h2 id="learnTitle">Ce qui se passe dans le réseau</h2>
+      <p>Chaque trait relance le calcul complet : prétraitement, deux couches de convolution, une couche cachée puis une probabilité par chiffre. Aucune image ne quitte l’appareil.</p>
+      <ol class="stages">
+        <li class="stage">
+          <h3>1. Mettre le dessin au format MNIST</h3>
+          <div class="flow">
+            <figure>
+              <canvas id="stageScaled" class="pixelated" role="img" width="20" height="20" aria-label="Chiffre recadré et réduit"></canvas>
+              <figcaption id="scaledCaption">recadré, ≤ 20×20</figcaption>
+            </figure>
+            <span class="flow-arrow" aria-hidden="true">→</span>
+            <figure>
+              <div class="seen-large">
+                <canvas id="stageSeen" class="pixelated" role="img" width="28" height="28" aria-label="Image 28 × 28 centrée"></canvas>
+                <div class="seen-com" id="seenCom" hidden></div>
+              </div>
+              <figcaption>centré en 28×28</figcaption>
+            </figure>
+          </div>
+          <p>Le réseau a appris sur MNIST : des chiffres réduits dans une boîte de 20×20 pixels (proportions conservées, bords adoucis en niveaux de gris), puis placés dans une image 28×28 de sorte que leur <strong>centre de masse</strong> (cercle bleu) soit au milieu. On reproduit exactement ces étapes : un chiffre dessiné petit ou dans un coin est vu comme les autres.</p>
+        </li>
+        <li class="stage">
+          <h3>2. Convolution : 8 filtres 5×5</h3>
+          <p class="muted">À gauche le filtre appris (rose : poids positifs, bleu : négatifs), à droite sa carte d’activation 24×24.</p>
+          <div class="maps" id="conv1Maps"></div>
+          <p>Chaque filtre glisse sur l’image et répond fort là où il retrouve son motif : bord horizontal, diagonale, extrémité de trait… Les mêmes 25 poids servent partout, d’où la robustesse aux petits décalages.</p>
+        </li>
+        <li class="stage">
+          <h3>3. Seconde convolution : 16 cartes 10×10</h3>
+          <div class="maps small" id="conv2Maps"></div>
+          <p>Ces filtres combinent les 8 cartes précédentes : ils détectent des assemblages (boucle, croisement, crochet). Un max-pooling divise ensuite la résolution par deux en gardant la réponse la plus forte de chaque bloc 2×2.</p>
+        </li>
+        <li class="stage">
+          <h3>4. 64 neurones cachés, puis 10 scores</h3>
+          <div class="flow">
+            <figure>
+              <canvas id="hiddenGrid" class="pixelated" role="img" width="8" height="8" aria-label="Activations des 64 neurones cachés"></canvas>
+              <figcaption>64 neurones (8×8)</figcaption>
+            </figure>
+          </div>
+          <p>Les 400 valeurs restantes (16×5×5) alimentent 64 neurones ; chacun vote ensuite pour chaque chiffre. La fonction <strong>softmax</strong> transforme ces 10 scores en probabilités qui somment à 100 %. Le réseau répond toujours : même un gribouillis reçoit un chiffre, parfois avec une confiance trompeuse.</p>
+        </li>
+        <li class="stage stage-wide">
+          <h3>Le modèle</h3>
+          <dl class="facts" id="facts">
+            <div><dt>Paramètres appris</dt><dd id="factParams">…</dd></div>
+            <div><dt>Poids (float32)</dt><dd id="factSize">…</dd></div>
+            <div><dt>Précision sur 10 000 images de test</dt><dd id="factAccuracy">…</dd></div>
+            <div><dt>Durée de la dernière inférence</dt><dd id="factTime">…</dd></div>
+          </dl>
+          <p class="muted">Entraîné par le script reproductible <code>scripts/train-digit-recognizer.js</code> (JavaScript pur, sans bibliothèque) sur le jeu de données MNIST de Yann LeCun, Corinna Cortes et Christopher J.C. Burges, distribué sous licence <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener" target="_blank">CC BY-SA 3.0</a>. L’inférence est écrite à la main avec des Float32Array : pas de TensorFlow.js, pas de CDN, pas d’appel réseau en dehors du chargement des poids depuis ce site. Les chiffres MNIST sont des chiffres manuscrits sur papier : un dessin au doigt reste un peu différent, d’où quelques erreurs possibles.</p>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

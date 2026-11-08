@@ -1,0 +1,9 @@
+{
+  "id": "digit-recognizer",
+  "name": "Reconnaissance de chiffres",
+  "description": "Dessinez un chiffre au doigt : un petit réseau de neurones entraîné sur MNIST le reconnaît en direct, dans le navigateur, et montre ses activations",
+  "tags": ["ia", "deep-learning", "pedagogie", "image"],
+  "author": "Cyrille",
+  "icon": "✍️",
+  "version": "1.0.0"
+}
