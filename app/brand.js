@@ -4,7 +4,10 @@
  * Trois touches légères, sans dépendance :
  * - le titre se « décode » au chargement, comme des tokens qui se résolvent ;
  * - la fiole de l'introduction réagit au clic (changement de teinte et agitation) ;
- * - les cartes reçoivent un halo qui suit le pointeur.
+ * - les cartes reçoivent un halo qui suit le pointeur ;
+ * - un reflet traverse le titre à chaque changement d'onglet ;
+ * - easter egg : un clic sur la tuile « Pl 42 », ou la frappe de « lab »,
+ *   fait déborder la fiole d'étoiles.
  *
  * Tout reste décoratif : le texte réel du titre est porté par un libellé
  * accessible, et rien ne s'anime si l'utilisateur préfère réduire les mouvements.
@@ -18,6 +21,14 @@ export const FLASK_REACTIONS = 4;
 
 const DECODE_DURATION_MS = 900;
 const SHAKE_DURATION_MS = 900;
+const SWEEP_DURATION_MS = 1200;
+const OVERFLOW_DURATION_MS = 2600;
+
+/**
+ * Séquence secrète au clavier. Les chiffres 1 à 4 changent déjà d'onglet
+ * (app/keyboard-commands.js) : « 42 » est donc réservé au clic sur la tuile.
+ */
+export const SECRET_SEQUENCE = ['l', 'a', 'b'];
 
 /**
  * Calcule une image du décodage du titre.
@@ -104,13 +115,102 @@ export function triggerReaction(flask, win = window) {
   const next = (Number(flask.dataset.reaction || 0) + 1) % FLASK_REACTIONS;
   flask.dataset.reaction = String(next);
   if (!prefersReducedMotion(win)) {
-    flask.classList.remove('is-shaken');
-    // Forcer un recalcul pour rejouer l'animation même sur des clics rapprochés.
-    void flask.offsetWidth;
-    flask.classList.add('is-shaken');
-    win.setTimeout(() => flask.classList.remove('is-shaken'), SHAKE_DURATION_MS);
+    replayClass(flask, 'is-shaken', SHAKE_DURATION_MS, win);
   }
   return next;
+}
+
+/**
+ * Rejoue une classe d'animation CSS sur un élément, même si elle est déjà active.
+ *
+ * @param {Element} element
+ * @param {string} className
+ * @param {number} duration - Durée avant retrait de la classe (ms)
+ * @param {Window} win
+ */
+function replayClass(element, className, duration, win) {
+  element.classList.remove(className);
+  // Forcer un recalcul pour rejouer l'animation même sur des déclenchements rapprochés.
+  void element.getBoundingClientRect();
+  element.classList.add(className);
+  win.setTimeout(() => element.classList.remove(className), duration);
+}
+
+/**
+ * Fait passer un reflet dans le dégradé du titre.
+ *
+ * @param {Document} [doc=document]
+ * @param {Window} [win=window]
+ * @returns {boolean} true si le reflet a été lancé
+ */
+export function sweepTitle(doc = document, win = window) {
+  const letters = doc.querySelector('.brand-letters');
+  if (!letters || prefersReducedMotion(win)) {
+    return false;
+  }
+  replayClass(letters, 'is-sweeping', SWEEP_DURATION_MS, win);
+  return true;
+}
+
+/**
+ * Fait déborder la fiole : le liquide monte dans le col et une gerbe d'étoiles s'échappe.
+ * En mouvement réduit, seule la teinte change (réaction suivante).
+ *
+ * @param {HTMLElement} flask - Bouton de la fiole
+ * @param {Window} [win=window]
+ */
+export function overflowFlask(flask, win = window) {
+  if (prefersReducedMotion(win)) {
+    triggerReaction(flask, win);
+    return;
+  }
+  replayClass(flask, 'is-overflowing', OVERFLOW_DURATION_MS, win);
+}
+
+/**
+ * Crée un détecteur de séquence de touches.
+ *
+ * Chaque appel reçoit une touche et renvoie true quand la séquence vient d'être
+ * complétée. Une pause plus longue que `timeout` entre deux touches recommence
+ * la détection ; une touche erronée aussi, sauf si elle commence une nouvelle séquence.
+ *
+ * @param {string[]} sequence - Touches attendues, dans l'ordre
+ * @param {object} [options]
+ * @param {number} [options.timeout=1200] - Délai maximal entre deux touches (ms)
+ * @param {() => number} [options.now=Date.now] - Horloge injectable pour les tests
+ * @returns {(key: string) => boolean}
+ */
+export function createSequenceDetector(sequence, { timeout = 1200, now = Date.now } = {}) {
+  let index = 0;
+  let last = -Infinity;
+  return key => {
+    const time = now();
+    if (time - last > timeout) {
+      index = 0;
+    }
+    last = time;
+    if (key === sequence[index]) {
+      index++;
+    } else {
+      index = key === sequence[0] ? 1 : 0;
+    }
+    if (index === sequence.length) {
+      index = 0;
+      return true;
+    }
+    return false;
+  };
+}
+
+/**
+ * Indique si une frappe clavier vise un champ de saisie (à ignorer pour l'easter egg).
+ *
+ * @param {EventTarget|null} target
+ * @returns {boolean}
+ */
+export function isTypingTarget(target) {
+  return target instanceof Element
+    && (target.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]') !== null);
 }
 
 /**
@@ -130,24 +230,74 @@ export function updateSpotlight(event, selector = '.card, .epic-card') {
 }
 
 /**
+ * Indique si une frappe doit être ignorée par l'easter egg :
+ * saisie en cours, touche de modification, ou jeu affiché en plein écran.
+ *
+ * @param {KeyboardEvent} event
+ * @param {Document} doc
+ * @returns {boolean}
+ */
+function shouldIgnoreKey(event, doc) {
+  return event.ctrlKey || event.metaKey || event.altKey || isTypingTarget(event.target)
+    || doc.body.classList.contains('game-active');
+}
+
+/**
+ * Branche le décodage du titre au chargement et au survol du logo.
+ *
+ * @param {Document} doc
+ * @param {Window} win
+ */
+function bindTitle(doc, win) {
+  const letters = doc.querySelector('.brand-letters');
+  if (!letters || prefersReducedMotion(win)) {
+    return;
+  }
+  let stop = playDecode(letters, { win });
+  // Rejouer au survol du logo, sans empiler les animations.
+  doc.querySelector('.brand')?.addEventListener('pointerenter', () => {
+    stop();
+    stop = playDecode(letters, { win });
+  });
+}
+
+/**
+ * Branche l'easter egg : clic sur la tuile « Pl 42 » ou frappe de la séquence secrète.
+ *
+ * @param {Document} doc
+ * @param {() => void} celebrate - Effet à déclencher
+ */
+function bindSecret(doc, celebrate) {
+  const secret = createSequenceDetector(SECRET_SEQUENCE);
+  doc.addEventListener('keydown', event => {
+    if (!shouldIgnoreKey(event, doc) && secret(event.key.toLowerCase())) {
+      celebrate();
+    }
+  });
+  doc.querySelector('.brand-mark')?.addEventListener('click', celebrate);
+}
+
+/**
  * Branche les animations d'identité sur le portail.
  *
  * @param {Document} [doc=document]
  * @param {Window} [win=window]
  */
 export function initBrand(doc = document, win = window) {
-  const letters = doc.querySelector('.brand-letters');
-  if (letters && !prefersReducedMotion(win)) {
-    let stop = playDecode(letters, { win });
-    // Rejouer au survol du logo, sans empiler les animations.
-    doc.querySelector('.brand')?.addEventListener('pointerenter', () => {
-      stop();
-      stop = playDecode(letters, { win });
-    });
-  }
+  bindTitle(doc, win);
 
-  doc.querySelector('.hero-flask')?.addEventListener('click', event => {
+  const flask = doc.querySelector('.hero-flask');
+  flask?.addEventListener('click', event => {
     triggerReaction(event.currentTarget, win);
+  });
+
+  doc.addEventListener('playlab:tabchange', () => sweepTitle(doc, win));
+
+  bindSecret(doc, () => {
+    sweepTitle(doc, win);
+    if (flask) {
+      overflowFlask(flask, win);
+    }
   });
 
   // Le halo n'a de sens qu'avec un pointeur précis (souris, stylet).

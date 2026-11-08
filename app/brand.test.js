@@ -9,6 +9,11 @@ import {
   triggerReaction,
   updateSpotlight,
   initBrand,
+  sweepTitle,
+  overflowFlask,
+  createSequenceDetector,
+  isTypingTarget,
+  SECRET_SEQUENCE,
   FLASK_REACTIONS,
   SCRAMBLE_GLYPHS,
 } from './brand.js';
@@ -157,5 +162,117 @@ describe('initBrand : intégration au portail', () => {
     expect(flask.getAttribute('aria-label')).toBeTruthy();
     flask.click();
     expect(flask.dataset.reaction).toBe('1');
+  });
+});
+
+describe('createSequenceDetector : séquence secrète', () => {
+  it('reconnaît la séquence complète, une seule fois', () => {
+    let time = 0;
+    const detect = createSequenceDetector(['l', 'a', 'b'], { now: () => time });
+    expect(['l', 'a', 'b'].map(key => { time += 100; return detect(key); })).toEqual([false, false, true]);
+    // Repart de zéro après un succès.
+    time += 100;
+    expect(detect('b')).toBe(false);
+  });
+
+  it('recommence après une pause trop longue', () => {
+    let time = 0;
+    const detect = createSequenceDetector(['l', 'a', 'b'], { timeout: 1000, now: () => time });
+    detect('l');
+    detect('a');
+    time += 1500;
+    expect(detect('b')).toBe(false);
+  });
+
+  it('accepte une fausse note qui commence une nouvelle séquence', () => {
+    const detect = createSequenceDetector(['l', 'a', 'b'], { now: () => 0 });
+    // « l l a b » : le second « l » relance la séquence au lieu de l'annuler.
+    expect(['l', 'l', 'a', 'b'].map(key => detect(key))).toEqual([false, false, false, true]);
+  });
+
+  it('évite les chiffres 1 à 4, déjà raccourcis des onglets', () => {
+    expect(SECRET_SEQUENCE.some(key => ['1', '2', '3', '4'].includes(key))).toBe(false);
+  });
+});
+
+describe('isTypingTarget : frappes à ignorer', () => {
+  it('reconnaît les champs de saisie et les zones éditables', () => {
+    document.body.innerHTML = '<input id="i"><textarea id="t"></textarea><div contenteditable="true"><span id="c"></span></div><p id="p"></p>';
+    expect(isTypingTarget(document.getElementById('i'))).toBe(true);
+    expect(isTypingTarget(document.getElementById('t'))).toBe(true);
+    expect(isTypingTarget(document.getElementById('c'))).toBe(true);
+    expect(isTypingTarget(document.getElementById('p'))).toBe(false);
+    expect(isTypingTarget(null)).toBe(false);
+  });
+});
+
+describe('sweepTitle et overflowFlask : effets ponctuels', () => {
+  beforeEach(() => {
+    document.body.innerHTML = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
+  });
+
+  it('fait passer un reflet dans le titre, retiré après la durée prévue', () => {
+    const win = fakeWindow();
+    expect(sweepTitle(document, win)).toBe(true);
+    const letters = document.querySelector('.brand-letters');
+    expect(letters.classList.contains('is-sweeping')).toBe(true);
+    win.setTimeout.mock.calls.at(-1)[0]();
+    expect(letters.classList.contains('is-sweeping')).toBe(false);
+  });
+
+  it('ne lance pas de reflet en mouvement réduit', () => {
+    expect(sweepTitle(document, fakeWindow({ reducedMotion: true }))).toBe(false);
+  });
+
+  it('fait déborder la fiole, ou change seulement sa teinte en mouvement réduit', () => {
+    const flask = document.querySelector('.hero-flask');
+    overflowFlask(flask, fakeWindow());
+    expect(flask.classList.contains('is-overflowing')).toBe(true);
+
+    const calm = document.createElement('button');
+    overflowFlask(calm, fakeWindow({ reducedMotion: true }));
+    expect(calm.classList.contains('is-overflowing')).toBe(false);
+    expect(calm.dataset.reaction).toBe('1');
+  });
+});
+
+describe('initBrand : déclencheurs', () => {
+  beforeEach(() => {
+    document.body.innerHTML = html.slice(html.indexOf('<body>') + 6, html.indexOf('</body>'));
+  });
+
+  const press = (key, target = document.body) => {
+    target.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+  };
+
+  it('fait passer un reflet dans le titre à chaque changement d’onglet', () => {
+    initBrand(document, fakeWindow());
+    document.dispatchEvent(new CustomEvent('playlab:tabchange', { detail: { tab: 'tools' } }));
+    expect(document.querySelector('.brand-letters').classList.contains('is-sweeping')).toBe(true);
+  });
+
+  it('déclenche le débordement en tapant « lab » hors d’un champ', () => {
+    initBrand(document, fakeWindow());
+    ['l', 'a', 'b'].forEach(key => press(key));
+    expect(document.querySelector('.hero-flask').classList.contains('is-overflowing')).toBe(true);
+  });
+
+  it('ignore la séquence tapée dans la recherche ou pendant un jeu', () => {
+    initBrand(document, fakeWindow());
+    const flask = document.querySelector('.hero-flask');
+    const input = document.createElement('input');
+    document.body.append(input);
+    ['l', 'a', 'b'].forEach(key => press(key, input));
+    expect(flask.classList.contains('is-overflowing')).toBe(false);
+
+    document.body.classList.add('game-active');
+    ['l', 'a', 'b'].forEach(key => press(key));
+    expect(flask.classList.contains('is-overflowing')).toBe(false);
+  });
+
+  it('déclenche aussi le débordement au clic sur la tuile « Pl 42 »', () => {
+    initBrand(document, fakeWindow());
+    document.querySelector('.brand-mark').click();
+    expect(document.querySelector('.hero-flask').classList.contains('is-overflowing')).toBe(true);
   });
 });
