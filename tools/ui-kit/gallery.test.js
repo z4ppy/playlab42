@@ -76,10 +76,30 @@ describe('Galerie UI interactive', () => {
   });
 
   test('les boutons produisent des statuts textuels', () => {
+    const status = document.getElementById('button-status');
     document.getElementById('primary').click();
-    expect(document.getElementById('button-status').textContent).toContain('Succès');
+    expect(status.textContent).toContain('Succès');
+    expect(status.classList.contains('ui-status-success')).toBe(true);
     document.getElementById('secondary').click();
-    expect(document.getElementById('button-status').textContent).toContain('Information');
+    expect(status.textContent).toContain('Information');
+    // Une information ne garde pas la bordure verte du succès précédent.
+    expect(status.className).toBe('ui-status');
+  });
+
+  test('la variante du statut de formulaire suit le message et aria-invalid suit l\'erreur', () => {
+    const title = document.getElementById('card-title');
+    const status = document.getElementById('form-status');
+    const form = document.getElementById('preview-form');
+    title.value = '  ';
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+    expect(status.classList.contains('ui-status-error')).toBe(true);
+    expect(title.getAttribute('aria-invalid')).toBe('true');
+    title.value = 'Titre corrigé';
+    title.dispatchEvent(new Event('input'));
+    expect(title.hasAttribute('aria-invalid')).toBe(false);
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+    expect(status.classList.contains('ui-status-success')).toBe(true);
+    expect(status.classList.contains('ui-status-error')).toBe(false);
   });
 
   test('le sélecteur de thème suit un changement venu d\'ailleurs (portail, autre onglet)', () => {
@@ -91,6 +111,15 @@ describe('Galerie UI interactive', () => {
     window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: 'dark' } }));
     expect(theme.value).toBe('dark');
     expect(document.getElementById('token-value').textContent).toBe('#000000');
+  });
+
+  test('le curseur d\'espacement annonce sa valeur avec l\'unité', () => {
+    const spacing = document.getElementById('spacing');
+    expect(spacing.getAttribute('aria-valuetext')).toBe('16 px');
+    spacing.value = '28';
+    spacing.dispatchEvent(new Event('input'));
+    expect(spacing.getAttribute('aria-valuetext')).toBe('28 px');
+    expect(document.getElementById('spacing-value').value).toBe('28');
   });
 
   test('emploie les composants partagés pour tous les boutons et champs', () => {

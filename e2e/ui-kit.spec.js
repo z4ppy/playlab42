@@ -126,3 +126,18 @@ test('Galerie UI: theme change a chaud depuis un autre document', async ({ page,
   await expect(page.locator('#token-value')).toHaveText('#f6f8fc');
   await other.close();
 });
+
+test('Galerie UI: statuts types, erreur annoncee et curseur avec unite', async ({ page }) => {
+  await page.goto('/tools/ui-kit/index.html');
+  const title = page.locator('#card-title');
+  await title.fill('   ');
+  await activate(page.getByRole('button', { name: 'Appliquer à la carte' }));
+  await expect(page.locator('#form-status')).toHaveClass(/ui-status-error/);
+  await expect(title).toHaveAttribute('aria-invalid', 'true');
+  await expect(title).toBeFocused();
+  await title.fill('Carte valide');
+  await expect(title).not.toHaveAttribute('aria-invalid');
+  await activate(page.getByRole('button', { name: 'Appliquer à la carte' }));
+  await expect(page.locator('#form-status')).toHaveClass(/ui-status-success/);
+  await expect(page.getByRole('slider', { name: /Espacement/ })).toHaveAttribute('aria-valuetext', '16 px');
+});
