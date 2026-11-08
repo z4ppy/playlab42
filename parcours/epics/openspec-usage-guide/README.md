@@ -42,6 +42,7 @@ Depuis ce worktree, dans Docker :
 ```bash
 make up
 make npm CMD="test -- --runInBand --runTestsByPath scripts/openspec-guide.test.js scripts/openspec-parcours.test.js scripts/parcours-utils.test.js"
+make npm CMD="run prepare:gpt2"  # une fois : poids GPT-2 exigés par build:local
 make npm CMD="run build:local"
 make npm CMD="run test:e2e -- e2e/openspec.spec.js"
 make lint

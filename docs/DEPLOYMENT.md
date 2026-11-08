@@ -109,6 +109,7 @@ Dans Docker :
 
 ```bash
 make npm CMD="run build"        # runtime, catalogues avec snapshot OG, site, SBOM/manifeste
+make npm CMD="run prepare:gpt2" # une fois : poids GPT-2 exigés par build et build:local
 make npm CMD="run build:local"  # même chaîne, sans enrichissement OG
 make npm CMD="run verify:site"
 make npm CMD="run check:recovery" # exercice local uniquement

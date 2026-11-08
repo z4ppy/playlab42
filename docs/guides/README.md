@@ -27,7 +27,8 @@ Markdown**, et non présenté comme une page du lecteur.
 ## Prendre ses repères
 
 - [Architecture](architecture.md) : comprendre les composants et leurs limites.
-- [Premiers pas](../GETTING_STARTED.md) : préparer l'environnement Docker.
+- [Architecture en bref](../ARCHITECTURE.md) : le schéma, la stack et la carte du dépôt.
+- [Premiers pas](../GETTING_STARTED.md) : préparer l'environnement, avec Node.js ou Docker.
 - [Contribuer](contributing.md) : connaître le workflow et les vérifications.
 - [L'usine logicielle](software-factory.md) : comprendre la chaîne de livraison et les points restant à améliorer.
 

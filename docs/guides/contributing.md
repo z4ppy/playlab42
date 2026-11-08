@@ -42,7 +42,7 @@ Pour un nouveau module, suivre aussi le [workflow OpenSpec](./openspec-workflow.
        - parcours/epics/mon-epic/ (epic.json, slides/...)
 
 4. PRÉPARATION ET PARCOURS LOCAL
-   └── make npm CMD="run build:local"
+   └── make npm CMD="run build:dev"
    └── make serve
    └── make info pour connaître le port de ce worktree
    └── make test-e2e pour les interactions navigateur
@@ -251,7 +251,7 @@ Avant de soumettre une PR, testez toujours en local :
 
 ```bash
 # Préparer le site sans collecte réseau puis connaître l'URL du worktree
-make npm CMD="run build:local"
+make npm CMD="run build:dev"   # ou, sans Docker : npm start
 make info
 make serve
 ```

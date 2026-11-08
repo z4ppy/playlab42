@@ -141,11 +141,12 @@ les preuves attendues et **les points restant à améliorer**.
 | Build | esbuild, scripts npm, distributions runtime locales |
 | Qualité | Jest, Playwright, ESLint, TypeScript, OpenSpec |
 | Livraison | GitHub Actions et GitHub Pages |
+| Travail assisté par IA | [AGENTS.md](../../AGENTS.md), [skills](project-skills.md), [OpenSpec](openspec-workflow.md) |
 
 ```bash
 make info
-make npm CMD="run build:local"  # préparation complète sans collecte OG
-make serve                    # URL externe affichée par make info
+make npm CMD="run build:dev"    # contenus et catalogues, sans collecte OG
+make serve                      # URL externe affichée par make info
 make typecheck
 make test
 make test-e2e
@@ -158,6 +159,8 @@ canoniques, sans copie concurrente dans ce guide.
 
 ## Voir aussi
 
+- [Architecture en bref](../ARCHITECTURE.md) : schéma, stack et carte du dépôt
+- [Guide de démarrage](../GETTING_STARTED.md) : Node.js local ou Docker, commandes du quotidien
 - [Usine logicielle](software-factory.md)
 - [Workflow OpenSpec](openspec-workflow.md)
 - [Skills](project-skills.md)

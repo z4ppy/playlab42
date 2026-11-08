@@ -420,7 +420,7 @@ git push -u origin feature/ma-feature
 ### Points d'attention
 
 - Les fichiers `data/*.json` sont générés au build et **non versionnés** (dans `.gitignore`)
-- Régénérer les catalogues dans Docker avec `make npm CMD="run build:local"` ; `make build` construit l'image Docker
+- Régénérer les catalogues dans Docker avec `make npm CMD="run build:dev"` (`build:local` prépare aussi `site/` et exige les poids GPT-2 : `prepare:gpt2`) ; `make build` construit l'image Docker
 - Les parcours utilisent un système de taxonomie avec threshold (min 3 epics par catégorie)
 - Les moteurs de jeux doivent être déterministes (utiliser SeededRandom)
 - Le projet est 100% statique, pas de backend requis
