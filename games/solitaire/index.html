@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Solitaire Klondike : pioche 1 ou 3, donnes numérotées, indices expliqués et une IA qui joue sous vos yeux.">
+  <title>Solitaire - Playlab42</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="../game-page.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <!-- Enseignes dessinées une fois, réutilisées par <use> : nettes à toute taille, sans police ni emoji. -->
+  <svg class="suit-sprite" aria-hidden="true" focusable="false">
+    <symbol id="suit-S" viewBox="0 0 100 100"><path d="M50 4C66 24 96 40 96 62c0 14-10 24-23 24-9 0-16-5-20-11 1 9 5 16 13 21H34c8-5 12-12 13-21-4 6-11 11-20 11C14 86 4 76 4 62 4 40 34 24 50 4Z"/></symbol>
+    <symbol id="suit-H" viewBox="0 0 100 100"><path d="M50 94C24 72 4 56 4 32 4 16 16 6 30 6c9 0 16 5 20 13 4-8 11-13 20-13 14 0 26 10 26 26 0 24-20 40-46 62Z"/></symbol>
+    <symbol id="suit-C" viewBox="0 0 100 100"><circle cx="50" cy="27" r="21"/><circle cx="26" cy="58" r="21"/><circle cx="74" cy="58" r="21"/><circle cx="50" cy="52" r="12"/><path d="M46 52h8c0 20 4 32 14 42H32c10-10 14-22 14-42Z"/></symbol>
+    <symbol id="suit-D" viewBox="0 0 100 100"><path d="M50 3 88 50 50 97 12 50Z"/></symbol>
+  </svg>
+
+  <main class="sol-app" id="app">
+    <header class="sol-header">
+      <div class="sol-title">
+        <h1>Solitaire</h1>
+        <p class="sol-deal" id="deal-label">Donne n° –</p>
+      </div>
+      <dl class="sol-stats" aria-label="Partie en cours">
+        <div><dt>Score</dt><dd id="stat-score">0</dd></div>
+        <div><dt>Coups</dt><dd id="stat-moves">0</dd></div>
+        <div><dt>Temps</dt><dd><time id="stat-time">0:00</time></dd></div>
+      </dl>
+    </header>
+
+    <nav class="sol-toolbar" aria-label="Commandes de la partie">
+      <button type="button" class="sol-button sol-button-primary" id="btn-new">Nouvelle donne</button>
+      <button type="button" class="sol-button" id="btn-replay">Rejouer</button>
+      <button type="button" class="sol-button" id="btn-undo" aria-keyshortcuts="Z Control+Z">Annuler</button>
+      <button type="button" class="sol-button" id="btn-redo" aria-keyshortcuts="Y Control+Y">Refaire</button>
+      <button type="button" class="sol-button" id="btn-hint" aria-keyshortcuts="I">Indice</button>
+      <button type="button" class="sol-button" id="btn-watch" aria-pressed="false" aria-keyshortcuts="A">Regarder l’IA</button>
+      <button type="button" class="sol-button sol-button-accent" id="btn-finish" aria-keyshortcuts="T" hidden>Terminer</button>
+      <button type="button" class="sol-button" id="btn-options">Options</button>
+      <button type="button" class="sol-button" id="btn-help" aria-keyshortcuts="?">Aide</button>
+    </nav>
+
+    <p class="sol-message" id="message" role="status" aria-live="polite">Cliquez ou glissez une carte pour la déplacer.</p>
+
+    <section class="sol-table" id="table" aria-label="Table de jeu" aria-describedby="table-help"></section>
+    <p class="sr-only" id="table-help">Flèches pour parcourir la table, Entrée pour déplacer automatiquement, Espace pour prendre puis poser, Échap pour annuler la prise. Point d’interrogation pour l’aide.</p>
+    <p class="sr-only" id="announcer" role="status" aria-live="polite" aria-atomic="true"></p>
+    <p class="sol-notice" id="storage-notice" role="status" hidden></p>
+  </main>
+
+  <div class="sol-overlay" id="dialog-options" role="dialog" aria-modal="true" aria-labelledby="options-title">
+    <form class="sol-dialog" id="options-form">
+      <h2 id="options-title">Options de partie</h2>
+      <fieldset class="sol-field">
+        <legend>Pioche</legend>
+        <label><input type="radio" name="draw" value="1" checked> 1 carte</label>
+        <label><input type="radio" name="draw" value="3"> 3 cartes</label>
+      </fieldset>
+      <label class="sol-check"><input type="checkbox" id="opt-winnable"> Donnes gagnables uniquement <small>(prouvées par le solveur)</small></label>
+      <label class="sol-check"><input type="checkbox" id="opt-autofinish" checked> Fin automatique quand tout est visible</label>
+      <label class="sol-field" for="opt-theme">Thème
+        <select id="opt-theme">
+          <option value="system">Automatique</option>
+          <option value="light">Clair</option>
+          <option value="dark">Sombre</option>
+        </select>
+      </label>
+      <label class="sol-field" for="opt-deal">Donne n°
+        <input type="number" id="opt-deal" min="0" max="4294967295" step="1" inputmode="numeric" placeholder="au hasard">
+      </label>
+      <p class="sol-small">Pioche et donnes gagnables s’appliquent à la prochaine donne.</p>
+      <div class="sol-actions">
+        <button type="submit" class="sol-button sol-button-primary">Distribuer</button>
+        <button type="button" class="sol-button" id="options-close">Fermer</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="sol-overlay" id="dialog-help" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="sol-dialog">
+      <h2 id="help-title">Règles et raccourcis</h2>
+      <p>Montez les quatre enseignes de l’as au roi sur les fondations. Dans les colonnes, posez une carte sur une carte de rang supérieur et de couleur opposée ; seul un roi occupe une colonne vide. Le talon se pioche une ou trois cartes à la fois et se recycle sans limite.</p>
+      <p>Un clic envoie la carte vers la meilleure destination, un double-clic vers sa fondation ; on peut aussi glisser une carte ou une séquence.</p>
+      <dl class="sol-keys">
+        <div><dt><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Parcourir la table (↑ prend plus de cartes dans une colonne)</dd></div>
+        <div><dt><kbd>1</kbd>…<kbd>7</kbd></dt><dd>Aller à une colonne</dd></div>
+        <div><dt><kbd>Entrée</kbd></dt><dd>Déplacement automatique</dd></div>
+        <div><dt><kbd>Espace</kbd></dt><dd>Prendre, puis poser sur la pile visée</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>Envoyer à la fondation</dd></div>
+        <div><dt><kbd>P</kbd></dt><dd>Piocher ou recycler le talon</dd></div>
+        <div><dt><kbd>Z</kbd> / <kbd>Y</kbd></dt><dd>Annuler / refaire (aussi Ctrl+Z, Ctrl+Y)</dd></div>
+        <div><dt><kbd>I</kbd></dt><dd>Indice</dd></div>
+        <div><dt><kbd>A</kbd></dt><dd>Regarder l’IA jouer, ou l’arrêter</dd></div>
+        <div><dt><kbd>T</kbd></dt><dd>Terminer automatiquement</dd></div>
+        <div><dt><kbd>N</kbd></dt><dd>Nouvelle donne</dd></div>
+        <div><dt><kbd>Échap</kbd></dt><dd>Annuler la prise ou fermer une fenêtre</dd></div>
+      </dl>
+      <p class="sol-small" id="help-stats"></p>
+      <div class="sol-actions">
+        <button type="button" class="sol-button sol-button-primary" id="help-close">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sol-overlay" id="dialog-victory" role="dialog" aria-modal="true" aria-labelledby="victory-title">
+    <div class="sol-dialog sol-dialog-victory">
+      <h2 id="victory-title">Bravo, donne réussie !</h2>
+      <p id="victory-summary"></p>
+      <div class="sol-actions">
+        <button type="button" class="sol-button sol-button-primary" id="victory-new">Nouvelle donne</button>
+        <button type="button" class="sol-button" id="victory-replay">Rejouer cette donne</button>
+        <button type="button" class="sol-button" id="victory-close">Admirer la table</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

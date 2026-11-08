@@ -62,13 +62,24 @@ export function findSafeMove(board, moves = listMoves(board)) {
  * @returns {string}
  */
 export function movedCard(board, move) {
-  const from = parsePile(move.from);
-  if (from.zone === 'tableau') {
-    const { up } = board.tableau[from.index];
-    return up[up.length - move.count];
+  return takenCard(board, move.from, move.count);
+}
+
+/**
+ * Carte la plus basse quand on prend `count` cartes sur la pile `from`.
+ * @param {import('../engine/rules.js').Board} board
+ * @param {string} from - Identifiant de pile valide
+ * @param {number} count
+ * @returns {string}
+ */
+export function takenCard(board, from, count) {
+  const pile = parsePile(from);
+  if (pile.zone === 'tableau') {
+    const { up } = board.tableau[pile.index];
+    return up[up.length - count];
   }
-  const pile = from.zone === 'waste' ? board.waste : board.foundations[from.index];
-  return pile[pile.length - 1];
+  const cards = pile.zone === 'waste' ? board.waste : board.foundations[pile.index];
+  return cards[cards.length - 1];
 }
 
 /** Une séquence partielle mérite d'être déplacée si elle découvre une carte qui monte. */

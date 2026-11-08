@@ -181,6 +181,9 @@ export default {
     // Moteur, règles et IA du Solitaire : contrats purs, entièrement testés.
     './games/solitaire/engine.js': { statements: 100, branches: 95, functions: 100, lines: 100 },
     './games/solitaire/{engine,ai,bots}/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    // Client sans DOM du Solitaire ; contrôleur, gestes et animations sont couverts par e2e/solitaire.spec.js.
+    './games/solitaire/ui/{announce,board-view,card-view,destinations,session,shortcuts,timers}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/solitaire/ui/{keyboard,progress}.js': { statements: 100, branches: 85, functions: 100, lines: 100 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
