@@ -97,9 +97,12 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 390, height: 844 }
       await touchDrag(page, dragPath(box, 0, 66));
       await expect(page.locator('#readout')).toHaveText('Angle 0,0° · 66 %');
       await expect(page.locator('#app')).toHaveAttribute('data-phase', 'aiming');
-      // Même source tactile (CDP) que le glissé : mélanger avec locator.tap() perd le clic sous Chromium complet.
-      const shoot = await page.locator('#btn-shoot').boundingBox();
-      await touchDrag(page, [{ x: shoot.x + shoot.width / 2, y: shoot.y + shoot.height / 2 }]);
+      // Juste après un glissé, certaines versions de Chromium ignorent le clic d'un tap trop rapproché :
+      // on retape jusqu'au départ du tir (un second tap pendant le vol est sans effet).
+      await expect(async () => {
+        await page.locator('#btn-shoot').tap();
+        await expect(page.locator('#hud-strokes')).toHaveText('Coups 1', { timeout: 1_000 });
+      }).toPass({ timeout: 15_000 });
       await expect(page.locator('#app')).toHaveAttribute('data-phase', 'holed', { timeout: 20_000 });
       await expect(page.locator('#result-title')).toHaveText('Trou en un');
       await expectVisibleHitTarget(page.locator('#btn-next'));
@@ -111,6 +114,7 @@ for (const viewport of [{ width: 360, height: 640 }, { width: 390, height: 844 }
 test('Golf orbital: la pause fige le vol, la reprise est volontaire', async ({ page }) => {
   await page.goto(GAME);
   await activate(page.locator('#btn-start'));
+  await expect(page.locator('#field')).toBeFocused();
   // Puissance 1 : la balle dérive 10 s simulées avant d'être perdue en orbite.
   for (let count = 0; count < 4; count++) { await page.keyboard.press('Shift+ArrowDown'); }
   await expect(page.locator('#readout')).toHaveText('Angle 0,0° · 1 %');
@@ -141,6 +145,7 @@ test('Golf orbital: mouvement reduit et aide au clavier', async ({ page }) => {
   await page.goto(GAME);
   await expect(page.locator('#app')).toHaveAttribute('data-motion', 'reduced');
   await activate(page.locator('#btn-start'));
+  await expect(page.locator('#field')).toBeFocused();
   await page.keyboard.press('?');
   const dialog = page.locator('#help-dialog');
   await expect(dialog).toBeVisible();
