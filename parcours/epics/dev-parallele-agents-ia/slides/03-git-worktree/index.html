@@ -10,226 +10,192 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .architecture-diagram {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-      overflow-x: auto;
-    }
-    .architecture-diagram pre {
-      margin: 0;
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      font-size: var(--font-size-sm);
-      line-height: 1.4;
-      color: var(--color-text-primary);
-    }
-    .advantages-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: var(--space-md);
-      margin: var(--space-lg) 0;
-    }
-    .advantage-card {
-      background: var(--color-bg-secondary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      text-align: center;
-    }
-    .advantage-card .icon {
-      font-size: 2rem;
-      margin-bottom: var(--space-sm);
-    }
-    .advantage-card .value {
-      font-size: var(--font-size-xl);
-      font-weight: bold;
-      color: var(--color-accent);
-    }
-    .code-section {
-      margin: var(--space-lg) 0;
-    }
-    .code-section h3 {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-sm);
-    }
-    .code-block {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-    }
-    .code-block-header {
-      background: var(--color-bg-secondary);
-      padding: var(--space-sm) var(--space-md);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .code-block pre {
-      margin: 0;
-      padding: var(--space-md);
-      overflow-x: auto;
-      font-size: var(--font-size-sm);
-    }
-    .code-block code {
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    }
-    .docker-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin-top: var(--space-xl);
-      border-left: 4px solid var(--color-info);
-    }
-    .docker-section h3 {
-      margin-top: 0;
-    }
-    .port-convention {
-      background: var(--color-bg-primary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      font-family: monospace;
-      text-align: center;
-      margin-top: var(--space-md);
-    }
-    .comment { color: var(--color-text-muted); }
-    .command { color: var(--color-accent); }
-    .string { color: var(--color-success); }
-  </style>
+  <link rel="stylesheet" href="../../assets/diagrams.css">
 </head>
 <body>
   <article class="slide">
     <h1>🔀 La solution : Git Worktree</h1>
 
     <h2>Le principe</h2>
-
     <p>
-      <dfn>Git Worktree</dfn> (disponible depuis Git 2.5) crée plusieurs répertoires de travail qui partagent la même base de données Git.
-      Chaque worktree a ses propres fichiers, son propre index, son propre HEAD — mais les commits sont partagés instantanément.
+      <code>git worktree</code> (apparu dans Git 2.5, en juillet 2015, d'abord marqué expérimental)
+      attache <strong>plusieurs répertoires de travail à un même dépôt</strong>. Chaque worktree
+      a ses fichiers, son index et son <code>HEAD</code> ; l'historique et les branches sont partagés.
+      Un commit fait dans un worktree est immédiatement visible depuis les autres.
     </p>
 
-    <div class="architecture-diagram">
-      <pre>my-project/
-├── .bare/                    <span class="comment"># Base de données Git partagée</span>
-├── main/                     <span class="comment"># Worktree principal (vous)</span>
-├── agent-1-auth/             <span class="comment"># Worktree agent 1</span>
-├── agent-2-api/              <span class="comment"># Worktree agent 2</span>
-└── agent-3-tests/            <span class="comment"># Worktree agent 3</span></pre>
+    <figure class="diagram" tabindex="0">
+      <svg viewBox="0 0 720 330" role="img" aria-labelledby="wt-titre wt-desc">
+        <title id="wt-titre">Un dépôt Git partagé par trois worktrees</title>
+        <desc id="wt-desc">À gauche, le dépôt .git partagé contient objets, branches, tags, configuration, hooks et stash. Trois flèches mènent à trois worktrees : mon-projet sur main, agent-auth sur feature/auth et agent-api sur feature/api. Chaque worktree a ses propres fichiers, son index et son HEAD.</desc>
+        <defs>
+          <marker id="wt-fleche" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="d-fleche"/>
+          </marker>
+        </defs>
+        <rect x="10" y="85" width="240" height="160" rx="12" class="d-boite d-accent"/>
+        <text x="130" y="118" class="d-titre" text-anchor="middle">Dépôt .git (partagé)</text>
+        <text x="130" y="150" class="d-texte" text-anchor="middle">objets (historique)</text>
+        <text x="130" y="174" class="d-texte" text-anchor="middle">branches et tags</text>
+        <text x="130" y="198" class="d-texte" text-anchor="middle">config et hooks</text>
+        <text x="130" y="222" class="d-texte" text-anchor="middle">stash</text>
+
+        <path d="M250,140 C320,140 330,55 400,55" class="d-lien" marker-end="url(#wt-fleche)"/>
+        <path d="M250,165 L400,165" class="d-lien" marker-end="url(#wt-fleche)"/>
+        <path d="M250,190 C320,190 330,275 400,275" class="d-lien" marker-end="url(#wt-fleche)"/>
+
+        <rect x="405" y="15" width="305" height="80" rx="10" class="d-boite"/>
+        <text x="420" y="45" class="d-titre">mon-projet · main</text>
+        <text x="420" y="72" class="d-texte">vous : fichiers · index · HEAD</text>
+
+        <rect x="405" y="125" width="305" height="80" rx="10" class="d-boite"/>
+        <text x="420" y="155" class="d-titre">agent-auth · feature/auth</text>
+        <text x="420" y="182" class="d-texte">agent 1 : fichiers · index · HEAD</text>
+
+        <rect x="405" y="235" width="305" height="80" rx="10" class="d-boite"/>
+        <text x="420" y="265" class="d-titre">agent-api · feature/api</text>
+        <text x="420" y="292" class="d-texte">agent 2 : fichiers · index · HEAD</text>
+      </svg>
+      <figcaption>Un seul historique, plusieurs répertoires de travail : chaque agent a sa branche et ses fichiers.</figcaption>
+    </figure>
+
+    <h2>Ce qui est isolé, ce qui est partagé</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Données propres ou partagées entre worktrees">
+      <table>
+        <thead><tr><th>Propre à chaque worktree</th><th>Partagé par tous les worktrees</th></tr></thead>
+        <tbody>
+          <tr><td>Fichiers extraits, y compris non suivis</td><td>Objets Git (historique)</td></tr>
+          <tr><td><code>HEAD</code> et branche courante</td><td>Branches et tags (<code>refs/</code>)</td></tr>
+          <tr><td>Index (staging area)</td><td>Configuration du dépôt et hooks</td></tr>
+          <tr><td><code>node_modules</code>, builds, caches locaux</td><td><strong>Le stash</strong> (<code>refs/stash</code>)</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="advantages-grid">
-      <div class="advantage-card">
-        <div class="icon">💾</div>
-        <div class="value">~85%</div>
-        <div>économie disque vs clones</div>
-      </div>
-      <div class="advantage-card">
-        <div class="icon">⚡</div>
-        <div class="value">Instantané</div>
-        <div>commits partagés</div>
-      </div>
-      <div class="advantage-card">
-        <div class="icon">🔒</div>
-        <div class="value">0</div>
-        <div>conflits de lock Git</div>
-      </div>
-      <div class="advantage-card">
-        <div class="icon">🌿</div>
-        <div class="value">N branches</div>
-        <div>simultanément</div>
-      </div>
+    <div class="callout callout-warning">
+      <p><strong>Deux règles à connaître.</strong></p>
+      <ul>
+        <li>
+          Une branche ne peut être extraite que dans <strong>un seul worktree</strong>.
+          Git refuse la seconde extraction (message du type
+          <code>fatal: 'feature/auth' is already used by worktree at …</code>, selon la version).
+          L'option <code>--force</code> contourne ce garde-fou : ne l'utilisez pas pour des agents.
+        </li>
+        <li>
+          Un fichier non commité dans votre worktree <strong>n'existe pas</strong> dans les autres.
+          Commitez specs et conventions avant de créer les worktrees des agents.
+        </li>
+      </ul>
     </div>
+
+    <p>
+      Côté disque, un worktree ne recopie pas l'historique : son <code>.git</code> est un fichier d'une ligne
+      qui pointe vers le dépôt principal. En revanche, les fichiers extraits, les dépendances installées
+      et les sorties de build sont dupliqués dans chaque worktree.
+    </p>
 
     <h2>Mise en place</h2>
 
-    <div class="code-section">
-      <h3>📦 Option 1 : Setup avec bare repository <small>(recommandé)</small></h3>
-      <div class="code-block">
-        <div class="code-block-header">bash</div>
-        <pre><code><span class="comment"># Créer la structure</span>
-mkdir my-project && cd my-project
-git clone --bare git@github.com:user/project.git .bare
+    <h3>Option 1 : depuis un dépôt existant (le plus simple)</h3>
+<pre><code class="language-bash">cd mon-projet
+git switch main &amp;&amp; git pull
 
-<span class="comment"># Pointer .git vers le bare repo</span>
-echo "gitdir: ./.bare" > .git
+# Un worktree et une branche par agent, à côté du dépôt
+git worktree add ../mon-projet-agent-auth -b feature/auth main
+git worktree add ../mon-projet-agent-api  -b feature/api  main
+git worktree add ../mon-projet-agent-tests -b fix/tests   main</code></pre>
 
-<span class="comment"># Configurer le fetch</span>
+    <h3>Option 2 : dépôt « bare » et un dossier par worktree</h3>
+    <p>Cette organisation range tous les worktrees, y compris <code>main</code>, au même niveau.</p>
+<pre><code class="language-bash">mkdir mon-projet &amp;&amp; cd mon-projet
+git clone --bare git@github.com:user/projet.git .bare
+echo "gitdir: ./.bare" &gt; .git
+
+# Un clone bare ne configure pas les branches distantes : on les ajoute
 git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
 git fetch origin
 
-<span class="comment"># Créer le worktree principal</span>
-git worktree add main origin/main</code></pre>
-      </div>
+# Extraire la branche locale main (et non origin/main, qui donnerait un HEAD détaché)
+git worktree add main main
+git -C main branch --set-upstream-to=origin/main</code></pre>
+
+    <h3>Commandes essentielles</h3>
+<pre><code class="language-bash">git worktree add &lt;chemin&gt; -b &lt;nouvelle-branche&gt; &lt;base&gt;  # créer
+git worktree list                                       # lister
+git worktree remove &lt;chemin&gt;                            # supprimer (refuse si non propre)
+git worktree prune                                      # nettoyer les références orphelines</code></pre>
+    <p>
+      <code>git worktree remove</code> refuse un worktree qui contient des modifications ou des fichiers
+      non suivis. C'est une protection : vérifiez ce qui reste avant d'ajouter <code>--force</code>.
+    </p>
+
+    <h2>Les outils le font aussi pour vous</h2>
+    <p>En 2026, les principaux agents savent créer leurs worktrees eux-mêmes :</p>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Prise en charge native des worktrees">
+      <table>
+        <thead><tr><th>Outil</th><th>Usage</th><th>Ce qui se passe</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Claude Code</td>
+            <td><code>claude -w feature-auth</code></td>
+            <td>Worktree dans <code>.claude/worktrees/feature-auth/</code>, branche <code>worktree-feature-auth</code>. À la sortie, Claude propose de garder ou supprimer le worktree.</td>
+          </tr>
+          <tr>
+            <td>Cursor</td>
+            <td><code>/worktree</code>, <code>/best-of-n</code></td>
+            <td>L'agent travaille dans un checkout isolé ; <code>/best-of-n</code> lance la même tâche sur plusieurs modèles, un worktree chacun.</td>
+          </tr>
+          <tr>
+            <td>Codex (application)</td>
+            <td>Mode « Worktree » sous la zone de saisie</td>
+            <td>Plusieurs conversations sur le même projet sans interférer.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <p>
+      Comprendre la commande Git reste utile : c'est elle qu'il faut savoir inspecter, nettoyer
+      et dépanner quand un outil laisse des worktrees derrière lui.
+      Avec Claude Code, un fichier <code>.worktreeinclude</code> liste les fichiers ignorés par Git
+      (comme <code>.env</code>) à copier dans chaque nouveau worktree.
+    </p>
 
-    <div class="code-section">
-      <h3>⚡ Option 2 : Depuis un repo existant <small>(pour tester)</small></h3>
-      <div class="code-block">
-        <div class="code-block-header">bash</div>
-        <pre><code>cd mon-projet-existant
-
-<span class="comment"># Créer des worktrees pour les agents</span>
-git worktree add ../agent-1 -b feature/auth main
-git worktree add ../agent-2 -b feature/api main
-git worktree add ../agent-3 -b fix/tests main</code></pre>
-      </div>
-    </div>
-
-    <h2>Commandes essentielles</h2>
-
-    <div class="code-block">
-      <div class="code-block-header">bash</div>
-      <pre><code><span class="comment"># Créer un worktree avec nouvelle branche</span>
-git worktree add &lt;chemin&gt; -b &lt;nouvelle-branche&gt; &lt;base&gt;
-
-<span class="comment"># Lister les worktrees</span>
-git worktree list
-
-<span class="comment"># Supprimer un worktree</span>
-git worktree remove &lt;chemin&gt;
-
-<span class="comment"># Nettoyer les références orphelines</span>
-git worktree prune</code></pre>
-    </div>
-
-    <div class="docker-section">
-      <h3>🐳 Et les services (DB, Redis, etc.) ?</h3>
-      <p>
-        Les worktrees isolent le code, pas les services. Si vos agents lancent des tests qui utilisent
-        une base de données, vous aurez des collisions.
-      </p>
-      <p><strong>Solution : Docker Compose par worktree</strong> avec des ports différents.</p>
-
-      <div class="code-block">
-        <div class="code-block-header">docker-compose.yml</div>
-        <pre><code>services:
+    <h2>🐳 Et les services (base de données, Redis…) ?</h2>
+    <p>
+      Les worktrees isolent le code, pas les services. Docker Compose nomme par défaut un projet
+      d'après son dossier (sauf si le fichier fixe un <code>name:</code>) : deux worktrees obtiennent donc des conteneurs distincts, mais
+      <strong>les ports publiés sur la machine entrent en collision</strong>. Paramétrez-les :
+    </p>
+<pre><code class="language-yaml"># docker-compose.yml
+services:
   db:
-    image: postgres:16
+    image: postgres:17
     ports:
       - "${DB_PORT:-5432}:5432"
   redis:
     image: redis:7-alpine
     ports:
       - "${REDIS_PORT:-6379}:6379"</code></pre>
-      </div>
-
-      <div class="code-block" style="margin-top: var(--space-md);">
-        <div class="code-block-header">.env par worktree</div>
-        <pre><code><span class="comment"># agent-1/.env</span>
+<pre><code class="language-bash"># mon-projet-agent-auth/.env
 DB_PORT=5410
 REDIS_PORT=6310
 
-<span class="comment"># agent-2/.env</span>
+# mon-projet-agent-api/.env
 DB_PORT=5420
 REDIS_PORT=6320</code></pre>
-      </div>
+    <p>
+      Une convention simple : <code>PORT = BASE + (INDEX_AGENT × 10)</code>.
+      Ce dépôt Playlab42 applique le même principe : chaque worktree reçoit un nom de projet Docker
+      et un port uniques (<code>make info</code> affiche l'instance courante).
+    </p>
 
-      <div class="port-convention">
-        Convention : <code>PORT = BASE + (AGENT_INDEX × 10)</code>
-      </div>
-    </div>
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://git-scm.com/docs/git-worktree" target="_blank" rel="noopener noreferrer">documentation git-worktree</a>,
+      <a href="https://code.claude.com/docs/en/worktrees" target="_blank" rel="noopener noreferrer">worktrees Claude Code</a>,
+      <a href="https://cursor.com/docs/configuration/worktrees" target="_blank" rel="noopener noreferrer">worktrees Cursor</a>,
+      <a href="https://learn.chatgpt.com/docs/environments/git-worktrees" target="_blank" rel="noopener noreferrer">worktrees Codex</a>.
+    </p>
   </article>
 </body>
 </html>

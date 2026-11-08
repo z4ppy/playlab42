@@ -1,13 +1,14 @@
 {
   "id": "dev-parallele-agents-ia",
   "title": "Développement parallèle avec agents IA",
-  "description": "Guide pratique pour utiliser plusieurs agents de code en parallèle sur le même projet sans conflits.",
+  "description": "Guide pratique pour faire travailler plusieurs agents de code en parallèle sur le même projet : worktrees, specs, sous-agents, agents cloud et relecture.",
   "hierarchy": ["agentique"],
-  "tags": ["ia", "dev", "git", "agent", "avance", "worktree", "tmux"],
+  "tags": ["ia", "dev", "git", "agent", "avance", "worktree", "tmux", "cloud"],
   "metadata": {
     "author": "Cyrille",
     "created": "2025-12-01",
-    "duration": "45 min",
+    "updated": "2026-11-08",
+    "duration": "65 min",
     "difficulty": "intermediate",
     "language": "fr"
   },
@@ -19,6 +20,8 @@
     { "id": "03-git-worktree" },
     { "id": "04-multiplexeur" },
     { "id": "05-contexte-specs" },
+    { "id": "sous-agents" },
+    { "id": "agents-cloud" },
     { "id": "06-workflow" },
     { "id": "07-windows" },
     { "id": "08-pieges" },
