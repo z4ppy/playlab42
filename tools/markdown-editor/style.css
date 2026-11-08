@@ -1,0 +1,528 @@
+/*
+ * Éditeur Markdown - mise en page mobile d'abord.
+ *
+ * - Petit écran : onglets « Écrire » / « Aperçu », barre d'outils défilante
+ *   au pouce sous l'en-tête ; le sommaire et le menu Fichier se superposent.
+ * - À partir de 760 px : vue côte à côte disponible, sommaire en panneau latéral.
+ * La hauteur suit la zone visible (dvh) : le clavier virtuel ne masque pas la saisie.
+ * La typographie du document rendu vit dans src/document-css.js (partagée avec l'export).
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: var(--font-family);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+.mde {
+  --mde-gutter: 12px;
+  --mde-touch: 44px;
+  position: relative;
+  display: grid;
+  /* Zones nommées : masquer la barre d'outils (vue Aperçu) ou la barre
+   * d'état (paysage) ne décale pas la zone de travail hors de la ligne 1fr. */
+  grid-template-areas: "top" "toolbar" "work" "status";
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* === En-tête ============================================================ */
+.mde-top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 8px;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mde-title {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.mde-logo {
+  flex: none;
+  padding: 2px 6px;
+  color: var(--color-text-inverse);
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  font: 700 0.85rem/1.4 var(--font-mono);
+}
+
+.mde-title-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Boutons : base tactile commune (au moins 44 × 44 px). */
+.mde-view,
+.mde-icon,
+.mde-tool,
+.mde-menu-item,
+.mde-toast-action {
+  min-width: var(--mde-touch);
+  min-height: var(--mde-touch);
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.mde-views {
+  display: flex;
+  flex: none;
+  padding: 2px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.mde-view {
+  padding: 0 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.mde-view[aria-pressed="true"] {
+  color: var(--color-text-inverse);
+  background: var(--color-accent);
+}
+
+.mde-view--wide,
+.mde-tool-sep {
+  display: none;
+}
+
+.mde-icon {
+  flex: none;
+  font-size: 1.15rem;
+}
+
+.mde-icon[aria-expanded="true"],
+.mde-tool:active {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+}
+
+/* === Barre d'outils (défilement horizontal au pouce) ==================== */
+.mde-toolbar {
+  grid-area: toolbar;
+  display: flex;
+  gap: 2px;
+  padding: 4px 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mde-tool {
+  flex: none;
+  font: 700 1rem/1 var(--font-family);
+}
+
+.mde-tool-icon--italic {
+  font-style: italic;
+  font-family: Georgia, serif;
+}
+
+.mde-tool-icon--strike {
+  text-decoration: line-through;
+}
+
+.mde-tool-icon--code {
+  font: 700 0.8rem/1 var(--font-mono);
+}
+
+.mde[data-view="preview"] .mde-toolbar {
+  display: none;
+}
+
+/* === Zone de travail ==================================================== */
+.mde-work {
+  grid-area: work;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+}
+
+.mde-pane {
+  min-width: 0;
+  min-height: 0;
+}
+
+.mde[data-view="editor"] .mde-pane--preview,
+.mde[data-view="preview"] .mde-pane--editor {
+  display: none;
+}
+
+.mde-source {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 16px var(--mde-gutter) 40vh;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 0;
+  border-radius: 0;
+  outline-offset: -3px;
+  resize: none;
+  /* 16 px minimum : iOS ne zoome pas au focus. */
+  font: 1rem/1.6 var(--font-mono);
+  tab-size: 4;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.mde-source::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.mde-pane--preview {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px var(--mde-gutter) 48px;
+  background: var(--color-bg);
+}
+
+.mde-pane--preview .md-doc {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+/* État vide : l'aperçu dit ce qu'il attend au lieu d'une page blanche. */
+.mde-pane--preview .md-doc:empty::before {
+  content: "L'aperçu apparaîtra ici dès que vous écrirez du Markdown (# Titre, **gras**, - liste).";
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Tâches de l'aperçu : la case occupe une marge tactile de 44 px (cliquable
+ * elle aussi, voir ui/app.js) au lieu des 18 px d'une case native. */
+.mde-pane--preview .md-doc .task-list-item {
+  position: relative;
+  min-height: var(--mde-touch);
+  padding-left: var(--mde-touch);
+}
+
+.mde-pane--preview .md-doc .task-list-item-checkbox {
+  position: absolute;
+  /* Centrée sur la première ligne de texte (26 px de haut). */
+  top: -9px;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.mde-pane--preview .md-doc .contains-task-list {
+  padding-left: 0;
+}
+
+/* Miroir invisible servant à mesurer les lignes de la zone de saisie. */
+.mde-mirror {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* === Sommaire =========================================================== */
+.mde-toc {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-dropdown);
+  overflow-y: auto;
+  padding: 8px var(--mde-gutter) 24px;
+  background: var(--color-bg-card);
+}
+
+.mde-toc[hidden] {
+  display: none;
+}
+
+.mde-toc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mde-toc-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.mde-toc-list,
+.mde-toc-list ol {
+  margin: 0;
+  padding-left: 1rem;
+  list-style: none;
+}
+
+.mde-toc-list > li {
+  padding-left: 0;
+}
+
+.mde-toc-list a {
+  display: flex;
+  align-items: center;
+  min-height: var(--mde-touch);
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mde-toc-empty {
+  padding: 12px 0;
+  color: var(--color-text-muted);
+}
+
+/* === Barre d'état ======================================================= */
+.mde-status {
+  grid-area: status;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  padding: 4px var(--mde-gutter) calc(4px + env(safe-area-inset-bottom, 0px));
+  color: var(--color-text-muted);
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+}
+
+.mde-save.is-warning {
+  /* --color-warning clair (#d97706) n'atteint que 3,2:1 sur fond blanc. */
+  color: light-dark(#a35400, var(--color-warning));
+  font-weight: 600;
+}
+
+/* === Menu Fichier ======================================================= */
+.mde-menu {
+  position: absolute;
+  top: calc(52px + env(safe-area-inset-top, 0px));
+  right: calc(8px + env(safe-area-inset-right, 0px));
+  z-index: var(--z-modal);
+  display: grid;
+  width: min(20rem, calc(100% - 16px));
+  padding: 6px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px var(--color-shadow);
+}
+
+.mde-menu[hidden] {
+  display: none;
+}
+
+.mde-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  text-align: left;
+}
+
+.mde-menu-item--danger {
+  /* --color-error sombre (#ef4444) n'atteint que 3,8:1 sur la carte du menu. */
+  color: light-dark(var(--color-error), #fca5a5);
+}
+
+.mde-menu-note {
+  margin: 6px 12px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+/* === Dépôt de fichier et messages ======================================= */
+.mde-drop {
+  position: absolute;
+  inset: 8px;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  border: 3px dashed var(--color-accent);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.mde-drop[hidden],
+.mde-toast[hidden] {
+  display: none;
+}
+
+.mde-toast {
+  position: absolute;
+  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 6px 6px 6px 14px;
+  color: var(--color-text);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px var(--color-shadow);
+  transform: translateX(-50%);
+}
+
+.mde-toast-action {
+  flex: none;
+  padding: 0 12px;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+@media (hover: hover) {
+  .mde-tool:hover,
+  .mde-icon:hover,
+  .mde-menu-item:hover,
+  .mde-view[aria-pressed="false"]:hover {
+    background: var(--color-bg-hover);
+  }
+}
+
+/* === Très petit écran : le titre se réduit au logo ===================== */
+@media (max-width: 420px) {
+  .mde-title-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .mde-view {
+    padding: 0 10px;
+  }
+}
+
+/* === Paysage de téléphone : en-têtes plus compacts ===================== */
+@media (max-height: 480px) and (orientation: landscape) {
+  .mde-top,
+  .mde-toolbar {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .mde-status {
+    display: none;
+  }
+
+  .mde-source {
+    padding-bottom: 30vh;
+  }
+}
+
+/* === Écran large : vue côte à côte et sommaire latéral ================= */
+@media (min-width: 760px) {
+  .mde {
+    --mde-gutter: 20px;
+  }
+
+  .mde-view--wide,
+  .mde-tool-sep {
+    display: block;
+  }
+
+  .mde-tool-sep {
+    flex: none;
+    width: 1px;
+    margin: 8px 4px;
+    background: var(--color-border);
+  }
+
+  .mde[data-view="split"] .mde-work {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .mde[data-view="split"] .mde-pane--preview {
+    border-left: 1px solid var(--color-border);
+  }
+
+  .mde-toc {
+    left: auto;
+    width: min(22rem, 45%);
+    border-left: 1px solid var(--color-border);
+    box-shadow: -12px 0 32px var(--color-shadow);
+  }
+}
+
+/* === Impression : seul le document rendu ================================ */
+@media print {
+  html,
+  body {
+    height: auto;
+    overflow: visible;
+    background: #fff;
+  }
+
+  .mde {
+    display: block;
+    height: auto;
+    padding: 0;
+  }
+
+  .mde-top,
+  .mde-toolbar,
+  .mde-status,
+  .mde-pane--editor,
+  .mde-toc,
+  .mde-menu,
+  .mde-toast,
+  .mde-drop {
+    display: none !important;
+  }
+
+  .mde .mde-pane--preview {
+    display: block !important;
+    overflow: visible;
+    padding: 0;
+    background: #fff;
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "markdown-editor",
+  "name": "Éditeur Markdown",
+  "description": "Éditeur Markdown local (CommonMark + GFM) : aperçu en direct, tableaux, tâches, code coloré, sommaire, export HTML et brouillon automatique",
+  "icon": "📝",
+  "tags": ["markdown", "écriture", "dev", "utility"],
+  "author": "Cyrille",
+  "version": "1.0.0"
+}
