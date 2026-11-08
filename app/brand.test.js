@@ -286,10 +286,16 @@ describe('jetons de marque en thème clair', () => {
     return Object.fromEntries([...block.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map(match => [match[1], match[2]]));
   };
 
-  it('applique en automatique sur système clair les mêmes jetons que le thème clair choisi', () => {
-    // Sans ce miroir, le titre et la fiole gardent les teintes sombres sur fond clair
+  it('déclare chaque couleur de marque une seule fois pour les deux thèmes', () => {
+    // light-dark() suit aussi le thème automatique, qui retire l'attribut data-theme
+    const colors = Object.entries(tokensAfter(':root')).filter(([name]) => /^--(brand|flask)-(?!nebula-)/.test(name));
+    expect(colors.length).toBeGreaterThan(5);
+    for (const [name, value] of colors) {expect([name, value]).toEqual([name, expect.stringMatching(/^light-dark\(/)]);}
+  });
+
+  it('applique en automatique sur système clair les mêmes réglages que le thème clair choisi', () => {
     const chosen = tokensAfter('[data-theme="light"]');
-    expect(Object.keys(chosen).length).toBeGreaterThan(5);
+    expect(Object.keys(chosen).length).toBeGreaterThan(0);
     expect(css).toMatch(/@media \(prefers-color-scheme: light\) \{\s*:root:not\(\[data-theme\]\) \{/);
     expect(tokensAfter(':root:not([data-theme])')).toEqual(chosen);
   });
