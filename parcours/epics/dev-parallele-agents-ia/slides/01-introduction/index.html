@@ -10,140 +10,91 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .hero {
-      text-align: center;
-      padding: var(--space-xl) 0;
-    }
-    .hero-emoji {
-      font-size: 4rem;
-      margin-bottom: var(--space-md);
-    }
-    .hero h1 {
-      border: none;
-      padding: 0;
-      font-size: 2rem;
-    }
-    .tagline {
-      font-size: var(--font-size-lg);
-      color: var(--color-text-muted);
-      font-style: italic;
-      margin-bottom: var(--space-xl);
-    }
-    .intro-text {
-      font-size: var(--font-size-md);
-      line-height: 1.8;
-      max-width: 700px;
-      margin: 0 auto var(--space-xl);
-    }
-    .objectives {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-xl) 0;
-    }
-    .objectives h2 {
-      margin-top: 0;
-      font-size: var(--font-size-lg);
-    }
-    .objectives ul {
-      margin-bottom: 0;
-    }
-    .toc-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: var(--space-sm);
-      margin-top: var(--space-lg);
-    }
-    .toc-chip {
-      background: var(--color-bg-secondary);
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-md);
-      font-size: var(--font-size-sm);
-      text-align: center;
-      border-left: 3px solid var(--color-accent);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .toc-chip:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    .toc-chip-icon {
-      display: block;
-      font-size: 1.5rem;
-      margin-bottom: var(--space-xs);
-    }
-  </style>
+  <link rel="stylesheet" href="../../assets/diagrams.css">
 </head>
 <body>
   <article class="slide">
-    <div class="hero">
-      <div class="hero-emoji">🔀</div>
-      <h1>Développement parallèle avec agents IA</h1>
-      <p class="tagline">Comment faire travailler plusieurs agents de code sur le même projet sans tout casser</p>
-    </div>
+    <h1>🔀 Développement parallèle avec agents IA</h1>
+    <p><em>Comment faire travailler plusieurs agents de code sur le même projet sans tout casser.</em></p>
 
-    <p class="intro-text">
-      Beaucoup de développeurs m'ont posé la question : "Comment tu fais pour utiliser plusieurs agents en parallèle sur un même projet ?"
-      Ce guide est ma réponse — un retour d'expérience avec les solutions techniques que j'ai testées et les workflows qui fonctionnent.
+    <figure class="illustration">
+      <img src="../../assets/hero-agents-paralleles.webp" width="1200" height="586"
+        alt="Illustration : une développeuse ou un développeur relit du code au centre ; autour, plusieurs postes d'agents robots reliés par des lignes colorées, comme des branches Git qui convergent vers le poste central.">
+      <figcaption>Illustration générée avec FLUX.1 [schnell] via Replicate.</figcaption>
+    </figure>
+
+    <p>
+      Beaucoup de développeurs m'ont posé la question : « Comment tu fais pour utiliser plusieurs agents en parallèle sur un même projet ? »
+      Ce guide est ma réponse : un retour d'expérience, avec les solutions techniques testées et les workflows qui fonctionnent.
+    </p>
+    <p>
+      L'objectif n'est pas de lister tous les outils du marché, mais de donner une méthode pour passer
+      de « un agent à la fois » à « plusieurs agents en parallèle » sans perdre le contrôle.
+      Les outils changent vite ; la méthode (isoler, spécifier, relire) reste.
     </p>
 
-    <p class="intro-text">
-      L'objectif n'est pas de lister tous les outils du marché, mais de donner une <strong>méthode concrète</strong> pour passer
-      de "un agent à la fois" à "plusieurs agents en parallèle" sans perdre le contrôle.
-    </p>
+    <h2>Trois façons de paralléliser en 2026</h2>
+    <figure class="diagram" tabindex="0">
+      <svg viewBox="0 0 720 220" role="img" aria-labelledby="niv-titre niv-desc">
+        <title id="niv-titre">Trois niveaux de parallélisme</title>
+        <desc id="niv-desc">Trois colonnes. Sous-agents : un agent principal délègue dans la même session. Sessions en worktrees : vous lancez plusieurs agents sur votre machine, un worktree chacun. Agents cloud : chaque tâche tourne sur sa propre machine distante et rend une pull request. De gauche à droite, l'isolation augmente.</desc>
+        <defs>
+          <marker id="niv-fleche" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="d-fleche"/>
+          </marker>
+        </defs>
+        <rect x="10" y="10" width="220" height="150" rx="12" class="d-boite"/>
+        <text x="120" y="42" class="d-titre" text-anchor="middle">Sous-agents</text>
+        <text x="120" y="72" class="d-texte" text-anchor="middle">une session principale</text>
+        <text x="120" y="94" class="d-texte" text-anchor="middle">délègue des sous-tâches</text>
+        <text x="120" y="126" class="d-texte" text-anchor="middle">même machine,</text>
+        <text x="120" y="146" class="d-texte" text-anchor="middle">contextes séparés</text>
 
-    <div class="objectives">
-      <h2>🎯 Ce que vous allez apprendre</h2>
-      <ul>
-        <li>Isoler chaque agent avec <strong>Git Worktree</strong></li>
-        <li>Superviser plusieurs agents avec un <strong>multiplexeur terminal</strong></li>
-        <li>Structurer le contexte avec l'approche <strong>spec-driven</strong></li>
-        <li>Maîtriser le <strong>workflow complet</strong> de la préparation au merge</li>
-        <li>Éviter les <strong>pièges courants</strong> et comprendre les limites humaines</li>
-      </ul>
-    </div>
+        <rect x="250" y="10" width="220" height="150" rx="12" class="d-boite d-accent"/>
+        <text x="360" y="42" class="d-titre" text-anchor="middle">Sessions en worktrees</text>
+        <text x="360" y="72" class="d-texte" text-anchor="middle">vous lancez et suivez</text>
+        <text x="360" y="94" class="d-texte" text-anchor="middle">plusieurs agents</text>
+        <text x="360" y="126" class="d-texte" text-anchor="middle">un worktree</text>
+        <text x="360" y="146" class="d-texte" text-anchor="middle">et une branche chacun</text>
 
-    <h2>📑 Table des matières</h2>
+        <rect x="490" y="10" width="220" height="150" rx="12" class="d-boite"/>
+        <text x="600" y="42" class="d-titre" text-anchor="middle">Agents cloud</text>
+        <text x="600" y="72" class="d-texte" text-anchor="middle">une machine distante</text>
+        <text x="600" y="94" class="d-texte" text-anchor="middle">par tâche</text>
+        <text x="600" y="126" class="d-texte" text-anchor="middle">le résultat arrive</text>
+        <text x="600" y="146" class="d-texte" text-anchor="middle">en pull request</text>
 
-    <div class="toc-grid">
-      <div class="toc-chip">
-        <span class="toc-chip-icon">⚠️</span>
-        Le problème
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">🔀</span>
-        Git Worktree
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">🖥️</span>
-        Multiplexeur
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">📋</span>
-        Specs & Contexte
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">🔄</span>
-        Workflow
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">🪟</span>
-        Windows
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">🚫</span>
-        Pièges
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">🧠</span>
-        Limites humaines
-      </div>
-      <div class="toc-chip">
-        <span class="toc-chip-icon">📚</span>
-        Références
-      </div>
-    </div>
+        <path d="M40,195 L680,195" class="d-lien" marker-end="url(#niv-fleche)"/>
+        <text x="360" y="186" class="d-texte" text-anchor="middle">isolation croissante</text>
+      </svg>
+      <figcaption>Le cœur du guide porte sur la colonne centrale ; les deux autres ont chacune leur chapitre.</figcaption>
+    </figure>
+
+    <h2>🎯 Ce que vous allez apprendre</h2>
+    <ul>
+      <li>Isoler chaque agent avec Git Worktree, à la main ou avec les options natives des outils</li>
+      <li>Superviser plusieurs agents avec un multiplexeur terminal ou un outil d'orchestration</li>
+      <li>Structurer le contexte avec des conventions partagées (AGENTS.md) et des specs versionnées</li>
+      <li>Choisir entre sous-agents, sessions locales et agents cloud</li>
+      <li>Mener le workflow complet, de la préparation à l'intégration par pull request</li>
+      <li>Éviter les pièges courants et comprendre pourquoi la relecture limite le passage à l'échelle</li>
+    </ul>
+
+    <h2>📑 Plan</h2>
+    <ol>
+      <li>Le problème à résoudre</li>
+      <li>Git Worktree</li>
+      <li>Supervision avec un multiplexeur</li>
+      <li>Contexte et specs</li>
+      <li>Paralléliser dans une session : les sous-agents</li>
+      <li>Agents en arrière-plan dans le cloud</li>
+      <li>Workflow complet</li>
+      <li>Spécificités Windows</li>
+      <li>Les pièges à éviter</li>
+      <li>Comprendre les limites humaines</li>
+      <li>Références et annexes</li>
+    </ol>
+    <p><small>Guide écrit en décembre 2025, mis à jour le 8 novembre 2026. Les commandes ont été vérifiées sur la documentation officielle à cette date.</small></p>
   </article>
 </body>
 </html>

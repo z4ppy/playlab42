@@ -10,314 +10,146 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .workflow-pipeline {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: var(--space-xs);
-      margin: var(--space-xl) 0;
-    }
-    .pipeline-step {
-      background: var(--color-bg-secondary);
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius-md);
-      text-align: center;
-      font-size: var(--font-size-sm);
-      font-weight: bold;
-      border-bottom: 3px solid var(--color-accent);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .pipeline-step:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    .pipeline-step .number {
-      display: block;
-      font-size: 0.75rem;
-      color: var(--color-text-muted);
-    }
-    .pipeline-arrow {
-      display: flex;
-      align-items: center;
-      color: var(--color-accent);
-      font-size: 1.2rem;
-    }
-    .step-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-      border-left: 4px solid var(--color-accent);
-    }
-    .step-section h3 {
-      margin-top: 0;
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-    .step-section h3 .step-number {
-      background: var(--color-accent);
-      color: white;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: var(--font-size-sm);
-    }
-    .code-block {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      margin: var(--space-md) 0;
-    }
-    .code-block-header {
-      background: var(--color-bg-tertiary);
-      padding: var(--space-sm) var(--space-md);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .code-block pre {
-      margin: 0;
-      padding: var(--space-md);
-      overflow-x: auto;
-      font-size: var(--font-size-sm);
-    }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: var(--space-sm);
-      margin: var(--space-lg) 0;
-    }
-    @media (max-width: 768px) {
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    .stat-card {
-      background: var(--color-bg-primary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      text-align: center;
-    }
-    .stat-card .value {
-      font-size: var(--font-size-xl);
-      font-weight: bold;
-    }
-    .stat-card .label {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .stat-card.green .value { color: var(--color-success); }
-    .stat-card.yellow .value { color: var(--color-warning); }
-    .stat-card.orange .value { color: #f59e0b; }
-    .stat-card.red .value { color: var(--color-error); }
-    .merge-order {
-      background: var(--color-bg-primary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      margin: var(--space-md) 0;
-    }
-    .merge-order ol {
-      margin: 0;
-      padding-left: var(--space-lg);
-    }
-    .callout {
-      background: var(--color-bg-primary);
-      border-left: 4px solid var(--color-info);
-      padding: var(--space-md) var(--space-lg);
-      margin: var(--space-md) 0;
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    }
-    .callout.warning {
-      border-left-color: var(--color-warning);
-    }
-    .comment { color: var(--color-text-muted); }
-  </style>
+  <link rel="stylesheet" href="../../assets/diagrams.css">
 </head>
 <body>
   <article class="slide">
-    <h1>🔄 Workflow complet : de la préparation au merge</h1>
+    <h1>🔄 Workflow complet : de la préparation à l'intégration</h1>
 
-    <h2>Vue d'ensemble</h2>
+    <p><strong>Préparer → Lancer → Surveiller → Relire → Intégrer → Nettoyer.</strong></p>
 
-    <div class="workflow-pipeline">
-      <div class="pipeline-step">
-        <span class="number">1</span>
-        PRÉPARER
-      </div>
-      <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step">
-        <span class="number">2</span>
-        LANCER
-      </div>
-      <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step">
-        <span class="number">3</span>
-        SURVEILLER
-      </div>
-      <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step">
-        <span class="number">4</span>
-        REVIEW
-      </div>
-      <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step">
-        <span class="number">5</span>
-        MERGER
-      </div>
-      <div class="pipeline-arrow">→</div>
-      <div class="pipeline-step">
-        <span class="number">6</span>
-        NETTOYER
-      </div>
-    </div>
+    <figure class="diagram" tabindex="0">
+      <svg viewBox="0 0 720 270" role="img" aria-labelledby="wf-titre wf-desc">
+        <title id="wf-titre">Les agents travaillent en parallèle, la relecture reste séquentielle</title>
+        <desc id="wf-desc">Une étape Préparer alimente trois agents qui travaillent en parallèle. Leurs trois résultats convergent vers une seule étape Relire, faite par un humain, l'une après l'autre. Viennent ensuite Intégrer puis Nettoyer.</desc>
+        <defs>
+          <marker id="wf-fleche" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="d-fleche"/>
+          </marker>
+        </defs>
+        <rect x="10" y="100" width="110" height="70" rx="10" class="d-boite"/>
+        <text x="65" y="141" class="d-titre" text-anchor="middle">Préparer</text>
 
-    <div class="step-section">
-      <h3><span class="step-number">1</span> Préparer</h3>
+        <path d="M120,125 C145,125 140,45 163,45" class="d-lien" marker-end="url(#wf-fleche)"/>
+        <path d="M120,135 L163,135" class="d-lien" marker-end="url(#wf-fleche)"/>
+        <path d="M120,145 C145,145 140,225 163,225" class="d-lien" marker-end="url(#wf-fleche)"/>
 
-      <p><strong>Décomposer la tâche</strong> en sous-tâches avec fichiers disjoints :</p>
+        <rect x="165" y="15" width="170" height="60" rx="10" class="d-boite d-accent"/>
+        <text x="250" y="42" class="d-titre" text-anchor="middle">Agent 1</text>
+        <text x="250" y="63" class="d-texte" text-anchor="middle">en parallèle</text>
+        <rect x="165" y="105" width="170" height="60" rx="10" class="d-boite d-accent"/>
+        <text x="250" y="132" class="d-titre" text-anchor="middle">Agent 2</text>
+        <text x="250" y="153" class="d-texte" text-anchor="middle">en parallèle</text>
+        <rect x="165" y="195" width="170" height="60" rx="10" class="d-boite d-accent"/>
+        <text x="250" y="222" class="d-titre" text-anchor="middle">Agent 3</text>
+        <text x="250" y="243" class="d-texte" text-anchor="middle">en parallèle</text>
 
-      <div class="code-block">
-        <div class="code-block-header">Exemple de décomposition</div>
-        <pre><code>Tâche globale : "Ajouter système de notifications"
+        <path d="M335,45 L400,108 L400,162 L335,225 Z" class="d-goulot"/>
+        <path d="M335,45 C370,45 365,120 398,122" class="d-lien" marker-end="url(#wf-fleche)"/>
+        <path d="M335,135 L398,135" class="d-lien" marker-end="url(#wf-fleche)"/>
+        <path d="M335,225 C370,225 365,150 398,148" class="d-lien" marker-end="url(#wf-fleche)"/>
 
-Agent 1 : Backend notifications (src/services/notifications/*)
-Agent 2 : API endpoints (src/api/notifications/*)
-Agent 3 : Frontend composants (src/components/notifications/*)</code></pre>
-      </div>
+        <rect x="400" y="95" width="130" height="80" rx="10" class="d-boite d-alerte"/>
+        <text x="465" y="128" class="d-titre" text-anchor="middle">Relire</text>
+        <text x="465" y="150" class="d-texte" text-anchor="middle">un humain,</text>
+        <text x="465" y="167" class="d-texte" text-anchor="middle">une PR à la fois</text>
 
-      <p><strong>Écrire les specs</strong> dans <code>specs/</code> et <strong>créer les worktrees</strong> :</p>
+        <path d="M530,135 L553,135" class="d-lien" marker-end="url(#wf-fleche)"/>
+        <rect x="555" y="105" width="75" height="60" rx="10" class="d-boite"/>
+        <text x="592" y="140" class="d-texte" text-anchor="middle">Intégrer</text>
+        <path d="M630,135 L638,135" class="d-lien" marker-end="url(#wf-fleche)"/>
+        <rect x="640" y="105" width="75" height="60" rx="10" class="d-boite"/>
+        <text x="677" y="140" class="d-texte" text-anchor="middle">Nettoyer</text>
+      </svg>
+      <figcaption>Ajouter des agents élargit la partie gauche ; la relecture, elle, ne s'élargit pas.</figcaption>
+    </figure>
 
-      <div class="code-block">
-        <div class="code-block-header">bash</div>
-        <pre><code>git worktree add ../notif-backend -b feature/notif-backend main
-git worktree add ../notif-api -b feature/notif-api main
+    <h2>1. Préparer</h2>
+    <p>Découper la tâche en sous-tâches qui touchent des <strong>fichiers disjoints</strong> :</p>
+<pre><code>Tâche globale : « Ajouter un système de notifications »
+
+Agent 1 : service de notifications   (src/services/notifications/*)
+Agent 2 : endpoints API              (src/api/notifications/*)
+Agent 3 : composants d'interface     (src/components/notifications/*)</code></pre>
+    <p>
+      Si les sous-tâches dépendent les unes des autres, écrivez d'abord le contrat commun
+      (types, interfaces, format des messages) et commitez-le. Puis écrivez les specs, commitez-les et créez les worktrees :
+    </p>
+<pre><code class="language-bash">git add specs/ src/types/notifications.ts
+git commit -m "docs: specs et contrat du système de notifications"
+
+git worktree add ../notif-backend  -b feature/notif-backend  main
+git worktree add ../notif-api      -b feature/notif-api      main
 git worktree add ../notif-frontend -b feature/notif-frontend main</code></pre>
-      </div>
+
+    <h2>2. Lancer</h2>
+<pre><code class="language-bash">tmux new-session -s agents
+# Un panneau par worktree (Ctrl-A | ou Ctrl-A - avec la configuration vue plus haut)
+cd ../notif-backend  &amp;&amp; claude "Implémente @specs/notif-backend.md"
+cd ../notif-api      &amp;&amp; claude "Implémente @specs/notif-api.md"
+cd ../notif-frontend &amp;&amp; claude "Implémente @specs/notif-frontend.md"</code></pre>
+    <p>
+      Variante sans terminal à surveiller : confiez chaque spec à un agent cloud
+      (<code>claude --cloud "Implémente la spec specs/notif-api.md"</code>, issue assignée à Copilot…).
+      Les étapes suivantes restent les mêmes.
+    </p>
+
+    <h2>3. Surveiller</h2>
+    <p>Ne micro-managez pas, mais passez régulièrement (toutes les 15 à 30 minutes, par exemple) :</p>
+    <ul>
+      <li>Un agent attend-il une permission ou une réponse ?</li>
+      <li>Un agent part-il dans une mauvaise direction ou sort-il de son périmètre ?</li>
+      <li>La même erreur revient-elle en boucle ? Arrêtez plutôt que de laisser « réessayer ».</li>
+    </ul>
+    <p>Entre deux passages, commencez la relecture du premier agent qui a terminé.</p>
+
+    <h2>4. Relire</h2>
+    <div class="callout callout-warning">
+      <p><strong>C'est le goulot d'étranglement.</strong> Lancer des agents est rapide ; relire sérieusement chacun de leurs diffs prend du temps. Prévoyez-le dès le découpage.</p>
     </div>
+    <p>Pour chaque branche :</p>
+    <ol>
+      <li>Lire le diff : <code>git diff main...feature/notif-backend</code></li>
+      <li>Vérifier le périmètre : aucun fichier hors spec, aucun test supprimé ou désactivé.</li>
+      <li>Relancer soi-même les tests et le lint, sans se fier au résumé de l'agent.</li>
+      <li>Vérifier la logique métier et la sécurité : entrées, secrets, dépendances ajoutées.</li>
+      <li>Demander des corrections, ou jeter et relancer avec une spec plus précise.</li>
+    </ol>
+    <p>
+      Une partie du travail sera à reprendre, voire à refaire : c'est normal. Si une même tâche échoue
+      deux fois, le problème vient souvent de la spec ou du découpage, pas de l'agent.
+    </p>
 
-    <div class="step-section">
-      <h3><span class="step-number">2</span> Lancer</h3>
+    <h2>5. Intégrer</h2>
+    <p>La voie la plus sûre : <strong>une pull request par agent</strong>, qui passe par la CI et une revue.</p>
+<pre><code class="language-bash">cd ../notif-backend
+git push -u origin feature/notif-backend
+gh pr create --base main --fill</code></pre>
+    <p>Ordre recommandé : contrat et types, puis services, API, interface, et enfin tests d'intégration.
+      Après chaque fusion, mettez les branches suivantes à jour depuis <code>main</code> et relancez leurs tests.</p>
+    <p>Sans plateforme de revue, l'équivalent local depuis le worktree principal :</p>
+<pre><code class="language-bash">git switch main
+git merge --no-ff feature/notif-backend
+git merge --no-ff feature/notif-api
+git merge --no-ff feature/notif-frontend</code></pre>
+    <p>
+      <strong>En cas de conflit</strong>, c'est souvent le signe d'un découpage pas assez disjoint : résolvez, puis notez-le
+      pour mieux découper la prochaine fois. <code>git config rerere.enabled true</code> fait mémoriser à Git
+      les résolutions de conflits pour les rejouer.
+    </p>
 
-      <div class="code-block">
-        <div class="code-block-header">bash</div>
-        <pre><code><span class="comment"># Créer une session tmux</span>
-tmux new-session -s agents
-
-<span class="comment"># Dans chaque pane, aller dans un worktree et lancer l'agent avec sa spec</span>
-cd ../notif-backend && claude "Implémente @specs/notif-backend.md"
-<span class="comment"># Ctrl-A | (split), puis :</span>
-cd ../notif-api && claude "Implémente @specs/notif-api.md"
-<span class="comment"># etc.</span></code></pre>
-      </div>
-    </div>
-
-    <div class="step-section">
-      <h3><span class="step-number">3</span> Surveiller</h3>
-
-      <p><strong>Ne pas micro-manager.</strong> Laissez les agents travailler. Check-in toutes les 15-30 minutes :</p>
-      <ul>
-        <li>Est-ce qu'un agent est bloqué ?</li>
-        <li>Est-ce qu'un agent part dans une mauvaise direction ?</li>
-        <li>Y a-t-il des erreurs répétées ?</li>
-      </ul>
-
-      <p>Pendant ce temps, vous pouvez faire autre chose — ou commencer à review le travail du premier agent terminé.</p>
-    </div>
-
-    <div class="step-section">
-      <h3><span class="step-number">4</span> Review</h3>
-
-      <div class="callout warning">
-        ⚠️ C'est le <strong>goulot d'étranglement</strong>. Attendez-vous à y passer ~50% du temps total.
-      </div>
-
-      <p><strong>Pour chaque agent :</strong></p>
-      <ol>
-        <li>Lire le diff : <code>git diff main...feature/notif-backend</code></li>
-        <li>Vérifier que le scope a été respecté</li>
-        <li>Lancer les tests : <code>npm test</code> ou équivalent</li>
-        <li>Vérifier la logique métier (l'agent pattern-matche, il ne "comprend" pas)</li>
-        <li>Demander des corrections si nécessaire</li>
-      </ol>
-
-      <p><strong>Taux de succès réalistes</strong> (d'après retours d'expérience) :</p>
-
-      <div class="stats-grid">
-        <div class="stat-card green">
-          <div class="value">~10%</div>
-          <div class="label">Parfait, prêt à merger</div>
-        </div>
-        <div class="stat-card yellow">
-          <div class="value">~20%</div>
-          <div class="label">Retouches mineures</div>
-        </div>
-        <div class="stat-card orange">
-          <div class="value">~40%</div>
-          <div class="label">Travail supplémentaire</div>
-        </div>
-        <div class="stat-card red">
-          <div class="value">~30%</div>
-          <div class="label">À jeter et refaire</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="step-section">
-      <h3><span class="step-number">5</span> Merger</h3>
-
-      <div class="merge-order">
-        <strong>Ordre recommandé :</strong>
-        <ol>
-          <li>Types et interfaces (si applicable)</li>
-          <li>Backend / services</li>
-          <li>API</li>
-          <li>Frontend</li>
-          <li>Tests d'intégration</li>
-        </ol>
-      </div>
-
-      <div class="code-block">
-        <div class="code-block-header">bash</div>
-        <pre><code><span class="comment"># Depuis le worktree main</span>
-git checkout main
-git merge feature/notif-backend --no-ff
-git merge feature/notif-api --no-ff
-git merge feature/notif-frontend --no-ff</code></pre>
-      </div>
-
-      <div class="callout">
-        <strong>En cas de conflit</strong> : c'est souvent signe que la décomposition n'était pas assez disjointe.
-        Résolvez, puis notez pour mieux découper la prochaine fois.
-      </div>
-
-      <div class="callout">
-        <strong>Astuce</strong> : Activez <code>git rerere</code> pour mémoriser les résolutions de conflits.
-        <br><code>git config rerere.enabled true</code>
-      </div>
-    </div>
-
-    <div class="step-section">
-      <h3><span class="step-number">6</span> Nettoyer</h3>
-
-      <div class="code-block">
-        <div class="code-block-header">bash</div>
-        <pre><code><span class="comment"># Supprimer les worktrees</span>
-git worktree remove ../notif-backend
+    <h2>6. Nettoyer</h2>
+<pre><code class="language-bash">git worktree remove ../notif-backend
 git worktree remove ../notif-api
 git worktree remove ../notif-frontend
-
-<span class="comment"># Nettoyer les références orphelines</span>
 git worktree prune
 
-<span class="comment"># Supprimer les branches mergées</span>
+# -d refuse de supprimer une branche non fusionnée : c'est voulu
 git branch -d feature/notif-backend feature/notif-api feature/notif-frontend</code></pre>
-      </div>
-    </div>
+    <p>
+      Après une fusion par « squash » sur la plateforme, Git local ne reconnaît pas la branche comme fusionnée :
+      vérifiez que la PR est bien fusionnée avant de forcer la suppression avec <code>-D</code>.
+    </p>
   </article>
 </body>
 </html>

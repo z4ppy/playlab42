@@ -10,190 +10,86 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .pitfalls-section {
-      margin: var(--space-xl) 0;
-    }
-    .pitfalls-section h2 {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-lg);
-    }
-    .pitfall-card {
-      background: var(--color-bg-secondary);
-      border-radius: var(--radius-lg);
-      margin: var(--space-md) 0;
-      overflow: hidden;
-      border-left: 4px solid var(--color-error);
-    }
-    .pitfall-header {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      padding: var(--space-md) var(--space-lg);
-      background: rgba(239, 68, 68, 0.1);
-    }
-    .pitfall-header .icon {
-      font-size: 1.5rem;
-    }
-    .pitfall-header .title {
-      font-weight: bold;
-      color: var(--color-error);
-    }
-    .pitfall-solution {
-      padding: var(--space-md) var(--space-lg);
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-sm);
-    }
-    .pitfall-solution .icon {
-      color: var(--color-success);
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-    .pitfall-solution .text {
-      flex: 1;
-    }
-    .category-icon {
-      font-size: 1.5rem;
-    }
-    .warning-stat {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
-      border: 1px solid var(--color-error);
-      border-radius: var(--radius-md);
-      padding: var(--space-md) var(--space-lg);
-      margin: var(--space-md) 0;
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-    }
-    .warning-stat .value {
-      font-size: var(--font-size-xl);
-      font-weight: bold;
-      color: var(--color-error);
-    }
-  </style>
 </head>
 <body>
   <article class="slide">
     <h1>🚫 Les pièges à éviter</h1>
 
-    <div class="pitfalls-section">
-      <h2><span class="category-icon">📋</span> Erreurs de décomposition</h2>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Tâches qui touchent les mêmes fichiers</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Revoir le découpage. <strong>Un fichier = un seul agent.</strong></span>
-        </div>
-      </div>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Scope trop vague dans CLAUDE.md</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Lister explicitement les fichiers/dossiers autorisés.</span>
-        </div>
-      </div>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Pas d'interface définie entre tâches dépendantes</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Définir les types/interfaces <strong>AVANT</strong> de lancer les agents.</span>
-        </div>
-      </div>
+    <h2>📋 Erreurs de découpage</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Erreurs de découpage">
+      <table>
+        <thead><tr><th>❌ Piège</th><th>✅ Parade</th></tr></thead>
+        <tbody>
+          <tr><td>Des tâches qui touchent les mêmes fichiers</td><td>Revoir le découpage : une zone de fichiers par agent.</td></tr>
+          <tr><td>Un périmètre vague dans la spec</td><td>Lister explicitement les fichiers et dossiers autorisés, et ceux interdits.</td></tr>
+          <tr><td>Pas d'interface entre tâches dépendantes</td><td>Écrire et commiter types et contrats <em>avant</em> de lancer les agents.</td></tr>
+          <tr><td>Specs écrites mais pas commitées</td><td>Commiter sur la branche de base avant de créer les worktrees : sinon les agents ne les voient pas.</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="pitfalls-section">
-      <h2><span class="category-icon">👀</span> Erreurs de supervision</h2>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Micro-management en temps réel</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Lancer, puis review à la fin. Les interruptions constantes cassent le flow de l'agent.</span>
-        </div>
-      </div>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Zéro supervision</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Check-in toutes les 15-30 min pour éviter qu'un agent parte en vrille pendant 2h.</span>
-        </div>
-      </div>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Merger sans review</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Toujours review. Le code généré par IA contient des failles de sécurité dans 40-48% des cas.</span>
-        </div>
-      </div>
-
-      <div class="warning-stat">
-        <span class="value">40-48%</span>
-        <span>du code IA contient des failles de sécurité (étude CodeRabbit)</span>
-      </div>
+    <h2>👀 Erreurs de supervision</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Erreurs de supervision">
+      <table>
+        <thead><tr><th>❌ Piège</th><th>✅ Parade</th></tr></thead>
+        <tbody>
+          <tr><td>Micro-management en temps réel</td><td>Lancer, puis passer à intervalles réguliers. Les interruptions constantes cassent le travail de l'agent… et le vôtre.</td></tr>
+          <tr><td>Aucune supervision</td><td>Un passage toutes les 15 à 30 minutes évite qu'un agent tourne en rond pendant deux heures.</td></tr>
+          <tr><td>Croire le résumé de l'agent</td><td>Relancer soi-même tests et lint. Un résumé peut annoncer des tests au vert qui n'ont pas tourné.</td></tr>
+          <tr><td>Fusionner sans relecture</td><td>Toujours relire, y compris la sécurité (voir les chiffres ci-dessous).</td></tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="pitfalls-section">
-      <h2><span class="category-icon">⚙️</span> Erreurs techniques</h2>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Agents dans le même répertoire</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text"><strong>Un worktree par agent, sans exception.</strong></span>
-        </div>
-      </div>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Pas de stratégie de merge</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Définir l'ordre de merge <strong>AVANT</strong> de lancer les agents.</span>
-        </div>
-      </div>
-
-      <div class="pitfall-card">
-        <div class="pitfall-header">
-          <span class="icon">❌</span>
-          <span class="title">Oublier le cleanup</span>
-        </div>
-        <div class="pitfall-solution">
-          <span class="icon">✅</span>
-          <span class="text">Les worktrees s'accumulent. Nettoyez après chaque session.</span>
-        </div>
-      </div>
+    <div class="callout callout-error">
+      <p><strong>Ce que disent les études sur la sécurité du code généré</strong></p>
+      <ul>
+        <li>
+          Sur 80 tâches de test conçues autour de failles connues, le code produit par plus de 100 modèles contient une vulnérabilité
+          dans <strong>environ 45 %</strong> des cas (Veracode, <em>2025 GenAI Code Security Report</em>, juillet 2025).
+        </li>
+        <li>
+          Sur 470 pull requests open source, celles co-écrites par IA contiennent environ <strong>1,7 fois plus de problèmes</strong>
+          que les PR humaines, et jusqu'à 2,74 fois plus de problèmes de sécurité (CodeRabbit, décembre 2025).
+        </li>
+      </ul>
+      <p>Ce sont des mesures sur des échantillons précis, pas une loi générale ; elles suffisent à justifier une relecture systématique.</p>
     </div>
+
+    <h2>⚙️ Erreurs techniques</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Erreurs techniques">
+      <table>
+        <thead><tr><th>❌ Piège</th><th>✅ Parade</th></tr></thead>
+        <tbody>
+          <tr><td>Plusieurs agents dans le même répertoire</td><td>Un worktree par agent, sans exception.</td></tr>
+          <tr><td>Forcer une branche dans deux worktrees (<code>--force</code>)</td><td>Une branche par agent ; créez-en une nouvelle plutôt que de contourner le garde-fou.</td></tr>
+          <tr><td>Utiliser <code>git stash</code> pour « mettre de côté » dans un worktree</td><td>Le stash est partagé par tous les worktrees : préférez un commit de travail sur la branche.</td></tr>
+          <tr><td>Oublier les dépendances</td><td>Chaque worktree a ses propres <code>node_modules</code> et builds : installez-les avant de lancer l'agent.</td></tr>
+          <tr><td>Deux worktrees sur les mêmes ports</td><td>Paramétrer les ports par worktree (fichier <code>.env</code>), ou passer par des agents cloud.</td></tr>
+          <tr><td>Pas de stratégie d'intégration</td><td>Définir l'ordre des PR <em>avant</em> de lancer les agents.</td></tr>
+          <tr><td>Oublier le nettoyage</td><td>Les worktrees s'accumulent : <code>git worktree list</code> en fin de session.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>💸 Erreurs de budget</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Erreurs de budget">
+      <table>
+        <thead><tr><th>❌ Piège</th><th>✅ Parade</th></tr></thead>
+        <tbody>
+          <tr><td>Lancer dix agents « pour voir »</td><td>Chaque agent consomme quotas ou crédits ; commencez par deux ou trois tâches bien découpées.</td></tr>
+          <tr><td>Laisser un agent réessayer en boucle</td><td>Arrêter, corriger la spec, relancer. Une boucle coûte sans produire.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://www.veracode.com/genai-code-security-report" target="_blank" rel="noopener noreferrer">Veracode 2025 GenAI Code Security Report</a>,
+      <a href="https://www.coderabbit.ai/blog/state-of-ai-vs-human-code-generation-report" target="_blank" rel="noopener noreferrer">CodeRabbit, State of AI vs Human Code Generation</a>,
+      <a href="https://git-scm.com/docs/git-worktree" target="_blank" rel="noopener noreferrer">git-worktree</a>,
+      <a href="https://git-scm.com/docs/git-stash" target="_blank" rel="noopener noreferrer">git-stash</a>.
+    </p>
   </article>
 </body>
 </html>

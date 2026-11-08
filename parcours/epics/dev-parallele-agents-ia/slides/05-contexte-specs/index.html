@@ -10,303 +10,154 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .context-flow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-md);
-      flex-wrap: wrap;
-      margin: var(--space-xl) 0;
-      padding: var(--space-lg);
-      background: var(--color-bg-secondary);
-      border-radius: var(--radius-lg);
-    }
-    .flow-item {
-      background: var(--color-bg-primary);
-      padding: var(--space-md) var(--space-lg);
-      border-radius: var(--radius-md);
-      text-align: center;
-      border: 2px solid var(--color-border);
-    }
-    .flow-item.highlight {
-      border-color: var(--color-accent);
-      background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
-    }
-    .flow-arrow {
-      font-size: 1.5rem;
-      color: var(--color-accent);
-    }
-    .structure-diagram {
-      background: var(--color-bg-code);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      font-size: var(--font-size-sm);
-      overflow-x: auto;
-    }
-    .code-block {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      margin: var(--space-md) 0;
-    }
-    .code-block-header {
-      background: var(--color-bg-secondary);
-      padding: var(--space-sm) var(--space-md);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-      border-bottom: 1px solid var(--color-border);
-    }
-    .code-block pre {
-      margin: 0;
-      padding: var(--space-md);
-      overflow-x: auto;
-      font-size: var(--font-size-sm);
-    }
-    .two-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-lg);
-      margin: var(--space-lg) 0;
-    }
-    @media (max-width: 768px) {
-      .two-columns {
-        grid-template-columns: 1fr;
-      }
-    }
-    .column-card {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-    }
-    .column-card h3 {
-      margin-top: 0;
-    }
-    .tools-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-xl) 0;
-    }
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: var(--space-md);
-      margin-top: var(--space-md);
-    }
-    .tool-card {
-      background: var(--color-bg-primary);
-      padding: var(--space-md);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--color-accent);
-    }
-    .tool-card h4 {
-      margin: 0 0 var(--space-xs);
-      color: var(--color-accent);
-    }
-    .tool-card p {
-      margin: 0;
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: var(--space-lg) 0;
-      font-size: var(--font-size-sm);
-    }
-    .comparison-table th, .comparison-table td {
-      padding: var(--space-sm) var(--space-md);
-      border: 1px solid var(--color-border);
-      text-align: left;
-    }
-    .comparison-table th {
-      background: var(--color-bg-secondary);
-    }
-    .comparison-table tr:last-child {
-      background: rgba(var(--color-accent-rgb), 0.1);
-    }
-    .callout {
-      background: var(--color-bg-secondary);
-      border-left: 4px solid var(--color-info);
-      padding: var(--space-md) var(--space-lg);
-      margin: var(--space-lg) 0;
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    }
-    .comment { color: var(--color-text-muted); }
-  </style>
 </head>
 <body>
   <article class="slide">
     <h1>📋 Donner le contexte aux agents : specs, pas duplication</h1>
 
     <h2>Le problème du contexte</h2>
-
-    <p>Chaque agent a besoin de savoir :</p>
+    <p>Chaque agent doit savoir :</p>
     <ul>
-      <li>Ce qu'il doit faire (la tâche)</li>
-      <li>Ce qu'il ne doit pas toucher (le scope)</li>
-      <li>Les conventions du projet</li>
+      <li><strong>ce qu'il doit faire</strong> : la tâche et ses critères de réussite ;</li>
+      <li><strong>ce qu'il ne doit pas toucher</strong> : le périmètre ;</li>
+      <li><strong>comment travailler</strong> : les conventions du projet.</li>
     </ul>
-
     <p>
-      La tentation serait de dupliquer un fichier de config dans chaque worktree.
-      <strong>Mauvaise idée</strong> : ça diverge, c'est difficile à maintenir, et ça ne scale pas.
+      La tentation est de recopier un fichier de configuration dans chaque worktree.
+      Mauvaise idée : les copies divergent et personne ne sait laquelle fait foi.
     </p>
 
     <h2>L'approche spec-driven</h2>
+    <p>
+      Conventions et specs sont <strong>versionnées dans le dépôt</strong>. Comme un worktree extrait un commit,
+      chaque agent les trouve dans son propre dossier… à condition qu'elles aient été commitées
+      <em>avant</em> la création du worktree.
+    </p>
+<pre><code>mon-projet/                  # dépôt principal (branche main)
+├── AGENTS.md                # conventions communes à tous les outils
+├── CLAUDE.md                # contient « @AGENTS.md » pour Claude Code
+└── specs/
+    ├── auth-oauth.md        # spec de l'agent 1
+    ├── api-notifications.md # spec de l'agent 2
+    └── fix-tests.md         # spec de l'agent 3
 
-    <div class="context-flow">
-      <div class="flow-item">
-        <strong>CLAUDE.md</strong><br>
-        <small>Conventions globales</small>
-      </div>
-      <span class="flow-arrow">+</span>
-      <div class="flow-item">
-        <strong>specs/*.md</strong><br>
-        <small>Spec par tâche</small>
-      </div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-item highlight">
-        <strong>🤖 Agent</strong><br>
-        <small>Contexte complet</small>
-      </div>
-      <span class="flow-arrow">→</span>
-      <div class="flow-item">
-        <strong>Code</strong><br>
-        <small>Résultat</small>
-      </div>
-    </div>
+mon-projet-agent-auth/       # worktree : contient aussi AGENTS.md et specs/
+mon-projet-agent-api/
+mon-projet-agent-tests/</code></pre>
 
-    <div class="structure-diagram">
-<pre>project/
-├── CLAUDE.md              <span class="comment"># Conventions globales (ou AGENTS.md)</span>
-├── specs/
-│   ├── auth-oauth.md      <span class="comment"># Spec pour agent 1</span>
-│   ├── api-notifications.md   <span class="comment"># Spec pour agent 2</span>
-│   └── fix-tests.md       <span class="comment"># Spec pour agent 3</span>
-├── main/                  <span class="comment"># Worktree principal</span>
-├── agent-1-auth/          <span class="comment"># Worktree agent 1</span>
-├── agent-2-api/           <span class="comment"># Worktree agent 2</span>
-└── agent-3-tests/         <span class="comment"># Worktree agent 3</span></pre>
-    </div>
-
-    <div class="two-columns">
-      <div class="column-card">
-        <h3>📄 CLAUDE.md global</h3>
-        <div class="code-block">
-          <div class="code-block-header">CLAUDE.md</div>
-          <pre><code><span class="comment"># CLAUDE.md</span>
+    <h2>📄 Les conventions : AGENTS.md et CLAUDE.md</h2>
+    <p>
+      <code>AGENTS.md</code> est un format ouvert d'instructions pour agents de code, géré depuis décembre 2025 par
+      l'Agentic AI Foundation (Linux Foundation). Codex, Copilot, Cursor, Jules, Aider et beaucoup d'autres le lisent.
+    </p>
+    <p>
+      Claude Code charge automatiquement <code>CLAUDE.md</code> au début de chaque session. Il sait lire
+      <code>AGENTS.md</code> lorsqu'aucun <code>CLAUDE.md</code> n'existe ; sinon, importez-le depuis
+      <code>CLAUDE.md</code> avec la ligne <code>@AGENTS.md</code>. C'est ce que fait le dépôt Playlab42 :
+      une seule source de conventions pour tous les outils.
+    </p>
+<pre><code class="language-markdown"># AGENTS.md
 
 ## Stack
-- Node.js 20, TypeScript, Express
+- Node.js 24, TypeScript, Express
 - PostgreSQL, Prisma ORM
 - Jest pour les tests
 
 ## Conventions
 - Commits conventionnels (feat:, fix:, etc.)
 - Tests obligatoires pour toute nouvelle fonction
-- Pas de modifications de schema DB sans validation humaine
+- Pas de modification du schéma de base sans validation humaine
 
 ## Structure
-- src/api/ — endpoints REST
-- src/services/ — logique métier
-- src/auth/ — authentification
-- tests/ — tests unitaires et intégration</code></pre>
-        </div>
-      </div>
+- src/api/ : endpoints REST
+- src/services/ : logique métier
+- src/auth/ : authentification
+- tests/ : tests unitaires et d'intégration</code></pre>
 
-      <div class="column-card">
-        <h3>📝 Spec par tâche</h3>
-        <div class="code-block">
-          <div class="code-block-header">specs/auth-oauth.md</div>
-          <pre><code><span class="comment"># Spec: Authentification OAuth Google</span>
+    <h2>📝 Une spec par tâche</h2>
+<pre><code class="language-markdown"># Spec : authentification OAuth Google
 
 ## Objectif
-Permettre aux utilisateurs de se connecter via leur compte Google.
+Permettre aux utilisateurs de se connecter avec leur compte Google.
 
-## Scope
-- Fichiers à créer/modifier : src/auth/oauth.ts, src/auth/google.ts
+## Périmètre
+- Fichiers à créer ou modifier : src/auth/oauth.ts, src/auth/google.ts
 - Tests : tests/auth/oauth.test.ts
 
-## Hors scope
-- Ne PAS modifier les autres providers d'auth
+## Hors périmètre
+- Ne PAS modifier les autres fournisseurs d'authentification
 - Ne PAS toucher à src/api/**
 
-## Critères de succès
+## Critères de réussite
 - [ ] Endpoint POST /auth/google fonctionnel
-- [ ] Token JWT généré après auth réussie
-- [ ] Tests passent</code></pre>
-        </div>
-      </div>
-    </div>
+- [ ] Jeton JWT émis après authentification réussie
+- [ ] Tests au vert</code></pre>
 
     <h2>Lancer un agent avec sa spec</h2>
+<pre><code class="language-bash"># 1. Commiter la spec sur main AVANT de créer le worktree
+git add specs/auth-oauth.md &amp;&amp; git commit -m "docs: spec OAuth Google"
+git worktree add ../mon-projet-agent-auth -b feature/auth main
 
-    <div class="code-block">
-      <div class="code-block-header">Claude Code</div>
-      <pre><code>cd agent-1-auth
-claude "Implémente @specs/auth-oauth.md"</code></pre>
-    </div>
+# 2a. Claude Code : @ inclut le contenu du fichier dans la demande
+cd ../mon-projet-agent-auth
+claude "Implémente @specs/auth-oauth.md"
 
-    <div class="callout">
-      Le <code>@</code> permet à Claude de lire le fichier. Il aura aussi accès au CLAUDE.md global automatiquement.
-    </div>
-
-    <div class="code-block">
-      <div class="code-block-header">Aider</div>
-      <pre><code>cd agent-1-auth
+# 2b. Aider : --read ajoute la spec en lecture seule
 aider --read specs/auth-oauth.md
-<span class="comment"># Puis dans Aider : "Implémente cette spec"</span></code></pre>
-    </div>
+# puis, dans Aider : « Implémente cette spec »</code></pre>
+    <p>
+      Avec Claude Code, <code>claude -w auth</code> crée lui-même le worktree. Il part par défaut de la branche
+      par défaut du dépôt : la spec doit donc y être commitée (et poussée si vous travaillez à plusieurs).
+    </p>
 
-    <div class="tools-section">
-      <h3>🛠️ Outils de spec-driven development</h3>
-      <div class="tools-grid">
-        <div class="tool-card">
-          <h4>OpenSpec</h4>
-          <p>Workflow structuré : proposal → apply → archive. Compatible multi-outils.</p>
-        </div>
-        <div class="tool-card">
-          <h4>Spec Kit</h4>
-          <p>Par GitHub, orienté workflow en 4 phases : /specify → /plan → /tasks → implement</p>
-        </div>
-        <div class="tool-card">
-          <h4>AGENTS.md</h4>
-          <p>Convention émergente pour fichier d'instructions compatible multi-outils.</p>
-        </div>
-      </div>
+    <h2>🛠️ Outils de spec-driven development</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Outils de spec-driven development">
+      <table>
+        <thead><tr><th>Outil</th><th>Workflow</th><th>Remarque</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="https://github.com/Fission-AI/OpenSpec" target="_blank" rel="noopener noreferrer">OpenSpec</a></td>
+            <td><code>/opsx:explore</code> → <code>/opsx:propose</code> → <code>/opsx:apply</code> → <code>/opsx:archive</code></td>
+            <td>Workflow OPSX ; plus de 30 outils pris en charge. Les anciennes commandes <code>/openspec:*</code> sont « legacy ». Voir le parcours OpenSpec.</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/github/spec-kit" target="_blank" rel="noopener noreferrer">Spec Kit</a> (GitHub)</td>
+            <td><code>/speckit-constitution</code> → <code>-specify</code> → <code>-plan</code> → <code>-tasks</code> → <code>-implement</code></td>
+            <td>Installation : <code>uv tool install specify-cli</code> puis <code>specify init</code>. La syntaxe exacte des commandes dépend de l'agent.</td>
+          </tr>
+          <tr>
+            <td><a href="https://agents.md" target="_blank" rel="noopener noreferrer">AGENTS.md</a></td>
+            <td>Un fichier Markdown à la racine</td>
+            <td>Format ouvert, lu par la plupart des agents.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <h2>Pourquoi cette approche est meilleure</h2>
-
-    <table class="comparison-table">
-      <thead>
-        <tr>
-          <th>Approche</th>
-          <th>Avantages</th>
-          <th>Inconvénients</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Config dupliquée par worktree</td>
-          <td>Simple au début</td>
-          <td>Divergence, maintenance, pas de vue globale</td>
-        </tr>
-        <tr>
-          <td><strong>Spec-driven</strong></td>
-          <td>Source unique de vérité, specs versionnées, réutilisables</td>
-          <td>Demande un peu plus de setup initial</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Comparaison des approches">
+      <table>
+        <thead><tr><th>Approche</th><th>Avantages</th><th>Inconvénients</th></tr></thead>
+        <tbody>
+          <tr><td>Configuration copiée par worktree</td><td>Simple au début</td><td>Divergence, maintenance, aucune vue globale</td></tr>
+          <tr><td>Specs versionnées</td><td>Source unique, historique, réutilisable par tous les outils</td><td>Un peu plus de préparation</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-success">
+      <p>
+        <strong>Les specs deviennent une documentation vivante.</strong>
+        Quand une feature est terminée, sa spec explique ce qui a été fait et pourquoi.
+      </p>
+    </div>
 
     <p>
-      Les specs deviennent une <strong>documentation vivante</strong> du projet.
-      Quand une feature est terminée, la spec documente ce qui a été fait et pourquoi.
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://agents.md" target="_blank" rel="noopener noreferrer">agents.md</a>,
+      <a href="https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation" target="_blank" rel="noopener noreferrer">annonce de l'Agentic AI Foundation</a>,
+      <a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener noreferrer">mémoire de Claude Code</a>,
+      <a href="https://aider.chat/docs/config/options.html" target="_blank" rel="noopener noreferrer">options Aider</a>,
+      README d'OpenSpec et de Spec Kit.
     </p>
   </article>
 </body>
