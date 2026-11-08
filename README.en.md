@@ -21,8 +21,6 @@ An open, browser-based learning lab: interactive courses, tools, games and resou
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-64748b.svg)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-0891b2.svg)](CONTRIBUTING.md)
 
-<img src="docs/assets/readme/portail.webp" width="860" alt="The Playlab42 portal in dark mode (French interface): the heading “Apprendre, expérimenter, jouer.” (Learn, experiment, play), the Courses, Tools, Games and Links tabs, and the first course cards.">
-
 </div>
 
 ## What’s inside
