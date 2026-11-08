@@ -166,6 +166,37 @@ summary { cursor: pointer; }
   fieldset small { font-size: 7px; }
   .overlay-footnote { display: none; }
 }
+/* Téléphone : la grille et les commandes doivent tenir ensemble à l'écran. */
+@media (max-width: 700px) {
+  .shell { padding-bottom: 0; }
+  .intro, .record-panel { display: none; }
+  .left-rail { grid-template-columns: 1fr; }
+  .board-frame { width: min(100%, calc((100dvh - 285px) / 2)); min-width: 180px; margin-inline: auto; }
+  #board { touch-action: none; }
+  .touch-controls { position: sticky; bottom: 0; z-index: 5; max-width: 450px; margin: 8px auto 0; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); gap: 6px; background: linear-gradient(to top, var(--ink) 80%, transparent); }
+  .touch-controls button { min-height: 52px; touch-action: manipulation; }
+  .touch-controls button[data-action="left"], .touch-controls button[data-action="right"], .touch-controls button[data-action="softDrop"] { touch-action: none; }
+  .touch-controls button span { display: none; }
+  .footer { padding-bottom: 12px; }
+}
+/* Paysage : bandeau compact, grille limitée à la hauteur visible. */
+@media (max-width: 950px) and (max-height: 500px) {
+  .shell { padding: 8px 12px 0; }
+  .masthead { padding-bottom: 8px; }
+  .intro, .record-panel, .notes, .board-heading, .board-caption, .progress-track { display: none; }
+  .arena { grid-template-columns: 110px minmax(0, 1fr) 110px; max-width: none; gap: 12px; margin-top: 8px; }
+  .left-rail { grid-column: 1; grid-template-columns: 1fr; padding: 0; }
+  .board-column { grid-column: 2; }
+  .right-rail { grid-column: 3; padding-top: 0; }
+  .board-frame { width: min(100%, calc((100dvh - 120px) / 2)); min-width: 120px; padding: 4px; }
+  .overlay { padding: 8px; overflow: auto; }
+  .overlay h2 { font-size: 20px; margin: 4px 0; }
+  fieldset { margin: 6px 0; }
+  fieldset label { padding: 5px 6px; margin: 3px 0; }
+  .touch-controls { position: fixed; left: 0; right: 0; bottom: 0; max-width: none; margin: 0; padding: 4px max(12px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .touch-controls button, .touch-controls button:nth-child(n+5) { grid-column: auto; min-height: 40px; }
+  .footer { display: none; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
