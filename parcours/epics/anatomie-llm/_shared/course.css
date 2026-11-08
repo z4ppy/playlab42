@@ -112,6 +112,11 @@ a:hover { text-decoration-thickness: 2px; }
 .anecdote { border-left: 2px solid var(--warm); padding-left: 1rem; }
 .explanation p { margin: 0 0 1.35rem; line-height: 1.85; }
 .explanation strong { font-weight: 680; color: var(--ink); }
+.explanation > h3 { font-size: 1.05rem; margin: 2rem 0 .6rem; }
+.explanation > h2 + h3 { margin-top: 0; }
+.explanation > ul, .explanation > ol { margin: 0 0 1.35rem; padding-left: 1.4rem; line-height: 1.8; }
+.explanation > ul li, .explanation > ol li { margin-bottom: .45rem; }
+.explanation .course-map li::marker { color: var(--accent); font-weight: 680; }
 .explanation dfn { font-style: normal; text-decoration: underline dotted var(--accent); text-underline-offset: .2em; }
 .margin-notes { display: flex; flex-direction: column; gap: 1.5rem; }
 .takeaway, .caution { border-left: 2px solid var(--accent); padding-left: 1.4rem; }

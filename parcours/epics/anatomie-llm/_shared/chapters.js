@@ -1,398 +1,546 @@
-/** Source éditoriale. Le script generate-llm-anatomy.js produit le HTML statique. */
+/**
+ * Source éditoriale. Le script generate-llm-anatomy.js produit le HTML statique.
+ *
+ * Gabarit de chaque étape, pour rester lisible par un public néophyte comme averti :
+ * - « lead » pose la question de l'étape en une ou deux phrases ;
+ * - le corps suit l'ordre intuition → mécanisme → exemple chiffré → « Dans Luciole » ;
+ * - les précisions techniques vont dans un volet « Pour les avertis » replié ;
+ * - les limites sont regroupées dans « caveat » plutôt que répétées à chaque paragraphe.
+ * L'ordre du tableau fixe l'ordre de lecture ; les identifiants restent stables.
+ */
 export const chapters = [
   {
-    id: '01-un-token', section: 'Du texte aux représentations', title: 'Une réponse.\nUn token à la fois.',
+    id: '01-un-token', section: 'Du texte aux nombres', title: 'Une réponse.\nUn token à la fois.',
     short: 'Suivez ce token', label: 'Le commencement', experiment: 'generation',
-    lead: 'Un LLM est un grand modèle de langage. Le modèle autorégressif étudié ici complète un texte un token à la fois : une unité, parfois un mot ou un morceau de mot.',
-    body: `<p>Le <strong>prompt</strong> est le texte de départ. Le <strong>contexte</strong> est tout le texte disponible pour continuer : le prompt, puis les tokens déjà ajoutés. Un modèle de langage calcule une probabilité pour chaque token possible du vocabulaire. La stratégie de <strong>décodage</strong> en choisit un, l’ajoute au contexte, puis recommence jusqu’à un signal de fin ou une limite.</p>
-<p><strong>Exemple :</strong> après « le chat », un token possible est « dort ». Une fois choisi, le contexte devient « le chat dort » ; le calcul suivant propose la suite de ce nouveau texte. Le modèle ne produit donc pas une phrase complète en une seule décision.</p>
-<p><strong>Notre instrument : Luciole.</strong> C’est un mini-Transformer entraîné pour ce cours sur un petit ensemble de phrases, appelé corpus. Ses calculs sont réels, ses capacités limitées. Les <strong>poids</strong> sont les nombres ajustés pendant son entraînement : ils restent fixes lorsque vous générez du texte. La prochaine étape présente ce modèle et ses limites mesurées.</p>
-<p><strong>Deux gestes que nous allons découvrir :</strong> l’<dfn>attention</dfn> fait circuler l’information entre les tokens ; le <dfn>MLP</dfn> (<em>Multi-Layer Perceptron</em>, un petit réseau de neurones) transforme ensuite les nombres de chaque position. Il reçoit ainsi une information déjà enrichie par le contexte. Pour commencer, retenez simplement : mélanger, puis transformer.</p>
-<p><strong>Pour prendre vos repères :</strong> un vecteur est une liste de nombres ; une matrice, un tableau de nombres ; une probabilité, une valeur entre 0 et 1. Des étapes intermédiaires introduisent ces notions avant de les combiner. Le parcours <a href="../../../../../index.html#/parcours/deep-learning-intro" target="_top">Deep Learning pour l’impatient</a> offre aussi une première exploration. Comptez environ 110 minutes ici, à votre rythme.</p>`,
-    formula: 'contexte → probabilités → choix → nouveau contexte ↻',
-    instruction: 'Cliquez sur « + Un token » pour compléter le texte affiché. Recommencez, puis essayez « le chat ». Les onglets sous le texte sont une exploration facultative.',
-    takeaway: 'À chaque tour, le modèle calcule des scores à partir du contexte ; le décodage choisit le token à ajouter.',
-    caveat: 'Un texte plausible n’est pas nécessairement vrai. La probabilité linguistique n’est pas une mesure de vérité.',
+    lead: 'Un assistant ne rédige pas sa réponse d’un seul geste. Il prédit un petit morceau de texte, l’ajoute, puis recommence. Tout ce parcours suit ce morceau : le token.',
+    body: `<h3>L’idée en une phrase</h3>
+<p>Un <strong>LLM</strong> (<em>Large Language Model</em>, grand modèle de langage) répond sans cesse à la même question : <strong>« quel morceau de texte vient ensuite ? »</strong> Ce morceau s’appelle un <dfn>token</dfn> : souvent un mot, parfois un morceau de mot ou un signe de ponctuation. L’image la plus proche est la suggestion de mot du clavier d’un téléphone, avec un modèle beaucoup plus riche qui tient compte de tout le texte précédent.</p>
+<h3>La boucle de génération</h3>
+<p>On part d’un <dfn>prompt</dfn>, le texte de départ. Le modèle attribue un score à chaque token qu’il connaît, puis une règle de <dfn>décodage</dfn> en choisit un. Ce token est ajouté au texte, qui forme le nouveau <dfn>contexte</dfn>, et tout recommence. La boucle s’arrête quand le modèle choisit un marqueur de fin, noté &lt;eos&gt;, ou quand une limite de longueur est atteinte.</p>
+<p><strong>Exemple :</strong> après « le chat », le modèle peut proposer « dort ». Le contexte devient « le chat dort » et le calcul suivant porte sur ce nouveau texte. Une réponse de cent tokens, ce sont donc cent décisions successives, chacune prise sans connaître les suivantes.</p>
+<h3>Ce qui change, ce qui ne change pas</h3>
+<p>Les <dfn>poids</dfn> sont les nombres réglés pendant l’entraînement : des milliards dans un grand modèle. Ils contiennent tout ce que le modèle a appris et <strong>restent fixes pendant qu’il vous répond</strong>. Seul le contexte grandit. Un modèle ne retient donc pas une conversation en modifiant ses poids : elle fait partie de son entrée à chaque tour.</p>
+<h3>Notre instrument : Luciole</h3>
+<p>Pour ouvrir la machine, nous utilisons <strong>Luciole</strong>, un mini-modèle entraîné pour ce cours. Ses calculs sont réels et s’exécutent dans votre navigateur ; ses capacités sont celles d’un modèle minuscule. L’étape suivante le présente.</p>
+<h3>La carte du voyage</h3>
+<ol class="course-map">
+<li><strong>Du texte aux nombres :</strong> découper le texte en tokens, puis remplacer chaque token par une liste de nombres.</li>
+<li><strong>À l’intérieur du Transformer :</strong> répéter deux gestes. L’<dfn>attention</dfn> fait circuler l’information entre les tokens ; le <dfn>MLP</dfn> (<em>Multi-Layer Perceptron</em>, un petit réseau de neurones) transforme ensuite les nombres de chaque token. Mélanger, puis transformer.</li>
+<li><strong>Du calcul à la réponse :</strong> convertir des scores en probabilités, choisir, puis comprendre ce qu’un assistant ajoute autour.</li>
+<li><strong>Mémoire, coûts et apprentissage :</strong> ce qu’il faut stocker, ce qui ralentit, d’où viennent les poids.</li>
+<li><strong>Tout assembler :</strong> un laboratoire complet, une sonde à l’intérieur, puis un modèle public 3 200 fois plus grand.</li>
+</ol>
+<p class="anecdote"><strong>Aucun prérequis mathématique.</strong> Vecteurs et matrices sont introduits pas à pas à l’étape 5. Pour découvrir d’abord les réseaux de neurones, voir <a href="../../../../../index.html#/parcours/deep-learning-intro" target="_top">Deep Learning pour l’impatient</a>. Comptez environ 110 minutes, à votre rythme.</p>`,
+    formula: 'contexte → scores → choix d’un token → contexte allongé ↻',
+    instruction: 'Cliquez sur « + Un token » : Luciole complète « la capitale de la france est ». Cliquez encore pour voir la suite, puis sur « ← Revenir ». Choisissez ensuite « le chat » dans « Prompt d’exemple » et recommencez. Les onglets sous le texte sont facultatifs à ce stade.',
+    takeaway: 'Un LLM produit une réponse token par token : à chaque tour, il calcule des scores à partir du contexte, un token est choisi puis ajouté au contexte.',
+    caveat: 'Un texte plausible n’est pas forcément vrai : le modèle prédit ce qui est probable dans la continuité de ses données, pas ce qui est exact.',
     question: 'Que reçoit le modèle après avoir généré un token ?',
     choices: ['Uniquement ce nouveau token, sans aucun passé', 'Le contexte enrichi du token choisi', 'De nouveaux poids entraînés sur sa réponse'],
-    answer: 1, explanation: 'Le contexte grandit. Un cache peut éviter de recalculer certaines représentations, mais les poids ne changent pas pendant cette inférence.',
-    refs: ['transformer'], notes: 'Accroche : une réponse, plusieurs décisions. Manipulation : trois tokens. Transition : que représente exactement un token ?',
+    answer: 1, explanation: 'Le contexte grandit d’un token à chaque tour ; les poids, eux, ne changent pas pendant la génération.',
+    refs: ['transformer'], notes: 'Accroche : une réponse, ce sont plusieurs décisions. Manipulation : trois tokens, puis « le chat ». Transition : qu’est-ce qu’un token, concrètement ?',
   },
   {
-    id: '01b-luciole', section: 'Du texte aux représentations', title: 'Luciole : petit modèle,\nvrais calculs.',
+    id: '01b-luciole', section: 'Du texte aux nombres', title: 'Luciole : petit modèle,\nvrais calculs.',
     short: 'La fiche de Luciole', label: 'Notre instrument, ses limites', experiment: 'modelCard',
-    lead: 'Luciole est le petit modèle du cours. Il a appris sur 1 512 phrases ; ses calculs restent assez petits pour être inspectés.',
-    body: `<p>Luciole est un petit Transformer créé pour ce parcours. Il a appris à continuer des phrases à partir d’exemples. Il possède <strong>38 720 paramètres</strong> : autant de nombres ajustés pendant l’entraînement, plutôt qu’une liste de réponses écrites à la main. Il accepte au plus 32 tokens à la fois, marqueur de début compris.</p>
-<p>Son <strong>corpus</strong>, l’ensemble des phrases utilisées pour apprendre, associe des phrases écrites pour le cours et 40 phrases naturelles françaises, anglaises et espagnoles de Tatoeba, sous licence CC0. Les identifiants et les sources sont publiés. Ces quelques phrases ne suffisent pas à faire de Luciole un assistant multilingue.</p>
-<p><strong>Lire l’historique :</strong> la perte mesure l’erreur de prédiction ; plus elle est basse sur un même lot, mieux le modèle en prédit les tokens. Le curseur relit des mesures enregistrées. Il ne lance pas d’entraînement et ne change pas les poids utilisés dans les autres expériences.</p>
-<p>Deux lots de 264 phrases synthétiques sont réservés : validation pendant le suivi, test après l’entraînement. Ils partagent les mots et les patrons, mais pas certaines combinaisons. On mesure un accord simple et la restitution d’un objet dans deux boîtes, y compris les erreurs. La présence de trois langues dans le corpus n’est pas une preuve de compétence multilingue.</p>
-<p>Luciole n’a ni apprentissage conversationnel, ni recherche Web, ni entraînement à suivre des consignes. Son tokenizer lexical est expliqué ci-dessous ; les mots hors vocabulaire sont refusés. Les autres tokeniseurs étudiés ensuite restent indépendants de ses poids.</p>
-<p><strong>Où lire son code ?</strong> Dans <a href="../17-sources/code.html#model" target="_blank" rel="noopener noreferrer">la lecture du code intégrée à Playlab42 ↗</a>. Commencez par <code>model.js</code> : <code>tokenize</code> transforme le texte en IDs, <code>loadWeights</code> charge les nombres appris, <code>forward</code> calcule les scores. Les opérations détaillées sont dans <code>tensor.js</code> ; le choix du prochain token est dans <code>math.js</code>. Des extraits facultatifs relieront ces fonctions aux explications du cours.</p>
-<details><summary>Pour aller plus loin · architecture et entraînement</summary><p>Luciole possède deux blocs, quatre têtes d’attention par bloc et 32 nombres par représentation. Il est causal : chaque position ne consulte que les précédentes et elle-même. Ses paramètres, initialisés pseudo-aléatoirement, ont été ajustés pendant 12 000 mises à jour. La rétropropagation calcule les gradients, puis l’optimiseur Adam ajuste les poids. La graine 42 permet de reproduire le processus. Ces mécanismes seront détaillés dans la suite du parcours.</p></details>`,
-    formula: 'phrases → prédictions → erreur → gradients → poids ajustés ; puis poids fixes pour générer',
-    instruction: 'Déplacez le curseur de l’historique, comparez une prédiction avant/après, puis explorez les échecs du test. Ce sont des mesures enregistrées, pas un entraînement lancé dans votre navigateur.',
-    takeaway: 'Luciole apprend réellement, mais sur un corpus minuscule. Observer son mécanisme ne démontre pas les capacités d’un grand assistant.',
-    caveat: 'Les tests vérifient des recombinaisons synthétiques, pas une compréhension générale. Sur les boîtes, Luciole atteint 41,7 % contre 50 % pour la référence simple : cet échec reste visible.',
-    question: 'Qu’est-ce qui a été écrit pour l’exemple, plutôt qu’appris par l’optimisation ?',
-    choices: ['Les réponses sous forme de règles if/else', 'Les patrons des phrases synthétiques', 'Chaque valeur des 38 720 paramètres'],
-    answer: 1, explanation: 'Les patrons sont préparés pour le cours et complétés par des phrases CC0. Les paramètres sont ensuite ajustés numériquement ; aucune règle de réponse n’est exécutée à l’inférence.',
-    refs: ['transformer', 'rmsnorm'], notes: 'Ouvrir le corpus. Insister sur la différence entre mémorisation, mécanisme réel et capacités de production.',
+    lead: 'Un modèle assez petit pour être ouvert en entier : 38 720 nombres appris, deux blocs, 333 tokens de vocabulaire. Voici ce qu’il sait faire, et ce qu’il ne sait pas faire.',
+    body: `<h3>Pourquoi un si petit modèle ?</h3>
+<p>Un LLM de production contient des milliards de <dfn>poids</dfn> : impossible d’en afficher les calculs. <strong>Luciole</strong> en a <strong>38 720</strong>. C’est assez pour apprendre quelque chose de réel, et assez peu pour inspecter chaque nombre dans votre navigateur. Le mécanisme est celui des grands modèles ; l’échelle, non.</p>
+<h3>Ce qu’il a appris</h3>
+<p>Luciole a lu 1 512 phrases courtes : des phrases écrites pour le cours, comme « la capitale de la france est paris . » ou « le chat dort sur le tapis . », et 40 phrases réelles en français, anglais et espagnol issues de Tatoeba, sous licence libre CC0. Cet ensemble de textes s’appelle le <dfn>corpus</dfn>.</p>
+<p>Personne n’a écrit de règle du type « si capitale, alors paris ». Les poids, d’abord tirés au hasard, ont été ajustés automatiquement 12 000 fois pour mieux prédire le token suivant de ces phrases. C’est tout ce que « apprendre » veut dire ici.</p>
+<h3>Ce qu’il ne sait pas faire</h3>
+<p>Il ne connaît que 333 tokens : un mot absent du corpus est refusé. Il n’a jamais appris à converser, à suivre des consignes ni à chercher sur le Web, et il lit au plus 32 tokens à la fois. Ses capacités sont modestes : quand on lui dit « la boîte rouge contient un chat . la boîte bleue contient un chien . » puis qu’on demande ce qu’il y a dans l’une des boîtes, il répond juste dans 41,7 % des cas, moins bien que la règle naïve « citer le dernier animal » (50 %).</p>
+<h3>Comment savoir s’il a appris, et pas seulement mémorisé ?</h3>
+<p>On met des phrases de côté <em>avant</em> l’entraînement : 264 pour la <dfn>validation</dfn>, qui suit les progrès, et 264 pour le <dfn>test</dfn>, mesuré une seule fois à la fin. Elles combinent des mots connus d’une façon que Luciole n’a jamais vue. Le curseur ci-dessous relit l’historique enregistré de cet entraînement : rien ne s’entraîne dans votre navigateur.</p>
+<details><summary>Pour les avertis · architecture, entraînement et code</summary><p>Décodeur causal à 2 blocs pré-normalisés (RMSNorm sans gain appris), 4 têtes de 8 dimensions par bloc, d = 32, positions apprises, MLP ReLU 32 → 64 → 32, sans biais, fenêtre de 32 tokens, tokenizer lexical fermé de 333 entrées. Entraînement : 12 000 mises à jour Adam, clipping élémentaire ±1, taux 0,0025 → 0,00025, graine 42, entropie croisée en nats/token, sans sélection de checkpoint.</p><p>Le code se lit dans <a href="../17-sources/code.html#model" target="_blank" rel="noopener noreferrer">la lecture du code intégrée à Playlab42 ↗</a>. Dans <code>model.js</code>, <code>tokenize</code> transforme le texte en IDs, <code>loadWeights</code> charge les nombres appris et <code>forward</code> calcule les scores. Les opérations sont dans <code>tensor.js</code>, le choix du prochain token dans <code>math.js</code>.</p></details>`,
+    formula: 'phrases → prédictions → erreur → ajustement des poids, avant publication · puis poids figés pour générer',
+    instruction: 'Déplacez le curseur de l’historique et observez la prédiction de l’exemple suivi s’améliorer. Explorez ensuite les résultats du test, échecs compris. Ce sont des mesures enregistrées : rien n’est entraîné dans votre navigateur.',
+    takeaway: 'Luciole apprend réellement, mais sur un corpus minuscule : il montre le mécanisme d’un LLM, pas ses capacités.',
+    caveat: 'Les tests portent sur deux tâches synthétiques, pas sur une compréhension générale. Sur les boîtes, Luciole fait moins bien qu’une règle naïve (41,7 % contre 50 %). Trois langues dans le corpus ne font pas un modèle multilingue.',
+    question: 'Qu’est-ce qui a été écrit à la main, plutôt qu’appris par l’entraînement ?',
+    choices: ['Les réponses, sous forme de règles if/else', 'Les modèles de phrases du corpus synthétique', 'Chaque valeur des 38 720 paramètres'],
+    answer: 1, explanation: 'Les phrases d’exemple ont été préparées pour le cours. Les paramètres, eux, ont été ajustés numériquement ; aucune règle de réponse n’est exécutée quand Luciole génère.',
+    refs: ['transformer', 'rmsnorm'], notes: 'Ouvrir le corpus. Insister sur trois choses distinctes : ce qui est écrit (les phrases), ce qui est appris (les poids), ce qui est mesuré (le test). Transition : comment le texte devient-il des tokens ?',
   },
   {
-    id: '02-tokenisation', section: 'Du texte aux représentations', title: 'Les mots ne sont\npas les tokens.',
+    id: '02-tokenisation', section: 'Du texte aux nombres', title: 'Les mots ne sont\npas les tokens.',
     short: 'La tokenisation', label: 'Le découpage', experiment: 'tokenizer',
-    lead: 'Le tokenizer découpe le texte en unités et leur attribue des numéros. Un même texte peut être découpé différemment selon le tokenizer.',
-    body: `<p>Un <dfn>tokenizer</dfn> transforme le texte en identifiants. Les systèmes courants utilisent souvent des sous-mots : un token peut contenir un mot, un morceau de mot, un espace ou des octets. Un accent ou un emoji ne correspond pas forcément à une unité.</p>
-<p>Le <dfn>BPE</dfn> apprend des fusions de paires fréquentes <strong>pendant la construction du tokenizer</strong>. Ensuite, il applique ces règles fixes au texte. Le petit curseur rejoue cette construction sur les 32 phrases originales du cours. La comparaison séparée utilise les <strong>vrais tokenizers de GPT-2, BERT et T5</strong> : BPE sur octets, WordPiece et Unigram. Aucun de ces tokenizers ne réapprend ses règles pendant une génération.</p>
-<p>Luciole utilise un autre choix, volontairement lisible : il normalise l’écriture Unicode (NFC), passe en minuscules, regroupe les lettres ou chiffres et isole la ponctuation. Les espaces disparaissent. Les accents restent dans les mots ; les apostrophes et autres signes deviennent des unités séparées. Son vocabulaire de 333 entrées vient uniquement du lot d’apprentissage, et tout mot absent est refusé. La reconstruction ne conserve ni la casse ni les espaces d’origine.</p>
-<p>Dans Luciole, &lt;bos&gt; ouvre la séquence et &lt;eos&gt; marque sa fin. Ces conventions varient selon les modèles. Les identifiants sont des numéros d’entrée du vocabulaire : 42 n’est pas « deux fois plus signifiant » que 21. Un ID n’a de sens qu’avec son vocabulaire.</p>
-<p class="anecdote"><strong>Un détour historique :</strong> en 2016, Sennrich et ses collègues ont popularisé les sous-mots BPE pour traduire des mots rares. Décomposer un mot aide à le représenter avec un vocabulaire fini ; cela ne garantit pas que le modèle saura l’utiliser correctement.</p>`,
-    formula: 'texte → unités → identifiants entiers',
-    instruction: 'Commencez par « le chat dort ». Comparez ensuite français et anglais, puis un emoji : les tokeniseurs publics et celui de Luciole n’ont pas le même vocabulaire.',
-    takeaway: 'Le nombre de tokens dépend du texte et du tokenizer. Il n’existe pas de taxe universelle du français.',
-    caveat: 'Ces tokeniseurs sont précis et identifiés, mais ne comptent pas automatiquement les marqueurs et outils d’un service de chat. Le BPE pédagogique reste une expérience distincte.',
+    lead: 'Un modèle ne lit pas des lettres ni des mots : il lit des numéros. Le tokenizer découpe le texte en morceaux connus et remplace chacun par son numéro.',
+    body: `<h3>L’idée</h3>
+<p>Un réseau de neurones ne calcule qu’avec des nombres. Le <dfn>tokenizer</dfn> est l’étape qui fait le pont : il découpe le texte en morceaux, puis remplace chaque morceau par son numéro dans une liste fixe, le <dfn>vocabulaire</dfn>. « le chat dort » peut ainsi devenir une liste comme [12, 47, 103].</p>
+<h3>Pourquoi des morceaux de mots ?</h3>
+<p>Un vocabulaire de mots entiers devrait contenir toutes les conjugaisons, tous les noms propres, toutes les fautes de frappe : il serait gigantesque et rencontrerait sans cesse des mots inconnus. Un vocabulaire de lettres serait minuscule, mais les textes deviendraient très longs. Les tokenizers modernes choisissent le milieu : les mots fréquents restent entiers, les mots rares sont découpés en <strong>sous-mots</strong>. « anticonstitutionnellement » peut ainsi devenir quatre ou cinq morceaux.</p>
+<p>La méthode la plus répandue, le <dfn>BPE</dfn> (<em>Byte Pair Encoding</em>), construit ce vocabulaire <strong>une fois pour toutes</strong>, avant l’entraînement du modèle : elle part des caractères et fusionne pas à pas les paires les plus fréquentes du corpus. Le curseur de l’expérience rejoue ces fusions sur les phrases du cours. Ensuite, le tokenizer applique ses règles figées, sans plus rien apprendre.</p>
+<h3>Dans Luciole</h3>
+<p>Luciole utilise un tokenizer volontairement simple : il met le texte en minuscules, garde les mots entiers, isole chaque signe de ponctuation et ignore les espaces. Son vocabulaire de 333 entrées ne contient que les mots de son corpus ; tout autre mot est refusé. Deux marqueurs spéciaux complètent la liste : &lt;bos&gt; ouvre la séquence, &lt;eos&gt; la termine.</p>
+<p><strong>Attention au piège :</strong> un numéro n’est qu’une adresse dans le vocabulaire. Le token 42 n’est pas « deux fois plus » que le token 21, et le même numéro désigne des morceaux différents d’un tokenizer à l’autre.</p>
+<p class="anecdote"><strong>Un détour historique :</strong> en 2016, Sennrich et ses collègues ont popularisé les sous-mots BPE pour traduire des mots rares. L’idée venait d’un algorithme de compression de données de 1994.</p>
+<details><summary>Pour les avertis · ce que fait vraiment un tokenizer</summary><p>Un tokenizer complet enchaîne normalisation (Unicode <dfn>NFC</dfn>, casse, accents), pré-tokenisation (espaces, ponctuation, chiffres), application du modèle de sous-mots et ajout éventuel de tokens spéciaux. Le tokenizer de Luciole applique NFC et la mise en minuscules, conserve les accents et regroupe lettres et chiffres contigus ; la reconstruction ne restitue ni la casse ni les espaces. GPT-2 applique le BPE sur des octets, ce qui lui évite tout token inconnu.</p></details>`,
+    formula: 'texte → morceaux du vocabulaire → numéros (IDs)',
+    instruction: 'Commencez par « le chat dort » avec Luciole, puis comparez les tokenizers publics sur une phrase française, une phrase anglaise et un emoji. Déplacez enfin le curseur des fusions BPE pour voir des sous-mots se former.',
+    takeaway: 'Le nombre de tokens dépend du texte et du tokenizer. Un mot peut valoir un token, plusieurs, ou être refusé.',
+    caveat: 'Les tokenizers publics comptent ici le seul texte saisi, sans les marqueurs qu’un service de chat ajoute. Le BPE du curseur est appris sur les phrases du cours : c’est une démonstration, pas le vocabulaire d’un modèle réel.',
     question: 'Peut-on déduire le nombre de tokens à partir du seul nombre de mots ?',
     choices: ['Oui, un mot est toujours un token', 'Non, il faut connaître le tokenizer', 'Oui, il suffit de compter les espaces'],
-    answer: 1, explanation: 'Le vocabulaire, les fusions, la normalisation et la pré-tokenisation font partie du comptage.',
-    refs: ['bpe', 'tokenization'], notes: 'Accroche : un mot ne vaut pas une unité. Manipulation : FR, EN, emoji. Transition : le texte réellement envoyé est-il celui affiché ?',
+    answer: 1, explanation: 'Le vocabulaire, les fusions apprises et la normalisation déterminent le découpage. Le même texte donne des comptes différents selon le tokenizer.',
+    refs: ['bpe', 'tokenization'], notes: 'Accroche : un mot ne vaut pas un token. Manipulation : FR, EN, emoji, puis fusions BPE. Transition : et sur des textes du quotidien ?',
   },
   {
-    id: '02b-cas-reels', section: 'Du texte aux représentations', title: 'Du code, du français.\nDes comptes différents.',
+    id: '02b-cas-reels', section: 'Du texte aux nombres', title: 'Du code, du français.\nDes comptes différents.',
     short: 'Cas réels de tokenisation', label: 'Des entrées du quotidien', experiment: 'tokenizerCases',
-    lead: 'Une demande de support, une fonction JavaScript, un message structuré : comparons des textes que l’on envoie vraiment.',
-    body: `<p>La comparaison utilise les définitions publiques originales de GPT-2, BERT uncased et T5 small, pas des découpages inventés. Vous pouvez changer chaque texte et examiner les pièces, leurs identifiants et la reconstruction obtenue. Aucun poids de ces modèles n’est chargé : <strong>tokeniser n’est pas générer une réponse</strong>.</p>
-<p>BERT uncased met notamment en minuscules et retire les accents : « ÉTÉ » peut revenir sous la forme « ete ». GPT-2 travaille sur des unités issues des octets. T5 applique ses propres règles de normalisation. Dans les pièces affichées, Ġ représente notamment un espace encodé, ## une continuation WordPiece, et ▁ un marqueur d’espace de SentencePiece. Leur aspect à l’écran ne décrit pas une pensée du modèle.</p>
-<p>Un nombre de tokens plus petit ne prouve pas qu’un modèle comprend mieux. Et ces comptes concernent uniquement le texte saisi, sans ajout automatique de marqueurs spéciaux. Le coût d’un appel réel dépend aussi du modèle, du template, des outils et de la sortie générée.</p>`,
-    formula: 'même texte + vocabulaire différent → pièces et identifiants différents',
-    instruction: 'Choisissez « Comparer les quatre », puis un exemple de texte. Changez un accent, un espace ou un nom de variable et comparez les découpages et le texte reconstruit.',
-    takeaway: 'Le tokenizer fait partie du modèle : son vocabulaire, ses règles et ses identifiants ne sont pas interchangeables.',
-    caveat: 'GPT-2, BERT et T5 sont des cas publics documentés, pas les tokeniseurs universels des assistants actuels. Aucun appel à ces modèles n’est effectué.',
+    lead: 'Une demande au support, une fonction JavaScript, un message JSON : comparons quatre vrais tokenizers sur des textes que l’on envoie vraiment.',
+    body: `<h3>Pourquoi c’est important</h3>
+<p>Le nombre de tokens détermine la place occupée dans le contexte, souvent le prix d’un appel et une partie du temps de calcul. Or ce nombre dépend du tokenizer : un même texte peut coûter deux fois plus de tokens avec l’un qu’avec l’autre, notamment pour une langue ou un format peu présents dans les données qui ont servi à construire son vocabulaire.</p>
+<h3>Quatre façons de découper</h3>
+<p>L’expérience charge les définitions publiques originales de trois tokenizers connus, à côté de celui de Luciole :</p>
+<ul>
+<li><strong>GPT-2</strong> (BPE sur octets) : tout texte est découpable, emojis compris. Le symbole Ġ affiché dans les morceaux signale une espace devant le mot.</li>
+<li><strong>BERT uncased</strong> (<dfn>WordPiece</dfn>) : met tout en minuscules et retire les accents. Le préfixe ## signale la suite d’un mot.</li>
+<li><strong>T5 small</strong> (<dfn>Unigram</dfn>) : le symbole ▁ marque le début d’un mot.</li>
+<li><strong>Luciole</strong> : mots entiers de son corpus, sinon refus.</li>
+</ul>
+<h3>Découper n’est pas toujours réversible</h3>
+<p>Avec BERT uncased, « ÉTÉ » revient sous la forme « ete » : la casse et les accents ont été perdus <em>avant</em> le découpage. C’est la normalisation, une étape du tokenizer. L’expérience affiche le texte reconstruit pour rendre ces pertes visibles.</p>
+<p>Aucun de ces modèles n’est exécuté ici : on ne charge que leurs tokenizers. <strong>Tokeniser n’est pas générer.</strong></p>
+<details><summary>Pour les avertis · ce que ces comptes n’incluent pas</summary><p>Les comptes portent sur le texte saisi, sans tokens spéciaux ajoutés automatiquement. Le coût réel d’un appel inclut aussi le chat template, les descriptions d’outils et la sortie générée. Un compte plus faible ne signifie pas qu’un modèle « comprend mieux » un texte : il traduit surtout la composition des données utilisées pour construire le vocabulaire. Pour mesurer un vrai service, il faut son propre tokenizer.</p></details>`,
+    formula: 'même texte + vocabulaire différent → morceaux, numéros et comptes différents',
+    instruction: 'Choisissez « Comparer les quatre tokenizers », puis un exemple de texte. Modifiez un accent, une espace ou un nom de variable : comparez les découpages, les comptes et le texte reconstruit.',
+    takeaway: 'Le tokenizer fait partie du modèle : son vocabulaire et ses numéros ne sont pas interchangeables d’un modèle à l’autre.',
+    caveat: 'GPT-2, BERT et T5 sont des tokenizers publics et documentés, pas ceux des assistants actuels. Seuls leurs tokenizers sont chargés ; aucun de ces modèles n’est exécuté.',
     question: 'Pourquoi « ÉTÉ » peut-il être reconstruit en « ete » avec BERT uncased ?',
     choices: ['Le modèle a traduit le texte', 'Le tokenizer normalise la casse et les accents', 'Les poids ont été réentraînés'],
-    answer: 1, explanation: 'La normalisation fait partie de la tokenisation. Il faut distinguer découpage réversible et transformation de l’entrée.',
-    refs: ['tokenization'], notes: 'Manipulation : support, code et JSON. Comparer les trois vrais découpages, puis leurs reconstructions.',
+    answer: 1, explanation: 'La normalisation fait partie de la tokenisation : l’information perdue à cette étape n’atteint jamais le modèle.',
+    refs: ['tokenization'], notes: 'Manipulation : support, code et JSON. Comparer les découpages, puis les reconstructions. Transition : un token est un numéro ; comment en faire des nombres utiles ?',
   },
   {
-    id: '03-prompt', section: 'Du texte aux représentations', title: 'La conversation\nsous la conversation.',
-    short: 'Le template caché', label: 'Les coulisses', experiment: 'prompt',
-    lead: 'Le modèle reçoit aussi qui parle et dans quel ordre. Un format de conversation transforme les messages en une seule suite de tokens.',
-    body: `<p>Le <strong>chat template</strong> est le gabarit qui assemble la conversation : instructions du système, messages de l’utilisateur et réponses de l’assistant. Il ajoute des marqueurs de rôle, des séparateurs et parfois un début de réponse. Cette conversion en une suite ordonnée de tokens s’appelle la sérialisation. Les formats varient selon les modèles.</p>
-<p>Un agent ajoute souvent des descriptions d’outils, leurs arguments et leurs résultats. Ces contenus peuvent consommer une part importante du contexte. Ils ne deviennent pas pour autant des instructions fiables : le résultat d’un outil peut contenir du texte hostile.</p>
-<p><strong>Qui exécute un outil ?</strong> Le modèle peut produire une demande structurée. Le programme qui l’entoure décide de l’exécuter, récupère le résultat, puis le replace dans le contexte pour un nouveau calcul. Générer les caractères d’un appel n’exécute pas cet appel à lui seul.</p>
-<p>L’échange ci-dessous est <strong>inventé pour le cours</strong>. Ses marqueurs sont illustratifs. Aucun raisonnement interne caché n’est montré ; un raisonnement affiché ne serait pas non plus une radiographie exhaustive du calcul.</p>`,
-    formula: 'messages + rôles + outils + template = entrée sérialisée',
-    instruction: 'Activez les rayons X, puis ajoutez le résultat de l’outil. Distinguez contenu visible et structure ajoutée.',
-    takeaway: 'Le prompt est une structure sérialisée, pas seulement la dernière question de l’utilisateur.',
-    caveat: 'L’ordre et les marqueurs dépendent du modèle. Luciole n’utilise pas ce template : il reçoit des tokens lexicaux et n’a pas appris à converser ni à appeler des outils.',
-    question: 'Le résultat d’un outil est-il automatiquement une instruction de confiance ?',
-    choices: ['Oui, puisqu’il vient d’un programme', 'Non, il peut contenir des données non fiables', 'Oui, si le texte est long'],
-    answer: 1, explanation: 'L’origine outil ne garantit pas la confiance du contenu. Données, instructions et autorisations doivent rester distinctes.',
-    refs: ['templates'], notes: 'Accroche : les coulisses du chat. Manipulation : rayons X et outil. Transition : tout cela devient des nombres.',
-  },
-  {
-    id: '03b-nombres', section: 'Du texte aux représentations', title: 'Un nombre.\nUne liste. Un tableau.',
+    id: '03b-nombres', section: 'Du texte aux nombres', title: 'Un nombre.\nUne liste. Un tableau.',
     short: 'Lire vecteurs et matrices', label: 'Les repères avant les calculs', experiment: 'numbers',
-    lead: 'Avant les grands mots, trois objets simples : un nombre, une liste de nombres et un tableau de listes.',
-    body: `<p>Un <dfn>vecteur</dfn> est une liste ordonnée de nombres. Chaque emplacement est une coordonnée, aussi appelée dimension. [0,4 ; −0,2 ; 0,8] contient trois coordonnées. Une valeur négative n’est pas mauvaise, et une grande valeur n’est pas automatiquement importante.</p>
-<p>Une <dfn>matrice</dfn> range ces listes en lignes. Si trois tokens possèdent chacun trois nombres, on obtient une matrice 3 × 3. Dans Luciole, chaque token possède 32 nombres : pour n tokens, la forme est n × 32. Les mots « dimension » et « forme » décrivent donc aussi la taille des données, pas leur signification.</p>
-<p><strong>Transformer une liste :</strong> une multiplication par une matrice fabrique de nouvelles coordonnées en pondérant puis en additionnant les anciennes. Par exemple, 2 × 0,4 + 3 × (−0,2) = 0,2. On répète ce calcul avec d’autres coefficients pour obtenir les autres coordonnées de sortie. C’est le principe des « projections » que nous rencontrerons dans l’attention.</p>
-<p>Le tableau manipulé ici est inventé pour apprendre la notation. Les vraies représentations de Luciole arrivent à l’étape suivante. Leurs nombres ne sont ni des probabilités ni des colonnes portant chacune un concept humain.</p>`,
-    formula: 'n lignes de d nombres = une matrice n × d',
-    instruction: 'Choisissez une ligne du tableau, puis changez un de ses nombres. Retrouvez exactement cette valeur dans le vecteur et le graphique.',
-    takeaway: 'Ici, une ligne représente une position de token. La forme de la matrice indique le nombre de positions et de coordonnées.',
-    caveat: 'Les trois nombres de cette étape sont inventés pour apprendre la notation. Les vrais embeddings de Luciole arrivent à l’étape suivante.',
+    lead: 'Tout ce qui suit manipule trois objets simples : une liste de nombres, un tableau de listes, et une façon de transformer une liste en une autre.',
+    body: `<h3>Une liste de nombres : le vecteur</h3>
+<p>Un <dfn>vecteur</dfn> est une liste ordonnée de nombres, par exemple [0,4 ; −0,2 ; 0,8]. Chaque case est une coordonnée ; le nombre de cases est sa <dfn>dimension</dfn>, ici 3. Dans un LLM, chaque token est représenté par un vecteur : 32 nombres dans Luciole, plusieurs milliers dans un grand modèle.</p>
+<p>Une analogie utile : une fiche de description. Les cases d’une fiche « couleur, taille, poids » décrivent un objet ; les cases d’un vecteur de token décrivent ce token. La différence est que <strong>personne n’a nommé les cases</strong> : leur rôle émerge de l’entraînement et n’a, en général, pas de sens humain simple.</p>
+<h3>Un tableau de listes : la matrice</h3>
+<p>Une <dfn>matrice</dfn> range plusieurs vecteurs en lignes. Pour une phrase de 3 tokens décrits par 3 nombres chacun, on obtient un tableau 3 × 3. Dans Luciole, pour n tokens, la forme est <strong>n × 32</strong> : une ligne par token, une colonne par coordonnée. La forme indique la taille des données, pas leur signification.</p>
+<h3>Transformer une liste : la somme pondérée</h3>
+<p>L’opération de base d’un réseau de neurones consiste à fabriquer un nouveau nombre en multipliant chaque coordonnée par un coefficient, puis en additionnant. Avec les coordonnées [2 ; 3] et les coefficients [0,4 ; −0,2] : 2 × 0,4 + 3 × (−0,2) = 0,2. Répéter ce calcul avec d’autres coefficients donne les autres coordonnées de sortie. Ranger tous ces coefficients dans une matrice, c’est faire une <strong>multiplication par une matrice</strong>, aussi appelée <dfn>projection</dfn>. Les coefficients sont les fameux poids appris.</p>
+<p>Le tableau de l’expérience est inventé pour apprendre à lire la notation. Les vrais vecteurs de Luciole arrivent à l’étape suivante.</p>`,
+    formula: 'vecteur = une liste · matrice n × d = n listes de d nombres · projection = sommes pondérées',
+    instruction: 'Choisissez un token dans « Token observé », puis changez une de ses coordonnées. Retrouvez cette valeur dans le vecteur, dans la ligne du tableau et dans le graphique.',
+    takeaway: 'Une ligne de la matrice décrit un token ; sa forme n × d donne le nombre de tokens et de coordonnées. Une projection fabrique de nouvelles coordonnées par sommes pondérées.',
+    caveat: 'Les trois nombres par token de cette étape sont inventés pour apprendre la notation. Une valeur négative n’est pas « mauvaise » et une grande valeur n’est pas forcément importante.',
     question: 'Que signifie « 9 × 32 » pour les représentations de notre séquence ?',
     choices: ['9 tokens possédant chacun 32 nombres', '9 probabilités dont la somme vaut 32', '32 réponses de 9 mots'],
-    answer: 0, explanation: 'Chaque ligne correspond à une position de token et chaque colonne à une coordonnée.',
-    refs: ['transformer'], notes: 'Faire lire une ligne avant de montrer un espace. Expliquer le signe et la forme, sans attribuer de sens aux coordonnées.',
+    answer: 0, explanation: 'Chaque ligne correspond à un token, chaque colonne à une coordonnée.',
+    refs: ['transformer'], notes: 'Faire lire une ligne avant de parler d’espace. Faire calculer la somme pondérée à voix haute. Transition : d’où viennent les 32 nombres d’un vrai token ?',
   },
   {
-    id: '04-embeddings', section: 'Du texte aux représentations', title: 'Un identifiant entre.\nUn vecteur apparaît.',
+    id: '04-embeddings', section: 'Du texte aux nombres', title: 'Un identifiant entre.\nUn vecteur apparaît.',
     short: 'Les embeddings', label: 'L’espace des représentations', experiment: 'embeddings',
-    lead: 'Le modèle n’effectue pas ses calculs sur des mots. Il manipule des coordonnées apprises.',
-    body: `<p>La table d’<dfn>embeddings</dfn> associe à chaque token un vecteur de dimension fixe. C’est d’abord une lecture de ligne dans une matrice apprise. Luciole utilise 32 dimensions ; un modèle de production en utilise souvent des milliers.</p>
-<p><strong>Trois moments à distinguer :</strong> le même ID lit toujours la même ligne d’embedding. Luciole y ajoute ensuite le vecteur de sa position. Les blocs produisent enfin des <strong>représentations contextualisées</strong>, dépendantes des tokens accessibles. « chat » part donc du même embedding dans deux phrases, mais son état peut évoluer différemment. Notre petit corpus ne suffit pas à démontrer une compréhension générale des ambiguïtés.</p>
-<p>La similarité cosinus compare des directions à partir des 32 coordonnées. L’atlas 3D permet d’en choisir trois et de faire tourner la vue. Les vingt-neuf autres sont cachées : deux points proches à l’écran ne prouvent ni synonymie ni proximité dans l’espace complet. Les coordonnées viennent des vrais poids de Luciole, pas d’une carte inventée.</p>
-<details><summary>Facultatif · notation de la table</summary><p>E ∈ ℝᵛˣᵈ : v tokens dans le vocabulaire, d nombres par token. L’embedding du token d’identifiant i est la ligne i de E, pas une multiplication du numéro i par un sens.</p></details>`,
-    formula: 'identifiant du token → ligne de la table apprise → 32 nombres dans Luciole',
-    instruction: 'Choisissez deux tokens, puis trois coordonnées pour les axes X, Y et Z. Tournez la vue : le dessin change, mais la similarité sur les 32 nombres reste identique.',
-    takeaway: 'Un embedding est une représentation apprise, pas un dictionnaire de concepts lisibles dimension par dimension.',
-    caveat: 'Nos voisins sont ceux d’un minuscule corpus. N’en déduisez pas une géographie universelle du langage.',
-    question: 'Une dimension d’embedding signifie-t-elle nécessairement « masculin », « ville » ou « positif » ?',
-    choices: ['Oui, les dimensions ont des noms universels', 'Non, les représentations sont généralement distribuées', 'Oui, si la valeur est positive'],
-    answer: 1, explanation: 'L’information peut être distribuée entre de nombreuses directions. Une interprétation exige des observations et des expériences supplémentaires.',
-    refs: ['transformer'], notes: 'Accroche : un mot devient une ligne. Manipulation : paris et france. Transition : comment ces lignes se transforment-elles ?',
+    lead: 'Un numéro de token ne dit rien du mot. Le modèle le remplace donc par une liste de nombres apprise, son embedding, où des tokens employés de façon similaire finissent par se ressembler.',
+    body: `<h3>L’idée : une grande table de correspondance</h3>
+<p>La table d’<dfn>embeddings</dfn> est une matrice qui contient une ligne par token du vocabulaire. Pour le token numéro 47, le modèle lit simplement la ligne 47 : 32 nombres dans Luciole, souvent plusieurs milliers dans un grand modèle. Aucun calcul, aucun dictionnaire : une lecture de ligne.</p>
+<h3>D’où viennent ces nombres ?</h3>
+<p>Au départ, ils sont tirés au hasard. Pendant l’entraînement, ils sont ajustés comme tous les autres poids, pour aider à prédire le token suivant. Résultat : des tokens qui apparaissent dans des contextes semblables, comme « paris » et « berne » après « la capitale de … est », tendent à recevoir des vecteurs proches. Personne ne l’a imposé : c’est un effet de l’objectif d’apprentissage.</p>
+<h3>Mesurer une ressemblance</h3>
+<p>Pour comparer deux vecteurs, on utilise souvent la <dfn>similarité cosinus</dfn> : 1 si les deux listes pointent dans la même direction, 0 si elles sont sans rapport, −1 si elles sont opposées. Elle se calcule sur les 32 coordonnées. L’atlas 3D n’en montre que trois à la fois : deux points proches à l’écran peuvent être éloignés dans l’espace complet.</p>
+<h3>Le même mot, trois moments</h3>
+<p>Dans Luciole, un token traverse trois états. <strong>1.</strong> Son embedding, toujours identique pour le même token. <strong>2.</strong> Cet embedding plus un vecteur de position, qui indique où il se trouve dans la phrase. <strong>3.</strong> Après les blocs du Transformer, une représentation <strong>contextualisée</strong>, enrichie par les tokens voisins. « chat » part du même vecteur dans toutes les phrases, mais n’en sort pas avec le même.</p>
+<details><summary>Pour les avertis · notation et limites de lecture</summary><p>E ∈ ℝ<sup>v×d</sup>, avec v tokens dans le vocabulaire et d coordonnées par token. L’embedding du token i est la ligne i de E, ce qui équivaut à multiplier un vecteur « one-hot » par E. Les coordonnées ne sont pas des concepts nommés : l’information est distribuée entre de nombreuses directions. Les axes de l’atlas sont trois coordonnées brutes, pas une PCA.</p></details>`,
+    formula: 'ID du token → ligne de la table apprise → 32 nombres dans Luciole',
+    instruction: 'Comparez « paris » et « france », puis choisissez d’autres tokens. Changez les coordonnées affichées sur les axes X, Y et Z et tournez la vue : le dessin change, mais la similarité calculée sur les 32 nombres reste la même.',
+    takeaway: 'Un embedding est une représentation apprise : une ligne de table, ajustée pendant l’entraînement, pas un dictionnaire de concepts lisibles case par case.',
+    caveat: 'Les voisins affichés sont ceux d’un corpus minuscule. Une vue en trois coordonnées sur trente-deux peut rapprocher des points éloignés : n’en déduisez pas une carte universelle du sens.',
+    question: 'Une coordonnée d’embedding signifie-t-elle nécessairement « masculin », « ville » ou « positif » ?',
+    choices: ['Oui, les coordonnées ont des noms universels', 'Non, l’information est généralement distribuée entre de nombreuses coordonnées', 'Oui, si la valeur est positive'],
+    answer: 1, explanation: 'Personne ne nomme les coordonnées ; leur rôle émerge de l’entraînement et se répartit sur de nombreuses directions. L’interpréter demande des expériences dédiées.',
+    refs: ['transformer'], notes: 'Accroche : un mot devient une ligne. Manipulation : paris, france, puis berne. Transition : comment ces lignes se parlent-elles ?',
   },
   {
     id: '05-transformer', section: 'À l’intérieur du Transformer', title: 'Une architecture.\nDes blocs répétés.',
     short: 'La carte du modèle', label: 'L’anatomie', experiment: 'architecture',
-    lead: 'Le Transformer alterne deux gestes : faire circuler l’information, puis transformer chaque représentation.',
-    body: `<p>L’<dfn>attention</dfn> combine l’information de plusieurs positions. Le <dfn>MLP</dfn>, petit réseau de neurones, transforme ensuite chaque position, avec les mêmes poids pour tous les tokens. Pensez à deux gestes : <strong>mélanger entre les tokens</strong>, puis <strong>transformer chaque liste séparément</strong>. Ce sont des calculs, pas des intentions. Empiler ces blocs permet de construire des représentations plus élaborées.</p>
-<p>Les <strong>connexions résiduelles</strong> ajoutent le résultat d’une transformation à son entrée. Elles offrent un chemin direct à l’information et aux gradients. La normalisation contrôle l’échelle des activations ; elle ne convertit pas les valeurs en probabilités.</p>
-<p>Luciole utilise deux blocs, quatre têtes et un MLP dense 32 → 64 → 32. « Dense » signifie que ce réseau entier est utilisé pour chaque token, sans routeur d’experts. Les positions sont des vecteurs appris, pas RoPE.</p>
-<p class="anecdote"><strong>2017 : une machine à traduire.</strong> L’article fondateur du Transformer présentait un encodeur et un décodeur pour la traduction. Ici, nous suivons un décodeur causal : une branche de cette famille, adaptée à la continuation de texte. De nombreux modèles actuels changent la normalisation, le MLP ou l’attention ; certains combinent même d’autres types de couches.</p>
-<details><summary>Facultatif · noms et ordre exact des opérations</summary><p>Luciole est pré-normalisé : RMSNorm sans gain appris avant l’attention et le MLP ; ReLU remplace les valeurs négatives par zéro entre les deux projections du MLP. Les résidus ajoutent les sorties à leurs entrées. x ← x + Attention(Norm(x)), puis x ← x + MLP(Norm(x)). Ce n’est pas le plan unique de tous les LLM.</p></details>`,
-    formula: 'représentations → attention (mélanger) → MLP (transformer) → bloc suivant',
-    instruction: 'Ouvrez chaque étape dans l’ordre. « n × 32 » signifie : n tokens, chacun décrit par 32 nombres. Le bloc mélange ces informations puis les transforme.',
-    takeaway: 'Attention, MLP, résidus et normalisation jouent des rôles différents et complémentaires.',
-    caveat: 'L’image « des couches qui pensent de plus en plus » est une métaphore, pas une description mesurée.',
+    lead: 'Un Transformer empile des blocs identiques dans leur forme. Chaque bloc fait deux gestes : laisser les tokens échanger de l’information, puis retravailler chaque token séparément.',
+    body: `<h3>Pourquoi deux gestes ?</h3>
+<p>Après l’étape des embeddings, chaque token est décrit par ses 32 nombres, mais il ne sait rien de ses voisins : « chat » a le même vecteur dans « le chat dort » et dans « le chat noir ». Il faut donc <strong>faire circuler l’information entre les tokens</strong>. C’est le rôle de l’<dfn>attention</dfn>. Ensuite, chaque token doit <strong>exploiter</strong> ce qu’il a reçu : c’est le rôle du <dfn>MLP</dfn>, qui retravaille chaque vecteur séparément, avec les mêmes poids pour tous les tokens.</p>
+<p>Une image : une réunion. Pendant l’attention, chacun écoute les autres et prend des notes ; pendant le MLP, chacun relit ses notes seul et les met au propre. Puis la réunion recommence au bloc suivant, avec des notes plus riches.</p>
+<h3>Deux pièces qui stabilisent l’ensemble</h3>
+<p>La <strong>connexion résiduelle</strong> ajoute le résultat de chaque geste au vecteur d’entrée, au lieu de le remplacer : le token conserve ce qu’il savait et y ajoute du nouveau. On parle souvent de « flux résiduel » : un vecteur par token, que chaque sous-bloc lit puis enrichit. La <dfn>normalisation</dfn> remet les nombres à une échelle comparable avant chaque geste, pour que les calculs restent stables.</p>
+<h3>Dans Luciole</h3>
+<p>Deux blocs se suivent. Chacun contient une attention à quatre têtes et un MLP qui passe de 32 à 64 nombres, puis revient à 32. À la sortie, une dernière projection convertit le vecteur du dernier token en un score pour chacun des 333 tokens du vocabulaire. Les grands modèles répètent le même schéma des dizaines de fois, avec des vecteurs bien plus longs.</p>
+<p class="anecdote"><strong>2017 : une machine à traduire.</strong> L’article fondateur du Transformer décrivait un encodeur et un décodeur pour la traduction. Les LLM actuels utilisent surtout la moitié « décodeur », qui prédit le token suivant.</p>
+<details><summary>Pour les avertis · l’ordre exact des opérations</summary><p>Luciole est pré-normalisé : x ← x + Attention(RMSNorm(x)), puis x ← x + MLP(RMSNorm(x)), avec RMSNorm sans gain appris et ReLU entre les deux projections du MLP. La sortie applique RMSNorm puis la matrice de sortie. Les résidus offrent aussi un chemin direct aux gradients pendant l’entraînement. Les modèles récents varient : SwiGLU au lieu de ReLU, RoPE au lieu de positions apprises, MoE au lieu d’un MLP dense, voire couches non-attentionnelles dans les architectures hybrides.</p></details>`,
+    formula: 'embeddings + positions → [ attention (mélanger) → MLP (transformer) ] × 2 → scores',
+    instruction: 'Cliquez sur chaque étape de la carte, dans l’ordre. « n × 32 » signifie : n tokens, chacun décrit par 32 nombres. Repérez l’étape qui mélange les tokens et celle qui les transforme un par un.',
+    takeaway: 'L’attention fait échanger les tokens, le MLP retravaille chaque token, les résidus conservent l’acquis et la normalisation stabilise l’échelle.',
+    caveat: 'L’image de la réunion est une métaphore : il n’y a ni intention ni prise de notes, seulement des sommes pondérées. Tous les LLM ne suivent pas exactement ce plan.',
     question: 'Quelle opération mélange directement les informations de plusieurs positions ?',
-    choices: ['Le MLP positionnel', 'L’attention', 'La lecture d’un embedding initial'],
-    answer: 1, explanation: 'L’attention calcule une combinaison des valeurs d’autres positions. Le MLP standard agit séparément sur chaque ligne.',
-    refs: ['transformer', 'rmsnorm'], notes: 'Accroche : une carte avant la visite. Faire distinguer attention et MLP. Transition : comment calculer un mélange ?',
+    choices: ['Le MLP', 'L’attention', 'La lecture d’un embedding'],
+    answer: 1, explanation: 'L’attention combine les informations de plusieurs positions. Le MLP agit séparément sur chaque ligne.',
+    refs: ['transformer', 'rmsnorm'], notes: 'Accroche : une carte avant la visite. Faire distinguer attention et MLP avec la métaphore de la réunion, puis la nuancer. Transition : comment calcule-t-on un mélange ?',
   },
   {
     id: '06b-tetes', section: 'À l’intérieur du Transformer', title: 'Une tête.\nUn mélange de nombres.',
     short: 'Une tête pas à pas', label: 'Avant la matrice d’attention', experiment: 'heads',
-    lead: 'Une tête n’est ni un mot, ni un neurone, ni un petit assistant. C’est un calcul d’attention parmi plusieurs.',
-    body: `<h3>À quoi servent ces trois lettres ?</h3><p>Dans « le chat dort », regardons la position « chat ». Nous voulons enrichir sa représentation avec les informations des positions qu’elle peut consulter : « le » et elle-même. <strong>Q et K calculent dans quelles proportions mélanger ; V fournit les nombres à mélanger.</strong></p>
-<p>Chaque token produit les trois listes Q, K et V. Ce ne sont pas trois sortes de mots. On obtient ces listes en multipliant sa représentation par trois matrices différentes, apprises pendant l’entraînement. Séparer les projections permet de choisir <em>comment comparer</em> sans imposer de transporter exactement les mêmes coordonnées comme contenu.</p>
-<h3>Suivre une seule position</h3><p>Le Q de « chat » est comparé au K de chaque position : on multiplie les coordonnées correspondantes, puis on additionne. C’est le <strong>produit scalaire</strong>. On divise ensuite par la racine du nombre de coordonnées de la tête, pour contrôler l’échelle des scores. Le masque causal interdit « dort », situé après « chat ». <strong>Softmax</strong> transforme les scores autorisés en proportions positives totalisant 100 %. Ces proportions servent à additionner les V pondérés.</p>
-<h3>Et les autres têtes ?</h3><p>Dans Luciole, chaque bloc possède quatre têtes de 8 coordonnées. Chacune calcule son mélange avec ses projections ; leurs sorties sont mises bout à bout, puis projetées vers 32 coordonnées. L’ajout résiduel conserve aussi l’entrée. Les têtes ne sont pas des spécialistes humains avec un rôle garanti.</p>
-<p>Les schémas ci-dessous utilisent les nombres <strong>inventés</strong> du premier mode de l’expérience. Le mode « Vraie trace Luciole » montre ensuite les tenseurs du modèle, avec &lt;bos&gt;. Les matrices de poids restent fixes dans les deux cas.</p>`,
-    formula: 'projections Q/K/V → scores → masque → softmax → somme des V → têtes réunies → projection',
-    instruction: 'Gardez « chat », avancez par « Étape suivante », puis changez sa première coordonnée. À l’étape du masque, vérifiez que « dort » est interdit. Sélectionnez ensuite « Vraie trace Luciole ».',
-    takeaway: 'Une tête est une façon apprise de mélanger des informations. Plusieurs têtes réalisent plusieurs mélanges en parallèle.',
-    caveat: 'Le petit calcul est inventé ; le mode Luciole lit ses vrais tenseurs sans changer les poids. L’attention mélange des informations, le MLP transforme séparément chaque position ; aucune tête n’a de rôle humain garanti.',
-    question: 'À la position « chat » dans « le chat dort », quels V peuvent contribuer au mélange causal ?',
-    choices: ['Seulement V de « dort », pour trouver la réponse', 'V de « le » et de « chat », mais pas du futur « dort »', 'Tous les V si leur score est positif'],
-    answer: 1, explanation: 'Le masque interdit le futur avant softmax. Dans la vraie trace Luciole, V de <bos> est aussi autorisé. Le mélange transforme la représentation ; il ne tire pas encore un prochain token.',
-    refs: ['transformer'], notes: 'Faire lire Q/K/V puis une somme pondérée. Montrer le futur interdit sur chat avant de passer à la vraie trace et à la carte.',
+    lead: 'Comment un token décide-t-il quels voisins écouter ? Chaque token pose une question, affiche une étiquette et propose un contenu : Q, K et V.',
+    body: `<h3>Le problème à résoudre</h3>
+<p>Dans « le chat dort », la position « chat » voudrait récupérer de l’information utile chez les tokens précédents. Mais lesquels, et dans quelle proportion ? L’attention répond par un calcul en quatre temps, réalisé par une <dfn>tête</dfn> d’attention.</p>
+<h3>Q, K, V : une question, une étiquette, un contenu</h3>
+<p>Chaque token fabrique trois vecteurs à partir du sien, par trois projections apprises :</p>
+<ul>
+<li><strong>Q</strong> (<em>query</em>, requête) : ce que ce token cherche ;</li>
+<li><strong>K</strong> (<em>key</em>, clé) : l’étiquette qu’il présente aux autres ;</li>
+<li><strong>V</strong> (<em>value</em>, valeur) : le contenu qu’il transmettra s’il est écouté.</li>
+</ul>
+<p>Pensez à une bibliothèque : votre question (Q) est comparée aux étiquettes des livres (K), et vous repartez avec un mélange de leurs contenus (V), surtout de ceux dont l’étiquette correspond le mieux. <strong>Q et K décident des proportions ; V fournit ce que l’on mélange.</strong> Ces rôles ne sont pas programmés : ils émergent parce que les trois projections ont été entraînées ensemble.</p>
+<h3>Le calcul, pour la position « chat »</h3>
+<ol>
+<li><strong>Comparer :</strong> le Q de « chat » est comparé au K de chaque position par un <dfn>produit scalaire</dfn> (multiplier les coordonnées deux à deux, puis additionner). Plus le résultat est grand, plus l’étiquette correspond.</li>
+<li><strong>Interdire le futur :</strong> le <dfn>masque causal</dfn> retire « dort », qui vient après « chat ». Un token ne peut consulter que lui-même et ce qui le précède.</li>
+<li><strong>Convertir en proportions :</strong> <dfn>softmax</dfn> transforme les scores restants en parts positives qui totalisent 100 %.</li>
+<li><strong>Mélanger :</strong> on additionne les V, chacun multiplié par sa part. Le résultat est un nouveau vecteur pour « chat », enrichi par son contexte.</li>
+</ol>
+<h3>Plusieurs têtes en parallèle</h3>
+<p>Une seule tête produit un seul mélange. Le modèle en utilise plusieurs, chacune avec ses propres projections, donc ses propres critères de comparaison. Dans Luciole, chaque bloc a quatre têtes de 8 coordonnées. Leurs résultats sont mis bout à bout (4 × 8 = 32), puis une dernière projection les combine.</p>
+<p>Les schémas ci-dessous utilisent les nombres <strong>inventés</strong> du « Petit exemple inventé » de l’expérience. Le mode « Vraie trace Luciole » montre ensuite les vrais calculs du modèle, où &lt;bos&gt; fait aussi partie des positions consultables.</p>
+<details><summary>Pour les avertis · mise à l’échelle et paramètres</summary><p>Les scores sont divisés par √d<sub>k</sub> (ici √8) avant softmax : sans cela, le produit scalaire grandit avec la dimension et softmax deviendrait presque toujours tranchant. W<sub>Q</sub>, W<sub>K</sub>, W<sub>V</sub> et la projection de sortie W<sub>O</sub> sont des paramètres fixes à l’inférence ; Q, K, V et les poids d’attention dépendent du texte. Séparer K et V permet de comparer sur certaines coordonnées tout en transportant un contenu différent.</p></details>`,
+    formula: 'Q·K → scores → masque → softmax → somme des V pondérés → têtes réunies → projection',
+    instruction: 'Gardez « chat » dans « Token qui consulte les autres » et avancez avec « Étape suivante ». Changez sa première coordonnée et observez les proportions bouger. À l’étape du masque, vérifiez que « dort » est interdit. Choisissez enfin « Vraie trace Luciole » dans « Calcul observé ».',
+    takeaway: 'Une tête compare les requêtes aux clés pour obtenir des proportions, puis mélange les valeurs. Plusieurs têtes réalisent plusieurs mélanges en parallèle.',
+    caveat: 'Le petit exemple est inventé ; la vraie trace lit les calculs de Luciole sans modifier ses poids. L’image de la bibliothèque aide à retenir les rôles, mais aucune tête n’a de rôle humain garanti.',
+    question: 'À la position « chat » dans « le chat dort », quels V peuvent contribuer au mélange ?',
+    choices: ['Seulement le V de « dort », pour trouver la réponse', 'Les V de « le » et de « chat », mais pas celui de « dort »', 'Tous les V dont le score est positif'],
+    answer: 1, explanation: 'Le masque interdit le futur avant softmax. Dans la vraie trace de Luciole, le V de <bos> est aussi autorisé. Le mélange produit un vecteur, pas encore un prochain token.',
+    refs: ['transformer'], notes: 'Faire raconter Q/K/V avec la bibliothèque, puis lire le calcul [0,5 ; 1]. Montrer le futur interdit avant de passer à la vraie trace. Transition : voyons toutes les lignes à la fois.',
   },
   {
     id: '07-attention', section: 'À l’intérieur du Transformer', title: 'Chaque token\ninterroge son passé.',
     short: 'L’attention causale', label: 'La circulation', experiment: 'attention',
-    lead: 'Chaque ligne de la grille indique comment un token mélange les informations accessibles. Les positions futures sont masquées.',
-    body: `<p>Retrouvons le calcul pas à pas sous forme de grille. Une <strong>ligne</strong> est le token qui consulte ; une <strong>colonne</strong>, le token consulté. Une case donne le poids utilisé pour mélanger son V. Les projections Q et K fixent les scores, le masque interdit le futur, softmax donne les poids, puis la tête combine les V.</p>
-<p>Le <strong>masque causal</strong> interdit de regarder les positions futures. À l’entraînement, on peut calculer plusieurs prédictions en parallèle tout en respectant cette contrainte. À l’inférence autorégressive, les nouvelles positions arrivent successivement.</p>
-<p><strong>Pourquoi la diagonale est-elle autorisée ?</strong> La représentation de « chat » utilise déjà « chat » pour prédire le token <em>suivant</em>. Consulter sa propre position est donc permis. Chaque ligne a sa propre distribution totalisant 100 % ; les colonnes n’ont pas cette contrainte.</p>
-<p>La grille montre les véritables poids d’attention de Luciole. Changez de tête pour voir un autre mélange du même texte, puis de bloc pour voir une autre étape. Deux blocs sont successifs ; quatre têtes sont parallèles dans chacun. Une case intense n’est pas une explication exhaustive de la décision finale.</p>
-<details><summary>Facultatif · notation mathématique</summary><p>Attention(Q,K,V) = softmax(QKᵀ / √dₖ + masque) V. Le produit scalaire dépend des directions et des longueurs, pas seulement de l’angle. dₖ = 8 coordonnées par tête dans Luciole. Les scores futurs sont exclus avant softmax ; leurs poids sont nuls.</p></details>`,
-    formula: 'ligne = token qui consulte · colonne = token consulté · × = futur interdit',
-    instruction: 'Choisissez « le chat » puis la ligne « le » : « chat » reste dans le futur. Observez la dernière ligne, puis une autre tête et un autre bloc.',
-    takeaway: 'L’attention est une opération de mélange pondéré, contrainte par le masque causal.',
-    caveat: '« Causal » signifie ici que le futur est masqué. Une grande valeur d’attention ne prouve pas, à elle seule, qu’un token a causé la réponse finale.',
+    lead: 'L’étape précédente suivait un seul token. Ici, on regarde tous les tokens à la fois, sous forme de grille : qui écoute qui, et dans quelle proportion.',
+    body: `<h3>Lire la grille</h3>
+<p>Chaque <strong>ligne</strong> est un token qui consulte ; chaque <strong>colonne</strong>, un token consulté. La case à l’intersection donne la part du V de la colonne dans le mélange de la ligne : ce sont les <dfn>poids d’attention</dfn>. Chaque ligne totalise 100 %, puisque c’est un partage ; les colonnes n’ont pas cette contrainte.</p>
+<h3>Pourquoi un triangle ?</h3>
+<p>Les cases au-dessus de la diagonale sont vides : c’est le <dfn>masque causal</dfn>. Un token ne voit que lui-même et ce qui le précède. La raison vient de l’entraînement : le modèle apprend à prédire le token suivant, il ne doit donc pas pouvoir le lire. Grâce à ce masque, une seule phrase fournit autant d’exercices que de positions, tous calculés en parallèle.</p>
+<p><strong>Et la diagonale ?</strong> Elle est autorisée. La position « chat » sert à prédire ce qui vient <em>après</em> « chat » ; se consulter elle-même ne révèle donc rien du futur.</p>
+<h3>Ce que montre l’expérience</h3>
+<p>La grille affiche les vrais poids d’attention de Luciole. Changez de tête : même texte, autre mélange, car chaque tête a ses propres projections. Changez de bloc : le bloc 2 travaille sur des vecteurs déjà enrichis par le bloc 1. Si une tête place une grande part de son attention sur &lt;bos&gt;, ce n’est pas un défaut : dans les grands modèles aussi, le premier token sert souvent de « point de repos » quand aucun autre n’apporte d’information utile.</p>
+<details><summary>Pour les avertis · la formule complète</summary><p>Attention(Q, K, V) = softmax(QK<sup>ᵀ</sup> / √d<sub>k</sub> + M) V, où M vaut −∞ au-dessus de la diagonale et 0 ailleurs ; d<sub>k</sub> = 8 dans Luciole. Le produit scalaire dépend des directions et des longueurs des vecteurs. Un poids élevé indique où l’information a été lue, pas qu’elle a causé la prédiction finale : la valeur V lue peut être petite, et la suite du réseau peut l’ignorer.</p></details>`,
+    formula: 'ligne = token qui consulte · colonne = token consulté · case vide = futur interdit',
+    instruction: 'Placez « Position requête » sur 0, puis avancez ligne par ligne : chaque token voit un peu plus de passé. Observez la dernière ligne, puis changez de tête et de bloc. Essayez aussi le contexte « le chat ».',
+    takeaway: 'L’attention est un mélange pondéré : chaque ligne répartit 100 % entre le token lui-même et ses prédécesseurs, jamais ses successeurs.',
+    caveat: '« Causal » désigne ici le masque du futur, pas une relation de cause à effet. Une case intense ne prouve pas, à elle seule, qu’un token a causé la réponse finale.',
     question: 'Pourquoi les cases au-dessus de la diagonale sont-elles masquées ?',
-    choices: ['Pour économiser les couleurs', 'Pour empêcher la fuite d’information depuis le futur', 'Parce que les tokens futurs valent zéro'],
-    answer: 1, explanation: 'La cible ne doit pas être visible dans l’entrée utilisée pour la prédire.',
-    refs: ['transformer'], notes: 'Accroche : le futur est fermé. Manipulation : ligne le puis dernière ligne. Transition : Q et K sont connus, comment ajouter l’ordre ?',
+    choices: ['Pour économiser les couleurs', 'Pour empêcher de lire le token que l’on doit prédire', 'Parce que les tokens futurs valent zéro'],
+    answer: 1, explanation: 'À l’entraînement, la cible de chaque position est le token suivant : elle ne doit pas être visible dans l’entrée qui sert à la prédire.',
+    refs: ['transformer'], notes: 'Accroche : le futur est fermé. Manipulation : première ligne, dernière ligne, autre tête. Transition : le masque connaît l’ordre, mais comment le modèle sait-il où se trouve chaque token ?',
   },
   {
     id: '06-position', section: 'À l’intérieur du Transformer', title: 'L’ordre fait\nla différence.',
     short: 'Position et RoPE', label: 'La géométrie de l’ordre', experiment: 'rope',
-    lead: '« Le chien mord le chat » n’est pas « Le chat mord le chien ». Il faut coder la position.',
-    body: `<p>Vous avez maintenant manipulé Q et K. Revenons à l’ordre : Luciole ajoute un <strong>vecteur de position appris</strong> à chaque embedding, avant les blocs. Le token « chat » peut ainsi commencer avec une liste différente selon sa position. La position n’est ni une connaissance nouvelle ni un mot ajouté au prompt.</p>
-<p>D’autres modèles utilisent <dfn>RoPE</dfn> : au lieu de cette addition, des rotations par paires de coordonnées sont appliquées aux requêtes Q et aux clés K. Le cadran ci-dessous est une illustration de cette <strong>variante, absente de Luciole</strong>. Une paire de nombres devient une flèche ; sa rotation encode une position. Ce n’est pas une flèche de pensée.</p>
-<p>Dans le cadran, les contenus Q et K sont maintenus fixes : les faire tourner ensemble conserve leur produit scalaire ; changer leur écart peut le modifier. Dans un modèle complet, déplacer du texte peut aussi changer son contexte et ses représentations. Cette propriété du cadran ne signifie donc pas que toute la sortie reste identique.</p>
-<p>RoPE emploie plusieurs fréquences pour représenter différentes échelles de distance. Il ne garantit pas une mémoire infinie ni une utilisation fiable de tout long contexte : architecture, entraînement et évaluations restent déterminants.</p>
-<details><summary>Facultatif · pourquoi une rotation commune ne change rien</summary><p>Dans une paire, ⟨R(m)q, R(n)k⟩ = ⟨q, R(n − m)k⟩. Une rotation conserve le produit scalaire. Agrandir la fenêtre autorisée ne garantit pas une extrapolation fiable hors des positions rencontrées.</p></details>`,
-    formula: 'Luciole : embedding + position apprise · variante RoPE : rotation de Q et K',
-    instruction: 'Déplacez ensemble les deux positions avec « Position m ». Le score reste stable. Changez ensuite l’écart : le score peut varier. Ce cadran ne décrit pas Luciole.',
-    takeaway: 'L’ordre doit être représenté. Luciole emploie des positions apprises ; RoPE est un autre choix, pas une mémoire infinie.',
-    caveat: 'Les cadrans ne représentent qu’une paire de dimensions inventée. Luciole n’utilise pas RoPE : ses positions sont des vecteurs appris ajoutés aux embeddings.',
+    lead: '« Le chien mord le chat » et « le chat mord le chien » contiennent les mêmes tokens. Sans information de position, l’attention aurait bien du mal à les distinguer.',
+    body: `<h3>Le problème</h3>
+<p>Le produit scalaire entre Q et K ne dépend que du contenu des vecteurs, pas de leur place. Sans information de position, « mord » comparerait « chien » de la même façon, que ce mot soit juste avant lui ou cinq tokens plus tôt. Le masque causal donne un indice indirect, puisque chaque token voit un passé de longueur différente, mais presque tous les modèles injectent la position explicitement dans les nombres.</p>
+<h3>Solution 1 : ajouter un vecteur de position (Luciole)</h3>
+<p>Luciole possède une seconde table apprise, avec une ligne par position de 0 à 31. Avant les blocs, il <strong>additionne</strong> l’embedding du token et le vecteur de sa position. « chat » en position 2 et « chat » en position 4 entrent donc avec des vecteurs différents. C’est la méthode des premiers GPT. Sa limite : le modèle ne connaît que les positions vues à l’entraînement.</p>
+<h3>Solution 2 : tourner Q et K (RoPE)</h3>
+<p>La plupart des LLM ouverts récents utilisent <dfn>RoPE</dfn> (<em>Rotary Position Embedding</em>). L’idée : regrouper les coordonnées de Q et de K par paires, voir chaque paire comme une flèche, et la <strong>faire tourner d’un angle proportionnel à la position</strong>. Quand on compare deux flèches tournées, seul compte l’écart d’angle entre elles, donc l’<strong>écart de position</strong> entre les deux tokens. Le score dépend ainsi de la distance relative, « trois tokens plus tôt », plutôt que de la position absolue.</p>
+<p>Le cadran de l’expérience illustre cette propriété sur une seule paire de nombres inventés. <strong>Luciole n’utilise pas RoPE</strong> : c’est une variante présentée pour comprendre les modèles actuels.</p>
+<details><summary>Pour les avertis · la propriété en une ligne</summary><p>Pour une paire de coordonnées, ⟨R(m)q, R(n)k⟩ = ⟨q, R(n − m)k⟩ : le score ne dépend que de n − m. RoPE applique plusieurs fréquences de rotation selon les paires, pour représenter des distances courtes et longues. Il ne garantit pas une utilisation fiable de contextes plus longs que ceux de l’entraînement : des techniques d’extension existent, avec leurs propres limites.</p></details>`,
+    formula: 'Luciole : embedding + vecteur de position appris · RoPE : rotation de Q et K selon la position',
+    instruction: 'Déplacez « Position m » : les deux flèches tournent ensemble et le score ne change pas. Modifiez ensuite « Écart n − m » : le score varie. Ce cadran illustre RoPE, pas Luciole.',
+    takeaway: 'Sans information de position, l’attention distingue mal l’ordre des mots. Luciole ajoute des positions apprises ; RoPE fait dépendre le score de la distance entre tokens.',
+    caveat: 'Le cadran ne montre qu’une paire de coordonnées inventée. Dans un modèle complet, déplacer un texte change aussi son contexte : le score d’une paire peut rester stable sans que toute la sortie le soit.',
     question: 'Comment Luciole représente-t-il la position avant ses blocs ?',
     choices: ['En ajoutant un vecteur de position appris', 'En faisant tourner Q et K avec RoPE', 'En réentraînant les poids à chaque token'],
-    answer: 0, explanation: 'Le cadran explore une variante moderne indépendante. Les poids de positions de Luciole sont appris avant publication puis restent fixes.',
-    refs: ['rope', 'transformer'], notes: 'Seulement après Q/K/V. Distinguer position apprise réelle et RoPE illustratif. Transition : attention mélange, MLP transforme.',
+    answer: 0, explanation: 'Luciole additionne un vecteur de position appris à chaque embedding. Le cadran explore RoPE, une variante utilisée par de nombreux modèles récents.',
+    refs: ['rope', 'transformer'], notes: 'Partir de « le chien mord le chat ». Distinguer position apprise (Luciole) et RoPE (illustré). Transition : après l’attention, que fait le MLP ?',
   },
   {
     id: '08-experts', section: 'À l’intérieur du Transformer', title: 'Beaucoup d’experts.\nPeu au travail.',
     short: 'MLP et MoE', label: 'La transformation', experiment: 'moe',
-    lead: 'Le modèle peut stocker beaucoup de paramètres sans tous les activer pour chaque token.',
-    body: `<p>Reprenons la différence : <strong>l’attention mélange plusieurs positions ; le MLP transforme une position à la fois</strong>, avec les mêmes poids à chaque position. Le MLP de Luciole est dense : il transforme 32 nombres en 64, applique ReLU, puis revient à 32. Il traite un vecteur déjà contextualisé par l’attention, sans consulter directement une autre ligne.</p>
-<p>Un <dfn>MoE</dfn> remplace certains MLP par plusieurs réseaux appelés experts et un routeur. Pour chaque position, celui-ci attribue des scores puis sélectionne un sous-ensemble, souvent les k meilleurs : c’est le top-k. Les sorties choisies sont pondérées et combinées. Il s’agit d’un choix <strong>à l’intérieur d’une couche</strong>, pas d’un choix entre plusieurs assistants complets.</p>
-<p>L’animation montre uniquement un routage <strong>inventé</strong>. Luciole n’a ni experts ni routeur. Un « expert » est un réseau de neurones, pas un spécialiste humain ni une source de savoir identifiée. Les paramètres actifs influencent le calcul ; tous les paramètres influencent le stockage.</p>
-<p class="anecdote"><strong>Un cas réel :</strong> le rapport DeepSeek-V3 annonce 671 milliards de paramètres au total, dont 37 milliards activés par token. Ces deux nombres répondent à des questions différentes : quelle capacité est stockée, et quelle partie participe au calcul d’un token ? Ils ne donnent pas à eux seuls la mémoire ni la latence d’un service.</p>
-<details><summary>Facultatif · combinaison des sorties et coûts</summary><p>sortie = Σ poids_routeur(expert) × expert(x). Les poids des experts sélectionnés sont ici renormalisés. Communication, équilibrage et capacité des experts ajoutent des coûts, non représentés par ce petit routage.</p></details>`,
-    formula: 'Luciole : MLP dense entier · variante MoE : quelques réseaux sélectionnés',
-    instruction: 'Passez de un à trois experts actifs. Observez les routes et le budget actif, sans modifier le nombre total d’experts.',
-    takeaway: 'Paramètres totaux, paramètres actifs et coût réel sont trois quantités distinctes.',
-    caveat: 'Le routage montré est synthétique, déterministe et sans étiquette sémantique. Luciole est un modèle dense.',
-    question: 'Activer deux experts sur huit divise-t-il forcément toute la mémoire du modèle par quatre ?',
-    choices: ['Oui, les autres experts disparaissent', 'Non, les poids des autres experts doivent encore être stockés ou chargés', 'Oui, quel que soit le matériel'],
-    answer: 1, explanation: 'Le calcul activé est réduit, mais les poids totaux et les coûts de déplacement ne disparaissent pas.',
-    refs: ['switch', 'v3'], notes: 'Accroche : actif ne signifie pas stocké. Manipulation : top-k. Transition : quand une prédiction devient-elle visible ?',
+    lead: 'Après l’attention vient le MLP, qui contient la majorité des poids d’un modèle. Les grands modèles récents le découpent souvent en « experts », dont seuls quelques-uns travaillent pour chaque token.',
+    body: `<h3>Le MLP : retravailler chaque token</h3>
+<p>L’attention a rassemblé de l’information de contexte dans le vecteur de chaque token. Le <dfn>MLP</dfn> la transforme ensuite, <strong>token par token</strong>, sans regarder les voisins. Il agrandit d’abord le vecteur (32 → 64 nombres dans Luciole), applique une fonction non linéaire, <dfn>ReLU</dfn>, qui remplace les nombres négatifs par zéro, puis revient à la taille d’origine (64 → 32).</p>
+<p><strong>À quoi ça sert ?</strong> Sans cette étape non linéaire, empiler des projections reviendrait à une seule grande projection. Le MLP permet des combinaisons du type « si telle configuration est présente, ajouter telle information ». Des travaux d’interprétabilité suggèrent qu’une bonne part des associations apprises, comme « capitale de la france → paris », est stockée dans ces couches. Dans un Transformer classique, les MLP représentent environ deux tiers des paramètres des blocs.</p>
+<h3>Le MoE : beaucoup de MLP, peu actifs</h3>
+<p>Un <dfn>MoE</dfn> (<em>Mixture of Experts</em>) remplace le MLP unique par plusieurs MLP, appelés <strong>experts</strong>, et un petit <dfn>routeur</dfn>. Pour chaque token, le routeur note les experts et n’active que les meilleurs, par exemple 2 sur 8. Leurs sorties sont combinées selon ces notes. On obtient un modèle qui <strong>stocke</strong> beaucoup de paramètres mais n’en <strong>calcule</strong> qu’une partie par token.</p>
+<p>Le mot « expert » est trompeur : ce n’est ni un spécialiste humain ni un domaine identifié, mais un réseau dont la spécialisation, quand elle existe, émerge de l’entraînement. Le choix se fait <strong>à l’intérieur d’une couche, pour chaque token</strong>, pas entre plusieurs assistants complets.</p>
+<p class="anecdote"><strong>Un cas réel :</strong> le rapport DeepSeek-V3 annonce 671 milliards de paramètres au total, dont 37 milliards activés par token. Le premier nombre dit ce qu’il faut stocker, le second ce qu’il faut calculer pour un token.</p>
+<p>L’expérience montre un routage <strong>inventé</strong>. Luciole a un MLP dense unique, sans experts ni routeur.</p>
+<details><summary>Pour les avertis · combinaison et coûts cachés</summary><p>sortie = Σ<sub>e ∈ top-k</sub> g<sub>e</sub>(x) · Expert<sub>e</sub>(x), avec des notes g renormalisées sur les experts retenus. En pratique, l’équilibrage de charge entre experts, la capacité par expert et la communication entre GPU ajoutent des coûts absents de cette illustration. Les MLP modernes utilisent souvent une porte (SwiGLU) plutôt que ReLU.</p></details>`,
+    formula: 'MLP : agrandir → ReLU → réduire · MoE : routeur → quelques experts → combinaison',
+    instruction: 'Choisissez un token dans « Token routé », puis faites varier « Experts actifs par token » de 1 à 3. Observez quels experts travaillent et la part du modèle réellement calculée ; le nombre total d’experts ne change pas.',
+    takeaway: 'Le MLP transforme chaque token séparément et contient l’essentiel des poids. Un MoE distingue paramètres stockés et paramètres actifs par token.',
+    caveat: 'Le routage montré est synthétique et ses experts n’ont pas de spécialité. Luciole est un modèle dense. Paramètres actifs, mémoire et vitesse réelle restent trois quantités distinctes.',
+    question: 'Activer deux experts sur huit divise-t-il forcément la mémoire du modèle par quatre ?',
+    choices: ['Oui, les autres experts disparaissent', 'Non, les poids de tous les experts doivent rester stockés', 'Oui, quel que soit le matériel'],
+    answer: 1, explanation: 'Le calcul par token est réduit, mais chaque expert peut être choisi pour un autre token : tous les poids doivent rester disponibles.',
+    refs: ['ffn-memories', 'switch', 'v3'], notes: 'Accroche : actif ne signifie pas stocké. Manipulation : 1, 2 puis 3 experts. Transition : les blocs sont finis ; comment obtient-on un choix de token ?',
   },
   {
     id: '09b-scores', section: 'Du calcul à la réponse', title: 'Un score n’est pas\nune probabilité.',
     short: 'Des scores aux probabilités', label: 'Avant le tirage', experiment: 'scores',
-    lead: '−2, 0, 3 : ces nombres peuvent être des scores. Ce ne sont pas encore des chances de choisir un token.',
-    body: `<p>La sortie du modèle attribue un score, appelé logit, à chaque token du vocabulaire. Ces scores peuvent être négatifs et leur somme n’a pas de valeur particulière. Ce sont leurs écarts qui comptent : un candidat au score plus grand reçoit davantage de probabilité après conversion.</p>
-<p>Le <dfn>softmax</dfn> transforme les scores en nombres positifs dont la somme vaut 1. Il amplifie les écarts par une exponentielle puis divise par le total. Dans cette étape, trois scores choisis à la main permettent de voir cette transformation, sans confondre ce petit exemple avec la sortie d’un modèle entraîné.</p>
-<p><strong>Un repère numérique :</strong> les scores [0 ; 0 ; 0] donnent environ [33,3 % ; 33,3 % ; 33,3 %]. [1 ; 1 ; 1] donne exactement les mêmes probabilités : ajouter une constante à tous les scores ne change pas leurs écarts. Dans Luciole, la sortie contient 333 scores, un par entrée du vocabulaire.</p>
-<p>Une distribution n’est toujours pas un choix. On peut prendre son maximum ou tirer un candidat au hasard selon les probabilités obtenues. L’étape « Le tirage » applique ces stratégies à cinq candidats fictifs pour rendre leurs effets visibles ; le laboratoire les utilise avec les vrais scores de Luciole. Une probabilité élevée n’est pas une garantie de vérité.</p>
-<details><summary>Facultatif · formule softmax</summary><p>probabilité(i) = exp(scoreᵢ) / somme des exp(scores). On retire en pratique le score maximal avant l’exponentielle pour stabiliser le calcul, sans changer le résultat.</p></details>`,
-    formula: 'scores libres → softmax → probabilités qui totalisent 100 %',
-    instruction: 'Changez les trois scores. Rendez-les égaux, puis augmentez-en un seul : les probabilités changent mais leur somme reste égale à 1.',
-    takeaway: 'Scores, probabilités et choix sont trois étapes distinctes. Une probabilité n’est pas un certificat de vérité.',
-    caveat: 'Ces trois candidats et leurs scores sont une expérience de calcul, pas une prédiction attribuée à Luciole ou à un service commercial.',
-    question: 'Si les trois scores sont égaux, quelles probabilités softmax obtient-on ?',
-    choices: ['100 % pour le premier', 'Un tiers pour chacun', 'Cela dépend de la somme des scores'],
-    answer: 1, explanation: 'Des scores identiques ont les mêmes exponentielles ; chacun reçoit donc un tiers du total.',
-    refs: ['transformer', 'nucleus'], notes: 'Séparer le score de la probabilité avant d’introduire température, filtres et tirage.',
-  },
-  {
-    id: '09-logit-lens', section: 'Du calcul à la réponse', title: 'Une prédiction\nse dessine.',
-    short: 'La logit lens', label: 'Les représentations intermédiaires', experiment: 'lens',
-    lead: 'Peut-on regarder la sortie avant la sortie ? Oui, à condition de savoir ce que l’on mesure.',
-    body: `<p>À la fin du modèle, une transformation convertit la représentation du dernier token en scores pour les tokens suivants possibles : c’est la <strong>projection de sortie</strong>. La <dfn>logit lens</dfn> réutilise cette transformation plus tôt, sur les représentations intermédiaires. Elle permet de comparer les candidats visibles au fil des couches.</p>
-<p>La projection donne des logits ; softmax permet de les lire comme une distribution sur le vocabulaire. Les couches intermédiaires n’ont pas été entraînées à produire directement la réponse avec cette projection. Une lecture changeante n’est donc pas un dysfonctionnement. La <em>tuned lens</em> apprend des transformations adaptées aux couches pour améliorer cette lecture ; elle n’est pas implémentée dans Luciole.</p>
-<p>Ici, la même tête de sortie et RMSNorm lisent l’état initial puis les deux blocs de Luciole. Les barres sont calculées à partir de ses vrais tenseurs. Le chemin n’est pas nécessairement monotone vers le bon token.</p>
-<details><summary>Facultatif · calcul de la sonde</summary><p>lecture intermédiaire = softmax(Norm(x_couche) W_sortie). Ce sont des lectures calculées, pas des décisions déjà prises par chaque couche.</p></details>`,
-    formula: 'représentation intermédiaire → même projection de sortie → candidats visibles',
-    instruction: 'Gardez « le chat » et parcourez les profondeurs 0, 1 et 2 : plusieurs suites restent visibles. Comparez ensuite avec la capitale de la France, où un candidat domine.',
-    takeaway: 'Une sonde est un instrument de lecture, pas un accès direct aux intentions du modèle.',
-    caveat: 'Avec seulement deux blocs et un corpus mémorisable, cette démonstration ne mesure pas une émergence générale du raisonnement.',
-    question: 'Une mauvaise prédiction intermédiaire prouve-t-elle que la couche ne sert à rien ?',
-    choices: ['Oui', 'Non, elle n’est pas nécessairement entraînée pour cette lecture directe', 'Oui, si sa probabilité est faible'],
-    answer: 1, explanation: 'Une représentation peut être utile aux couches suivantes sans être directement lisible avec la tête finale.',
-    refs: ['lens'], notes: 'Accroche : une radiographie imparfaite. Manipulation : couche 0, 1, 2. Transition : une distribution n’est pas encore un choix.',
+    lead: 'À la sortie des blocs, le modèle produit un score par token du vocabulaire. Ces scores peuvent être négatifs et ne totalisent rien de particulier : il faut les convertir en probabilités.',
+    body: `<h3>Des scores bruts : les logits</h3>
+<p>Une dernière projection transforme le vecteur du dernier token en une liste de scores, un par entrée du vocabulaire : 333 pour Luciole, des dizaines de milliers pour un grand modèle. Ces scores s’appellent des <dfn>logits</dfn>. Seuls leurs <strong>écarts</strong> comptent : un logit de 3 face à 0 signifie « nettement plus probable », quelle que soit la valeur absolue.</p>
+<h3>La conversion : softmax</h3>
+<p><dfn>Softmax</dfn> fait deux choses : il rend chaque score positif en prenant son exponentielle, puis divise par le total pour que tout fasse 100 %. L’exponentielle <strong>amplifie les écarts</strong> : un point de score en plus multiplie la probabilité relative par environ 2,7.</p>
+<p><strong>Exemple chiffré :</strong> les scores [−2 ; 0 ; 3] donnent environ [0,6 % ; 4,7 % ; 94,7 %]. Les scores [0 ; 0 ; 0] donnent un tiers chacun, tout comme [5 ; 5 ; 5] : ajouter la même constante à tous les scores ne change rien.</p>
+<h3>Une probabilité n’est pas encore un choix</h3>
+<p>Le modèle fournit une distribution ; il reste à choisir un token. On peut prendre le plus probable ou tirer au hasard selon ces probabilités. C’est l’objet de l’étape suivante. Notez aussi qu’une probabilité élevée exprime ce qui est fréquent dans la continuité des données d’entraînement, pas une garantie de vérité.</p>
+<details><summary>Pour les avertis · formule et stabilité numérique</summary><p>p<sub>i</sub> = exp(z<sub>i</sub>) / Σ<sub>j</sub> exp(z<sub>j</sub>). En pratique, on soustrait max(z) avant l’exponentielle pour éviter les débordements, sans changer le résultat. Le logarithme de p<sub>i</sub> sert directement de perte à l’entraînement (entropie croisée).</p></details>`,
+    formula: 'logits (scores libres) → softmax → probabilités qui totalisent 100 %',
+    instruction: 'Modifiez les trois scores. Rendez-les égaux, puis augmentez-en un seul d’un point : sa probabilité grimpe vite, mais le total reste 100 %.',
+    takeaway: 'Logits, probabilités et choix sont trois étapes distinctes. Softmax convertit des scores en probabilités en amplifiant leurs écarts.',
+    caveat: 'Les trois scores de cette étape sont choisis à la main pour isoler le calcul ; ce n’est pas une sortie de Luciole. Une probabilité élevée n’est pas un certificat de vérité.',
+    question: 'Si les trois scores sont égaux, quelles probabilités softmax donne-t-il ?',
+    choices: ['100 % pour le premier', 'Un tiers pour chacun', 'Cela dépend de la valeur des scores'],
+    answer: 1, explanation: 'Des scores identiques ont la même exponentielle ; chacun reçoit donc un tiers, quelle que soit leur valeur commune.',
+    refs: ['transformer', 'nucleus'], notes: 'Faire deviner l’effet de +1 sur un score avant de le montrer. Séparer score, probabilité et choix avant le tirage.',
   },
   {
     id: '10-tirage', section: 'Du calcul à la réponse', title: 'Prédire n’est\npas choisir.',
     short: 'Le tirage', label: 'Le décodage', experiment: 'sampling',
-    lead: 'Une même distribution peut conduire à plusieurs choix. Cinq candidats fictifs permettent de voir précisément ce que changent la température, les filtres et le hasard.',
-    body: `<p><strong>Notre exemple :</strong> « Pour le dessert, je prendrai… ». Nous attribuons volontairement 40 % à « un gâteau », 30 % à « une glace », 20 % à « un fruit », 8 % à « un café » et 2 % à « autre chose ». Ces choix et probabilités sont <strong>inventés</strong> : ce ne sont ni une prédiction de Luciole, ni les tokens d’un tokenizer réel. Un vrai modèle applique les mêmes opérations aux scores de son vocabulaire.</p>
-<h3>1 · Régler la concentration</h3><p>Pour une température T positive, on divise les scores par T avant softmax. Une température plus basse favorise davantage les meilleurs scores ; une température plus haute rapproche les probabilités. Si les scores sont tous égaux, la température ne les départage pas. À T = 0, cette interface choisit directement le premier maximum : un choix à 100 % ne signifie pas que sa probabilité initiale était de 100 %.</p>
-<h3>2 · Réduire les candidats</h3><p><strong>Top-k</strong> garde les k meilleurs candidats. <strong>Min-p</strong> retire ceux dont la probabilité est trop faible par rapport au favori : avec un favori à 40 % et min-p = 0,1, le seuil est 4 %. <strong>Top-p</strong> garde ensuite les meilleurs candidats jusqu’à couvrir la fraction demandée de la masse restante. Ici, l’ordre est top-k, puis min-p, puis top-p ; d’autres logiciels peuvent employer un autre ordre.</p>
-<p>Avec la situation initiale, température 1, top-k = 5, min-p = 0 et top-p = 0,8, les trois premiers choix sont gardés : 40 + 30 + 20 = 90 %. On les <strong>renormalise</strong> en divisant par 0,9 : environ 44,4 %, 33,3 % et 22,2 %. Les deux autres restent visibles à 0 % pour comprendre leur exclusion.</p>
-<h3>3 · Tirer, puis observer</h3><p>Un tirage choisit un seul candidat ; cent tirages donnent des fréquences qui peuvent différer des probabilités. Ici, chaque essai utilise la <strong>même distribution</strong>, sans ajouter de texte. Lors d’une vraie génération, chaque token ajouté change le contexte et déclenche une nouvelle prédiction. La graine 42 permet de reproduire nos tirages.</p>`,
-    formula: 'scores → température et softmax → top-k → min-p → top-p → renormalisation → tirage',
-    instruction: 'Gardez « Plusieurs choix plausibles ». Modifiez un réglage à la fois, tirez une fois puis ajoutez 100 tirages. Comparez ensuite avec « Un favori dominant » et « Égalité entre les choix ».',
-    takeaway: 'Les réglages de décodage changent les choix, pas les connaissances ni les poids du modèle.',
-    caveat: 'Les cinq choix et leurs probabilités sont inventés pour isoler le décodage. Aucun modèle n’est chargé. Une température basse ne garantit pas une réponse vraie.',
+    lead: 'Le modèle a produit des probabilités. Il reste à choisir un token. La température et les filtres règlent ce choix, sans rien changer à ce que le modèle sait.',
+    body: `<h3>Pourquoi ne pas toujours prendre le favori ?</h3>
+<p>Choisir systématiquement le token le plus probable donne des textes sûrs mais souvent répétitifs et plats. Tirer au hasard selon les probabilités apporte de la variété, mais risque de choisir des candidats très improbables. Les réglages de <dfn>décodage</dfn> cherchent un compromis entre ces deux extrêmes.</p>
+<p><strong>Notre exemple :</strong> « Pour le dessert, je prendrai… ». Nous attribuons volontairement 40 % à « un gâteau », 30 % à « une glace », 20 % à « un fruit », 8 % à « un café » et 2 % à « autre chose ». Ces candidats et probabilités sont <strong>inventés</strong> pour rendre chaque réglage lisible ; un vrai modèle applique les mêmes opérations à tout son vocabulaire.</p>
+<h3>1 · La température : régler la concentration</h3>
+<p>On divise les scores par la <dfn>température</dfn> T avant softmax. <strong>T &lt; 1</strong> creuse les écarts : le favori devient encore plus favori. <strong>T &gt; 1</strong> les aplatit : les outsiders gagnent des chances. <strong>T = 0</strong> revient à toujours prendre le favori ; un choix à 100 % ne signifie alors pas que le modèle était certain.</p>
+<h3>2 · Les filtres : écarter les candidats improbables</h3>
+<ul>
+<li><dfn>Top-k</dfn> garde les k meilleurs candidats.</li>
+<li><dfn>Min-p</dfn> retire ceux qui sont trop faibles par rapport au favori : avec un favori à 40 % et min-p = 0,1, le seuil est 4 %, et « autre chose » (2 %) est écarté.</li>
+<li><dfn>Top-p</dfn> garde les meilleurs candidats jusqu’à atteindre la part demandée de la probabilité totale.</li>
+</ul>
+<p>Les survivants sont <strong>renormalisés</strong> pour totaliser à nouveau 100 %. Avec top-p = 0,8 : « gâteau », « glace » et « fruit » atteignent 90 % et sont gardés ; divisés par 0,9, ils valent environ 44,4 %, 33,3 % et 22,2 %. Les candidats écartés restent visibles à 0 %.</p>
+<h3>3 · Tirer, puis observer</h3>
+<p>Un tirage choisit un seul candidat ; cent tirages donnent des fréquences proches des probabilités, sans les égaler exactement. Ici, chaque tirage repart de la même distribution. Dans une vraie génération, chaque token choisi modifie le contexte et donc les probabilités suivantes. La <dfn>graine</dfn> 42 rend les tirages reproductibles.</p>
+<details><summary>Pour les avertis · ordre des filtres et ex aequo</summary><p>Cette interface applique la température, puis top-k, min-p et top-p, avant renormalisation ; d’autres bibliothèques choisissent un autre ordre, ce qui peut changer le résultat. À T = 0 ou à la frontière de top-k, les ex aequo sont départagés dans l’ordre d’affichage. Min-p est décrit par Nguyen et al. (2024) ; top-p par Holtzman et al. (2019).</p></details>`,
+    formula: 'scores ÷ T → softmax → top-k → min-p → top-p → renormalisation → tirage',
+    instruction: 'Gardez « Plusieurs choix plausibles ». Modifiez un seul réglage à la fois, cliquez sur « Tirer une fois », puis sur « Ajouter 100 tirages ». Comparez ensuite avec « Un favori dominant » et « Égalité entre les choix ».',
+    takeaway: 'Les réglages de décodage changent la façon de choisir, pas les connaissances ni les poids du modèle.',
+    caveat: 'Les cinq candidats et leurs probabilités sont inventés pour isoler le décodage ; aucun modèle n’est chargé. Une température basse rend la sortie plus prévisible, pas plus vraie.',
     question: 'Que fait la température aux poids appris du modèle ?',
     choices: ['Elle les réentraîne', 'Elle ne les change pas', 'Elle supprime les couches incertaines'],
-    answer: 1, explanation: 'La température agit après le calcul des logits. Elle ne modifie pas les paramètres appris.',
-    refs: ['nucleus', 'decoding'], notes: 'Accroche : score puis décision. Manipulation : température nulle et top-p. Transition : peut-on dépenser plus de calcul pour mieux réussir ?',
+    answer: 1, explanation: 'La température agit sur les logits, après le calcul du modèle. Les paramètres appris ne bougent pas.',
+    refs: ['nucleus', 'minp', 'decoding'], notes: 'Accroche : calculer puis décider. Manipulation : T = 0, T = 1,5, puis top-p. Transition : dans un vrai chat, que reçoit le modèle en plus de votre message ?',
+  },
+  {
+    id: '03-prompt', section: 'Du calcul à la réponse', title: 'La conversation\nsous la conversation.',
+    short: 'Le template caché', label: 'Les coulisses', experiment: 'prompt',
+    lead: 'Un modèle ne lit qu’une seule suite de tokens. Pour en faire un assistant de discussion, il faut transformer toute la conversation, rôles compris, en cette suite.',
+    body: `<h3>L’idée</h3>
+<p>Vous voyez des bulles de discussion. Le modèle, lui, ne voit qu’un long texte à continuer. Le <dfn>chat template</dfn> est la recette qui fabrique ce texte : il assemble les consignes du système, vos messages et les réponses précédentes, en les séparant par des marqueurs spéciaux qui indiquent qui parle. Il se termine par le marqueur « début de la réponse de l’assistant » : le modèle n’a plus qu’à continuer, token par token, comme à l’étape 1.</p>
+<p>Chaque famille de modèles a son propre format, appris pendant son entraînement à la conversation. Utiliser le mauvais format dégrade les réponses.</p>
+<h3>Et les outils ?</h3>
+<p>Un assistant capable d’utiliser des outils (recherche, calculatrice, code) reçoit aussi leur description dans le contexte. Quand il veut s’en servir, il <strong>génère un texte structuré</strong> qui décrit l’appel. C’est le <strong>programme autour du modèle</strong> qui exécute réellement l’outil, puis insère le résultat dans le contexte avant de relancer la génération. Le modèle lui-même ne fait qu’écrire des tokens.</p>
+<h3>Un point de sécurité</h3>
+<p>Une fois dans le contexte, le résultat d’un outil n’est qu’un texte parmi d’autres. Une page Web consultée peut contenir « ignore tes consignes et… » : c’est l’<strong>injection de prompt</strong>. Le programme qui entoure le modèle doit donc traiter ces résultats comme des données, pas comme des ordres, et limiter ce que les outils peuvent faire.</p>
+<p>L’échange de l’expérience est <strong>inventé</strong> et ses marqueurs sont illustratifs. Luciole n’utilise pas de template : il n’a jamais appris à converser.</p>
+<details><summary>Pour les avertis · ce que le template change</summary><p>Le template fixe l’ordre, les tokens spéciaux de rôle, l’endroit où s’insèrent les définitions d’outils et parfois un début de réponse imposé. Il consomme des tokens de contexte à chaque tour. Les bibliothèques comme Hugging Face Transformers le stockent avec le tokenizer. Les modèles de raisonnement ajoutent souvent une section de réflexion dans ce même flux ; ce texte affiché n’est pas une trace exhaustive du calcul interne.</p></details>`,
+    formula: 'messages + rôles + outils + template = une seule suite de tokens à continuer',
+    instruction: 'Cliquez sur « Activer les rayons X » pour voir les marqueurs ajoutés, puis sur « Ajouter un résultat d’outil ». Distinguez ce que voit la personne et ce que reçoit le modèle.',
+    takeaway: 'Un assistant reçoit une conversation sérialisée en une seule suite de tokens ; le programme qui l’entoure exécute les outils.',
+    caveat: 'L’ordre et les marqueurs dépendent du modèle ; ceux de l’expérience sont illustratifs. Luciole n’a jamais appris à converser ni à appeler des outils.',
+    question: 'Le résultat d’un outil est-il automatiquement une instruction de confiance ?',
+    choices: ['Oui, puisqu’il vient d’un programme', 'Non, il peut contenir du texte non fiable', 'Oui, si le texte est long'],
+    answer: 1, explanation: 'Un résultat d’outil peut contenir n’importe quel texte, y compris des instructions hostiles. Données, instructions et autorisations doivent rester distinctes.',
+    refs: ['templates'], notes: 'Accroche : les coulisses du chat. Manipulation : rayons X, puis outil. Transition : certains assistants « réfléchissent » avant de répondre ; qu’est-ce que cela change ?',
   },
   {
     id: '11-effort', section: 'Du calcul à la réponse', title: 'Plus de calcul.\nPas de garantie.',
     short: 'L’effort de raisonnement', label: 'Le budget à l’inférence', experiment: 'effort',
-    lead: 'Décomposer, chercher, vérifier : le temps de calcul peut devenir une ressource de résolution.',
-    body: `<p>Un modèle de raisonnement autorégressif génère lui aussi des tokens. Son entraînement peut favoriser des étapes de résolution, et son utilisation autoriser une trajectoire plus longue, plusieurs essais ou une recherche. Le bénéfice dépend du modèle, de la tâche et de la stratégie ; ajouter du calcul ne garantit pas la réussite.</p>
-<p><strong>Un exemple documenté :</strong> DeepSeek-R1 décrit un entraînement par récompenses sur des tâches notamment vérifiables, comme les mathématiques et le code. Cela illustre le lien entre apprentissage et calcul à l’inférence, pas une recette universelle. Un test de programme ou une égalité mathématique offre un retour plus précis qu’un simple jugement « cette réponse paraît bonne ».</p>
-<p>Pour isoler cette idée sans inventer de benchmark, notre expérience résout une équation entière par <strong>recherche exhaustive bornée</strong>. Plus de budget permet de tester plus de candidats. Le vérificateur contrôle exactement l’égalité.</p>
-<p>Ce n’est pas une simulation du raisonnement interne d’un LLM : c’est une analogie calculable. Un modèle peut produire une longue justification fausse. Une procédure de vérification fiable change profondément le problème.</p>`,
-    formula: 'budget de recherche + vérificateur ≠ connaissance nouvelle garantie',
-    instruction: 'Augmentez le nombre d’essais pour résoudre 7x + 3 = 94. Le résultat doit être vérifié, pas seulement proposé.',
-    takeaway: 'Le calcul supplémentaire aide certaines stratégies ; sa valeur dépend notamment de la possibilité de vérifier.',
-    caveat: 'Aucun score de modèle commercial n’est attribué à cette expérience. La longueur d’une réponse n’est pas un certificat de raisonnement.',
+    lead: 'Certains modèles écrivent un long raisonnement avant de répondre. Dépenser plus de calcul au moment de répondre peut aider, surtout quand une réponse peut être vérifiée.',
+    body: `<h3>Réfléchir, c’est encore générer des tokens</h3>
+<p>Un « modèle de raisonnement » n’a pas d’organe supplémentaire : il génère toujours des tokens, un à la fois. La différence vient de son entraînement, qui l’a habitué à écrire des étapes intermédiaires avant la réponse, et du budget qu’on lui accorde : plus de tokens de réflexion, plusieurs essais, ou une recherche parmi plusieurs pistes. Chaque token écrit fait partie du contexte et peut aider à calculer les suivants.</p>
+<h3>Pourquoi la vérification change tout</h3>
+<p>Ajouter du calcul est surtout utile quand on peut <strong>vérifier</strong> une réponse : un programme passe ou échoue ses tests, une équation est juste ou fausse. On peut alors essayer plusieurs pistes et garder celle qui passe. Sans vérification, une longue justification peut être aussi fausse qu’une courte, simplement plus convaincante.</p>
+<p><strong>Un exemple documenté :</strong> DeepSeek-R1 a été entraîné par renforcement sur des tâches vérifiables, comme les mathématiques et le code. Le modèle y apprend à produire des raisonnements plus longs, parce que cela augmente ses chances d’obtenir une réponse validée.</p>
+<h3>L’expérience : chercher et vérifier</h3>
+<p>Pour isoler l’idée, l’expérience n’utilise aucun LLM. Elle cherche la solution entière de 7x + 3 = 94 en essayant x = 0, 1, 2… Le budget fixe le nombre d’essais ; un <dfn>vérificateur</dfn> contrôle chaque proposition. Avec trop peu d’essais, on ne trouve rien ; avec assez, la solution est trouvée <em>et prouvée</em>. C’est une analogie : un LLM ne raisonne pas par énumération.</p>
+<details><summary>Pour les avertis · stratégies de calcul à l’inférence</summary><p>On distingue l’allongement d’une chaîne de raisonnement, l’échantillonnage de plusieurs réponses avec vote majoritaire, la sélection par un vérificateur ou un modèle de récompense, et la recherche arborescente. Snell et al. (2024) montrent que la meilleure stratégie dépend de la difficulté de la question et du modèle. Le texte de réflexion affiché n’est pas une trace fidèle de tout le calcul interne.</p></details>`,
+    formula: 'plus de budget + un vérificateur fiable → plus de chances de trouver, pas de garantie sans vérification',
+    instruction: 'Avec un budget de 5 candidats, aucune solution n’est trouvée. Augmentez « Budget de candidats à vérifier » jusqu’à ce que la solution de 7x + 3 = 94 soit trouvée et vérifiée.',
+    takeaway: 'Plus de calcul à l’inférence aide certaines tâches, surtout quand une réponse peut être vérifiée. La longueur d’un raisonnement ne prouve pas sa justesse.',
+    caveat: 'Cette expérience est une analogie déterministe : aucun LLM n’y raisonne et aucun score de modèle commercial n’y est attribué.',
     question: 'Qu’est-ce qui rend cette expérience particulièrement facile à vérifier ?',
-    choices: ['La longueur du texte produit', 'On peut substituer x dans une équation exacte', 'La confiance affichée par le modèle'],
-    answer: 1, explanation: 'Un vérificateur externe teste l’égalité. Beaucoup de tâches ouvertes n’offrent pas un critère aussi simple.',
-    refs: ['test-time', 'r1'], notes: 'Accroche : chercher n’est pas savoir. Manipulation : budgets 5 puis 20. Transition : ce calcul utilise aussi de la mémoire.',
+    choices: ['La longueur du texte produit', 'On peut remplacer x dans une équation exacte', 'La confiance affichée par le modèle'],
+    answer: 1, explanation: 'Un vérificateur externe teste l’égalité. Beaucoup de tâches ouvertes, comme rédiger ou conseiller, n’offrent pas un critère aussi net.',
+    refs: ['test-time', 'r1'], notes: 'Accroche : chercher n’est pas savoir. Manipulation : budget 5, puis 14. Transition : générer longtemps coûte de la mémoire ; laquelle ?',
   },
   {
-    id: '12-memoire', section: 'Mémoire, performance et apprentissage', title: 'Le contexte grandit.\nLa mémoire aussi.',
+    id: '12-memoire', section: 'Mémoire, coûts et apprentissage', title: 'Le contexte grandit.\nLa mémoire aussi.',
     short: 'Le KV cache', label: 'Le stockage à l’inférence', experiment: 'memory',
-    lead: 'Les poids ne sont pas la seule chose à faire tenir en mémoire.',
-    body: `<h3>Pourquoi refaire un calcul déjà fait ?</h3><p>Après avoir traité « &lt;bos&gt; le chat », ajoutons « dort ». Avec le <strong>masque causal</strong>, les anciennes positions ne peuvent pas consulter ce nouveau token. Leurs représentations restent donc inchangées, dans chaque couche, si le préfixe, les positions et les paramètres restent les mêmes.</p>
-<p>Le <dfn>KV cache</dfn> exploite cette propriété : il conserve les clés K et les valeurs V du passé. Le <strong>prefill</strong> traite le prompt et remplit ce cache. Puis chaque pas de décodage traite le token qui vient d’être choisi, ajoute ses K/V et calcule les scores du token suivant.</p>
-<h3>Pourquoi K et V, mais pas Q ?</h3><p>La nouvelle position a besoin de son <strong>nouveau Q</strong> pour comparer toutes les clés accessibles, puis mélanger leurs valeurs. Les anciennes requêtes ont déjà servi à calculer les anciennes représentations : elles ne sont pas nécessaires à ce nouveau mélange. Les poids d’attention, eux, dépendent du nouveau Q et doivent être recalculés.</p>
-<p>Retenez trois objets distincts : les <strong>paramètres appris</strong> sont fixes ; les <strong>K/V en cache</strong> sont des données temporaires liées au contexte ; les <strong>poids d’attention</strong> sont les proportions calculées pour la requête actuelle. Le cache ne remplace ni l’attention, ni le MLP, ni la prédiction. Modifier un préfixe invalide les entrées qui en dépendent.</p>
-<h3>Ce que l’expérience permet de vérifier</h3><p><strong>Luciole n’a pas de cache.</strong> Il recalcule le contexte complet. La frise illustre la réutilisation possible et impose la suite « dort . ». Le bouton de vérification compare ses vrais K/V sur deux préfixes successifs : leur égalité montre pourquoi un cache fonctionnerait, sans mesurer un gain de vitesse.</p>
-<details><summary>Aller plus loin · mémoire, GQA et limites</summary><p>Un cache K/V standard non compressé occupe environ : 2 × couches × têtes_KV × dimension_tête × tokens × séquences × octets. Le 2 correspond à K et V. Avec 2 couches, 4 têtes, 8 coordonnées, 10 tokens, une séquence et 4 octets par nombre, cela ferait 5 120 octets, hors autres allocations.</p><p>GQA fait partager des têtes K/V à plusieurs têtes Q ; MQA n’en garde qu’une. Ce sont des choix d’architecture et d’entraînement, pas un bouton gratuit sur n’importe quel modèle. Fenêtres glissantes et caches compressés changent encore le stockage effectif.</p><p>Le cache évite de refaire les positions passées, mais l’attention dense de la nouvelle position doit encore consulter leurs K/V. Son travail grandit donc avec la longueur du contexte. Les curseurs décrivent un modèle hypothétique de 8 milliards de paramètres ; ils ne dimensionnent pas un service de production.</p></details>`,
-    formula: 'prefill : calculer le prompt · t : réutiliser le passé + calculer le nouveau · t + 1 : recommencer',
-    instruction: 'Passez du prefill à t puis à t + 1. Repérez les K/V réutilisés dans chaque couche. Vérifiez ensuite les vraies projections de Luciole, recalculées sans cache.',
-    takeaway: 'La mémoire d’inférence dépend à la fois du modèle, du contexte, du parallélisme et de la précision.',
-    caveat: 'Animation conceptuelle : Luciole recalcule tout le contexte, sans cache. Les nombres de positions ne sont pas des mesures de vitesse. La formule optionnelle n’est pas un dimensionnement de production.',
-    question: 'À t + 1, que peut réutiliser un modèle causal avec cache si le préfixe ne change pas ?',
-    choices: ['Les poids d’attention de la requête précédente', 'Les K et V du passé, dans chaque couche', 'Une réponse stockée qui remplace tous les calculs'],
-    answer: 1, explanation: 'Les anciennes projections K/V sont identiques pour un préfixe inchangé. Les nouveaux Q/K/V, les poids d’attention, le mélange et la prédiction restent à calculer. Aucun apprentissage ne se produit.',
-    refs: ['cache', 'gqa', 'transformer'], notes: 'Faire dire ce qui est réutilisé et ce qui reste à calculer. Distinguer token traité et token prédit, puis trace conceptuelle avec cache et vérification réelle sans cache.',
+    lead: 'Pour générer le token suivant, faut-il tout recalculer depuis le début ? Non : une partie du travail passé peut être gardée en mémoire. C’est le KV cache.',
+    body: `<h3>L’observation de départ</h3>
+<p>Après avoir traité « &lt;bos&gt; le chat », le modèle ajoute « dort ». Grâce au <dfn>masque causal</dfn>, les anciens tokens ne peuvent pas consulter ce nouveau venu : leurs calculs, dans chaque couche, sont exactement les mêmes qu’avant. Les refaire serait du travail perdu.</p>
+<h3>Ce que l’on garde : K et V</h3>
+<p>Le nouveau token a besoin de deux choses venant du passé : les <strong>clés K</strong>, pour calculer ses proportions, et les <strong>valeurs V</strong>, pour faire son mélange. Le <dfn>KV cache</dfn> conserve donc les K et V de chaque token déjà traité, dans chaque couche. Les anciens Q, eux, ne servent plus : ils n’étaient utiles qu’aux anciens tokens.</p>
+<h3>Deux phases</h3>
+<ul>
+<li><strong>Le <dfn>prefill</dfn></strong> traite tout le prompt d’un coup, remplit le cache et produit le premier token.</li>
+<li><strong>Le <dfn>décodage</dfn></strong> traite ensuite un seul token par pas : il calcule ses Q, K, V, ajoute K et V au cache, compare son Q à toutes les clés stockées et produit le token suivant.</li>
+</ul>
+<h3>Trois choses à ne pas confondre</h3>
+<p>Les <strong>poids appris</strong> sont fixes et identiques pour toutes les conversations. Les <strong>K/V en cache</strong> sont des données temporaires, propres à une conversation. Les <strong>poids d’attention</strong> sont recalculés à chaque pas, car ils dépendent du nouveau Q. Le cache grossit avec le contexte : c’est pourquoi les longues conversations consomment beaucoup de mémoire.</p>
+<p><strong>Luciole n’a pas de cache</strong> : il recalcule tout le contexte à chaque token, ce qui garde son code simple. La frise illustre le principe sur une suite imposée ; le bouton de vérification compare les vrais K/V de Luciole sur deux préfixes successifs et montre qu’ils sont identiques, donc réutilisables.</p>
+<details><summary>Pour les avertis · taille du cache, GQA et limites</summary><p>Taille ≈ 2 × couches × têtes_KV × dimension_tête × tokens × séquences × octets. Le 2 compte K et V. Pour Luciole avec 10 tokens en float32 : 2 × 2 × 4 × 8 × 10 × 1 × 4 = 5 120 octets. Pour un modèle de 8 milliards de paramètres, le cache d’un long contexte peut atteindre plusieurs Go par séquence.</p><p><dfn>GQA</dfn> fait partager chaque tête K/V par un groupe de têtes Q ; <dfn>MQA</dfn> n’en garde qu’une. Ce sont des choix d’architecture faits avant l’entraînement. La quantification du cache, les fenêtres glissantes et la compression réduisent encore la mémoire. Le cache n’efface pas le coût de l’attention : chaque nouveau token compare toujours son Q à toutes les clés stockées.</p></details>`,
+    formula: 'prefill : calculer tout le prompt · chaque pas : réutiliser K/V du passé + calculer le nouveau token',
+    instruction: 'Cliquez sur « Passer à t », puis avancez encore d’un pas : repérez les K/V réutilisés et ceux qui sont ajoutés dans chaque couche. Cliquez ensuite sur « Vérifier K/V dans Luciole (sans cache) ». L’estimateur de mémoire est facultatif.',
+    takeaway: 'Le KV cache évite de recalculer le passé en gardant ses K et V ; il échange du calcul contre de la mémoire, qui grandit avec le contexte.',
+    caveat: 'La frise est conceptuelle : Luciole recalcule tout, sans cache, et ne mesure aucun gain de vitesse. L’estimateur décrit un modèle hypothétique, pas un service réel.',
+    question: 'Au pas suivant, que peut réutiliser un modèle avec cache si le début du texte n’a pas changé ?',
+    choices: ['Les poids d’attention du pas précédent', 'Les K et V des tokens passés, dans chaque couche', 'Une réponse stockée qui remplace tous les calculs'],
+    answer: 1, explanation: 'Les K/V passés sont identiques tant que le préfixe ne change pas. Le nouveau Q, les poids d’attention, le MLP et la prédiction restent à calculer.',
+    refs: ['cache', 'gqa', 'transformer'], notes: 'Faire dire ce qui est réutilisé et ce qui reste à calculer. Distinguer token traité et token prédit. Transition : avec ce cache, qu’est-ce qui limite la vitesse ?',
   },
   {
-    id: '13-performance', section: 'Mémoire, performance et apprentissage', title: 'Calculer vite.\nLire assez vite.',
+    id: '13-performance', section: 'Mémoire, coûts et apprentissage', title: 'Calculer vite.\nLire assez vite.',
     short: 'Le coût de génération', label: 'Les limites matérielles', experiment: 'roofline',
-    lead: 'Un GPU peut disposer de beaucoup de puissance et attendre malgré tout ses données.',
-    body: `<p>Le <strong>prefill</strong> traite plusieurs positions du prompt. Le <strong>décodage</strong> produit ensuite un token par séquence et par itération. À petit batch, relire les poids peut coûter davantage que les multiplications elles-mêmes.</p>
-<p>Le <strong>batch</strong> est le nombre de séquences traitées ensemble. Le <strong>débit</strong> compte les tokens produits par seconde pour l’ensemble ; la <strong>latence</strong> est le temps d’attente pour une séquence. Le modèle roofline compare le nombre d’opérations par octet lu à deux limites : la vitesse de calcul et celle de lecture de la mémoire. Regrouper plusieurs séquences permet de réutiliser les mêmes poids.</p>
-<p>Deux attentes sont perceptibles : le <strong>temps avant le premier token</strong> comprend notamment la file d’attente et le traitement du prompt ; le <strong>temps entre les tokens</strong> détermine ensuite le rythme d’affichage. Un service peut produire beaucoup de tokens au total tout en faisant attendre une personne.</p>
-<p><strong>Une optimisation majeure : FlashAttention.</strong> Elle organise l’attention dense pour réduire les échanges avec la mémoire GPU et éviter de stocker toute la matrice intermédiaire. Elle conserve le calcul d’attention exact, aux arrondis numériques près. Elle ne remplace pas le KV cache et ne supprime pas le nombre quadratique de comparaisons du prefill dense.</p>
-<p>Notre estimation concerne un grand modèle dense hypothétique, pas Luciole. Elle ignore notamment l’attention, le cache et les communications. Luciole recalcule tout le contexte sans cache dans le navigateur. Les deux temps donnent une <strong>borne idéale</strong>, jamais une mesure de sa latence.</p>
-<details><summary>Facultatif · modèle de coût simplifié</summary><p>On compte environ 2P opérations par token et une lecture complète des poids par pas. t ≥ max(2P × batch / FLOP·s⁻¹, P × octets_poids / octets·s⁻¹). P désigne le nombre de paramètres. Le débit total ne donne pas le temps d’attente individuel.</p></details>`,
-    formula: 'temps idéal ≥ le plus lent des deux : calculer / lire les poids',
-    instruction: 'Augmentez le batch et observez le changement de régime. Distinguez débit total et latence par séquence.',
-    takeaway: 'Le goulot d’étranglement dépend de la charge et du matériel. « Toujours limité par la mémoire » est trop général.',
-    caveat: 'GPU illustratif : 600 TFLOP/s et 3 To/s, sans constructeur associé. Aucune promesse de performance réelle.',
-    question: 'Augmenter le batch réduit-il nécessairement la latence d’une requête individuelle ?',
+    lead: 'Un GPU peut calculer des centaines de milliers de milliards d’opérations par seconde, et pourtant attendre ses données. Pendant la génération, c’est souvent la mémoire qui fixe le rythme.',
+    body: `<h3>Deux limites qui font la course</h3>
+<p>Pour produire un token, le matériel doit <strong>lire</strong> tous les poids du modèle depuis sa mémoire, puis <strong>calculer</strong> avec eux. Chacune de ces deux opérations a une vitesse maximale : la <dfn>bande passante</dfn> mémoire (octets par seconde) et la puissance de calcul (<dfn data-term="flop">FLOP</dfn> par seconde). Le temps réel est au moins celui de la plus lente. C’est l’idée du modèle <dfn>roofline</dfn>.</p>
+<h3>Pourquoi le décodage attend la mémoire</h3>
+<p>Pendant le décodage, chaque séquence ne produit qu’un token par pas. Pour un seul utilisateur, on lit donc des gigaoctets de poids… pour faire relativement peu de calculs avec. Le GPU attend. L’astuce est le <dfn>batch</dfn> : traiter plusieurs conversations ensemble, pour que <strong>chaque lecture des poids serve à plusieurs tokens</strong>. Le prefill, qui traite tout le prompt d’un coup, profite naturellement de cet effet.</p>
+<h3>Débit et latence ne sont pas la même chose</h3>
+<p>Le <strong>débit</strong> compte les tokens produits par seconde pour tout le monde. La <dfn>latence</dfn> est ce que ressent une personne : le <strong>temps avant le premier token</strong> (file d’attente et prefill), puis le <strong>temps entre deux tokens</strong> (rythme d’affichage). Un gros batch améliore le débit, mais chaque personne peut attendre davantage.</p>
+<p class="anecdote"><strong>Une optimisation célèbre : FlashAttention.</strong> Elle réorganise le calcul de l’attention pour limiter les allers-retours avec la mémoire du GPU, sans changer le résultat. Elle accélère l’attention mais ne remplace pas le KV cache.</p>
+<details><summary>Pour les avertis · le modèle de coût simplifié</summary><p>Pour un modèle dense de P paramètres : environ 2P opérations par token, et une lecture complète des poids par pas. t<sub>pas</sub> ≥ max(2P × batch / FLOP·s⁻¹, P × octets_par_poids / octets·s⁻¹). L’estimation ignore l’attention, la lecture du KV cache, les communications et l’ordonnancement. Le point de bascule entre les deux régimes est l’intensité arithmétique : le nombre d’opérations par octet lu.</p></details>`,
+    formula: 'temps par pas ≥ max(temps de calcul, temps de lecture des poids)',
+    instruction: 'Partez d’un batch de 1, puis augmentez « Batch (séquences) » : repérez le moment où le calcul devient la limite. Comparez débit total et temps par pas.',
+    takeaway: 'À petit batch, la génération est limitée par la lecture de la mémoire ; regrouper les requêtes augmente le débit, pas forcément la réactivité pour chacun.',
+    caveat: 'GPU illustratif : 600 TFLOP/s et 3 To/s, sans constructeur associé. Le calcul donne une borne idéale pour un modèle hypothétique, pas Luciole ni une mesure réelle.',
+    question: 'Augmenter le batch réduit-il nécessairement la latence d’une requête ?',
     choices: ['Oui, dans tous les cas', 'Non, le débit peut augmenter sans réduire sa latence', 'Oui, parce que le modèle devient plus petit'],
-    answer: 1, explanation: 'Le batching amortit des lectures et améliore le débit, mais ajoute aussi du calcul et éventuellement de l’attente.',
-    refs: ['roofline', 'flash'], notes: 'Accroche : calcul et lecture font la course. Manipulation : batch 1 puis 512. Transition : d’où viennent les poids ?',
+    answer: 1, explanation: 'Le batch amortit la lecture des poids et améliore le débit total, mais ajoute du calcul par pas et parfois de l’attente.',
+    refs: ['roofline', 'flash'], notes: 'Accroche : calcul et lecture font la course. Manipulation : batch 1 puis 512. Transition : d’où viennent tous ces poids ?',
   },
   {
-    id: '14-apprentissage', section: 'Mémoire, performance et apprentissage', title: 'Les poids ont\nune histoire.',
+    id: '14-apprentissage', section: 'Mémoire, coûts et apprentissage', title: 'Les poids ont\nune histoire.',
     short: 'L’apprentissage', label: 'Avant l’inférence', experiment: 'training',
-    lead: 'Le prompt conditionne un calcul. L’entraînement, lui, modifie les paramètres qui le réalisent.',
-    body: `<p>Le préentraînement ajuste les poids pour mieux prédire des tokens sur un corpus. Une fonction de perte mesure l’erreur ; la rétropropagation calcule les gradients ; un optimiseur met à jour les paramètres.</p>
-<p>Pour apprendre sur « le chat dort », les entrées sont « &lt;bos&gt; le chat dort » et les cibles « le chat dort &lt;eos&gt; ». Après &lt;bos&gt;, le modèle doit prédire « le » ; après « le », « chat » ; après « chat », « dort » ; après « dort », la fin. L’entrée et les cibles sont donc décalées d’un token. Le masque causal empêche chaque position de consulter les suivantes, même lorsque plusieurs prédictions sont calculées en parallèle.</p>
-<p><strong>À l’entraînement</strong>, les préfixes viennent ici du texte du corpus. <strong>Pendant la génération</strong>, ils incluent les tokens choisis par le modèle : une erreur peut donc modifier les prédictions suivantes. La perte récompense la probabilité donnée à la cible du corpus ; elle ne teste pas directement la vérité de toute phrase produite.</p>
-<p>Le post-entraînement peut apprendre à suivre des instructions, utiliser des préférences entre réponses ou des récompenses vérifiables. InstructGPT décrit un exemple avec retours humains et apprentissage par renforcement ; DPO optimise directement un objectif à partir de paires préférées/rejetées. Ce sont des recettes distinctes, pas des étapes obligatoires que tous les modèles suivraient.</p>
-<p>Les courbes proviennent du préentraînement réel de Luciole : 12 000 mises à jour, 1 512 phrases d’apprentissage, graine 42. Elles suivent des exemples fixes d’apprentissage et de validation. Le curseur permet de relire des prédictions enregistrées ; il ne modifie aucun poids. La fiche Luciole expose aussi le test final, réservé jusqu’à la fin de ce calcul.</p>
-<p>Une baisse de perte signifie moins d’erreur sur l’objectif mesuré, pas une compétence universelle. Les phrases Tatoeba enrichissent les langues rencontrées ; les tests synthétiques vérifient seulement certaines recombinaisons. Les échecs sur les boîtes restent visibles.</p>
-<details><summary>Facultatif · une mise à jour simplifiée</summary><p>poids ← poids − taux_apprentissage × gradient. Ce schéma décrit une descente de gradient simple ; Luciole a été entraîné avec Adam, qui utilise aussi des moyennes des gradients et de leurs carrés. Aucun de ces ajustements ne s’exécute quand vous déplacez le curseur.</p></details>`,
-    formula: 'corpus → erreur de prédiction → gradients → ajuster les poids avant publication',
-    instruction: 'Parcourez les phases, puis inspectez la courbe de Luciole. Distinguez la mesure observée des étapes qu’il n’a pas suivies.',
-    takeaway: 'Préentraînement, post-entraînement et inférence sont des processus distincts.',
-    caveat: 'Luciole a uniquement appris la prédiction du token suivant. Il n’a reçu ni instruction tuning ni entraînement par préférences.',
+    lead: 'Jusqu’ici, les poids étaient fixes. Ils ont pourtant été réglés un jour, par un processus très simple dans son principe : prédire, mesurer l’erreur, corriger un peu, et recommencer des millions de fois.',
+    body: `<h3>L’exercice : deviner le token suivant</h3>
+<p>Le préentraînement transforme n’importe quel texte en exercices. Pour « le chat dort », l’entrée est « &lt;bos&gt; le chat dort » et les réponses attendues sont « le chat dort &lt;eos&gt; » : après &lt;bos&gt;, il faut prédire « le » ; après « le », « chat » ; et ainsi de suite. Grâce au masque causal, ces quatre exercices sont calculés en même temps, sans que chaque position puisse voir sa réponse.</p>
+<h3>La boucle d’apprentissage</h3>
+<ol>
+<li><strong>Prédire :</strong> le modèle calcule ses probabilités pour chaque position.</li>
+<li><strong>Mesurer :</strong> la <dfn>perte</dfn> est faible si le bon token avait une forte probabilité, élevée sinon.</li>
+<li><strong>Attribuer :</strong> la <dfn>rétropropagation</dfn> calcule, pour chaque poids, dans quel sens il faudrait le bouger pour réduire la perte : c’est le <dfn>gradient</dfn>.</li>
+<li><strong>Corriger :</strong> un optimiseur déplace chaque poids d’un petit pas dans ce sens.</li>
+</ol>
+<p>Luciole a répété cette boucle 12 000 fois. Les grands modèles la répètent sur des milliers de milliards de tokens.</p>
+<h3>Apprendre ou mémoriser ?</h3>
+<p>Une perte basse sur les phrases d’entraînement peut signifier que le modèle les a simplement retenues. Pour mesurer la <dfn>généralisation</dfn>, on suit la perte sur des phrases jamais vues : la <dfn>validation</dfn>. Les deux courbes de l’expérience montrent cet écart.</p>
+<h3>Après le préentraînement</h3>
+<p>Un modèle préentraîné sait continuer un texte, pas encore tenir une conversation. Le <strong>post-entraînement</strong> lui apprend à suivre des instructions sur des exemples de dialogues, puis à préférer certaines réponses : retours humains et renforcement (InstructGPT), optimisation directe de préférences (DPO), ou récompenses vérifiables (DeepSeek-R1). Luciole n’a suivi aucune de ces étapes.</p>
+<details><summary>Pour les avertis · perte, optimiseur et biais d’exposition</summary><p>La perte est l’entropie croisée moyenne en <dfn>nats</dfn>/token : −ln(p<sub>cible</sub>). Une cible prédite à 50 % coûte environ 0,693 nat. La descente de gradient simple fait poids ← poids − taux × gradient ; Luciole utilise Adam, qui adapte ce pas avec des moyennes des gradients et de leurs carrés. À l’entraînement, les préfixes viennent toujours du corpus ; à la génération, ils contiennent les choix du modèle, qui peut donc s’éloigner des situations rencontrées.</p></details>`,
+    formula: 'prédire → mesurer la perte → gradients → corriger les poids ↻ · puis poids figés pour générer',
+    instruction: 'Cliquez sur chaque phase pour voir ce que Luciole a suivi ou non. Déplacez ensuite le curseur de l’historique : comparez la perte d’apprentissage et celle de validation, et observez une prédiction s’améliorer.',
+    takeaway: 'Préentraînement, post-entraînement et inférence sont des processus distincts ; seul l’entraînement modifie les poids.',
+    caveat: 'Luciole a uniquement appris la prédiction du token suivant, sans instruction tuning ni préférences. Le curseur relit des mesures enregistrées et ne modifie aucun poids.',
     question: 'Une perte d’entraînement très basse prouve-t-elle une bonne généralisation ?',
-    choices: ['Oui, c’est suffisant', 'Non, il faut évaluer sur des données et tâches distinctes', 'Oui, si le graphe est régulier'],
-    answer: 1, explanation: 'Un modèle peut mémoriser les exemples. Une évaluation indépendante est nécessaire pour étudier sa généralisation.',
-    refs: ['transformer', 'instruct', 'dpo'], notes: 'Accroche : les paramètres ont appris avant le chat. Manipulation : courbe et phases. Transition : assemblons tous les organes.',
+    choices: ['Oui, c’est suffisant', 'Non, il faut évaluer sur des données mises de côté', 'Oui, si la courbe est régulière'],
+    answer: 1, explanation: 'Un modèle peut mémoriser ses exemples. Seule une évaluation sur des données distinctes renseigne sur sa généralisation.',
+    refs: ['transformer', 'instruct', 'dpo'], notes: 'Accroche : les poids ont appris avant le chat. Manipulation : phases, puis courbes. Transition : assemblons toutes les pièces.',
   },
   {
     id: '15-laboratoire', section: 'Tout assembler', title: 'La machine,\nà livre ouvert.',
     short: 'Le laboratoire', label: 'Tout se rejoint', experiment: 'laboratory',
-    lead: 'Un contexte entre, un token sort. Les nombres affichés viennent du calcul réel de Luciole : vous pouvez maintenant relier chaque vue à une opération.',
-    body: `<p>Le laboratoire réunit le tokenizer lexical, les embeddings, les positions apprises, les deux blocs d’attention et MLP, la normalisation, la projection et le tirage. Les paramètres chargés sont les poids réellement entraînés et publiés.</p>
-<p>Choisissez un exemple ou composez un prompt avec le vocabulaire disponible. La fenêtre est limitée à 32 tokens, marqueur de début compris. Un mot inconnu est signalé, pas silencieusement remplacé. « Revenir » permet d’inspecter l’état précédent ; « Réinitialiser » restaure le prompt et la graine.</p>
-<p>Les vues attention, représentation et candidats correspondent toutes au <strong>même passage avant</strong>. Le calcul est entièrement local. Pour garder le code lisible, Luciole recalcule le contexte et n’implémente pas de KV cache.</p>
-<p><strong>Une enquête simple :</strong> changez seulement « france » en « belgique », en gardant les réglages fixes. Comparez d’abord les tokens d’entrée, puis la dernière ligne d’attention et les candidats. Vous observez l’effet de cette modification sur ce modèle ; deux exemples ne suffisent pas à démontrer une connaissance générale des capitales.</p>`,
-    formula: 'tokeniser → représenter → contextualiser → projeter → échantillonner',
-    instruction: 'Générez « paris » à partir de « la capitale de la france est », puis essayez la Belgique. Comparez couches, têtes et probabilités.',
-    takeaway: 'Les mécanismes sont inspectables. La qualité des réponses dépend aussi des données, de l’échelle et de l’entraînement.',
-    caveat: 'Luciole est un modèle pédagogique, pas un assistant. Pas de RoPE, MoE, GQA ou KV cache dans ce mini-modèle ; ces variantes sont étudiées séparément.',
-    question: 'Les probabilités montrées dans le laboratoire sont-elles prédéfinies pour chaque phrase ?',
+    lead: 'Toutes les pièces sont là : tokenizer, embeddings, positions, deux blocs, scores et tirage. Le laboratoire les montre ensemble, sur un même calcul de Luciole.',
+    body: `<h3>Un passage complet</h3>
+<p>Quand vous cliquez sur « + Un token », Luciole effectue un <dfn>passage avant</dfn> : découper le prompt, lire les embeddings, ajouter les positions, traverser les deux blocs d’attention et de MLP, normaliser, projeter vers 333 scores, puis tirer un token. Toutes les vues du laboratoire — tokens, vecteurs, blocs, attention, candidats — décrivent <strong>ce même calcul</strong>.</p>
+<h3>Retrouver chaque étape du parcours</h3>
+<ul>
+<li><strong>Tokens :</strong> le découpage de l’étape 3, avec ses numéros.</li>
+<li><strong>Vecteurs :</strong> l’embedding plus la position, avant tout échange entre tokens.</li>
+<li><strong>Bloc 1, Bloc 2 :</strong> le même token après chaque bloc, enrichi par le contexte.</li>
+<li><strong>Couche et tête inspectées :</strong> la grille d’attention de l’étape 9 pour le calcul en cours.</li>
+<li><strong>Sortie :</strong> les probabilités avant et après les réglages de décodage.</li>
+</ul>
+<h3>Mener une petite enquête</h3>
+<p>Partez de « la capitale de la france est », puis remplacez seulement « france » par « belgique ». Comparez dans l’ordre : les tokens d’entrée, la dernière ligne d’attention, puis les candidats. Ne changez qu’une chose à la fois, sinon vous ne saurez pas ce qui a produit la différence. La température est réglée par défaut à 0,7 : la génération tire au hasard, avec la graine 42 pour que le résultat soit reproductible.</p>
+<p>Vous pouvez composer vos propres prompts avec les mots du corpus, jusqu’à 32 tokens. Un mot inconnu est signalé, jamais remplacé en silence. « ← Revenir » inspecte l’état précédent ; « Réinitialiser » restaure le prompt et la graine.</p>`,
+    formula: 'découper → représenter → contextualiser (× 2 blocs) → projeter → choisir',
+    instruction: 'Générez la suite de « la capitale de la france est », puis choisissez l’exemple sur la Belgique. Comparez tokens, attention et probabilités. Écrivez ensuite votre propre prompt et cliquez sur « Appliquer le prompt ».',
+    takeaway: 'Toutes les vues décrivent un même calcul réel. Les mécanismes sont inspectables ; la qualité des réponses dépend aussi des données, de l’échelle et de l’entraînement.',
+    caveat: 'Luciole est un modèle pédagogique, pas un assistant : pas de RoPE, de MoE, de GQA ni de KV cache. Deux exemples ne suffisent pas à démontrer une connaissance générale des capitales.',
+    question: 'Les probabilités du laboratoire sont-elles prédéfinies pour chaque phrase ?',
     choices: ['Oui, c’est une vidéo interactive', 'Non, elles résultent du calcul avec les poids publiés', 'Elles viennent d’une API distante'],
-    answer: 1, explanation: 'Le graphe numérique est exécuté localement. Les mêmes opérations servent à son entraînement et à son inférence.',
-    refs: ['transformer', 'rmsnorm'], notes: 'Accroche : dézoomer sans perdre les détails. Manipulation : France, Belgique, température. Transition : qu’avons-nous réellement établi ?',
+    answer: 1, explanation: 'Le calcul s’exécute dans votre navigateur avec les poids appris de Luciole ; aucune réponse n’est écrite à l’avance.',
+    refs: ['transformer', 'rmsnorm'], notes: 'Accroche : dézoomer sans perdre les détails. Manipulation : France, Belgique, puis un prompt libre. Transition : peut-on lire la prédiction avant la fin du modèle ?',
+  },
+  {
+    id: '09-logit-lens', section: 'Tout assembler', title: 'Une prédiction\nse dessine.',
+    short: 'La logit lens', label: 'Les représentations intermédiaires', experiment: 'lens',
+    lead: 'Que « penserait » le modèle s’il devait répondre dès le premier bloc ? La logit lens apporte une réponse approximative, à condition de savoir ce qu’elle mesure.',
+    body: `<h3>L’idée</h3>
+<p>Normalement, seule la sortie du dernier bloc passe par la projection finale qui produit les scores. La <dfn>logit lens</dfn> applique <strong>cette même projection</strong> plus tôt, à la sortie de chaque bloc, comme si le modèle s’arrêtait là. On obtient une suite de « brouillons » de prédiction, couche après couche.</p>
+<p>C’est possible grâce aux connexions résiduelles : chaque bloc ajoute sa contribution au même vecteur, qui garde la même taille et un « langage » assez proche d’une couche à l’autre. Dans de grands modèles, on voit souvent la bonne réponse émerger progressivement au fil des couches.</p>
+<h3>Ce qu’il faut garder en tête</h3>
+<p>Les couches intermédiaires n’ont jamais été entraînées à être lues ainsi. Un brouillon confus ne veut donc pas dire que la couche est inutile : son vecteur peut contenir une information que seuls les blocs suivants savent exploiter. La logit lens est une <strong>sonde</strong>, un instrument de lecture, pas une fenêtre sur les intentions du modèle.</p>
+<h3>Dans Luciole</h3>
+<p>Avec deux blocs, on obtient trois lectures : profondeur 0 (embeddings et positions, avant tout bloc), 1 et 2 (la sortie réelle). Sur « le chat », plusieurs suites restent plausibles jusqu’au bout. Sur « la capitale de la france est », un candidat domine plus nettement. Les barres sont calculées à partir des vrais vecteurs de Luciole et indiquent la part des candidats non affichés.</p>
+<p class="anecdote"><strong>Un peu d’histoire :</strong> la logit lens a été proposée en 2020 dans un billet de blog signé nostalgebraist, à propos d’un modèle public de 2019. La <em>tuned lens</em> (Belrose et al., 2023) apprend une petite correction par couche pour rendre ces lectures plus fiables ; elle n’est pas implémentée ici.</p>
+<details><summary>Pour les avertis · le calcul de la sonde</summary><p>lecture(ℓ) = softmax(RMSNorm(x<sub>ℓ</sub>) · W<sub>sortie</sub>), où x<sub>ℓ</sub> est le flux résiduel après le bloc ℓ. À la profondeur maximale, c’est exactement la sortie du modèle. La trajectoire n’est pas forcément monotone : une couche peut faire baisser la probabilité finale d’un candidat.</p></details>`,
+    formula: 'vecteur après le bloc ℓ → même normalisation et projection de sortie → brouillon de prédiction',
+    instruction: 'Gardez « le chat » et faites varier « Profondeur · 0 = entrée » de 0 à 2 : plusieurs suites restent visibles. Choisissez ensuite « la capitale de la france est » et comparez.',
+    takeaway: 'La logit lens lit les états intermédiaires avec la tête de sortie finale : un instrument utile, mais imparfait, pour voir une prédiction se construire.',
+    caveat: 'Avec seulement deux blocs et un corpus minuscule, cette démonstration ne montre pas l’émergence générale d’un raisonnement. Une lecture intermédiaire n’est pas une décision prise par la couche.',
+    question: 'Une mauvaise prédiction intermédiaire prouve-t-elle que la couche ne sert à rien ?',
+    choices: ['Oui', 'Non, la couche n’a pas été entraînée pour être lue directement', 'Oui, si sa probabilité est faible'],
+    answer: 1, explanation: 'Un vecteur intermédiaire peut être très utile aux couches suivantes sans être lisible avec la projection finale.',
+    refs: ['logit-lens', 'lens'], notes: 'Accroche : une radiographie imparfaite. Manipulation : profondeur 0, 1, 2 sur deux contextes. Transition : que pouvons-nous vraiment conclure de toutes ces vues ?',
   },
   {
     id: '16-synthese', section: 'Tout assembler', title: 'Comprendre.\nSans surinterpréter.',
     short: 'La synthèse', label: 'Ce qui reste', experiment: 'synthesis',
-    lead: 'Une bonne anatomie montre autant les frontières de notre connaissance que les organes de la machine.',
-    body: `    <p><strong>Établi :</strong> nous pouvons décrire les opérations, inspecter les tenseurs, reproduire une génération et estimer ses coûts sous des hypothèses données. Le modèle prédit des tokens à partir de paramètres appris.</p>
-<p><strong>À interpréter avec prudence :</strong> le rôle d’une tête, une direction d’embedding, une lecture intermédiaire. Ces indices peuvent guider des expériences, mais ne remplacent pas des interventions causales.</p>
-<p>Pour aller au-delà d’une image, formulez une hypothèse, modifiez une variable et mesurez son effet, puis répétez sur plusieurs cas. Une carte colorée suggère une piste ; une intervention contrôlée fournit une preuve plus directe du rôle de ce que l’on a changé.</p>
-<p><strong>Non démontré par ce parcours :</strong> une compréhension humaine, une intention, une conscience ou une garantie de vérité. Ni la fluidité d’une réponse, ni la beauté d’une carte ne suffisent à les établir.</p>`,
-    formula: 'observation ≠ interprétation ≠ preuve causale',
-    instruction: 'Classez les affirmations. Expliquez votre choix avant de lire la correction.',
-    takeaway: 'Un bon modèle mental permet de prévoir, de vérifier et de reconnaître ce qu’on ne sait pas.',
-    caveat: 'Les défis sont formatifs et locaux. La progression du viewer indique les pages visitées, pas une certification de compétence.',
+    lead: 'Vous avez vu chaque pièce de la machine. Reste à trier : qu’est-ce qui est établi, qu’est-ce qui n’est qu’une piste, et qu’est-ce que ce parcours ne démontre pas ?',
+    body: `<h3>Le parcours en six phrases</h3>
+<ol>
+<li>Le texte est découpé en tokens, puis chaque token devient un vecteur appris.</li>
+<li>Dans chaque bloc, l’attention fait circuler l’information des tokens précédents ; le MLP transforme chaque token.</li>
+<li>À la sortie, des scores deviennent des probabilités, puis une règle de décodage choisit un token.</li>
+<li>Ce token est ajouté au contexte et la boucle recommence ; le KV cache évite de refaire le passé.</li>
+<li>Les poids ont été réglés avant, en prédisant le token suivant sur un corpus, puis souvent ajustés pour converser.</li>
+<li>Pendant la génération, les poids ne changent pas : seul le contexte grandit.</li>
+</ol>
+<h3>Trois niveaux de certitude</h3>
+<p><strong>Établi :</strong> les opérations sont connues et reproductibles. Avec les mêmes poids, le même contexte, les mêmes réglages et la même graine, on obtient le même résultat, et chaque nombre intermédiaire peut être inspecté.</p>
+<p><strong>Hypothèse à tester :</strong> le rôle d’une tête, le sens d’une direction d’embedding, une lecture de logit lens. Ces observations suggèrent des pistes. Pour les confirmer, il faut <em>intervenir</em> : modifier un élément, mesurer l’effet, recommencer sur de nombreux cas. Une carte colorée montre une corrélation ; une intervention contrôlée apporte une preuve plus directe.</p>
+<p><strong>Non démontré ici :</strong> une compréhension au sens humain, une intention, une conscience ou une garantie de vérité. La fluidité d’une réponse ou la beauté d’une visualisation ne suffisent pas à les établir.</p>`,
+    formula: 'observer ≠ interpréter ≠ prouver une cause',
+    instruction: 'Classez chaque affirmation : « Établi ici », « Hypothèse à tester » ou « Non démontré ». Formulez votre raison avant de lire la correction.',
+    takeaway: 'Un bon modèle mental permet de prévoir, de vérifier, et de reconnaître ce que l’on ne sait pas encore.',
+    caveat: 'Les défis sont formatifs et restent dans votre navigateur. La progression indique les pages visitées, pas une compétence certifiée.',
     question: 'Quelle affirmation est soutenue par les expériences du parcours ?',
     choices: ['Une carte d’attention révèle toutes les causes d’une réponse', 'On peut reproduire des calculs et des tirages avec des paramètres fixés', 'Un texte sûr de lui est probablement vrai'],
-    answer: 1, explanation: 'La reproductibilité porte sur des opérations définies et leurs entrées. Elle ne transforme pas une interprétation en vérité universelle.',
-    refs: ['transformer', 'lens'], notes: 'Accroche : établi, interprété, inconnu. Manipulation : classement collectif. Conclusion : revenir au laboratoire avec une nouvelle hypothèse.',
+    answer: 1, explanation: 'La reproductibilité porte sur des opérations définies et leurs entrées. Elle ne transforme pas une interprétation en vérité.',
+    refs: ['transformer', 'lens'], notes: 'Accroche : établi, hypothèse, non démontré. Manipulation : classement collectif. Conclusion : revenir au laboratoire avec une hypothèse à tester, puis changer d’échelle au final.',
   },
   {
     id: '16b-transformer-explainer', section: 'Tout assembler', title: 'Changer d’échelle.\nTout retrouver.',
     short: 'Transformer Explainer · GPT-2', label: 'Le grand final', experiment: 'transformerExplainer',
-    lead: 'Après Luciole, retrouvez le même enchaînement dans le véritable Transformer Explainer, adapté en français pour Playlab42.',
-    body: `<p>Cette dernière expérience est une adaptation du projet <strong>Transformer Explainer</strong>, et non une nouvelle vue de Luciole. Elle utilise GPT-2, son propre tokenizer, ses poids et ses activations. Les identifiants et les dimensions de Luciole ne doivent pas être transférés à ce modèle.</p>
-<p>Le principe reste familier : découper un prompt, lire les embeddings, faire circuler l’information dans l’attention, transformer les représentations et choisir un token dans la distribution de sortie. Parcourez la vue d’ensemble, puis ouvrez un mécanisme pour retrouver les notions étudiées séparément.</p>
-<p><strong>Un repère historique :</strong> GPT-2 date de 2019. Ce final permet d’observer les mécanismes à une autre échelle ; il ne représente pas les capacités des assistants actuels.</p>
-<p><strong>Traduire une interface n’est pas entraîner un modèle.</strong> Les commandes et explications sont adaptées en français, mais GPT-2 reste le modèle d’origine, principalement entraîné sur de l’anglais. Commencez avec les prompts anglais proposés ; une suite française peut être moins fiable.</p>
-<p>Le modèle est beaucoup plus volumineux que Luciole : son chargement est volontaire et séparé du parcours léger. Le navigateur calcule les prédictions ; les contraintes et ressources nécessaires sont indiquées avant le lancement. Une erreur de chargement n’est jamais remplacée par des résultats inventés.</p>`,
-    formula: 'mêmes principes · autre tokenizer · autres poids · autre échelle',
-    instruction: 'Ce final est facultatif : prévoyez 657 Mo à charger, plusieurs Go de mémoire et HTTPS ou localhost. Ouvrez le laboratoire dans un nouvel onglet, puis cliquez sur « Charger GPT-2 ». Une fois prêt, masquez les informations ou passez en plein écran. Commencez avec un exemple anglais.',
-    takeaway: 'Le modèle change, mais les mécanismes deviennent reconnaissables. L’échelle n’efface ni les limites des données ni celles de l’interprétation.',
-    caveat: 'GPT-2 et Luciole sont deux modèles indépendants. Le chargement du final est plus lourd ; ni son interface française ni une génération plausible ne garantissent une réponse correcte.',
+    lead: 'Luciole a 38 720 paramètres ; GPT-2 small en a environ 124 millions. Retrouvez le même enchaînement dans Transformer Explainer, adapté en français pour Playlab42.',
+    body: `<h3>Ce que vous allez voir</h3>
+<p>Ce final ouvre une adaptation française du projet <strong>Transformer Explainer</strong> (Polo Club, Georgia Tech). Il exécute <strong>GPT-2 small</strong>, un modèle publié en 2019 : 12 blocs au lieu de 2, 12 têtes par bloc au lieu de 4, des vecteurs de 768 nombres au lieu de 32 et un vocabulaire d’environ 50 000 tokens.</p>
+<h3>Ce que vous allez reconnaître</h3>
+<p>L’enchaînement est le même : découper le prompt avec un tokenizer BPE, lire les embeddings et les positions, calculer Q, K et V, appliquer le masque causal et softmax, passer dans le MLP, projeter vers les scores puis tirer avec une température. Parcourez la vue d’ensemble, puis ouvrez chaque mécanisme pour le relier aux étapes du parcours.</p>
+<h3>Avant de commencer</h3>
+<ul>
+<li><strong>Une autre machine :</strong> GPT-2 a son propre tokenizer et ses propres poids. Les numéros de tokens de Luciole n’ont aucun sens ici.</li>
+<li><strong>Un modèle anglophone :</strong> l’interface est traduite, mais GPT-2 a surtout appris sur de l’anglais. Commencez par les exemples anglais proposés.</li>
+<li><strong>Un chargement volontaire :</strong> environ 657 Mo à télécharger, plusieurs Go de mémoire, et une page servie en HTTPS ou sur localhost. Rien n’est chargé avant votre clic.</li>
+</ul>
+<p>GPT-2 date d’avant les assistants de discussion : il continue du texte, sans avoir été entraîné à suivre des consignes. Il montre l’échelle, pas les capacités des modèles actuels. Si le chargement échoue, aucune prédiction n’est inventée à sa place.</p>`,
+    formula: 'mêmes mécanismes · autre tokenizer · autres poids · 3 200 fois plus de paramètres',
+    instruction: 'Ce final est facultatif. Ouvrez le laboratoire dans un nouvel onglet, puis cliquez sur « Charger GPT-2 ». Une fois le modèle prêt, masquez les informations ou passez en plein écran, et commencez par un exemple anglais.',
+    takeaway: 'Le modèle change d’échelle, mais les mécanismes restent reconnaissables. L’échelle n’efface ni les limites des données ni celles de l’interprétation.',
+    caveat: 'GPT-2 et Luciole sont deux modèles indépendants. Une interface traduite ou une suite plausible ne garantissent pas une réponse correcte, surtout en français.',
     question: 'Traduire Transformer Explainer en français modifie-t-il les poids de GPT-2 ?',
     choices: ['Oui, le modèle apprend la langue des boutons', 'Non, seules l’interface et les explications changent', 'Oui, à chaque nouveau prompt'],
-    answer: 1, explanation: 'La langue de l’interface est distincte du corpus et des paramètres appris. GPT-2 reste inchangé ; l’inférence ne le réentraîne pas.',
+    answer: 1, explanation: 'La langue de l’interface est indépendante des données et des paramètres appris. GPT-2 reste inchangé, et l’inférence ne le réentraîne pas.',
     refs: ['transformer-explainer', 'gpt2'],
-    notes: 'Prévoir le chargement avant une présentation. Relier la vue globale aux étapes précédentes. Ne pas comparer directement les IDs de GPT-2 et ceux de Luciole.',
+    notes: 'Prévoir le chargement avant une présentation. Faire retrouver à voix haute chaque étape du parcours dans la vue d’ensemble. Ne pas comparer les numéros de tokens de GPT-2 et de Luciole.',
   },
 ];
 
@@ -421,6 +569,7 @@ export const chapterTerms = {
   transformerExplainer: ['tokenizer', 'embeddings', 'attention', 'logits', 'température', 'inférence'],
 };
 
+
 export const references = {
   cache: { title: 'Hugging Face — Comprendre le cache K/V', url: 'https://huggingface.co/docs/transformers/cache_explanation', note: 'Réutilisation causale, nouvelles requêtes et ajout des K/V couche par couche. Documentation consultée le 14 octobre 2026.' },
   flash: { title: 'FlashAttention — Dao et al., 2022', url: 'https://arxiv.org/abs/2205.14135', note: 'Attention exacte organisée pour réduire les transferts mémoire ; distincte du KV cache.' },
@@ -443,4 +592,7 @@ export const references = {
   gqa: { title: 'GQA: Training Generalized Multi-Query Transformer Models — Ainslie et al., 2023', url: 'https://arxiv.org/abs/2305.13245', note: 'Partage des têtes K/V et compromis de l’attention.' },
   roofline: { title: 'Roofline: An Insightful Visual Performance Model — Williams et al., 2009', url: 'https://doi.org/10.1145/1498765.1498785', note: 'Modèle de performance calcul/bande passante.' },
   instruct: { title: 'Training language models to follow instructions with human feedback — Ouyang et al., 2022', url: 'https://arxiv.org/abs/2203.02155', note: 'Exemple de post-entraînement, pas un pipeline universel.' },
+  'logit-lens': { title: 'interpreting GPT: the logit lens — nostalgebraist, 2020', url: 'https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens', note: 'Billet d’origine de la logit lens, appliquée à GPT-2.' },
+  'ffn-memories': { title: 'Transformer Feed-Forward Layers Are Key-Value Memories — Geva et al., 2021', url: 'https://arxiv.org/abs/2012.14913', note: 'Les couches MLP se comportent comme des mémoires associatives ; résultat d’interprétabilité, pas une règle universelle.' },
+  minp: { title: 'Turning Up the Heat: Min-p Sampling for Creative and Coherent LLM Outputs — Nguyen et al., 2024', url: 'https://arxiv.org/abs/2407.01082', note: 'Seuil min-p proportionnel à la probabilité du candidat favori.' },
 };

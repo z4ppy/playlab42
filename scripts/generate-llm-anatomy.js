@@ -130,7 +130,7 @@ await writeFile(new URL('epic.json', root), `${JSON.stringify({
   id: 'anatomie-llm', title: 'Anatomie d’un LLM — Suivez ce token',
   description: `Ouvrez la machine : ${chapters.length} étapes progressives, de vrais tokeniseurs et un mini-Transformer inspectable. Des premiers nombres aux comparaisons 3D.`,
   hierarchy: ['autres'], tags: ['ia', 'llm', 'transformer', 'deep-learning', 'interactif'],
-  metadata: { author: 'cyrille', created: '2026-10-12', duration: `${chapters.length * 5} min`, difficulty: 'intermediate', language: 'fr' },
+  metadata: { author: 'Cyrille', created: '2026-10-12', duration: `${chapters.length * 5} min`, difficulty: 'intermediate', language: 'fr' },
   icon: '◎', thumbnail: 'thumbnail.svg',
   content: [...sections, { id: '17-sources', optional: true }, { id: '18-glossaire', optional: true }],
 }, null, 2)}\n`);

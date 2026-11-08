@@ -273,6 +273,19 @@ Les éléments intermédiaires de calcul restent dans le navigateur.
 
 ## Lecture guidée et clarté
 
+Chaque étape suit le même gabarit : une question d'entrée, puis intuition,
+mécanisme, exemple chiffré et rôle dans Luciole. Les précisions techniques
+(formules, variantes, ordres exacts) sont repliées dans un volet « Pour les
+avertis ». Les limites sont regroupées dans l'encadré « Les limites » plutôt que
+répétées à chaque paragraphe, pour que les néophytes gardent le fil et que les
+lecteurs avertis trouvent les détails sans les chercher.
+
+L'ordre de lecture va du texte aux nombres, traverse le Transformer, puis passe
+des scores au choix. Le chat template (`03-prompt`) suit le tirage, avant le
+raisonnement : la première section reste centrée sur texte, vecteurs et
+embeddings. La logit lens (`09-logit-lens`) suit le laboratoire, juste avant la
+synthèse sur l'interprétation. Les identifiants des pages ne changent pas.
+
 La première page définit LLM, token, prompt, contexte et poids avant de détailler
 l'architecture. Les consignes correspondent à l'état initial des instruments.
 Les explications précèdent les expériences dans le HTML et à l'écran. Une
@@ -348,7 +361,7 @@ non finie ou supérieure à 1 nat/token sur son propre corpus.
 | Coûts et entraînement | 12, 13, 14 | 8 min |
 | Laboratoire et synthèse | 15, 16 | 10 min |
 
-Les étapes 3 et 9 constituent des détours selon les questions.
+Les étapes 3 (template) et 9 (logit lens) constituent des détours selon les questions.
 Les numéros de ce tableau désignent les identifiants historiques des pages,
 pas leur rang après enrichissement. Les cinq nouvelles étapes peuvent servir
 de pauses de clarification ; la visite autonome complète prend environ 110 min.

@@ -41,7 +41,9 @@ describe('Contrat éditorial du parcours', () => {
   });
   test('les prérequis précèdent les mécanismes qu’ils expliquent', () => {
     const index = id => chapters.findIndex(chapter => chapter.id === id);
-    for (const [before, after] of [['01-un-token', '01b-luciole'], ['01b-luciole', '02-tokenisation'], ['02-tokenisation', '02b-cas-reels'], ['03b-nombres', '04-embeddings'], ['06b-tetes', '07-attention'], ['07-attention', '06-position'], ['09b-scores', '10-tirage'], ['16-synthese', '16b-transformer-explainer']]) {
+    for (const [before, after] of [['01-un-token', '01b-luciole'], ['01b-luciole', '02-tokenisation'], ['02-tokenisation', '02b-cas-reels'], ['03b-nombres', '04-embeddings'], ['06b-tetes', '07-attention'], ['07-attention', '06-position'], ['09b-scores', '10-tirage'], ['16-synthese', '16b-transformer-explainer'],
+      // Le chat template suit le décodage ; la logit lens suit le laboratoire qui assemble toutes les pièces.
+      ['10-tirage', '03-prompt'], ['15-laboratoire', '09-logit-lens'], ['09-logit-lens', '16-synthese']]) {
       expect(index(before)).toBeLessThan(index(after));
     }
     expect(chapters.at(-1).id).toBe('16b-transformer-explainer');

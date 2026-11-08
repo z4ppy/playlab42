@@ -57,7 +57,7 @@
     "similarité cosinus": { "short": "Mesure de l’alignement de deux vecteurs : 1 pour la même direction, 0 pour des directions perpendiculaires, −1 pour des directions opposées." },
     "produit scalaire": { "short": "Somme des produits des coordonnées correspondantes de deux vecteurs. Sert notamment à calculer les scores d’attention." },
     "routeur": { "short": "Composant qui attribue des scores aux experts et choisit lesquels exécuter pour un token." },
-    "top-k": { "short": "Sélection des k candidats ayant les scores les plus élevés. Ici, elle choisit les experts actifs." },
+    "top-k": { "short": "Sélection des k candidats ayant les scores les plus élevés : les k tokens gardés lors du tirage, ou les k experts activés par un routeur MoE." },
     "vérificateur": { "short": "Procédure qui teste une réponse selon un critère explicite, par exemple en remplaçant x dans une équation." },
     "mha": { "short": "Multi-Head Attention : chaque tête de requête possède ses propres clés et valeurs." },
     "mqa": { "short": "Multi-Query Attention : toutes les têtes de requête partagent un seul groupe de clés et de valeurs, ce qui réduit le cache." },
