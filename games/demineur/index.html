@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Démineur : premier clic sûr, grilles sans hasard, indices expliqués et IA qui joue sous vos yeux.">
+  <title>Démineur — Playlab42</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="../game-page.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <main class="app">
+    <header class="masthead">
+      <h1><span class="mine-glyph" aria-hidden="true"></span>Démineur</h1>
+      <button class="icon-button" id="theme" type="button" aria-label="Basculer le thème clair ou sombre">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <section class="settings" aria-label="Réglages de la partie">
+      <fieldset class="levels" id="levels">
+        <legend class="sr-only">Niveau</legend>
+        <label><input type="radio" name="level" value="beginner" checked><span>Débutant<small>9 × 9 · 10 mines</small></span></label>
+        <label><input type="radio" name="level" value="intermediate"><span>Intermédiaire<small>16 × 16 · 40 mines</small></span></label>
+        <label><input type="radio" name="level" value="expert"><span>Expert<small>30 × 16 · 99 mines</small></span></label>
+      </fieldset>
+      <label class="switch" title="La grille est garantie résoluble sans deviner">
+        <input type="checkbox" id="no-guess" role="switch" checked>
+        <span class="switch-track" aria-hidden="true"></span>
+        <span>Sans hasard</span>
+      </label>
+      <button class="btn" id="new-game" type="button">Nouvelle partie</button>
+    </section>
+
+    <section class="hud" aria-label="Tableau de bord">
+      <p class="counter" title="Mines restantes (mines moins drapeaux)">
+        <span class="mine-glyph" aria-hidden="true"></span>
+        <span class="sr-only">Mines restantes :</span>
+        <strong id="mines-left">10</strong>
+      </p>
+      <div class="hud-status">
+        <p class="status" id="status">Premier clic sans risque</p>
+        <p class="meta"><span class="badge" id="mode-badge">Sans hasard</span> <span id="best">Record : —</span></p>
+      </div>
+      <p class="counter" title="Temps écoulé">
+        <span class="clock-glyph" aria-hidden="true"></span>
+        <span class="sr-only">Temps :</span>
+        <time id="timer">0:00</time>
+      </p>
+    </section>
+
+    <div class="play-area">
+      <div class="board-wrap" id="board-wrap"></div>
+
+      <aside class="side">
+        <div class="tools" role="group" aria-label="Aides et mode de jeu">
+          <button class="tool" id="flag-mode" type="button" aria-pressed="false">
+            <span class="flag-glyph" aria-hidden="true"></span><span class="label">Mode drapeau</span>
+          </button>
+          <button class="tool" id="hint" type="button" aria-keyshortcuts="H">
+            <span class="tool-icon" aria-hidden="true">?</span><span class="label">Indice</span>
+          </button>
+          <button class="tool" id="risks" type="button" aria-pressed="false">
+            <span class="tool-icon" aria-hidden="true">%</span><span class="label">Probabilités</span>
+          </button>
+          <button class="tool" id="watch-ai" type="button" aria-pressed="false">
+            <span class="tool-icon play-glyph" aria-hidden="true"></span><span class="label">Regarder l'IA</span>
+          </button>
+        </div>
+
+        <section class="reasoning" aria-labelledby="reasoning-title" aria-live="polite">
+          <h2 id="reasoning-title">Raisonnement</h2>
+          <p id="reasoning-text"></p>
+          <ul id="reasoning-because" aria-label="Parce que" hidden></ul>
+          <p class="risk-legend" aria-hidden="true"><span>sûre</span><span class="risk-scale"></span><span>mine</span></p>
+        </section>
+
+        <details class="help">
+          <summary>Commandes et règles</summary>
+          <p id="board-help">
+            Ouvrez toutes les cases sans mine. Un chiffre compte les mines parmi ses huit voisines.
+            Souris : clic pour ouvrir, clic droit pour un drapeau, clic sur un chiffre (ou clic milieu)
+            pour ouvrir ses voisines quand ses drapeaux sont posés. Doigt : appui pour ouvrir, appui long
+            ou mode drapeau pour marquer. Clavier : flèches pour se déplacer, Entrée ou Espace pour ouvrir,
+            F pour un drapeau, H pour un indice.
+          </p>
+          <p>
+            Les coordonnées des explications sont (colonne, ligne), à partir du coin supérieur gauche.
+            En mode « Sans hasard », chaque grille est vérifiée par le solveur : elle se termine sans jamais deviner.
+          </p>
+        </details>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <p class="seed-info" id="seed-info"></p>
+      <p class="notice" id="storage-notice" role="status" hidden></p>
+      <p class="sr-only" id="announcer" role="status" aria-live="polite" aria-atomic="true"></p>
+    </footer>
+  </main>
+
+  <div class="end-overlay" id="end-dialog" role="dialog" aria-modal="true" aria-labelledby="end-title" aria-describedby="end-text">
+    <div class="end-card">
+      <h2 id="end-title">Bilan</h2>
+      <p id="end-text"></p>
+      <p class="end-record" id="end-record"></p>
+      <div class="end-actions">
+        <button class="btn" id="replay" type="button">Nouvelle partie</button>
+        <button class="btn btn-secondary" id="same-grid" type="button">Rejouer cette grille</button>
+        <button class="btn btn-secondary" id="close-end" type="button">Voir la grille</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

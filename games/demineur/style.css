@@ -1,0 +1,813 @@
+/*
+ * Démineur. Chargé après lib/theme.css, lib/ui.css et games/game-page.css :
+ * toutes les couleurs dérivent des jetons du thème (clair, sombre, auto),
+ * mélangés avec color-mix pour garder le contraste dans les deux thèmes.
+ */
+
+body {
+  flex-direction: column;
+  align-items: center;
+  min-height: 100dvh;
+  --gutter: max(var(--space-md), env(safe-area-inset-left));
+  padding: max(var(--space-sm), env(safe-area-inset-top)) var(--gutter) max(var(--space-md), env(safe-area-inset-bottom));
+  overflow-x: hidden;
+}
+
+.app {
+  width: min(100%, 76rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* --- En-tête et réglages ------------------------------------------------- */
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.masthead h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  letter-spacing: -0.02em;
+}
+
+.masthead .mine-glyph {
+  --size: 1em;
+}
+
+.icon-button {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+}
+
+.levels {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
+  padding: 3px;
+  min-width: 0;
+}
+
+.levels label {
+  position: relative;
+  flex: 1;
+}
+
+/* Radios natifs : invisibles mais focalisables et annoncés. */
+.levels input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.levels span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: calc(var(--radius-lg) - 3px);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.levels small {
+  font-weight: 400;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.levels input:checked + span {
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+.levels input:checked + span small {
+  color: inherit;
+  opacity: 0.85;
+}
+
+.levels input:focus-visible + span {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 44px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.switch-track {
+  width: 44px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  position: relative;
+  transition: background var(--transition-normal);
+}
+
+.switch-track::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-bg-card);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  transition: transform var(--transition-normal);
+}
+
+.switch input:checked + .switch-track {
+  background: var(--color-success);
+}
+
+.switch input:checked + .switch-track::after {
+  transform: translateX(18px);
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.btn {
+  min-height: 44px;
+  padding: 0 var(--space-lg);
+}
+
+/* --- Tableau de bord ------------------------------------------------------ */
+
+.hud {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.counter strong,
+.counter time {
+  font-weight: 700;
+  min-width: 2.5ch;
+}
+
+.hud-status {
+  text-align: center;
+  min-width: 0;
+}
+
+.status {
+  font-weight: 600;
+}
+
+.meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 0.5rem;
+  border-radius: var(--radius-full);
+  background: color-mix(in oklab, var(--color-success) 18%, transparent);
+  color: color-mix(in oklab, var(--color-success) 55%, var(--color-text));
+  font-weight: 600;
+}
+
+/* --- Zone de jeu --------------------------------------------------------- */
+
+.play-area {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--space-lg);
+}
+
+.board-wrap {
+  position: relative;
+  max-width: 100%;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  /* Le défilement interne reste possible au doigt ; pas de zoom au double appui. */
+  touch-action: manipulation;
+  overscroll-behavior: contain;
+}
+
+.board {
+  /* Taille de case : la largeur et la hauteur visibles la bornent, jamais sous 23 px. */
+  --cell: clamp(23px, min(calc((100vw - 2 * var(--gutter) - 1rem) / var(--columns)), calc((100dvh - 16rem) / var(--rows))), 52px);
+  --cell-closed: color-mix(in oklab, var(--color-info) 24%, var(--color-bg-card));
+  --cell-closed-alt: color-mix(in oklab, var(--color-info) 30%, var(--color-bg-card));
+  --cell-open: color-mix(in oklab, var(--color-bg) 92%, var(--color-text));
+  display: grid;
+  grid-template-columns: repeat(var(--columns), var(--cell));
+  grid-auto-rows: var(--cell);
+  width: max-content;
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklab, var(--color-bg-secondary) 80%, var(--color-text));
+  box-shadow: 0 10px 30px -18px var(--color-shadow);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow var(--transition-slow), filter var(--transition-slow);
+}
+
+.cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--cell);
+  height: var(--cell);
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--font-family);
+  font-size: calc(var(--cell) * 0.56);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-text);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.cell:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: -3px;
+  z-index: 2;
+}
+
+/* Cases fermées : légèrement bombées. */
+.cell.hidden,
+.cell.flag,
+.cell.wrong-flag {
+  background: var(--cell-closed);
+  box-shadow:
+    inset 0 2px 0 color-mix(in oklab, white 35%, transparent),
+    inset 0 -2px 0 color-mix(in oklab, black 18%, transparent);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.cell.hidden[data-shade="1"],
+.cell.flag[data-shade="1"] {
+  background: var(--cell-closed-alt);
+}
+
+@media (hover: hover) {
+  [data-status="ready"] .cell.hidden:hover,
+  [data-status="playing"] .cell.hidden:hover {
+    background: color-mix(in oklab, var(--color-info) 40%, var(--color-bg-card));
+  }
+}
+
+.cell.hidden:active {
+  transform: scale(0.94);
+}
+
+/* Cases ouvertes : à plat, chiffres colorés (mélangés au texte pour le contraste). */
+.cell.open {
+  background: var(--cell-open);
+  cursor: default;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-border) 45%, transparent);
+}
+
+.cell.n1 { color: color-mix(in oklab, var(--color-info) 75%, var(--color-text)); }
+.cell.n2 { color: color-mix(in oklab, var(--color-success) 65%, var(--color-text)); }
+.cell.n3 { color: color-mix(in oklab, var(--color-error) 80%, var(--color-text)); }
+.cell.n4 { color: color-mix(in oklab, var(--color-syntax-boolean) 75%, var(--color-text)); }
+.cell.n5 { color: color-mix(in oklab, var(--color-warning) 60%, var(--color-text)); }
+.cell.n6 { color: color-mix(in oklab, var(--color-syntax-key) 70%, var(--color-text)); }
+.cell.n7 { color: var(--color-text); }
+.cell.n8 { color: var(--color-text-muted); }
+
+.cell.reveal {
+  animation: cell-open 260ms ease-out both;
+  animation-delay: var(--delay);
+}
+
+@keyframes cell-open {
+  from {
+    transform: scale(0.55);
+    opacity: 0.2;
+  }
+}
+
+/* --- Glyphes dessinés en CSS : nets à toutes les tailles, sans emoji. ---- */
+
+/* Mine : un corps rond, un reflet et quatre pointes, en dégradés superposés. */
+.mine-glyph,
+.cell.mine::before,
+.cell.exploded::before {
+  --mine: color-mix(in oklab, var(--color-text) 92%, var(--color-bg));
+  content: '';
+  display: inline-block;
+  background:
+    radial-gradient(circle at 38% 36%, color-mix(in oklab, white 75%, transparent) 0 8%, transparent 10%),
+    radial-gradient(circle, var(--mine) 0 42%, transparent 44%),
+    linear-gradient(var(--mine), var(--mine)) center / 100% 12% no-repeat,
+    linear-gradient(var(--mine), var(--mine)) center / 12% 100% no-repeat;
+  flex: none;
+}
+
+.mine-glyph {
+  --size: 0.75em;
+  width: var(--size);
+  height: var(--size);
+}
+
+.cell.mine::before,
+.cell.exploded::before {
+  width: 66%;
+  height: 66%;
+}
+
+.cell.exploded::before {
+  --mine: #1b1b1f;
+}
+
+.cell.mine {
+  background: color-mix(in oklab, var(--color-error) 14%, var(--cell-open));
+  animation: mine-show 320ms ease-out both;
+  animation-delay: var(--delay);
+}
+
+.cell.exploded {
+  background: var(--color-error);
+  animation: explode 520ms ease-out both;
+  z-index: 1;
+}
+
+@keyframes mine-show {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes explode {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-error) 70%, transparent); }
+  30% { transform: scale(1.25); }
+  100% { transform: scale(1); box-shadow: 0 0 0 calc(var(--cell) * 0.9) transparent; }
+}
+
+.flag-glyph,
+.cell.flag::before,
+.cell.wrong-flag::before {
+  content: '';
+  width: 0.62em;
+  height: 0.75em;
+  background:
+    linear-gradient(var(--color-error), var(--color-error)) 18% 0 / 62% 55% no-repeat,
+    linear-gradient(currentColor, currentColor) 14% 0 / 9% 100% no-repeat,
+    linear-gradient(currentColor, currentColor) 0 100% / 60% 12% no-repeat;
+  clip-path: polygon(0 0, 85% 27%, 23% 55%, 23% 88%, 60% 88%, 60% 100%, 0 100%);
+}
+
+.flag-glyph {
+  display: inline-block;
+  font-size: 1.4rem;
+  color: var(--color-text);
+}
+
+.cell.flag::before {
+  animation: flag-in 220ms cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+@keyframes flag-in {
+  from { transform: translateY(-30%) scale(0.4); opacity: 0; }
+}
+
+/* Drapeau faux, dévoilé en fin de partie : barré. */
+.cell.wrong-flag::after {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  background:
+    linear-gradient(45deg, transparent 44%, var(--color-text) 44% 56%, transparent 56%),
+    linear-gradient(-45deg, transparent 44%, var(--color-text) 44% 56%, transparent 56%);
+}
+
+/* --- Indice, sources du raisonnement et probabilités ------------------- */
+
+.cell.hint {
+  z-index: 2;
+  animation: hint-pulse 1.4s ease-in-out infinite;
+  box-shadow: 0 0 0 3px var(--color-warning), 0 0 14px 2px color-mix(in oklab, var(--color-warning) 60%, transparent);
+}
+
+@keyframes hint-pulse {
+  50% { box-shadow: 0 0 0 5px var(--color-warning), 0 0 22px 6px color-mix(in oklab, var(--color-warning) 45%, transparent); }
+}
+
+.cell.source {
+  z-index: 1;
+  box-shadow: inset 0 0 0 2px var(--color-info);
+  background: color-mix(in oklab, var(--color-info) 16%, var(--cell-open));
+}
+
+/*
+ * Carte de chaleur : teinte du vert (sûre) au rouge (mine) en passant par l'ambre,
+ * à luminosité constante (oklch) ; le pourcentage reste dans le nom accessible.
+ * Le sélecteur [data-shade] l'emporte sur le damier des cases fermées.
+ */
+.cell.risk[data-shade] {
+  --risk-color: oklch(0.7 0.17 calc(145 - var(--risk) * 120));
+  background: color-mix(in oklab, var(--risk-color) 60%, var(--cell-closed));
+}
+
+@media (min-width: 900px) {
+  .cell.risk::after {
+    content: attr(data-risk);
+    position: absolute;
+    inset: auto 0 2px;
+    font-size: calc(var(--cell) * 0.26);
+    font-weight: 700;
+    color: color-mix(in oklab, var(--color-text) 80%, transparent);
+  }
+}
+
+.risk-legend {
+  display: none;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.side:has(#risks[aria-pressed="true"]) .risk-legend {
+  display: flex;
+}
+
+.risk-scale {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, oklch(0.7 0.17 145), oklch(0.7 0.17 85), oklch(0.7 0.17 25));
+}
+
+/* --- États de la grille -------------------------------------------------- */
+
+.board.flag-mode {
+  box-shadow: 0 0 0 3px var(--color-error), 0 10px 30px -18px var(--color-shadow);
+}
+
+.board[data-status="won"] {
+  box-shadow: 0 0 0 3px var(--color-success), 0 0 40px -6px color-mix(in oklab, var(--color-success) 60%, transparent);
+}
+
+.board[data-status="won"] .cell.flag::before,
+.board[data-status="lost"] .cell.flag::before {
+  animation: none;
+}
+
+.board[data-status="won"] .cell,
+.board[data-status="lost"] .cell {
+  cursor: default;
+}
+
+.board-wrap.paused .board {
+  filter: blur(8px) saturate(0.4);
+  pointer-events: none;
+}
+
+.board-wrap.paused::after {
+  content: 'En pause';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+/* --- Panneau latéral --------------------------------------------------- */
+
+.side {
+  flex: 1 1 18rem;
+  max-width: 26rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.tools {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm);
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 48px;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.tool:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.tool:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tool[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+#flag-mode[aria-pressed="true"] {
+  border-color: var(--color-error);
+  background: color-mix(in oklab, var(--color-error) 14%, var(--color-bg-secondary));
+  box-shadow: inset 0 0 0 1px var(--color-error);
+}
+
+.tool-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--color-accent) 18%, transparent);
+  font-weight: 800;
+}
+
+.play-glyph::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.65rem;
+  margin-left: 2px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+#watch-ai[aria-pressed="true"] .play-glyph::before {
+  margin-left: 0;
+  clip-path: polygon(0 0, 35% 0, 35% 100%, 0 100%, 0 0, 65% 0, 100% 0, 100% 100%, 65% 100%, 65% 0);
+}
+
+@media (hover: hover) {
+  .tool:hover:not(:disabled),
+  .icon-button:hover {
+    background: var(--color-bg-hover);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-bg-hover);
+  }
+}
+
+.reasoning {
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-info);
+  min-height: 7.5rem;
+}
+
+.reasoning h2 {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--space-xs);
+}
+
+.reasoning p,
+.reasoning li {
+  line-height: 1.5;
+}
+
+#reasoning-because {
+  margin: var(--space-sm) 0 0 1.1rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+#reasoning-because::before {
+  content: 'Parce que :';
+  display: block;
+  margin-left: -1.1rem;
+  font-weight: 600;
+}
+
+.help {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.help summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.help p + p {
+  margin-top: var(--space-sm);
+}
+
+.footer {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.notice {
+  margin-top: var(--space-xs);
+  color: var(--color-warning);
+}
+
+/* --- Bilan de fin -------------------------------------------------------- */
+
+.end-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--space-md);
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(3px);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity var(--transition-slow), visibility var(--transition-slow);
+}
+
+.end-overlay.open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.end-card {
+  width: min(100%, 26rem);
+  padding: var(--space-xl) var(--space-lg) var(--space-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-top: 6px solid var(--color-error);
+  box-shadow: 0 30px 60px -20px var(--color-shadow);
+  text-align: center;
+  transform: translateY(12px) scale(0.98);
+  transition: transform var(--transition-slow);
+}
+
+.end-overlay.open .end-card {
+  transform: none;
+}
+
+.end-overlay[data-result="won"] .end-card {
+  border-top-color: var(--color-success);
+}
+
+.end-card h2 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-sm);
+}
+
+.end-record {
+  margin-top: var(--space-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.end-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+/* --- Petits écrans -------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  body {
+    --gutter: max(var(--space-sm), env(safe-area-inset-left));
+  }
+
+  .app {
+    gap: var(--space-sm);
+  }
+
+  .settings {
+    justify-content: space-between;
+  }
+
+  .levels {
+    flex: 1 1 100%;
+  }
+
+  .levels span {
+    padding-inline: 0.3rem;
+  }
+
+  .hud {
+    padding: var(--space-xs) var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .counter {
+    font-size: var(--font-size-lg);
+  }
+
+  .board {
+    --cell: clamp(23px, min(calc((100vw - 2 * var(--gutter) - 12px) / var(--columns)), calc((100dvh - 14rem) / var(--rows))), 44px);
+  }
+
+  /* La barre d'outils reste au bas de l'écran pendant qu'on joue (mode drapeau à portée de pouce). */
+  .play-area {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .board-wrap {
+    align-self: center;
+  }
+
+  .side {
+    display: contents;
+  }
+
+  .tools {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: var(--space-xs) 0 max(var(--space-xs), env(safe-area-inset-bottom));
+    background: color-mix(in oklab, var(--color-bg) 88%, transparent);
+    backdrop-filter: blur(6px);
+  }
+
+  .tool {
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs);
+  }
+}
