@@ -24,7 +24,7 @@
   "content": [
     {
       "id": "section-1",
-      "title": "Du texte aux représentations",
+      "title": "Du texte aux nombres",
       "content": [
         {
           "id": "01-un-token"
@@ -37,9 +37,6 @@
         },
         {
           "id": "02b-cas-reels"
-        },
-        {
-          "id": "03-prompt"
         },
         {
           "id": "03b-nombres"
@@ -78,10 +75,10 @@
           "id": "09b-scores"
         },
         {
-          "id": "09-logit-lens"
+          "id": "10-tirage"
         },
         {
-          "id": "10-tirage"
+          "id": "03-prompt"
         },
         {
           "id": "11-effort"
@@ -90,7 +87,7 @@
     },
     {
       "id": "section-4",
-      "title": "Mémoire, performance et apprentissage",
+      "title": "Mémoire, coûts et apprentissage",
       "content": [
         {
           "id": "12-memoire"
@@ -109,6 +106,9 @@
       "content": [
         {
           "id": "15-laboratoire"
+        },
+        {
+          "id": "09-logit-lens"
         },
         {
           "id": "16-synthese"
