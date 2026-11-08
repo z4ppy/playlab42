@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog-as-Code et Backstage — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="Catalog-as-Code : Backstage et catalog-info.yaml, architectures de catalogues, critères de choix et l'exemple de Playlab42.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>Catalog-as-Code et Backstage</h1>
+            <p class="asc-kicker">Outils et pratiques</p>
+            <p class="asc-lead">
+                Services, outils, contenus : des inventaires tenus avec la même rigueur que le code applicatif.
+            </p>
+        </header>
+
+        <h2 id="principe">Gérer un inventaire comme du code</h2>
+        <p>
+            Le <dfn data-term="Catalog-as-Code">Catalog-as-Code</dfn> applique le paradigme aux inventaires :
+            catalogues de logiciels, collections de contenus, registres de composants, listes de ressources.
+            Fini les feuilles de calcul orphelines et les wikis délaissés. Les données vivent dans des
+            fichiers versionnés, ajouter une entrée revient à ouvrir une <em>pull request</em>, et un
+            pipeline vérifie la cohérence avant de générer un site, souvent statique.
+        </p>
+
+        <h2 id="backstage">Backstage, le catalogue des développeurs</h2>
+        <p>
+            Annoncé en open source par Spotify le 16 mars 2020
+            <a class="asc-ref" href="../09-sources/index.html#src-29" data-asc-slide="09-sources" aria-label="Source 29">[29]</a>,
+            <dfn data-term="Backstage">Backstage</dfn> est un projet CNCF en incubation depuis le
+            15 mars 2022
+            <a class="asc-ref" href="../09-sources/index.html#src-31" data-asc-slide="09-sources" aria-label="Source 31">[31]</a>.
+            Son catalogue lit des fichiers <code>catalog-info.yaml</code>, inspirés des manifestes Kubernetes,
+            placés à côté du code de chaque composant. Pour un <code>Component</code>, les champs
+            <code>spec.type</code>, <code>spec.lifecycle</code> et <code>spec.owner</code> sont obligatoires
+            <a class="asc-ref" href="../09-sources/index.html#src-30" data-asc-slide="09-sources" aria-label="Source 30">[30]</a>.
+        </p>
+        <figure class="asc-code">
+            <figcaption>YAML · catalog-info.yaml</figcaption>
+            <pre><code class="language-yaml"><span class="asc-tok-com"># À la racine du dépôt du service</span>
+<span class="asc-tok-key">apiVersion</span>: backstage.io/v1alpha1
+<span class="asc-tok-key">kind</span>: Component
+<span class="asc-tok-key">metadata</span>:
+  <span class="asc-tok-key">name</span>: payment-service
+  <span class="asc-tok-key">description</span>: <span class="asc-tok-str">Service de paiement principal</span>
+  <span class="asc-tok-key">tags</span>:
+    - python
+    - payments
+<span class="asc-tok-key">spec</span>:
+  <span class="asc-tok-key">type</span>: service
+  <span class="asc-tok-key">lifecycle</span>: production
+  <span class="asc-tok-key">owner</span>: team-payments
+  <span class="asc-tok-key">dependsOn</span>:
+    - component:user-service</code></pre>
+        </figure>
+
+        <h2 id="architectures">Trois façons d'organiser un catalogue</h2>
+        <table>
+            <caption>Architectures de catalogues as-code</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Approche</th>
+                    <th scope="col">Avantages</th>
+                    <th scope="col">Inconvénients</th>
+                    <th scope="col">Exemples</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Fichier unique</th>
+                    <td>Une seule source de vérité, requêtes simples</td>
+                    <td>Conflits de fusion fréquents</td>
+                    <td>CNCF Landscape</td>
+                </tr>
+                <tr>
+                    <th scope="row">Distribué</th>
+                    <td>Édition en parallèle, propriété claire</td>
+                    <td>Découverte plus complexe</td>
+                    <td>Backstage, npm</td>
+                </tr>
+                <tr>
+                    <th scope="row">Markdown</th>
+                    <td>Très simple, familier</td>
+                    <td>Validation limitée</td>
+                    <td>Listes « awesome »</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="choisir">Quand choisir le Catalog-as-Code ?</h2>
+        <table>
+            <caption>Critères de choix d'un catalogue as-code</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Critère</th>
+                    <th scope="col">Catalog-as-Code adapté</th>
+                    <th scope="col">Préférer une autre solution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Équipe</th>
+                    <td>Contributeurs à l'aise avec Git</td>
+                    <td>Éditeurs non techniques</td>
+                </tr>
+                <tr>
+                    <th scope="row">Mises à jour</th>
+                    <td>Peu fréquentes, relues</td>
+                    <td>Temps réel requis</td>
+                </tr>
+                <tr>
+                    <th scope="row">Historique</th>
+                    <td>Traçabilité exigée</td>
+                    <td>Accessoire</td>
+                </tr>
+                <tr>
+                    <th scope="row">Volume</th>
+                    <td>Modéré (quelques centaines à milliers d'entrées)</td>
+                    <td>Très grand, très changeant</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="playlab42">Playlab42, un catalogue as-code</h2>
+        <p>
+            Le portail que vous lisez applique ce principe
+            <a class="asc-ref" href="../09-sources/index.html#src-32" data-asc-slide="09-sources" aria-label="Source 32">[32]</a>.
+            Chaque jeu décrit ses métadonnées dans <code>game.json</code>, chaque parcours dans
+            <code>epic.json</code> et chaque étape dans <code>slide.json</code>. Des scripts de build les
+            valident puis génèrent les fichiers <code>data/*.json</code>, jamais modifiés à la main et absents
+            du dépôt. Publier ce parcours, c'est fusionner une <em>pull request</em>.
+        </p>
+        <ol class="asc-flow" aria-label="Chaîne de génération du catalogue Playlab42">
+            <li><span>Manifestes JSON versionnés</span></li>
+            <li><span>Scripts de build et validation</span></li>
+            <li><span>Catalogues data/*.json générés</span></li>
+            <li><span>Portail statique</span></li>
+        </ol>
+    </article>
+</body>
+</html>

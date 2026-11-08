@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infrastructure as Code — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="Infrastructure as Code : Terraform, Ansible, Docker et Kubernetes, un exemple HCL, Cattle vs Pets et les générations d'outils.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>Infrastructure as Code</h1>
+            <p class="asc-kicker">Outils et pratiques</p>
+            <p class="asc-lead">
+                Serveurs, réseaux et bases de données décrits dans des fichiers : la forme la plus répandue
+                du paradigme.
+            </p>
+        </header>
+
+        <h2 id="essor">L'essor des outils déclaratifs</h2>
+        <p>
+            Le 25 février 2011, AWS lance CloudFormation, qui crée une pile complète de ressources à partir
+            d'un modèle décrit dans un fichier
+            <a class="asc-ref" href="../09-sources/index.html#src-11" data-asc-slide="09-sources" aria-label="Source 11">[11]</a>.
+            Le 28 juillet 2014, Mitchell Hashimoto annonce Terraform, pensé dès l'origine pour plusieurs
+            fournisseurs grâce à des <em>providers</em> extensibles
+            <a class="asc-ref" href="../09-sources/index.html#src-12" data-asc-slide="09-sources" aria-label="Source 12">[12]</a>.
+            Autour de lui, quelques outils structurent la décennie.
+        </p>
+
+        <ul class="asc-grid">
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">🏗️</span>Terraform</h3>
+                <p class="asc-tag">Depuis 2014 <a class="asc-ref" href="../09-sources/index.html#src-12" data-asc-slide="09-sources" aria-label="Source 12">[12]</a></p>
+                <p>Infrastructure multi-cloud décrite en HCL et étendue par des providers.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">⚙️</span>Ansible</h3>
+                <p class="asc-tag">Depuis 2012 <a class="asc-ref" href="../09-sources/index.html#src-13" data-asc-slide="09-sources" aria-label="Source 13">[13]</a></p>
+                <p>Configuration sans agent, par SSH, avec des <em>playbooks</em> YAML.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">📦</span>Docker</h3>
+                <p class="asc-tag">Depuis 2013 <a class="asc-ref" href="../09-sources/index.html#src-14" data-asc-slide="09-sources" aria-label="Source 14">[14]</a></p>
+                <p>Conteneurs construits depuis un Dockerfile : des images immuables.</p>
+            </li>
+            <li class="slide-card">
+                <h3><span class="asc-icon" aria-hidden="true">☸️</span>Kubernetes</h3>
+                <p class="asc-tag">Depuis 2014 <a class="asc-ref" href="../09-sources/index.html#src-15" data-asc-slide="09-sources" aria-label="Source 15">[15]</a></p>
+                <p>Orchestration déclarative de conteneurs par manifestes YAML.</p>
+            </li>
+        </ul>
+
+        <h2 id="exemple">Un premier exemple en HCL</h2>
+        <p>
+            Ce fichier décrit une petite machine virtuelle à Paris. L'image Ubuntu n'est pas codée en dur :
+            elle est recherchée parmi celles publiées par Canonical.
+        </p>
+        <figure class="asc-code">
+            <figcaption>HCL · main.tf</figcaption>
+            <pre><code class="language-hcl"><span class="asc-tok-com"># Une machine virtuelle décrite en HCL (Terraform ou OpenTofu)</span>
+<span class="asc-tok-kw">provider</span> <span class="asc-tok-str">"aws"</span> {
+  <span class="asc-tok-key">region</span> = <span class="asc-tok-str">"eu-west-3"</span> <span class="asc-tok-com"># Paris</span>
+}
+
+<span class="asc-tok-kw">data</span> <span class="asc-tok-str">"aws_ami"</span> <span class="asc-tok-str">"ubuntu"</span> {
+  <span class="asc-tok-key">most_recent</span> = true
+  <span class="asc-tok-key">owners</span>      = [<span class="asc-tok-str">"099720109477"</span>] <span class="asc-tok-com"># Canonical</span>
+
+  <span class="asc-tok-kw">filter</span> {
+    <span class="asc-tok-key">name</span>   = <span class="asc-tok-str">"name"</span>
+    <span class="asc-tok-key">values</span> = [<span class="asc-tok-str">"ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"</span>]
+  }
+}
+
+<span class="asc-tok-kw">resource</span> <span class="asc-tok-str">"aws_instance"</span> <span class="asc-tok-str">"web"</span> {
+  <span class="asc-tok-key">ami</span>           = data.aws_ami.ubuntu.id
+  <span class="asc-tok-key">instance_type</span> = <span class="asc-tok-str">"t3.micro"</span>
+
+  <span class="asc-tok-key">tags</span> = {
+    <span class="asc-tok-key">Name</span> = <span class="asc-tok-str">"demo-as-code"</span>
+  }
+}</code></pre>
+        </figure>
+        <div class="callout callout-info">
+            <p>
+                <strong>En pratique.</strong> Ce code fonctionne aussi avec OpenTofu. La commande
+                <code>terraform plan</code> (ou <code>tofu plan</code>) affiche les changements prévus ;
+                <code>apply</code> les applique. Le plan se relit dans la <em>pull request</em>, comme du code.
+            </p>
+        </div>
+
+        <h2 id="cattle">Cattle vs Pets</h2>
+        <p>
+            Une métaphore résume ce changement : <em>Cattle vs Pets</em>, le bétail contre les animaux de
+            compagnie. Bill Baker l'emploie d'abord pour opposer deux façons de faire grandir SQL Server ;
+            Randy Bias l'adopte en 2011 ou 2012 pour expliquer le cloud
+            <a class="asc-ref" href="../09-sources/index.html#src-16" data-asc-slide="09-sources" aria-label="Source 16">[16]</a>.
+            Un serveur « animal de compagnie » est unique, soigné à la main et irremplaçable. Un serveur
+            « bétail » est interchangeable : on le détruit et on le recrée depuis sa description. Ce n'est
+            plus le serveur qui compte, mais le code qui le décrit.
+        </p>
+
+        <h2 id="generations">Quatre générations d'outils</h2>
+        <table>
+            <caption>Découpage indicatif : les générations se chevauchent.</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Génération</th>
+                    <th scope="col">Période</th>
+                    <th scope="col">Outils</th>
+                    <th scope="col">Apport</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1re</td>
+                    <td>1993-2004</td>
+                    <td>CFEngine</td>
+                    <td>Configuration automatisée, convergence</td>
+                </tr>
+                <tr>
+                    <td>2e</td>
+                    <td>2005-2010</td>
+                    <td>Puppet, Chef</td>
+                    <td>Langages déclaratifs dédiés</td>
+                </tr>
+                <tr>
+                    <td>3e</td>
+                    <td>2011-2016</td>
+                    <td>CloudFormation, Terraform, Ansible, Docker</td>
+                    <td>Cloud, multi-fournisseurs, conteneurs</td>
+                </tr>
+                <tr>
+                    <td>4e</td>
+                    <td>Depuis 2017</td>
+                    <td>Argo CD, Flux, Crossplane</td>
+                    <td>GitOps, plans de contrôle Kubernetes</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout callout-warning">
+            <p>
+                <strong>2023-2025 : licence, fork et rachat.</strong> Le 10 août 2023, HashiCorp annonce
+                que ses futures versions, dont celles de Terraform, passent de la licence MPL 2.0 à la
+                <dfn data-term="BUSL">Business Source License</dfn> 1.1
+                <a class="asc-ref" href="../09-sources/index.html#src-17" data-asc-slide="09-sources" aria-label="Source 17">[17]</a>.
+                Le 20 septembre 2023, la Linux Foundation lance <dfn data-term="OpenTofu">OpenTofu</dfn>,
+                un fork resté open source
+                <a class="asc-ref" href="../09-sources/index.html#src-18" data-asc-slide="09-sources" aria-label="Source 18">[18]</a>,
+                que la CNCF accepte en <em>sandbox</em> le 23 avril 2025
+                <a class="asc-ref" href="../09-sources/index.html#src-19" data-asc-slide="09-sources" aria-label="Source 19">[19]</a>.
+                Entre-temps, IBM a finalisé le rachat de HashiCorp le 27 février 2025
+                <a class="asc-ref" href="../09-sources/index.html#src-20" data-asc-slide="09-sources" aria-label="Source 20">[20]</a>.
+            </p>
+        </div>
+    </article>
+</body>
+</html>

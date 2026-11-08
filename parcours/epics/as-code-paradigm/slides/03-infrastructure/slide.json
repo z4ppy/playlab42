@@ -1,0 +1,8 @@
+{
+  "id": "03-infrastructure",
+  "title": "Infrastructure as Code",
+  "icon": "🏗️",
+  "description": "Terraform, Ansible, Docker et Kubernetes, un exemple HCL, « Cattle vs Pets » et les générations d'outils.",
+  "duration": "3 min",
+  "type": "page"
+}

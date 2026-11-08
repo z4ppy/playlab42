@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pourquoi tout devient du code — Le Paradigme As-Code</title>
+    <link rel="stylesheet" href="../../../../../lib/theme.css">
+    <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+    <meta name="description" content="Introduction au paradigme as-code : décrire les systèmes dans des fichiers versionnés plutôt que les modifier à la main.">
+    <link rel="stylesheet" href="../../_shared/as-code.css">
+    <script type="module" src="../../_shared/as-code.js"></script>
+</head>
+<body>
+    <article class="slide">
+        <header class="asc-hero">
+            <h1>Pourquoi tout devient du code</h1>
+            <p class="asc-kicker">Origines</p>
+            <p class="asc-lead">
+                Comment une idée née en 1993 dans un département de physique d'Oslo a transformé
+                la façon dont nous construisons et exploitons les systèmes informatiques.
+            </p>
+            <p class="asc-meta">État du contenu : novembre 2026</p>
+        </header>
+
+        <h2 id="principe">Décrire plutôt qu'agir</h2>
+        <p>
+            Il est des révolutions qui se font dans le fracas, et d'autres qui se propagent dans le silence
+            des terminaux. La transformation « as-code » appartient à la seconde catégorie : plutôt que
+            d'enchaîner des gestes manuels sur des serveurs, on <em>décrit</em> l'état voulu d'un système
+            dans des fichiers texte, et des outils se chargent de l'atteindre.
+        </p>
+        <p>
+            Cette approche, dont l'<dfn data-term="IaC">Infrastructure as Code</dfn> est la forme la plus
+            connue, s'est étendue à la configuration, aux politiques de sécurité, à la documentation et aux
+            catalogues. Partout, la même idée : ce qui est écrit peut être versionné, relu, testé et rejoué.
+        </p>
+
+        <ol class="asc-flow" aria-label="Le principe as-code en quatre étapes">
+            <li><span>Fichier YAML ou HCL</span></li>
+            <li><span>Commit Git</span></li>
+            <li><span>Revue et pipeline CI/CD</span></li>
+            <li><span>Système mis à jour</span></li>
+        </ol>
+
+        <div class="callout callout-info">
+            <p>
+                <strong>En pratique.</strong> Au lieu de cliquer dans une console pour créer un serveur,
+                vous écrivez un fichier qui le décrit. Ce fichier est versionné avec Git, relu en équipe
+                dans une <em>pull request</em>, puis appliqué automatiquement.
+            </p>
+        </div>
+
+        <h2 id="essentiel">L'essentiel en 30 secondes</h2>
+        <ul>
+            <li>As-code : décrire l'infrastructure ou la configuration dans des fichiers versionnés.</li>
+            <li>Outils phares : Terraform ou OpenTofu, Ansible, Kubernetes, Argo CD et Flux.</li>
+            <li>Bénéfices : traçabilité, reproductibilité, collaboration par revue de code.</li>
+            <li>Coûts : courbe d'apprentissage, outillage à maintenir, discipline d'équipe.</li>
+            <li>Le Catalog-as-Code applique les mêmes principes aux inventaires.</li>
+        </ul>
+
+        <h2 id="reperes">Quelques repères chiffrés</h2>
+        <dl class="asc-stats">
+            <div>
+                <dt>77 %</dt>
+                <dd>
+                    des organisations interrogées déclarent avoir adopté les principes GitOps pour leurs
+                    déploiements
+                    <a class="asc-ref" href="../09-sources/index.html#src-2" data-asc-slide="09-sources" aria-label="Source 2">[2]</a>
+                </dd>
+            </div>
+            <div>
+                <dt>+31 %</dt>
+                <dd>
+                    de progression sur un an de l'adoption du CI/CD dans la même enquête
+                    <a class="asc-ref" href="../09-sources/index.html#src-2" data-asc-slide="09-sources" aria-label="Source 2">[2]</a>
+                </dd>
+            </div>
+            <div>
+                <dt>1993</dt>
+                <dd>
+                    début du projet CFEngine à l'université d'Oslo
+                    <a class="asc-ref" href="../09-sources/index.html#src-3" data-asc-slide="09-sources" aria-label="Source 3">[3]</a>
+                </dd>
+            </div>
+        </dl>
+        <p class="asc-meta">
+            Enquête annuelle de la CNCF menée à l'automne 2024 auprès de 750 membres de la communauté
+            cloud native, publiée en avril 2025
+            <a class="asc-ref" href="../09-sources/index.html#src-1" data-asc-slide="09-sources" aria-label="Source 1">[1]</a>.
+            C'est un échantillon de cette communauté, pas une mesure de l'ensemble des entreprises.
+        </p>
+
+        <h2 id="objectifs">Ce que vous allez apprendre</h2>
+        <ul>
+            <li>D'où vient le paradigme, de CFEngine aux premiers DevOpsDays.</li>
+            <li>Comment fonctionnent l'Infrastructure as Code et GitOps, exemples à l'appui.</li>
+            <li>Quelles sont ses déclinaisons : politiques, documentation, pipelines, catalogues.</li>
+            <li>Ce qu'il apporte, ce qu'il coûte, et comment le marché a évolué depuis 2023.</li>
+        </ul>
+    </article>
+</body>
+</html>

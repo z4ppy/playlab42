@@ -1,732 +1,320 @@
 /**
- * As-Code Paradigm - Styles partagés
- * Utilisé par toutes les slides du parcours as-code-paradigm
- * Supporte les 3 modes de lecture : littéraire, scientifique, pratique
+ * Parcours « Le Paradigme As-Code » : composants propres au parcours.
+ * Chargé après lib/theme.css et parcours/_shared/slide-base.css, dont il
+ * réutilise la typographie, les blocs de code, les tableaux et les callouts.
+ * Préfixe local asc- ; uniquement des tokens du thème (clair et sombre).
  */
 
-@import url("../../../_shared/slide-base.css");
-
-/* === Variables locales mappées sur le thème global === */
-:root {
-    /* Backgrounds - mappés sur theme.css */
-    --ac-bg-primary: var(--color-bg);
-    --ac-bg-secondary: var(--color-bg-secondary);
-    --ac-bg-tertiary: var(--color-bg-card);
-    --ac-bg-card: var(--color-bg-secondary);
-
-    /* Couleurs d'accent par mode */
-    --ac-accent-literary: #f0b984;
-    --ac-accent-scientific: #7dd3fc;
-    --ac-accent-practical: #86efac;
-    --ac-accent-current: var(--ac-accent-literary);
-
-    /* Couleurs sémantiques - mappées sur theme.css */
-    --ac-accent-red: var(--color-accent);
-    --ac-accent-green: var(--color-success);
-    --ac-accent-yellow: var(--color-warning);
-    --ac-accent-blue: var(--color-info);
-    --ac-accent-purple: #bd93f9;
-    --ac-accent-cyan: #06b6d4;
-
-    /* Texte - mappé sur theme.css */
-    --ac-text-primary: var(--color-text);
-    --ac-text-secondary: var(--color-text);
-    --ac-text-muted: var(--color-text-muted);
-
-    /* Bordures - mappé sur theme.css */
-    --ac-border-color: var(--color-border);
-
-    /* Code - fond sombre conservé pour meilleure lisibilité */
-    --ac-code-bg: var(--color-bg-secondary);
-    --ac-code-text: var(--color-text);
-}
-
-[data-theme="light"] {
-    --ac-accent-literary: #8b4513;
-    --ac-accent-scientific: #1e5f74;
-    --ac-accent-practical: #2d5a27;
-}
-
-@media (prefers-color-scheme: light) {
-    :root:not([data-theme]) {
-        --ac-accent-literary: #8b4513;
-        --ac-accent-scientific: #1e5f74;
-        --ac-accent-practical: #2d5a27;
-    }
+/* En-tête de slide : surtitre, titre, chapeau */
+.slide .asc-hero {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2.5rem;
 }
 
-/* Couleurs de syntaxe adaptées au thème */
-[data-theme="light"] .code-block .comment { color: #6a737d; }
-[data-theme="light"] .code-block .keyword { color: #d73a49; }
-[data-theme="light"] .code-block .string { color: #22863a; }
-[data-theme="light"] .code-block .property { color: #005cc5; }
-[data-theme="light"] .code-block .value { color: #6f42c1; }
-
-@media (prefers-color-scheme: light) {
-    :root:not([data-theme]) .code-block .comment { color: #6a737d; }
-    :root:not([data-theme]) .code-block .keyword { color: #d73a49; }
-    :root:not([data-theme]) .code-block .string { color: #22863a; }
-    :root:not([data-theme]) .code-block .property { color: #005cc5; }
-    :root:not([data-theme]) .code-block .value { color: #6f42c1; }
-}
-
-/* === Base === */
-body {
-    font-family: 'Source Serif 4', Georgia, serif;
-    background-color: var(--ac-bg-primary);
-    color: var(--ac-text-primary);
-    line-height: 1.7;
-    font-size: 18px;
-}
-
-.font-mono { font-family: 'JetBrains Mono', 'Monaco', 'Consolas', monospace; }
-
-/* === Mode Selector === */
-.mode-selector {
-    position: sticky;
-    top: 0;
-    background: var(--ac-bg-secondary);
-    border-bottom: 1px solid var(--ac-border-color);
-    padding: 12px 24px;
-    z-index: 100;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.mode-btn {
-    background: transparent;
-    border: 1px solid var(--ac-border-color);
-    color: var(--ac-text-secondary);
-    padding: 8px 20px;
-    border-radius: 24px;
-    cursor: pointer;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-}
-
-.mode-btn:hover {
-    background: var(--ac-bg-tertiary);
-    color: var(--ac-text-primary);
-}
-
-.mode-btn.active {
-    background: var(--ac-accent-current);
-    border-color: var(--ac-accent-current);
-    color: var(--color-text-inverse);
-}
-
-/* === Mode-specific visibility === */
-.literary-only,
-.scientific-only,
-.practical-only {
-    display: none;
-}
-
-body.mode-literary .literary-only,
-body.mode-scientific .scientific-only,
-body.mode-practical .practical-only {
-    display: block;
-}
-
-body.mode-literary .literary-hide,
-body.mode-scientific .scientific-hide,
-body.mode-practical .practical-hide {
-    display: none;
-}
-
-/* === Mode-specific accents === */
-body.mode-literary {
-    --ac-accent-current: var(--ac-accent-literary);
-}
-
-body.mode-scientific {
-    --ac-accent-current: var(--ac-accent-scientific);
-}
-
-body.mode-practical {
-    --ac-accent-current: var(--ac-accent-practical);
-}
-
-/* === Hero Section === */
-.hero-section {
-    position: relative;
-    padding: 80px 24px;
-    overflow: hidden;
-    border-bottom: 1px solid var(--ac-border-color);
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(196, 69, 54, 0.08), transparent);
-    pointer-events: none;
-}
-
-.hero-section h1 {
-    font-family: 'Source Serif 4', Georgia, serif;
-    font-size: clamp(2rem, 6vw, 4rem);
-    font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 20px;
-    color: var(--ac-text-primary);
-}
-
-.hero-section h1 .accent {
-    color: var(--ac-accent-red);
-    font-style: italic;
-}
-
-.hero-section .subtitle {
-    font-size: 1.2rem;
-    color: var(--ac-text-muted);
-    max-width: 600px;
-    margin: 0 auto 32px;
-}
-
-.hero-meta {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--ac-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.hero-meta span::before {
-    content: '→ ';
-    color: var(--ac-accent-red);
-}
-
-/* === Content === */
-.content {
-    max-width: 750px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-}
-
-body.mode-literary .content {
-    max-width: 680px;
-}
-
-body.mode-practical .content {
-    max-width: 850px;
-}
-
-/* === Sections === */
-section {
-    margin-bottom: 64px;
-}
-
-h2 {
-    font-family: 'Source Serif 4', Georgia, serif;
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    position: relative;
-    padding-left: 20px;
-    color: var(--ac-text-primary);
-}
-
-h2::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 6px;
-    bottom: 6px;
-    width: 4px;
-    background: var(--ac-accent-current);
-    border-radius: 2px;
-}
-
-body.mode-practical h2::before {
-    content: '$ ';
-    position: static;
-    background: none;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--ac-accent-current);
-}
-
-h3 {
-    font-family: 'Source Serif 4', Georgia, serif;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 32px 0 16px;
-    color: var(--ac-text-primary);
-}
-
-p {
-    margin-bottom: 16px;
-    color: var(--ac-text-secondary);
-}
-
-body.mode-literary p {
-    text-align: justify;
-    hyphens: auto;
-    line-height: 1.85;
-}
-
-/* Drop cap pour le mode littéraire */
-body.mode-literary .drop-cap::first-letter {
-    float: left;
-    font-family: 'Source Serif 4', serif;
-    font-size: 4rem;
-    line-height: 0.8;
-    padding-right: 12px;
-    padding-top: 8px;
-    color: var(--ac-accent-current);
-}
-
-/* === Code Blocks === */
-.code-block {
-    background: var(--ac-code-bg);
-    border-radius: 8px;
-    padding: 20px 24px;
-    margin: 24px 0;
-    overflow-x: auto;
-    position: relative;
-}
-
-.code-block::before {
-    content: attr(data-lang);
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.code-block code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--ac-code-text);
-    line-height: 1.6;
-}
-
-.code-block .comment { color: #6272a4; }
-.code-block .keyword { color: #ff79c6; }
-.code-block .string { color: #f1fa8c; }
-.code-block .property { color: #8be9fd; }
-.code-block .value { color: #bd93f9; }
-
-code {
-    font-family: 'JetBrains Mono', monospace;
-    background: var(--ac-bg-tertiary);
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 0.9em;
-}
-
-/* === Blockquote === */
-blockquote {
-    border-left: 3px solid var(--ac-accent-current);
-    padding-left: 24px;
-    margin: 32px 0;
-    font-style: italic;
-    color: var(--ac-text-muted);
-}
-
-blockquote cite {
-    display: block;
-    margin-top: 12px;
-    font-size: 0.9rem;
-    font-style: normal;
-}
-
-/* === Timeline === */
-.timeline {
-    position: relative;
-    padding-left: 40px;
-    margin: 32px 0;
+/* Le surtitre suit le h1 dans le DOM (titre lu en premier) mais s'affiche au-dessus. */
+.slide .asc-hero .asc-kicker {
+  order: -1;
 }
 
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--ac-accent-current), var(--ac-border-color));
+.slide .asc-hero h1 {
+  margin-bottom: 1rem;
 }
 
-.timeline-item {
-    position: relative;
-    margin-bottom: 28px;
-    padding-bottom: 28px;
-    border-bottom: 1px dashed var(--ac-border-color);
+.slide .asc-kicker {
+  margin: 0 0 .5rem;
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
-.timeline-item:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
+.slide .asc-lead {
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  color: var(--color-text-muted);
 }
 
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    left: -36px;
-    top: 6px;
-    width: 12px;
-    height: 12px;
-    background: var(--ac-bg-primary);
-    border: 3px solid var(--ac-accent-current);
-    border-radius: 50%;
+.slide .asc-meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
 }
 
-.timeline-year {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--ac-accent-current);
-    margin-bottom: 6px;
-    font-weight: 500;
+/* Grille de cartes (fond et bordure : .slide-card de slide-base.css) */
+.slide .asc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
 }
 
-.timeline-title {
-    font-family: 'Source Serif 4', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--ac-text-primary);
+.slide .asc-grid > .slide-card {
+  margin: 0;
+  list-style: none;
+  padding: 1.1rem 1.25rem;
 }
 
-/* === Flow Diagram === */
-.illustration {
-    margin: 32px 0;
-    background: var(--ac-bg-secondary);
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid var(--ac-border-color);
+.slide .asc-grid h3 {
+  margin: 0 0 .4rem;
+  font-size: 1.05rem;
 }
 
-.illustration-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--ac-text-muted);
-    margin-bottom: 20px;
+.slide .asc-grid p {
+  margin: 0;
+  font-size: .95rem;
+  line-height: 1.6;
 }
 
-.flow-diagram {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
+.slide .asc-icon {
+  margin-right: .4rem;
 }
 
-.flow-node {
-    background: var(--ac-bg-card);
-    border: 2px solid var(--ac-border-color);
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    text-align: center;
-    min-width: 100px;
-    transition: all 0.3s ease;
-    color: var(--ac-text-primary);
+.slide .asc-tag {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
-.flow-node:hover {
-    border-color: var(--ac-accent-current);
-    transform: translateY(-2px);
+/* Liste de définitions (anti-patterns) */
+.slide .asc-defs dt {
+  font-weight: 700;
 }
 
-.flow-node.highlight {
-    background: var(--ac-accent-current);
-    color: var(--color-text-inverse);
-    border-color: var(--ac-accent-current);
+.slide .asc-defs dd {
+  margin: .15rem 0 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--color-border);
 }
 
-.flow-arrow {
-    color: var(--ac-accent-current);
-    font-size: 20px;
+/* Chiffres clés */
+.slide .asc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 0;
 }
 
-/* === Tool Grid === */
-.tool-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin: 24px 0;
+.slide .asc-stats > div {
+  padding: 1rem 0 0;
+  border-top: 2px solid var(--color-accent);
 }
 
-.tool-card {
-    background: var(--ac-bg-card);
-    border: 1px solid var(--ac-border-color);
-    border-radius: 8px;
-    padding: 16px;
-    transition: all 0.3s ease;
+.slide .asc-stats dt {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-accent);
 }
 
-.tool-card:hover {
-    border-color: var(--ac-accent-current);
-    transform: translateY(-2px);
+.slide .asc-stats dd {
+  margin: .4rem 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
 }
 
-.tool-card-icon {
-    width: 36px;
-    height: 36px;
-    background: var(--ac-bg-tertiary);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--ac-accent-current);
+/* Chaîne de traitement horizontale, repliée sur petit écran */
+.slide .asc-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
 }
 
-.tool-card h4 {
-    font-family: 'Source Serif 4', serif;
-    font-size: 1rem;
-    margin-bottom: 6px;
-    color: var(--ac-text-primary);
+.slide .asc-flow li {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  list-style: none;
+  font-size: var(--font-size-sm);
 }
 
-.tool-card p {
-    font-size: 0.85rem;
-    color: var(--ac-text-muted);
-    margin-bottom: 0;
+.slide .asc-flow span {
+  padding: .4rem .8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-secondary);
 }
 
-.tool-card .year {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--ac-accent-current);
+.slide .asc-flow li + li::before {
+  content: "→";
+  color: var(--color-text-muted);
 }
 
-/* === Stat Row === */
-.stat-row {
-    display: flex;
-    gap: 20px;
-    margin: 24px 0;
-    flex-wrap: wrap;
+/* Frise chronologique */
+.slide .asc-timeline {
+  margin: 1.75rem 0;
+  padding: 0 0 0 1.25rem;
+  border-left: 2px solid var(--color-border);
+  list-style: none;
 }
 
-.stat-box {
-    flex: 1;
-    min-width: 130px;
-    background: var(--ac-bg-secondary);
-    border: 1px solid var(--ac-border-color);
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
+.slide .asc-timeline > li {
+  position: relative;
+  list-style: none;
+  margin-bottom: 1.5rem;
 }
 
-.stat-box .number {
-    font-family: 'Source Serif 4', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--ac-accent-green);
+.slide .asc-timeline > li::before {
+  content: "";
+  position: absolute;
+  top: .55rem;
+  left: calc(-1.25rem - 6px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
 }
 
-.stat-box .label {
-    font-size: 0.8rem;
-    color: var(--ac-text-muted);
-    margin-top: 6px;
+.slide .asc-year {
+  display: block;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
 }
 
-/* === Summary Box === */
-.summary-box {
-    background: linear-gradient(135deg, var(--ac-accent-current), color-mix(in srgb, var(--ac-accent-current) 85%, var(--ac-bg-primary)));
-    color: var(--color-text-inverse);
-    padding: 24px;
-    border-radius: 12px;
-    margin: 32px 0;
+.slide .asc-timeline h3 {
+  margin: .1rem 0 .3rem;
+  font-size: 1.05rem;
 }
 
-.summary-box h3 {
-    color: var(--color-text-inverse);
-    margin-top: 0;
-    margin-bottom: 16px;
+.slide .asc-timeline p {
+  margin: 0;
 }
 
-.summary-box ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+/* Exemples de code : légende + bloc .slide pre de slide-base.css */
+.slide .asc-code {
+  margin: 1.5rem 0;
+  text-align: left;
 }
 
-.summary-box li {
-    padding: 6px 0;
-    padding-left: 24px;
-    position: relative;
+.slide .asc-code figcaption {
+  margin: 0 0 .4rem;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  letter-spacing: .04em;
+  color: var(--color-text-muted);
 }
 
-.summary-box li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: var(--color-text-inverse);
+.slide.slide .asc-code pre {
+  margin: 0;
 }
 
-/* === Caution Box === */
-.caution-box {
-    background: var(--ac-bg-secondary);
-    border-left: 4px solid var(--ac-accent-yellow);
-    padding: 20px 24px;
-    border-radius: 0 8px 8px 0;
-    margin: 24px 0;
+.slide caption {
+  /* Le tableau partagé passe en display:block : sans cela, la légende prend la largeur
+     de son texte sur une ligne et se retrouve coupée sur mobile. */
+  display: block;
+  caption-side: top;
+  padding-bottom: .5rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: left;
 }
 
-.caution-box h4 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--ac-accent-yellow);
-    margin-bottom: 12px;
-}
-
-.caution-box p {
-    margin-bottom: 0;
-}
+.slide .asc-tok-kw { color: var(--color-syntax-boolean); }
+.slide .asc-tok-key { color: var(--color-syntax-key); }
+.slide .asc-tok-str { color: var(--color-syntax-string); }
+.slide .asc-tok-com { color: var(--color-text-muted); font-style: italic; }
 
-/* === TOC === */
-.toc {
-    background: var(--ac-bg-secondary);
-    padding: 24px;
-    border-radius: 12px;
-    margin: 32px 0;
-    border: 1px solid var(--ac-border-color);
+/* Appels de note vers la slide Sources */
+.slide .asc-ref {
+  font-size: .75em;
+  vertical-align: super;
+  line-height: 0;
+  white-space: nowrap;
 }
 
-.toc h3 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0 0 16px 0;
-    color: var(--ac-text-muted);
+/* Bibliographie */
+.slide .asc-sources li {
+  margin-bottom: .9rem;
+  scroll-margin-top: 1.5rem;
 }
 
-.toc ol {
-    padding-left: 24px;
-    margin: 0;
+.slide .asc-sources li:target {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
 
-.toc li {
-    margin-bottom: 10px;
+/* Termes du glossaire : dfn balisés dans les slides */
+.slide dfn {
+  font-style: normal;
+  text-decoration: underline dotted var(--color-accent);
+  text-underline-offset: 3px;
+  cursor: help;
 }
 
-.toc a {
-    color: var(--ac-text-secondary);
-    text-decoration: none;
-    transition: color 0.2s ease;
+.glossary-tooltip {
+  position: absolute;
+  z-index: var(--z-dropdown);
+  max-width: min(20rem, calc(100vw - 1rem));
+  padding: .6rem .8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  box-shadow: 0 6px 18px var(--color-shadow);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
-.toc a:hover {
-    color: var(--ac-accent-current);
+.glossary-tooltip-header {
+  font-weight: 700;
+  color: var(--color-accent);
 }
 
-/* === Comparison Table === */
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 24px 0;
-    font-size: 0.9rem;
+.glossary-tooltip :is(.glossary-tooltip-short, .glossary-tooltip-see) {
+  margin: .25rem 0 0;
 }
 
-.comparison-table th,
-.comparison-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--ac-border-color);
+.glossary-tooltip-see {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
 }
 
-.comparison-table th {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: var(--ac-bg-secondary);
-    color: var(--ac-text-muted);
+/* Page glossaire générée par ParcoursGlossary.generateGlossaryPage() */
+.slide .glossary-list {
+  display: grid;
+  gap: .75rem;
+  margin: 0 0 2rem;
 }
 
-.comparison-table td {
-    color: var(--ac-text-secondary);
+.slide .glossary-entry {
+  padding-left: 1rem;
+  border-left: 2px solid var(--color-border);
 }
 
-.comparison-table tr:hover td {
-    background: var(--ac-bg-secondary);
+.slide .glossary-term-title {
+  font-weight: 700;
 }
 
-/* === Footnote === */
-.footnote {
-    font-size: 0.85rem;
-    color: var(--ac-text-muted);
-    border-top: 1px solid var(--ac-border-color);
-    padding-top: 16px;
-    margin-top: 40px;
+.slide .glossary-definition {
+  margin: 0;
 }
 
-.footnote sup {
-    color: var(--ac-accent-current);
+.slide .glossary-definition p {
+  margin: .2rem 0 0;
 }
 
-/* === Footer === */
-footer.ac-footer {
-    background: var(--ac-bg-secondary);
-    border-top: 1px solid var(--ac-border-color);
-    padding: 24px;
-    text-align: center;
-    color: var(--ac-text-muted);
-    font-size: 0.9rem;
+.slide .glossary-see {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
 }
-
-/* === Responsive === */
-@media (max-width: 768px) {
-    .mode-selector {
-        padding: 10px 16px;
-    }
-
-    .mode-btn {
-        padding: 6px 14px;
-        font-size: 11px;
-    }
 
-    .hero-section {
-        padding: 60px 20px;
-    }
-
-    .content {
-        padding: 24px 16px 60px;
-    }
-
-    .stat-row {
-        flex-direction: column;
-    }
-
-    .flow-diagram {
-        flex-direction: column;
-    }
-
-    .flow-arrow {
-        transform: rotate(90deg);
-    }
+@media (prefers-reduced-motion: reduce) {
+  .glossary-tooltip { transition: none; }
 }
-
-/* === Scrollbar === */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--ac-bg-primary); }
-::-webkit-scrollbar-thumb { background: var(--ac-border-color); border-radius: 4px; }

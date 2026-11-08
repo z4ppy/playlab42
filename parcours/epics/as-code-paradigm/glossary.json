@@ -1,0 +1,77 @@
+{
+  "terms": {
+    "IaC": {
+      "short": "Infrastructure as Code : serveurs, réseaux et services décrits dans des fichiers versionnés, appliqués par des outils plutôt que configurés à la main.",
+      "see": ["OpenTofu", "Drift"],
+      "category": "Concepts"
+    },
+    "Idempotence": {
+      "short": "Propriété d'une opération qui produit le même résultat qu'on l'exécute une fois ou dix fois.",
+      "see": ["Convergence"],
+      "category": "Concepts"
+    },
+    "Convergence": {
+      "short": "Rapprochement progressif d'un système de l'état décrit, à chaque exécution de l'outil de configuration.",
+      "see": ["Idempotence", "Réconciliation"],
+      "category": "Concepts"
+    },
+    "Drift": {
+      "short": "Dérive : écart entre l'état réel d'un système et l'état décrit dans le dépôt, souvent dû à une modification manuelle.",
+      "see": ["Réconciliation"],
+      "category": "Concepts"
+    },
+    "GitOps": {
+      "short": "Exploitation où l'état voulu, déclaratif et versionné dans Git, est tiré et réconcilié en continu par des agents.",
+      "see": ["Réconciliation", "Drift"],
+      "category": "Concepts"
+    },
+    "Réconciliation": {
+      "short": "Boucle d'un agent qui compare en continu l'état réel à l'état voulu et corrige les écarts.",
+      "see": ["GitOps", "Convergence"],
+      "category": "Concepts"
+    },
+    "Promise Theory": {
+      "short": "Modèle de Mark Burgess (DSOM 2005) où des agents autonomes promettent un état au lieu de recevoir des ordres.",
+      "see": ["Convergence"],
+      "category": "Concepts"
+    },
+    "Catalog-as-Code": {
+      "short": "Gestion d'un inventaire (services, outils, contenus) dans des fichiers versionnés, validés puis publiés par un pipeline.",
+      "see": ["Backstage"],
+      "category": "Concepts"
+    },
+    "OPA": {
+      "short": "Open Policy Agent : moteur open source qui évalue des politiques écrites en Rego, par exemple pour Kubernetes.",
+      "see": ["Rego"],
+      "category": "Outils"
+    },
+    "Rego": {
+      "short": "Langage déclaratif des politiques OPA. Depuis OPA 1.0, les mots-clés if et contains sont obligatoires.",
+      "see": ["OPA"],
+      "category": "Outils"
+    },
+    "CRD": {
+      "short": "Custom Resource Definition : extension de l'API Kubernetes qui ajoute un nouveau type de ressource déclarative.",
+      "category": "Outils"
+    },
+    "Backstage": {
+      "short": "Portail développeur open source créé par Spotify, dont le catalogue lit des fichiers catalog-info.yaml.",
+      "see": ["Catalog-as-Code"],
+      "category": "Outils"
+    },
+    "OpenTofu": {
+      "short": "Fork open source de Terraform lancé en 2023 par la Linux Foundation, projet CNCF depuis 2025.",
+      "see": ["BUSL", "IaC"],
+      "category": "Outils"
+    },
+    "BUSL": {
+      "short": "Business Source License : licence à sources disponibles qui restreint certains usages concurrents, adoptée par HashiCorp en 2023.",
+      "see": ["OpenTofu"],
+      "category": "Pilotage et licences"
+    },
+    "RTO": {
+      "short": "Recovery Time Objective : durée maximale acceptable pour rétablir un service après un incident.",
+      "category": "Pilotage et licences"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "id": "02-histoire",
+  "title": "De CFEngine à DevOps (1993-2009)",
+  "icon": "🌿",
+  "description": "Les racines du paradigme : CFEngine, Puppet, la Promise Theory et la naissance du mouvement DevOps.",
+  "duration": "3 min",
+  "type": "page"
+}
