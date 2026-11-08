@@ -16,11 +16,15 @@ import { loadParcoursCatalogue, renderParcours } from './app/parcours.js';
 import { loadBookmarksCatalogue, renderBookmarks } from './app/bookmarks.js';
 import { updateSoundButton } from './app/game-loader.js';
 import { initRouter } from './app/router.js';
+import { initBrand } from './app/brand.js';
 
 /**
  * Initialise l'application
  */
 async function init() {
+  // Animations d'identité : décoratives, lancées avant le chargement des catalogues
+  initBrand();
+
   // Charger les préférences utilisateur
   loadPreferences();
 
