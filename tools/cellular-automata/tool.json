@@ -1,0 +1,9 @@
+{
+  "id": "cellular-automata",
+  "name": "Automate cellulaire",
+  "description": "Automates élémentaires de Wolfram (règles 0-255) et de type Life (B/S) : dessinez au doigt, posez des planeurs et canons, partagez par lien",
+  "icon": "🧬",
+  "tags": ["simulation", "emergent", "math", "education"],
+  "author": "Cyrille",
+  "version": "1.0.0"
+}

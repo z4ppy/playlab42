@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Automates cellulaires élémentaires (Wolfram) et de type Life, à explorer au doigt.">
+  <title>Automate cellulaire - Playlab42</title>
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module">
+    // Appliqué au plus tôt pour éviter un flash de thème.
+    import { initTheme } from '../../lib/theme.js';
+    initTheme();
+  </script>
+  <script type="module" src="./src/main.js"></script>
+</head>
+<body>
+  <div class="app" id="app" data-mode="2d" data-tool="draw" data-sheet="closed">
+    <header class="topbar">
+      <h1 class="title"><span class="title-icon" aria-hidden="true">▦</span> Automate cellulaire</h1>
+      <div class="segmented" role="group" aria-label="Type d'automate">
+        <button type="button" class="segmented-btn" data-set-mode="1d" aria-pressed="false" title="Automate élémentaire à une dimension">1D</button>
+        <button type="button" class="segmented-btn" data-set-mode="2d" aria-pressed="true" title="Automate de type Life à deux dimensions">2D</button>
+      </div>
+      <button type="button" class="icon-btn" id="theme-toggle" aria-label="Basculer entre thème clair et sombre" title="Thème clair / sombre">
+        <span aria-hidden="true">◐</span>
+      </button>
+    </header>
+
+    <main class="stage" id="stage">
+      <canvas id="board" class="board" tabindex="0" role="application" aria-roledescription="grille" aria-label="Grille de l'automate cellulaire" aria-describedby="board-help"></canvas>
+      <p class="sr-only" id="board-help">Flèches : déplacer le curseur. Entrée : basculer la cellule ou poser le motif choisi. Majuscule et flèches : déplacer la vue. Plus, moins et zéro : zoom. Espace : lecture ou pause.</p>
+      <p class="sr-only" id="board-status" aria-live="polite"></p>
+      <div class="hud" aria-live="off">
+        <span class="hud-item">Gén. <strong id="hud-generation">0</strong></span>
+        <span class="hud-item" data-only="2d">Pop. <strong id="hud-population">0</strong></span>
+        <span class="hud-item hud-rule" id="hud-rule">B3/S23</span>
+      </div>
+      <div class="pattern-chip" id="pattern-chip" data-only="2d">
+        <span class="pattern-chip-label">Motif : <strong id="pattern-chip-name">Planeur</strong></span>
+        <button type="button" class="icon-btn icon-btn--small" id="rotate-pattern" aria-label="Tourner le motif d'un quart de tour" title="Tourner le motif">
+          <span aria-hidden="true">↻</span>
+        </button>
+      </div>
+      <div class="zoom-controls" data-only="2d" role="group" aria-label="Zoom">
+        <button type="button" class="icon-btn" id="zoom-in" aria-label="Zoomer" title="Zoomer"><span aria-hidden="true">+</span></button>
+        <button type="button" class="icon-btn" id="zoom-out" aria-label="Dézoomer" title="Dézoomer"><span aria-hidden="true">−</span></button>
+        <button type="button" class="icon-btn" id="zoom-fit" aria-label="Voir toute la grille" title="Voir toute la grille"><span aria-hidden="true">⤢</span></button>
+      </div>
+      <p class="toast" id="toast" role="status" aria-live="polite" hidden>
+        <span id="toast-text"></span>
+        <button type="button" class="toast-action" id="toast-action" hidden>Annuler</button>
+      </p>
+    </main>
+
+    <section class="sheet" id="sheet" aria-label="Réglages">
+      <!-- ===== Réglages 1D ===== -->
+      <div class="sheet-section" data-only="1d">
+        <h2 class="sheet-title">Règle élémentaire</h2>
+        <div class="rule-number">
+          <button type="button" class="icon-btn" id="rule-dec" aria-label="Règle précédente"><span aria-hidden="true">−</span></button>
+          <label class="field field--grow">
+            <span class="field-label">Numéro (0-255)</span>
+            <input type="number" id="rule-input" class="input" min="0" max="255" step="1" inputmode="numeric" value="30">
+          </label>
+          <button type="button" class="icon-btn" id="rule-inc" aria-label="Règle suivante"><span aria-hidden="true">+</span></button>
+        </div>
+        <label class="field">
+          <span class="sr-only">Curseur de règle</span>
+          <input type="range" id="rule-range" class="range" min="0" max="255" step="1" value="30">
+        </label>
+        <div class="chips" role="group" aria-label="Règles célèbres" id="famous-rules"></div>
+        <p class="hint" id="famous-rule-label"></p>
+      </div>
+
+      <div class="sheet-section" data-only="1d">
+        <h2 class="sheet-title">Table des 8 motifs</h2>
+        <p class="hint">Touchez un motif pour inverser la cellule produite : le numéro de règle est l'écriture binaire de cette table.</p>
+        <div class="rule-table" id="rule-table" role="group" aria-label="Table de la règle"></div>
+      </div>
+
+      <div class="sheet-section" data-only="1d">
+        <h2 class="sheet-title">Ligne de départ</h2>
+        <div class="button-row">
+          <button type="button" class="btn" id="row-center">Une cellule au centre</button>
+          <button type="button" class="btn" id="row-random">Aléatoire</button>
+        </div>
+        <label class="field">
+          <span class="field-label">Largeur</span>
+          <select id="width-select" class="input"></select>
+        </label>
+      </div>
+
+      <!-- ===== Réglages 2D ===== -->
+      <div class="sheet-section" data-only="2d">
+        <h2 class="sheet-title">Règle B/S</h2>
+        <label class="field">
+          <span class="field-label">Préréglage</span>
+          <select id="life-preset" class="input"></select>
+        </label>
+        <label class="field">
+          <span class="field-label">Notation (B = naissance, S = survie)</span>
+          <input type="text" id="life-input" class="input input--mono" value="B3/S23" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="life-status">
+        </label>
+        <p class="hint" id="life-status" aria-live="polite">Une cellule naît avec 3 voisines et survit avec 2 ou 3.</p>
+      </div>
+
+      <div class="sheet-section" data-only="2d">
+        <h2 class="sheet-title">Motifs</h2>
+        <p class="hint">Choisissez un motif puis touchez la grille : glissez pour viser, relâchez pour poser.</p>
+        <div class="pattern-list" id="pattern-list"></div>
+      </div>
+
+      <div class="sheet-section" data-only="2d">
+        <h2 class="sheet-title">Remplir</h2>
+        <label class="field">
+          <span class="field-label">Densité : <output id="density-value" for="density">30 %</output></span>
+          <input type="range" id="density" class="range" min="5" max="80" step="5" value="30" aria-label="Densité de remplissage" aria-valuetext="30 %">
+        </label>
+        <div class="button-row">
+          <button type="button" class="btn" id="randomize">Aléatoire</button>
+          <button type="button" class="btn btn--danger" id="clear">Tout effacer</button>
+        </div>
+        <label class="field">
+          <span class="field-label">Taille de la grille</span>
+          <select id="size-select" class="input"></select>
+        </label>
+      </div>
+
+      <!-- ===== Commun ===== -->
+      <div class="sheet-section">
+        <h2 class="sheet-title">Affichage et partage</h2>
+        <label class="switch">
+          <input type="checkbox" id="trace-toggle" checked>
+          <span>Couleurs selon l'âge et traînée</span>
+        </label>
+        <div class="button-row">
+          <button type="button" class="btn" id="share-link">Copier le lien</button>
+          <button type="button" class="btn" id="export-png">Exporter en PNG</button>
+        </div>
+        <label class="field" id="share-field" hidden>
+          <span class="field-label">Lien à partager</span>
+          <input type="url" id="share-url" class="input" readonly>
+        </label>
+        <p class="hint hint--desktop">Clavier : Espace = lecture/pause, → = pas suivant, Ctrl+Z = annuler « Tout effacer » ou « Aléatoire ». Sur la grille (Tab) : flèches = curseur, Entrée = basculer la cellule ou poser le motif, Maj+flèches = vue, + / − / 0 = zoom.</p>
+      </div>
+    </section>
+
+    <nav class="controls" aria-label="Commandes">
+      <div class="transport">
+        <button type="button" class="ctrl-btn" id="restart" title="Revenir à la génération 0">
+          <span class="ctrl-icon" aria-hidden="true">⟲</span><span class="ctrl-label">Début</span>
+        </button>
+        <button type="button" class="ctrl-btn ctrl-btn--primary" id="play">
+          <span class="ctrl-icon" aria-hidden="true" id="play-icon">▶</span><span class="ctrl-label" id="play-label">Lecture</span>
+        </button>
+        <button type="button" class="ctrl-btn" id="step" title="Avancer d'une génération">
+          <span class="ctrl-icon" aria-hidden="true">⇥</span><span class="ctrl-label">Pas</span>
+        </button>
+        <label class="speed">
+          <span class="speed-label">Vitesse <output id="speed-value" for="speed">30/s</output></span>
+          <input type="range" id="speed" class="range" min="0" max="11" step="1" value="7" aria-label="Vitesse en générations par seconde">
+        </label>
+      </div>
+      <div class="tools" role="group" aria-label="Outils">
+        <button type="button" class="ctrl-btn" data-tool="draw" aria-pressed="true">
+          <span class="ctrl-icon" aria-hidden="true">✏</span><span class="ctrl-label">Dessiner</span>
+        </button>
+        <button type="button" class="ctrl-btn" data-tool="erase" aria-pressed="false">
+          <span class="ctrl-icon" aria-hidden="true">⌫</span><span class="ctrl-label">Effacer</span>
+        </button>
+        <button type="button" class="ctrl-btn" data-tool="pan" aria-pressed="false" data-only="2d" title="Déplacer la vue">
+          <span class="ctrl-icon" aria-hidden="true">✥</span><span class="ctrl-label">Vue</span>
+        </button>
+        <button type="button" class="ctrl-btn" data-tool="pattern" aria-pressed="false" data-only="2d">
+          <span class="ctrl-icon" aria-hidden="true">◆</span><span class="ctrl-label">Motif</span>
+        </button>
+        <button type="button" class="ctrl-btn" id="quick-random" data-only="1d">
+          <span class="ctrl-icon" aria-hidden="true">⁂</span><span class="ctrl-label">Hasard</span>
+        </button>
+        <button type="button" class="ctrl-btn" id="quick-center" data-only="1d">
+          <span class="ctrl-icon" aria-hidden="true">·</span><span class="ctrl-label">Centre</span>
+        </button>
+        <button type="button" class="ctrl-btn" id="sheet-toggle" aria-expanded="false" aria-controls="sheet" title="Réglages, motifs et partage">
+          <span class="ctrl-icon" aria-hidden="true">⚙</span><span class="ctrl-label">Options</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+</body>
+</html>
