@@ -36,6 +36,14 @@
   background: var(--color-bg-secondary);
   color: var(--color-text);
   font: inherit;
+  /* WCAG 1.4.11 : le contour d'un champ ou d'un bouton secondaire doit contraster
+   * d'au moins 3:1 avec le fond. --color-border (≈1,6:1) reste réservé aux
+   * séparateurs décoratifs ; ce mélange atteint ≥3,4:1 dans les deux palettes,
+   * thème automatique compris, sans nouveau token. La ligne précédente sert de
+   * repli aux navigateurs sans color-mix(). */
+  border-color: color-mix(in srgb, var(--color-text-muted) 70%, var(--color-border));
+  /* Curseurs, cases et radios natifs suivent l'accent du thème au lieu du bleu système. */
+  accent-color: var(--color-accent);
 }
 .ui-button { cursor: pointer; transition: border-color var(--transition-fast); }
 .ui-button:hover:not(:disabled) { border-color: var(--color-accent); }
@@ -55,7 +63,8 @@ textarea.ui-field { resize: vertical; }
 .ui-status-warning { border-color: var(--color-warning); }
 .ui-status-error { border-color: var(--color-error); }
 .ui-badge { display: inline-block; padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius-full); }
-.ui-code { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: var(--font-size-sm); padding: var(--space-md); border-radius: var(--radius-sm); background: var(--color-bg-secondary); }
+/* Fond de page plutôt que --color-bg-secondary : en clair, celui-ci est blanc comme la carte et le bloc disparaissait. */
+.ui-code { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: var(--font-size-sm); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg); }
 .ui-dialog {
   width: min(36rem, calc(100% - 2rem));
   max-height: calc(100% - 2rem);

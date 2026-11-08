@@ -42,3 +42,70 @@ test('Galerie UI mobile: themes partages, tokens effectifs et aucun debordement'
     await expectNoOverflow(page);
   }
 });
+
+// Contraste WCAG entre la couleur `property` de `selector` et le fond de `backdrop`.
+function contrastIn(page, selector, property, backdrop) {
+  return page.evaluate(([target, prop, behind]) => {
+    // Le canvas normalise toute syntaxe CSS (rgb, color-mix résolu...) en canaux sRGB.
+    const channels = color => {
+      const context = document.createElement('canvas').getContext('2d');
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+    };
+    const luminance = rgb => {
+      const [r, g, b] = rgb.map(value => {
+        const v = value / 255;
+        return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const front = luminance(channels(getComputedStyle(document.querySelector(target))[prop]));
+    const back = luminance(channels(getComputedStyle(document.querySelector(behind)).backgroundColor));
+    return (Math.max(front, back) + 0.05) / (Math.min(front, back) + 0.05);
+  }, [selector, property, backdrop]);
+}
+
+// Le mode automatique (sans data-theme) doit être aussi soigné que les choix explicites.
+const THEME_MODES = [
+  { label: 'clair', option: 'light', scheme: 'dark' },
+  { label: 'sombre', option: 'dark', scheme: 'light' },
+  { label: 'automatique clair', option: 'system', scheme: 'light' },
+  { label: 'automatique sombre', option: 'system', scheme: 'dark' },
+];
+
+for (const { label, option, scheme } of THEME_MODES) {
+  test(`Galerie UI theme ${label}: contours, code et accent lisibles`, async ({ page }) => {
+    // Mouvement réduit : la transition de bordure des boutons ne fausse pas la mesure.
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
+    await page.goto('/tools/ui-kit/index.html');
+    await page.locator('#theme').selectOption(option);
+    if (option === 'system') {
+      await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+    }
+    // WCAG 1.4.11 : contour des champs et boutons secondaires >= 3:1 sur leur carte ou la page.
+    for (const [control, backdrop] of [
+      ['#card-title', '.ui-card:has(#preview-form)'],
+      ['#secondary', '.ui-card:has(#primary)'],
+      ['#theme', 'body'],
+    ]) {
+      expect(await contrastIn(page, control, 'borderTopColor', backdrop), `${control} (${label})`)
+        .toBeGreaterThanOrEqual(3);
+    }
+    // Le bloc de code se distingue de sa carte (il était blanc sur blanc en clair).
+    expect(await page.locator('#token-code').evaluate(code =>
+      getComputedStyle(code.parentElement).backgroundColor !==
+        getComputedStyle(code.closest('.ui-card')).backgroundColor,
+    )).toBe(true);
+    // Le curseur natif prend l'accent du thème courant plutôt que le bleu système.
+    const [accentColor, expected] = await page.locator('#spacing').evaluate(range => {
+      const probe = document.createElement('span');
+      probe.style.color = 'var(--color-accent)';
+      document.body.append(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      return [getComputedStyle(range).accentColor, color];
+    });
+    expect(accentColor).toBe(expected);
+  });
+}
