@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agents en arrière-plan dans le cloud - Développement parallèle avec agents IA</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <article class="slide">
+    <h1>☁️ Agents en arrière-plan dans le cloud</h1>
+
+    <p>
+      Les principaux éditeurs proposent d'exécuter un agent <strong>hors de votre machine</strong>.
+      Chaque tâche obtient sa propre machine virtuelle ou son conteneur, clone le dépôt, travaille sur une branche
+      et vous rend une pull request. C'est le même principe que « un worktree par agent », poussé jusqu'à
+      « une machine par agent ».
+    </p>
+
+    <h2>Panorama au 8 novembre 2026</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Agents cloud par éditeur">
+      <table>
+        <thead><tr><th>Offre</th><th>Où tourne l'agent</th><th>Comment le lancer</th><th>Résultat</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Claude Code on the web (Anthropic)</td>
+            <td>VM isolée gérée par Anthropic</td>
+            <td>claude.ai/code, ou <code>claude --cloud "…"</code> depuis le terminal</td>
+            <td>Branche poussée, PR créée depuis l'interface</td>
+          </tr>
+          <tr>
+            <td>Codex cloud (OpenAI)</td>
+            <td>Un espace de travail par tâche, qui continue même ordinateur en veille</td>
+            <td>Interface Codex</td>
+            <td>Commit ou pull request quand vous le décidez</td>
+          </tr>
+          <tr>
+            <td>Copilot cloud agent (GitHub)</td>
+            <td>Environnement basé sur GitHub Actions</td>
+            <td>Assigner une issue à Copilot, ou <code>/delegate</code> depuis Copilot CLI</td>
+            <td>Pull request en brouillon, revue demandée</td>
+          </tr>
+          <tr>
+            <td>Cursor Cloud Agents</td>
+            <td>VM cloud avec environnement de développement complet</td>
+            <td>Cursor</td>
+            <td>PR prête à relire, avec démonstration des changements</td>
+          </tr>
+          <tr>
+            <td>Jules (Google)</td>
+            <td>VM cloud</td>
+            <td>jules.google, ou label <code>jules</code> sur une issue</td>
+            <td>Plan à valider, puis PR</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Noms et fonctions bougent vite : l'agent de Copilot s'appelait « Copilot coding agent » jusqu'en avril 2026,
+      et les Cloud Agents de Cursor s'appelaient « Background Agents ». Vérifiez la documentation de l'éditeur avant une démonstration.
+    </p>
+
+    <h2>Lancer plusieurs tâches depuis le terminal</h2>
+    <p>Avec Claude Code, chaque commande <code>--cloud</code> crée une session indépendante ; elles tournent simultanément :</p>
+<pre><code class="language-bash">claude --cloud "Implémente la spec specs/notif-backend.md"
+claude --cloud "Implémente la spec specs/notif-api.md"
+
+# Récupérer une session cloud dans le terminal pour la terminer en local
+claude --teleport</code></pre>
+    <p>
+      Le passage se fait du cloud vers le terminal ; on ne pousse pas une session de terminal existante vers le cloud depuis la CLI.
+      L'ancienne option <code>--remote</code> reste acceptée mais est dépréciée.
+    </p>
+
+    <h2>Ce que le cloud règle… et ce qu'il ne règle pas</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Avantages et limites des agents cloud">
+      <table>
+        <thead><tr><th>Réglé</th><th>Toujours à votre charge</th></tr></thead>
+        <tbody>
+          <tr><td>Conflits de ports, de base de données et de RAM sur votre poste</td><td>Décrire l'environnement : dépendances, script d'installation, accès réseau</td></tr>
+          <tr><td>Votre machine reste libre ; le travail continue pendant que vous êtes absent</td><td>La revue de chaque PR et l'ordre d'intégration</td></tr>
+          <tr><td>Isolation forte entre tâches</td><td>Le coût : chaque tâche consomme quotas, crédits ou minutes de calcul</td></tr>
+          <tr><td>Traçabilité : une branche et une PR par tâche</td><td>Les secrets : ne donnez que les accès nécessaires à la tâche</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-warning">
+      <p>
+        <strong>Une issue est une entrée non fiable.</strong> Un agent qui lit une issue, un commentaire ou une page web
+        peut y trouver des instructions écrites par un tiers (injection de prompt). Limitez ses permissions et
+        son accès réseau, et relisez la PR comme celle d'un contributeur inconnu.
+      </p>
+    </div>
+
+    <h2>Et en local, un bac à sable ?</h2>
+    <p>
+      Si vous voulez l'isolation sans le cloud, Docker Sandboxes exécute un agent dans un environnement isolé
+      sur votre machine, par exemple <code>sbx run claude ~/mon-projet</code>. Lisez sa documentation pour savoir
+      quels fichiers, réseaux et permissions l'agent y reçoit.
+    </p>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://code.claude.com/docs/en/claude-code-on-the-web" target="_blank" rel="noopener noreferrer">Claude Code on the web</a>,
+      <a href="https://learn.chatgpt.com/docs/cloud" target="_blank" rel="noopener noreferrer">Codex cloud</a>,
+      <a href="https://docs.github.com/en/copilot/how-tos/use-copilot-agents/cloud-agent/use-cloud-agent-on-github" target="_blank" rel="noopener noreferrer">Copilot cloud agent</a>,
+      <a href="https://github.blog/changelog/2026-04-01-research-plan-and-code-with-copilot-cloud-agent/" target="_blank" rel="noopener noreferrer">changelog GitHub du 1er avril 2026</a>,
+      <a href="https://cursor.com/docs/cloud-agent" target="_blank" rel="noopener noreferrer">Cursor Cloud Agents</a>,
+      <a href="https://jules.google" target="_blank" rel="noopener noreferrer">Jules</a>,
+      <a href="https://docs.docker.com/ai/sandboxes/agents/claude-code/" target="_blank" rel="noopener noreferrer">Docker Sandboxes</a>.
+    </p>
+  </article>
+</body>
+</html>

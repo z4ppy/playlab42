@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paralléliser dans une session - Développement parallèle avec agents IA</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <article class="slide">
+    <h1>🧩 Paralléliser dans une session : les sous-agents</h1>
+
+    <p>
+      Jusqu'ici, <strong>vous</strong> lancez plusieurs agents et vous les coordonnez.
+      Les agents récents savent aussi le faire eux-mêmes : une session principale délègue des sous-tâches
+      à des <dfn>sous-agents</dfn>, attend leurs résultats et les intègre.
+    </p>
+
+    <h2>Trois niveaux de parallélisme</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Niveaux de parallélisme">
+      <table>
+        <thead><tr><th>Niveau</th><th>Qui coordonne ?</th><th>Isolation</th><th>Bon usage</th></tr></thead>
+        <tbody>
+          <tr><td>Sous-agents dans une session</td><td>L'agent principal</td><td>Contexte séparé ; fichiers partagés, sauf si un worktree est demandé</td><td>Explorer, analyser, écrire des tests sur des zones distinctes</td></tr>
+          <tr><td>Sessions locales en worktrees</td><td>Vous</td><td>Un worktree et une branche par session</td><td>Plusieurs features indépendantes que vous suivez de près</td></tr>
+          <tr><td>Agents cloud</td><td>Vous, via les PR</td><td>Une machine par tâche</td><td>Tâches bien spécifiées, longues, à relire plus tard</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Les sous-agents de Claude Code</h2>
+    <p>
+      Chaque sous-agent a <strong>sa propre fenêtre de contexte</strong>, son prompt système, ses outils et ses permissions.
+      La session principale ne reçoit que son résultat, ce qui la garde lisible. Des sous-agents en arrière-plan
+      peuvent tourner en même temps pendant que vous continuez à travailler ; <code>/tasks</code> les liste.
+    </p>
+    <p>On les définit dans <code>.claude/agents/</code> (projet) ou <code>~/.claude/agents/</code> (personnel) :</p>
+<pre><code class="language-markdown">---
+name: redacteur-tests
+description: Écrit des tests unitaires pour un module donné, sans modifier le code de production
+tools: Read, Grep, Glob, Edit, Bash
+isolation: worktree
+---
+Tu écris des tests Jest en français pour le module indiqué.
+Tu ne modifies que les fichiers de test. Tu termines par la liste des tests ajoutés
+et le résultat de leur exécution.</code></pre>
+    <p>
+      <code>isolation: worktree</code> fait travailler le sous-agent dans un worktree temporaire,
+      supprimé automatiquement s'il n'a rien modifié. Attention : ce worktree part par défaut de la
+      <strong>branche par défaut</strong> du dépôt, pas de votre <code>HEAD</code> ; un travail non poussé sur votre branche n'y figure pas. Sans cette option, les sous-agents écrivent dans les
+      mêmes fichiers que la session principale : ne leur confiez alors que des zones disjointes.
+    </p>
+
+    <h3>Agent teams (expérimental)</h3>
+    <p>
+      Claude Code propose aussi des <em>équipes</em> : une session « chef » et des coéquipiers, chacun avec son contexte,
+      qui partagent une liste de tâches et s'envoient des messages. La fonction est expérimentale et désactivée par défaut
+      (variable <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>). Réservez-la à l'expérimentation.
+    </p>
+
+    <h2>Chez les autres outils</h2>
+    <ul>
+      <li><strong>Copilot CLI</strong> : <code>/fleet</code> répartit des tâches indépendantes entre sous-agents. Voir le chapitre Fleet du parcours GitHub Copilot.</li>
+      <li><strong>Cursor</strong> : <code>/best-of-n</code> lance la même tâche sur plusieurs modèles, chacun dans son worktree, pour comparer les résultats.</li>
+    </ul>
+
+    <h2>Avant de déléguer</h2>
+    <ol>
+      <li>Ne parallélisez que des tâches <strong>indépendantes</strong> : un sous-agent qui attend une décision d'un autre ne gagne rien.</li>
+      <li>Attribuez une zone de fichiers à chaque sous-agent, ou demandez l'isolation en worktree.</li>
+      <li>Exigez une sortie vérifiable : fichiers touchés, commandes lancées et leur résultat, questions ouvertes.</li>
+      <li>Relancez les validations transversales (tests, lint) après l'intégration, pas seulement dans chaque sous-agent.</li>
+    </ol>
+
+    <div class="callout callout-info">
+      <p>
+        <strong>Le coût.</strong> Chaque sous-agent relit du contexte et appelle des outils et des modèles.
+        Le parallélisme réduit le temps d'attente mais <strong>augmente la consommation totale</strong>.
+        Pour lire deux petits fichiers, un seul agent suffit.
+      </p>
+    </div>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener noreferrer">sous-agents Claude Code</a>,
+      <a href="https://code.claude.com/docs/en/agent-teams" target="_blank" rel="noopener noreferrer">agent teams</a>,
+      <a href="https://docs.github.com/en/copilot/concepts/agents/copilot-cli/fleet" target="_blank" rel="noopener noreferrer">Fleet (Copilot CLI)</a>,
+      <a href="https://cursor.com/docs/configuration/worktrees" target="_blank" rel="noopener noreferrer">worktrees Cursor</a>.
+    </p>
+  </article>
+</body>
+</html>

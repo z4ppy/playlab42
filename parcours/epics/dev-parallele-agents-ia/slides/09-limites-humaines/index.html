@@ -10,244 +10,89 @@
     import { initTheme } from '../../../../../lib/theme.js';
     initTheme();
   </script>
-  <style>
-    .intro-text {
-      font-size: var(--font-size-lg);
-      color: var(--color-text-muted);
-      font-style: italic;
-      margin: var(--space-lg) 0;
-      padding-left: var(--space-lg);
-      border-left: 3px solid var(--color-accent);
-    }
-    .concept-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-    }
-    .concept-section h3 {
-      margin-top: 0;
-    }
-    .stats-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-lg);
-      margin: var(--space-lg) 0;
-    }
-    .stat-highlight {
-      background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg-tertiary) 100%);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      flex: 1;
-      min-width: 200px;
-      text-align: center;
-      border: 2px solid var(--color-accent);
-    }
-    .stat-highlight .value {
-      font-size: 3rem;
-      font-weight: bold;
-      color: var(--color-accent);
-      line-height: 1;
-    }
-    .stat-highlight .unit {
-      font-size: var(--font-size-lg);
-      color: var(--color-text-muted);
-    }
-    .stat-highlight .label {
-      margin-top: var(--space-sm);
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .memory-gauge {
-      background: var(--color-bg-code);
-      border-radius: var(--radius-lg);
-      padding: var(--space-lg);
-      margin: var(--space-lg) 0;
-    }
-    .gauge-bar {
-      display: flex;
-      gap: var(--space-xs);
-      margin: var(--space-md) 0;
-    }
-    .gauge-slot {
-      flex: 1;
-      height: 40px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: var(--font-size-sm);
-    }
-    .gauge-slot.filled {
-      background: var(--color-accent);
-      color: white;
-    }
-    .gauge-slot.empty {
-      background: var(--color-bg-secondary);
-      color: var(--color-text-muted);
-      border: 2px dashed var(--color-border);
-    }
-    .gauge-label {
-      text-align: center;
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .timeline-visual {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin: var(--space-lg) 0;
-    }
-    .timeline-bar {
-      height: 20px;
-      background: linear-gradient(90deg, var(--color-error) 0%, var(--color-error) 40%, var(--color-success) 40%, var(--color-success) 100%);
-      border-radius: var(--radius-md);
-      margin: var(--space-md) 0;
-      position: relative;
-    }
-    .timeline-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: var(--font-size-sm);
-      color: var(--color-text-muted);
-    }
-    .implication-box {
-      background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%);
-      border: 2px solid var(--color-accent);
-      border-radius: var(--radius-lg);
-      padding: var(--space-lg);
-      margin: var(--space-xl) 0;
-    }
-    .implication-box h3 {
-      margin-top: 0;
-      color: var(--color-accent);
-    }
-    .references-section {
-      background: var(--color-bg-secondary);
-      padding: var(--space-lg);
-      border-radius: var(--radius-lg);
-      margin-top: var(--space-xl);
-    }
-    .references-section h3 {
-      margin-top: 0;
-    }
-    .references-section ul {
-      font-size: var(--font-size-sm);
-      margin-bottom: 0;
-    }
-    .references-section li {
-      margin-bottom: var(--space-sm);
-    }
-  </style>
 </head>
 <body>
   <article class="slide">
     <h1>🧠 Pour aller plus loin : comprendre les limites humaines</h1>
-
-    <p class="intro-text">
-      Cette section est pour ceux qui veulent comprendre pourquoi on recommande 4-6 agents max, pas 20.
+    <p>
+      Pourquoi recommander quelques agents à la fois, et pas vingt ? Les agents passent à l'échelle ;
+      notre attention, beaucoup moins. Voici ce que dit la recherche, avec ses nuances.
     </p>
 
-    <div class="concept-section">
-      <h3>📊 La mémoire de travail</h3>
+    <h2>📊 La mémoire de travail</h2>
+    <p>
+      George Miller (1956) évoquait une limite de « sept, plus ou moins deux » éléments.
+      Nelson Cowan (2001) a réexaminé les données et propose plutôt <strong>environ quatre « chunks »</strong>,
+      des groupes d'informations liées entre elles.
+    </p>
+    <p>
+      Pour le multi-agents, une conséquence pratique : garder en tête l'état détaillé de plus de trois ou quatre tâches
+      distinctes devient difficile. C'est une règle d'usage, pas un seuil mesuré sur des développeurs.
+    </p>
 
+    <h2>⏱️ Le coût du changement de tâche</h2>
+    <ul>
+      <li>
+        Les expériences de Rubinstein, Meyer et Evans (2001) montrent qu'alterner entre tâches a un coût mesurable,
+        de l'ordre de quelques dixièmes de seconde par bascule dans leurs tâches de laboratoire.
+      </li>
+      <li>
+        Le chiffre souvent cité de « jusqu'à 40 % du temps productif » est une <strong>estimation de David Meyer</strong>
+        reprise par l'APA (<em>Multitasking: Switching costs</em>, 2006), et non un résultat de l'étude de 2001.
+      </li>
+      <li>
+        Gloria Mark et ses collègues (CHI 2005) ont observé que, lorsqu'une tâche interrompue est reprise le même jour,
+        elle l'est en moyenne <strong>environ 25 minutes plus tard</strong>, après deux autres activités en moyenne.
+        Le chiffre de « 23 minutes » vient d'une interview de Gloria Mark (Gallup, 2006). Il s'agit du délai avant de revenir
+        à la tâche, pas du temps nécessaire pour se reconcentrer.
+      </li>
+    </ul>
+
+    <h2>🔀 Deux objectifs à la fois</h2>
+    <p>
+      En imagerie cérébrale, Charron et Koechlin (2010) observent que le cortex frontal semble limité à la poursuite
+      simultanée de <strong>deux objectifs</strong>. Au-delà, on alterne plutôt qu'on ne parallélise.
+    </p>
+
+    <h2>💡 Implication pour le multi-agents</h2>
+    <div class="callout callout-info">
       <p>
-        George Miller (1956) identifiait une limite de <strong>7±2 éléments</strong> en mémoire de travail.
-        Les recherches de Cowan (2001) ont révisé cette estimation à <strong>4 chunks</strong> —
-        des unités d'information liées entre elles.
+        Avec des agents autonomes (vous les lancez, ils travaillent, vous relisez ensuite), vous n'avez pas à suivre
+        leur raisonnement en continu. C'est pourquoi quelques agents restent gérables quand autant de tâches manuelles
+        en parallèle ne le seraient pas.
       </p>
-
-      <div class="memory-gauge">
-        <div class="gauge-bar">
-          <div class="gauge-slot filled">1</div>
-          <div class="gauge-slot filled">2</div>
-          <div class="gauge-slot filled">3</div>
-          <div class="gauge-slot filled">4</div>
-          <div class="gauge-slot empty">5</div>
-          <div class="gauge-slot empty">6</div>
-          <div class="gauge-slot empty">7</div>
-        </div>
-        <div class="gauge-label">
-          Capacité réelle : ~4 chunks (Cowan, 2001) vs 7±2 (Miller, 1956)
-        </div>
-      </div>
-
       <p>
-        <strong>Concrètement</strong> : maintenir le contexte de plus de 4 tâches distinctes devient difficile.
-      </p>
-    </div>
-
-    <div class="concept-section">
-      <h3>⏱️ Le coût du context-switching</h3>
-
-      <p>
-        L'étude de Rubinstein, Meyer et Evans (2001) montre que le basculement entre tâches
-        peut consommer jusqu'à <strong>40% du temps productif</strong>.
-      </p>
-
-      <div class="stats-row">
-        <div class="stat-highlight">
-          <div class="value">40<span class="unit">%</span></div>
-          <div class="label">du temps perdu en context-switching</div>
-        </div>
-        <div class="stat-highlight">
-          <div class="value">23<span class="unit">min</span></div>
-          <div class="label">pour retrouver la concentration</div>
-        </div>
-      </div>
-
-      <p>
-        Gloria Mark (UC Irvine) a mesuré qu'il faut en moyenne <strong>23 minutes</strong>
-        pour retrouver une concentration complète après une interruption.
+        Mais <strong>la relecture reste séquentielle</strong> : c'est elle qui limite le passage à l'échelle,
+        pas le nombre d'agents qu'on peut lancer.
       </p>
     </div>
 
-    <div class="concept-section">
-      <h3>🔀 Le parallélisme humain réel</h3>
+    <h2>📈 Et la productivité réelle ?</h2>
+    <ul>
+      <li>
+        L'étude METR de juillet 2025 a mesuré que 16 développeurs open source expérimentés mettaient <strong>19 % de temps en plus</strong>
+        avec les outils d'IA de début 2025, tout en estimant après coup avoir été accélérés d'environ 20 %.
+        En février 2026, METR a présenté ces résultats comme datés et a revu son protocole ; ses nouvelles mesures restent jugées peu fiables.
+      </li>
+      <li>
+        Le rapport DORA 2025 (environ 5 000 répondants) décrit l'IA comme un <strong>amplificateur</strong> des forces et faiblesses
+        existantes d'une organisation : plus de débit de livraison, mais une relation toujours négative avec la stabilité.
+      </li>
+    </ul>
+    <p>Retenez surtout l'écart entre ressenti et mesure : mesurez votre propre workflow avant de conclure qu'il va plus vite.</p>
 
-      <p>
-        Le cerveau peut traiter <strong>2 tâches en parallèle réel</strong> maximum.
-        Au-delà, on passe en time-slicing — alternance rapide qui donne l'illusion du parallélisme
-        mais dégrade la performance.
-      </p>
-
-      <div class="timeline-visual">
-        <p><strong>Temps productif vs temps perdu :</strong></p>
-        <div class="timeline-bar"></div>
-        <div class="timeline-labels">
-          <span>Productif (~60%)</span>
-          <span>Perdu en switching (~40%)</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="implication-box">
-      <h3>💡 Implication pour le multi-agent</h3>
-
-      <p>
-        Avec des agents qui travaillent de façon <strong>autonome</strong> (vous les lancez, ils bossent, vous reviewez à la fin),
-        vous n'avez pas besoin de maintenir leur contexte en permanence.
-      </p>
-
-      <p>
-        C'est pourquoi <strong>4-6 agents restent gérables</strong> alors que 4-6 tâches manuelles parallèles seraient impossibles.
-      </p>
-
-      <p>
-        Mais la <strong>review reste séquentielle</strong> — et c'est elle qui limite le scaling, pas le nombre d'agents qu'on peut lancer.
-      </p>
-    </div>
-
-    <div class="references-section">
-      <h3>📚 Références scientifiques</h3>
-      <ul>
-        <li>Miller, G.A. (1956). "The magical number seven, plus or minus two". <em>Psychological Review</em>, 63(2), 81-97.</li>
-        <li>Cowan, N. (2001). "The magical number 4 in short-term memory". <em>Behavioral and Brain Sciences</em>, 24(1), 87-114.</li>
-        <li>Rubinstein, J.S., Meyer, D.E., & Evans, J.E. (2001). "Executive control of cognitive processes in task switching". <em>Journal of Experimental Psychology</em>.</li>
-        <li>Mark, G., Gonzalez, V.M., & Harris, J. (2005). "No task left behind? Examining the nature of fragmented work". <em>CHI '05</em>.</li>
-      </ul>
-    </div>
+    <h2>📚 Références</h2>
+    <ul>
+      <li>Miller, G. A. (1956). The magical number seven, plus or minus two. <em>Psychological Review</em>, 63(2), 81-97. <a href="https://doi.org/10.1037/h0043158" target="_blank" rel="noopener noreferrer">doi:10.1037/h0043158</a></li>
+      <li>Cowan, N. (2001). The magical number 4 in short-term memory. <em>Behavioral and Brain Sciences</em>, 24(1), 87-114. <a href="https://doi.org/10.1017/S0140525X01003922" target="_blank" rel="noopener noreferrer">doi:10.1017/S0140525X01003922</a></li>
+      <li>Rubinstein, J. S., Meyer, D. E., &amp; Evans, J. E. (2001). Executive control of cognitive processes in task switching. <em>Journal of Experimental Psychology: Human Perception and Performance</em>, 27(4), 763-797. <a href="https://doi.org/10.1037/0096-1523.27.4.763" target="_blank" rel="noopener noreferrer">doi:10.1037/0096-1523.27.4.763</a></li>
+      <li>American Psychological Association (2006). <a href="https://www.apa.org/topics/research/multitasking" target="_blank" rel="noopener noreferrer">Multitasking: Switching costs</a>.</li>
+      <li>Mark, G., Gonzalez, V. M., &amp; Harris, J. (2005). No task left behind? Examining the nature of fragmented work. <em>CHI '05</em>, 321-330. <a href="https://doi.org/10.1145/1054972.1055017" target="_blank" rel="noopener noreferrer">doi:10.1145/1054972.1055017</a></li>
+      <li>Robison, J. (2006). <a href="https://news.gallup.com/businessjournal/23146/too-many-interruptions-work.aspx" target="_blank" rel="noopener noreferrer">Too Many Interruptions at Work?</a> <em>Gallup Business Journal</em> (interview de Gloria Mark).</li>
+      <li>Charron, S., &amp; Koechlin, E. (2010). Divided representation of concurrent goals in the human frontal lobes. <em>Science</em>, 328(5976), 360-363. <a href="https://doi.org/10.1126/science.1183614" target="_blank" rel="noopener noreferrer">doi:10.1126/science.1183614</a></li>
+      <li>METR (2025). <a href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/" target="_blank" rel="noopener noreferrer">Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity</a> ; mise à jour (2026) : <a href="https://metr.org/blog/2026-02-24-uplift-update/" target="_blank" rel="noopener noreferrer">We are Changing our Developer Productivity Experiment Design</a>.</li>
+      <li>DORA (2025). <a href="https://dora.dev/research/2025/dora-report/" target="_blank" rel="noopener noreferrer">State of AI-assisted Software Development</a>.</li>
+    </ul>
   </article>
 </body>
 </html>

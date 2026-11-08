@@ -3,7 +3,7 @@
   "terms": {
     "Git Worktree": {
       "short": "Plusieurs répertoires de travail partageant la même base Git",
-      "long": "Fonctionnalité Git (depuis 2.5) permettant d'avoir plusieurs répertoires de travail distincts qui partagent le même .git. Chaque worktree a son propre HEAD, index et fichiers, mais les commits sont partagés instantanément. Économise ~85% d'espace disque par rapport à des clones multiples.",
+      "long": "Fonctionnalité Git (depuis la version 2.5, 2015) qui attache plusieurs répertoires de travail à un même dépôt. Chaque worktree a ses fichiers, son index et son HEAD ; l'historique, les branches, la configuration et le stash sont partagés. Une même branche ne peut être extraite que dans un seul worktree. L'historique n'est pas dupliqué, contrairement à des clones multiples.",
       "see": ["bare repository", "staging area"],
       "category": "Git"
     },
@@ -27,7 +27,7 @@
     },
     "tmux": {
       "short": "Multiplexeur terminal populaire avec gestion de sessions persistantes",
-      "long": "Terminal MUltipleXer. Permet de créer des sessions persistantes avec plusieurs fenêtres et panes. Les sessions survivent à la déconnexion (Ctrl-A d pour détacher, tmux attach pour réattacher). Configuration via ~/.tmux.conf.",
+      "long": "Terminal MUltipleXer. Permet de créer des sessions persistantes avec plusieurs fenêtres et panneaux. Les sessions survivent à la déconnexion : préfixe puis d pour se détacher (préfixe Ctrl-B par défaut), tmux attach pour se rattacher. Configuration via ~/.tmux.conf.",
       "see": ["multiplexeur terminal", "screen"],
       "category": "Outils"
     },
@@ -45,13 +45,13 @@
     },
     "coding agent": {
       "short": "Agent IA autonome capable de lire, écrire du code et exécuter des commandes",
-      "long": "Système combinant un LLM avec des capacités d'action : lecture/écriture de fichiers, exécution de commandes shell, navigation dans le code. Exemples : Claude Code, Aider, Cline, Cursor. Représente l'évolution des assistants de code vers des agents autonomes.",
+      "long": "Système combinant un LLM avec des capacités d'action : lecture et écriture de fichiers, exécution de commandes, navigation dans le code. Exemples : Claude Code, Codex, Copilot, Cursor, Aider, Cline. Il peut tourner sur votre machine ou dans le cloud.",
       "see": ["LLM"],
       "category": "IA"
     },
     "LLM": {
       "short": "Large Language Model : modèle de langage entraîné sur de vastes corpus de texte",
-      "long": "Grand modèle de langage. Réseau de neurones (généralement Transformer) entraîné à prédire le texte suivant. Capable de générer du code, répondre à des questions, suivre des instructions. Exemples : GPT-4, Claude, Llama.",
+      "long": "Grand modèle de langage. Réseau de neurones (généralement un Transformer) entraîné à prédire la suite d'un texte. Capable de générer du code, de répondre à des questions et de suivre des instructions. Exemples de familles : Claude, GPT, Gemini, Llama.",
       "see": ["coding agent"],
       "category": "IA"
     },
@@ -63,31 +63,31 @@
     },
     "CLAUDE.md": {
       "short": "Fichier de conventions projet lu automatiquement par Claude Code",
-      "long": "Fichier Markdown à la racine du projet contenant les instructions pour l'agent : stack technique, conventions de code, structure du projet, règles spécifiques. Lu automatiquement par Claude Code au démarrage.",
+      "long": "Fichier Markdown de conventions chargé automatiquement par Claude Code au début de chaque session : stack, conventions, structure, règles spécifiques. Il peut importer d'autres fichiers, par exemple @AGENTS.md pour partager les conventions avec les autres outils.",
       "see": ["AGENTS.md", "spec-driven development"],
       "category": "Méthodologie"
     },
     "AGENTS.md": {
-      "short": "Convention émergente pour un fichier d'instructions compatible multi-outils",
-      "long": "Fichier d'instructions standardisé compatible avec plusieurs outils IA (Claude Code, Cursor, Codex, etc.). Similaire à CLAUDE.md mais avec une convention de nommage plus générique.",
+      "short": "Format ouvert de fichier d'instructions pour agents de code",
+      "long": "Fichier Markdown à la racine d'un projet qui décrit stack, conventions et commandes pour les agents. Format ouvert géré depuis décembre 2025 par l'Agentic AI Foundation (Linux Foundation), lu par Codex, Copilot, Cursor, Jules, Aider et d'autres. Claude Code le lit en l'absence de CLAUDE.md ; sinon, on l'importe depuis CLAUDE.md avec la ligne @AGENTS.md.",
       "see": ["CLAUDE.md"],
       "category": "Méthodologie"
     },
     "OpenSpec": {
       "short": "Framework léger pour le spec-driven development avec agents IA",
-      "long": "Outil open-source qui structure le workflow : proposal → apply → archive. Génère des specs et des tâches automatiquement. Compatible Claude Code, Cursor, Copilot, Cline. Créé par Fission AI.",
+      "long": "Outil open source de spec-driven development créé par Fission AI. Son workflow actuel, OPSX, enchaîne /opsx:explore, /opsx:propose, /opsx:apply et /opsx:archive ; les anciennes commandes /openspec:* sont considérées comme héritées. Compatible avec plus de 30 outils, dont Claude Code, Cursor, Copilot et Codex.",
       "see": ["spec-driven development"],
       "category": "Méthodologie"
     },
     "context-switching": {
-      "short": "Basculement entre tâches, coûteux cognitivement (jusqu'à 40% du temps)",
-      "long": "Passage d'une tâche à une autre nécessitant un changement de contexte mental. Les études (Rubinstein, Meyer, Evans 2001) montrent un coût de 15-40% du temps productif. Gloria Mark (UC Irvine) mesure ~23 minutes pour retrouver la concentration après interruption.",
+      "short": "Basculement entre tâches, coûteux en attention",
+      "long": "Passage d'une tâche à une autre qui impose de recharger un contexte mental. Rubinstein, Meyer et Evans (2001) en mesurent le coût en laboratoire ; le chiffre de « jusqu'à 40 % du temps productif » est une estimation de David Meyer reprise par l'APA (2006). Mark et al. (CHI 2005) observent qu'une tâche interrompue est reprise en moyenne environ 25 minutes plus tard.",
       "see": ["mémoire de travail"],
       "category": "Cognitif"
     },
     "mémoire de travail": {
       "short": "Capacité cognitive limitée à ~4 éléments simultanés (Cowan, 2001)",
-      "long": "Système cognitif de stockage temporaire à capacité limitée. Miller (1956) estimait 7±2 éléments, révisé à ~4 chunks par Cowan (2001). Explique pourquoi superviser plus de 4-6 agents devient difficile.",
+      "long": "Système cognitif de stockage temporaire à capacité limitée. Miller (1956) évoquait 7±2 éléments ; Cowan (2001) propose plutôt environ 4 « chunks ». D'où la règle d'usage de ne suivre en détail que quelques tâches à la fois.",
       "see": ["context-switching"],
       "category": "Cognitif"
     },
@@ -98,15 +98,27 @@
     },
     "review": {
       "short": "Relecture critique du code avant intégration (code review)",
-      "long": "Processus d'examen du code par un humain avant merge. Avec les agents IA, la review devient le goulot d'étranglement (~50% du temps total). Vérifie la logique métier, la sécurité, et le respect du scope.",
+      "long": "Examen du code par un humain avant intégration. Avec plusieurs agents, la relecture devient le goulot d'étranglement : on lance les agents en parallèle, mais on relit une pull request à la fois. Elle vérifie la logique métier, la sécurité et le respect du périmètre.",
       "see": ["merge"],
       "category": "Workflow"
     },
     "merge": {
       "short": "Fusion d'une branche dans une autre, intégrant les modifications",
-      "long": "Opération Git qui combine les modifications de deux branches. L'ordre de merge est important quand plusieurs agents travaillent en parallèle : types d'abord, puis backend, API, frontend.",
+      "long": "Opération Git qui combine les modifications de deux branches. Avec plusieurs agents, on définit l'ordre d'intégration à l'avance : contrats et types d'abord, puis services, API, interface. En pratique, chaque branche passe par une pull request, la CI et une relecture.",
       "see": ["Git Worktree", "review"],
       "category": "Git"
+    },
+    "sous-agent": {
+      "short": "Agent secondaire lancé par une session principale, avec son propre contexte",
+      "long": "Assistant spécialisé auquel l'agent principal délègue une sous-tâche. Dans Claude Code, chaque sous-agent a sa fenêtre de contexte, son prompt, ses outils et ses permissions ; il est défini dans .claude/agents/ et peut travailler dans un worktree temporaire (isolation: worktree). Copilot CLI propose un mécanisme voisin avec /fleet.",
+      "see": ["coding agent", "Git Worktree"],
+      "category": "IA"
+    },
+    "agent cloud": {
+      "short": "Agent de code exécuté sur une machine distante, qui rend une pull request",
+      "long": "Agent qui travaille hors de votre poste, dans une VM ou un conteneur dédié à la tâche : il clone le dépôt, travaille sur une branche et propose une pull request. Exemples : Claude Code on the web, Codex cloud, Copilot cloud agent, Cursor Cloud Agents, Jules.",
+      "see": ["coding agent", "review"],
+      "category": "IA"
     }
   }
 }
