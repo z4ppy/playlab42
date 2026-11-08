@@ -19,8 +19,6 @@ Un laboratoire pédagogique ouvert, en français, qui tourne dans le navigateur 
 [![Licence : Apache 2.0](https://img.shields.io/badge/licence-Apache_2.0-64748b.svg)](LICENSE)
 [![PR bienvenues](https://img.shields.io/badge/PR-bienvenues-0891b2.svg)](CONTRIBUTING.md)
 
-<img src="docs/assets/readme/portail.webp" width="860" alt="Portail Playlab42 en thème sombre : titre « Apprendre, expérimenter, jouer. », onglets Parcours, Outils, Jeux et Liens, et les premières cartes de parcours.">
-
 </div>
 
 ## Ce qu’on y trouve

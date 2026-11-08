@@ -5,37 +5,39 @@
  * transform/opacity pour rester légères.
  */
 
-/* === Jetons de marque === */
+/* === Jetons de marque ===
+   light-dark(clair, sombre) suit le color-scheme posé par lib/theme.css : thème
+   choisi, ou préférence du système en mode automatique, sans dupliquer les jetons.
+   En clair, des teintes plus profondes gardent le contraste du titre et du verre ;
+   le liquide reste lumineux. */
 :root {
-  --brand-a: #38bdf8;
-  --brand-b: #4ade80;
-  --brand-c: #a3e635;
-  --brand-nebula: #a78bfa;
-  --brand-glass: rgba(226, 240, 255, 0.6);
-  --brand-glass-shine: rgba(255, 255, 255, 0.35);
-  --brand-glow: rgba(74, 222, 128, 0.35);
-  --brand-star: #ffffff;
-  --brand-spotlight: rgba(56, 189, 248, 0.14);
-  --flask-a: #22d3ee;
-  --flask-b: #a3e635;
+  --brand-a: light-dark(#0369a1, #38bdf8);
+  --brand-b: light-dark(#047857, #4ade80);
+  --brand-c: light-dark(#4d7c0f, #a3e635);
+  --brand-nebula: light-dark(#7c3aed, #a78bfa);
+  --brand-glass: light-dark(rgba(15, 40, 70, 0.55), rgba(226, 240, 255, 0.6));
+  --brand-glass-shine: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.35));
+  --brand-glow: light-dark(rgba(4, 120, 87, 0.22), rgba(74, 222, 128, 0.35));
+  --brand-star: light-dark(#fefce8, #ffffff);
+  --brand-spotlight: light-dark(rgba(3, 105, 161, 0.08), rgba(56, 189, 248, 0.14));
+  --flask-a: light-dark(#06b6d4, #22d3ee);
+  --flask-b: light-dark(#84cc16, #a3e635);
   --flask-nebula-blend: screen;
+  --flask-nebula-opacity: 1;
 }
 
-/* En clair, des teintes plus profondes gardent le contraste du titre et le contour du verre. */
+/* Réglages hors couleur, que light-dark() ne couvre pas : thème clair choisi,
+   ou automatique sur un système clair (même convention que lib/theme.css). */
 [data-theme="light"] {
-  --brand-a: #0369a1;
-  --brand-b: #047857;
-  --brand-c: #4d7c0f;
-  --brand-nebula: #7c3aed;
-  --brand-glass: rgba(15, 40, 70, 0.55);
-  --brand-glass-shine: rgba(255, 255, 255, 0.85);
-  --brand-glow: rgba(4, 120, 87, 0.22);
-  --brand-star: #fefce8;
-  --brand-spotlight: rgba(3, 105, 161, 0.08);
-  /* Le liquide reste lumineux sur fond clair ; seul le verre se fonce. */
-  --flask-a: #06b6d4;
-  --flask-b: #84cc16;
   --flask-nebula-blend: normal;
+  --flask-nebula-opacity: 0.3;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --flask-nebula-blend: normal;
+    --flask-nebula-opacity: 0.3;
+  }
 }
 
 /* === En-tête : liseré dégradé et verre dépoli === */
@@ -61,13 +63,9 @@ header::after {
   width: 38px;
   height: 38px;
   background: linear-gradient(135deg, var(--brand-a), var(--brand-b) 60%, var(--brand-c));
-  color: var(--color-text-inverse);
+  color: light-dark(#ffffff, var(--color-text-inverse));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--brand-b) 40%, transparent), 0 4px 14px var(--brand-glow);
   transition: transform var(--transition-slow), box-shadow var(--transition-slow);
-}
-
-[data-theme="light"] .brand-mark {
-  color: #ffffff;
 }
 
 .brand-number {
@@ -218,6 +216,7 @@ header::after {
 .flask-nebula {
   fill: url(#flask-nebula);
   mix-blend-mode: var(--flask-nebula-blend);
+  opacity: var(--flask-nebula-opacity);
   /* Pivot décalé du centre : la nébuleuse orbite doucement sans dépasser la surface. */
   transform-origin: 104px 194px;
   animation: flask-nebula 14s linear infinite;
@@ -226,10 +225,6 @@ header::after {
 .flask-nebula-b {
   animation-duration: 19s;
   animation-direction: reverse;
-}
-
-[data-theme="light"] .flask-nebula {
-  opacity: 0.3;
 }
 
 .flask-stars circle {
