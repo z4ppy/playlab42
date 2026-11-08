@@ -75,7 +75,7 @@ const THEME_MODES = [
 ];
 
 for (const { label, option, scheme } of THEME_MODES) {
-  test(`Galerie UI theme ${label}: contours, code et accent lisibles`, async ({ page }) => {
+  test(`Galerie UI theme ${label}: contours, code, statuts vides et accent lisibles`, async ({ page }) => {
     // Mouvement réduit : la transition de bordure des boutons ne fausse pas la mesure.
     await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
     await page.goto('/tools/ui-kit/index.html');
@@ -97,6 +97,10 @@ for (const { label, option, scheme } of THEME_MODES) {
       getComputedStyle(code.parentElement).backgroundColor !==
         getComputedStyle(code.closest('.ui-card')).backgroundColor,
     )).toBe(true);
+    // L'aide reste collée à son champ : seule la grille du formulaire espace les éléments.
+    await expect(page.locator('#title-help')).toHaveCSS('margin-top', '0px');
+    // Une région de statut encore vide ne dessine pas de barre orpheline.
+    await expect(page.locator('#form-status')).toHaveCSS('border-left-color', 'rgba(0, 0, 0, 0)');
     // Le curseur natif prend l'accent du thème courant plutôt que le bleu système.
     const [accentColor, expected] = await page.locator('#spacing').evaluate(range => {
       const probe = document.createElement('span');

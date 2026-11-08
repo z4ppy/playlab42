@@ -53,6 +53,10 @@
 .ui-label { display: block; }
 .ui-form { display: grid; gap: var(--space-sm); min-width: 0; }
 .ui-form > .ui-field { width: 100%; }
+/* La grille porte le rythme vertical : sans marge propre, une aide reste collée
+ * à son champ et chaque nouveau libellé ouvre visiblement un nouveau groupe. */
+.ui-form > p { margin-block: 0; }
+.ui-form > .ui-label:not(:first-child) { margin-top: var(--space-sm); }
 textarea.ui-field { resize: vertical; }
 .ui-help { color: var(--color-text-muted); font-size: var(--font-size-sm); }
 .ui-fieldset { min-width: 0; border: 1px solid var(--color-border); padding: var(--space-md); margin: 0; }
@@ -62,6 +66,9 @@ textarea.ui-field { resize: vertical; }
 .ui-status-success { border-color: var(--color-success); }
 .ui-status-warning { border-color: var(--color-warning); }
 .ui-status-error { border-color: var(--color-error); }
+/* Région live encore vide : rien à montrer, mais l'élément reste rendu pour que
+ * les lecteurs d'écran annoncent le premier message inséré. */
+.ui-status:empty { padding-block: 0; border-left-color: transparent; }
 .ui-badge { display: inline-block; padding: var(--space-xs) var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius-full); }
 /* Fond de page plutôt que --color-bg-secondary : en clair, celui-ci est blanc comme la carte et le bloc disparaissait. */
 .ui-code { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--font-mono); font-size: var(--font-size-sm); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg); }

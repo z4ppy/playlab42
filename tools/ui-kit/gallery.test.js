@@ -104,10 +104,11 @@ describe('Galerie UI interactive', () => {
       }
     }
     expect(css.match(/\.ui-dialog\s*\{([^}]*)\}/)[1]).not.toMatch(/\bdisplay\s*:/);
-    // Régressions de rendu : contour de contrôle contrasté, accent du thème, code visible en clair.
+    // Régressions de rendu : contour de contrôle contrasté, région vide sans barre, code visible en clair.
     const control = css.match(/\.ui-button, \.ui-field \{([^}]*)\}/)[1];
     expect(control).toMatch(/border-color:\s*color-mix\(in srgb, var\(--color-text-muted\)/);
     expect(control).toContain('accent-color: var(--color-accent)');
+    expect(css).toMatch(/\.ui-status:empty \{[^}]*border-left-color: transparent/);
     expect(css.match(/\.ui-code \{([^}]*)\}/)[1]).not.toContain('--color-bg-secondary');
     const local = readFileSync(join(directory, 'gallery.css'), 'utf8');
     expect(local).not.toMatch(/\.ui-(button|field|status|dialog)\b/);
