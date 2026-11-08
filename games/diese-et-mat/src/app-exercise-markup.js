@@ -15,109 +15,38 @@
  */
 export function exerciseShellHtml(exercise) {
   return `
-      <div class="exercise-container" style="
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        padding: var(--space-md);
-      ">
+      <div class="exercise-container">
         <!-- Header -->
-        <div style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: var(--space-md);
-        ">
-          <button id="btn-quit" style="
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-muted);
-          ">✕</button>
-          <div style="text-align: center;">
-            <div style="font-weight: bold;">${exercise.title}</div>
-            <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
+        <div class="exercise-topbar">
+          <button id="btn-quit" class="exercise-quit" aria-label="Quitter l'exercice">✕</button>
+          <div class="exercise-heading">
+            <div class="exercise-heading-title">${exercise.title}</div>
+            <div class="exercise-heading-count">
               Question <span id="question-num">1</span>/${exercise.config.questionsCount}
             </div>
           </div>
-          <div id="score-display" style="
-            font-size: var(--font-size-lg);
-            font-weight: bold;
-            color: var(--color-accent);
-          ">0 pts</div>
+          <div id="score-display" class="exercise-score">0 pts</div>
         </div>
 
         <!-- Barre de progression -->
-        <div style="
-          height: 4px;
-          background: var(--color-border);
-          border-radius: 2px;
-          margin-bottom: var(--space-lg);
-          overflow: hidden;
-        ">
-          <div id="progress-bar" style="
-            height: 100%;
-            width: 0%;
-            background: var(--color-accent);
-            transition: width 0.3s ease;
-          "></div>
+        <div class="exercise-progress">
+          <div id="progress-bar" class="exercise-progress-fill" style="width: 0%;"></div>
         </div>
 
         <!-- Zone de portée -->
-        <div id="staff-container" style="
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 150px;
-        "></div>
+        <div id="staff-container" class="exercise-staff"></div>
 
         <!-- Feedback -->
-        <div id="feedback-container" role="status" aria-live="polite" style="
-          min-height: 50px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: var(--space-md);
-        "></div>
+        <div id="feedback-container" class="exercise-feedback" role="status" aria-live="polite"></div>
 
         <!-- Boutons de réponse -->
-        <div id="note-buttons" style="
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: var(--space-sm);
-          margin-bottom: var(--space-md);
-        "></div>
+        <div id="note-buttons" class="exercise-answers" style="grid-template-columns: repeat(7, 1fr);"></div>
 
         <!-- Actions -->
-        <div style="
-          display: flex;
-          justify-content: center;
-          gap: var(--space-md);
-        ">
-          <button id="btn-play-sound" style="
-            padding: var(--space-sm) var(--space-md);
-            background: var(--color-accent);
-            color: var(--color-text-inverse);
-            border: none;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-          ">🔊 Écouter</button>
-          <button id="btn-hint" style="
-            padding: var(--space-sm) var(--space-md);
-            background: var(--color-bg-secondary);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-          ">💡 Indice</button>
-          <button id="btn-skip" style="
-            padding: var(--space-sm) var(--space-md);
-            background: var(--color-bg-secondary);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-          ">Passer →</button>
+        <div class="exercise-actions">
+          <button id="btn-play-sound" class="exercise-action exercise-action-primary">🔊 Écouter</button>
+          <button id="btn-hint" class="exercise-action">💡 Indice</button>
+          <button id="btn-skip" class="exercise-action">Passer →</button>
         </div>
       </div>
     `;
@@ -192,92 +121,52 @@ function medalFor(accuracy) {
 
 /**
  * Écran de fin d'exercice.
- * @param {{totalScore: number, maxStreak: number}} summary
+ * @param {{totalScore: number, bestStreak?: number, maxStreak?: number}} summary
+ *   Le moteur fournit `bestStreak` ; `maxStreak` reste accepté.
  * @param {number} accuracy - Pourcentage entier de réussite
  * @returns {string} HTML
  */
 export function resultsHtml(summary, accuracy) {
+  const bestStreak = summary.bestStreak ?? summary.maxStreak ?? 0;
   return `
-      <div style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        padding: var(--space-lg);
-        text-align: center;
-      " role="region" aria-label="Résultats de l'exercice">
-        <div style="font-size: 4rem; margin-bottom: var(--space-lg);" aria-hidden="true">
+      <div class="results-screen" role="region" aria-label="Résultats de l'exercice">
+        <div class="results-medal" aria-hidden="true">
           ${medalFor(accuracy)}
         </div>
         <h2>Exercice terminé !</h2>
 
-        <div style="
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: var(--space-lg);
-          margin: var(--space-lg) 0;
-          width: 100%;
-          max-width: 400px;
-        " role="group" aria-label="Statistiques">
-          <div style="
-            padding: var(--space-md);
-            background: var(--color-bg-secondary);
-            border-radius: var(--radius-md);
-          ">
-            <div style="font-size: 2rem; font-weight: bold; color: var(--color-accent);" aria-label="Score">
+        <div class="results-stats" role="group" aria-label="Statistiques">
+          <div class="results-stat">
+            <div class="results-stat-value" style="color: var(--color-accent);" aria-label="Score">
               ${summary.totalScore}
             </div>
-            <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
+            <div class="results-stat-label">
               Points
             </div>
           </div>
-          <div style="
-            padding: var(--space-md);
-            background: var(--color-bg-secondary);
-            border-radius: var(--radius-md);
-          ">
-            <div style="font-size: 2rem; font-weight: bold; color: var(--color-success);" aria-label="Taux de réussite">
+          <div class="results-stat">
+            <div class="results-stat-value" style="color: var(--color-success);" aria-label="Taux de réussite">
               ${accuracy}%
             </div>
-            <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
+            <div class="results-stat-label">
               Réussite
             </div>
           </div>
-          <div style="
-            padding: var(--space-md);
-            background: var(--color-bg-secondary);
-            border-radius: var(--radius-md);
-          ">
-            <div style="font-size: 2rem; font-weight: bold; color: var(--color-warning);" aria-label="Meilleure série">
-              ${summary.maxStreak}
+          <div class="results-stat">
+            <div class="results-stat-value" style="color: var(--color-warning);" aria-label="Meilleure série">
+              ${bestStreak}
             </div>
-            <div style="font-size: var(--font-size-sm); color: var(--color-text-muted);">
+            <div class="results-stat-label">
               Meilleure série
             </div>
           </div>
         </div>
 
-        <div style="display: flex; gap: var(--space-md);" role="group" aria-label="Actions">
-          <button id="btn-replay" style="
-            padding: var(--space-sm) var(--space-lg);
-            background: var(--color-accent);
-            color: var(--color-text-inverse);
-            border: none;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: var(--font-size-md);
-          " aria-label="Rejouer cet exercice">
+        <div class="results-actions" role="group" aria-label="Actions">
+          <button id="btn-replay" class="results-btn results-btn-primary" aria-label="Rejouer cet exercice">
             Rejouer
           </button>
-          <button id="btn-back-menu" style="
-            padding: var(--space-sm) var(--space-lg);
-            background: var(--color-bg-secondary);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: var(--font-size-md);
-          " aria-label="Retour au menu principal">
+          <button id="btn-back-menu" class="results-btn" aria-label="Retour au menu principal">
             Menu
           </button>
         </div>

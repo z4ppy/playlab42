@@ -27,6 +27,7 @@ html, body {
 .app-container {
   width: 100%;
   height: 100%;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -40,6 +41,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding: var(--space-sm) var(--space-md);
+  padding: max(var(--space-sm), env(safe-area-inset-top)) max(var(--space-md), env(safe-area-inset-right)) var(--space-sm) max(var(--space-md), env(safe-area-inset-left));
   background: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
 }
@@ -1027,6 +1029,218 @@ html, body {
   font-size: var(--font-size-xs);
   color: var(--color-success);
   margin-top: var(--space-xs);
+}
+
+/* ============================================================================
+   Exercise View (gabarit de app-exercise-markup.js)
+   ============================================================================ */
+
+.exercise-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: var(--space-md);
+  padding: var(--space-md) max(var(--space-md), env(safe-area-inset-right)) max(var(--space-md), env(safe-area-inset-bottom)) max(var(--space-md), env(safe-area-inset-left));
+}
+
+.exercise-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.exercise-quit {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.exercise-heading {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.exercise-heading-title {
+  font-weight: bold;
+}
+
+.exercise-heading-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.exercise-score {
+  flex-shrink: 0;
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.exercise-progress {
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+}
+
+.exercise-progress-fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.exercise-staff {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  min-width: 0;
+}
+
+/* La portée (SVG avec viewBox) s'adapte à la place disponible. */
+.exercise-staff > svg {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  max-height: 100%;
+}
+
+.exercise-feedback {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.exercise-answers {
+  display: grid;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.note-btn {
+  min-width: 0;
+  min-height: 48px;
+  padding: var(--space-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  transition: all 0.15s ease;
+  touch-action: manipulation;
+}
+
+.note-btn-compact {
+  padding: var(--space-sm) var(--space-xs);
+  font-size: var(--font-size-sm);
+}
+
+.exercise-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.exercise-action {
+  min-height: 44px;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font: inherit;
+  touch-action: manipulation;
+}
+
+.exercise-action-primary {
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  border-color: var(--color-accent);
+}
+
+/* Écran de résultats */
+.results-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--space-lg);
+  padding: var(--space-lg) max(var(--space-md), env(safe-area-inset-right)) max(var(--space-lg), env(safe-area-inset-bottom)) max(var(--space-md), env(safe-area-inset-left));
+  text-align: center;
+}
+
+.results-medal {
+  font-size: 4rem;
+  margin-bottom: var(--space-lg);
+}
+
+.results-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-lg);
+  margin: var(--space-lg) 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.results-stat {
+  min-width: 0;
+  padding: var(--space-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.results-stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.results-stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.results-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.results-btn {
+  min-height: 44px;
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-md);
+  touch-action: manipulation;
+}
+
+.results-btn-primary {
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  border-color: var(--color-accent);
 }
 
 /* ============================================================================
@@ -2149,5 +2363,533 @@ html, body {
 
   .synth-popup {
     max-width: 500px;
+  }
+}
+
+/* ============================================================================
+   Mobile first : téléphone et tablette
+   ============================================================================ */
+
+/* Hauteurs dynamiques : la barre d'adresse mobile ne masque plus le bas. */
+.memo-popup,
+.synth-popup {
+  max-height: 85dvh;
+}
+
+.synth-content {
+  max-height: 70dvh;
+}
+
+.tuner-popup {
+  max-height: 90dvh;
+}
+
+.memo-overlay,
+.piano-overlay,
+.metronome-overlay,
+.tuner-overlay,
+.synth-overlay {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Boutons de fermeture : cible tactile de 44px partout. */
+.memo-close,
+.piano-close,
+.synth-close,
+.metronome-close,
+.tuner-close {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+}
+
+/* Les touches noires sont placées en JS sur une grille de 40px : les touches
+   blanches gardent donc cette largeur à toutes les tailles (le clavier défile). */
+.piano-keyboard .piano-key-white {
+  width: 40px;
+}
+
+.piano-keyboard .piano-key-black {
+  width: 28px;
+}
+
+.rhythm-tap-zone {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Écrans tactiles ou étroits : cibles de 44px, pas de zoom à la saisie. */
+@media (max-width: 768px), (pointer: coarse) {
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+  }
+
+  .filter-btn,
+  .metronome-tempo-btn,
+  .piano-octave-btn,
+  .synth-osc-btn,
+  .synth-test-btn,
+  .tuner-btn,
+  .metronome-play-btn {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .metronome-tempo-btn,
+  .piano-octave-btn {
+    min-width: 44px;
+  }
+
+  .toggle-label {
+    min-height: 44px;
+  }
+
+  .btn-back,
+  .notation-btn,
+  #btn-reset-progress,
+  #btn-start-rhythm {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  #volume-slider {
+    height: 32px;
+  }
+
+  .toggle-label input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+
+  .piano-fx-toggle {
+    min-height: 44px;
+    gap: 6px;
+    font-size: var(--font-size-sm);
+  }
+
+  .piano-fx-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .piano-fx-slider {
+    width: 72px;
+    height: 24px;
+  }
+
+  .synth-checkbox {
+    min-height: 44px;
+  }
+
+  .synth-slider-row input[type="range"] {
+    height: 24px;
+    background: transparent;
+  }
+
+  .synth-slider-row input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    background: var(--color-border);
+    border-radius: 3px;
+  }
+
+  .synth-slider-row input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+    margin-top: -8px;
+  }
+
+  .metronome-tempo-control input[type="range"] {
+    height: 24px;
+    min-width: 0;
+  }
+
+  select,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  .piano-select,
+  .synth-select-full {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .piano-select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .piano-tool-group {
+    flex-wrap: wrap;
+  }
+
+  .piano-octave-value {
+    min-width: 28px;
+  }
+
+  .piano-tool-separator {
+    display: none;
+  }
+
+  .piano-fx-group {
+    flex-wrap: wrap;
+    margin-left: 0;
+    column-gap: var(--space-md);
+  }
+
+  .piano-tool-label,
+  .synth-field label,
+  .filter-label {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Sans clavier physique, les aides au clavier n'ont pas d'intérêt. */
+@media (hover: none) and (pointer: coarse) {
+  .piano-help,
+  .memo-keyboard-only,
+  .piano-key-label {
+    display: none;
+  }
+}
+
+/* Téléphone portrait : en-tête sur deux lignes, partie compacte. */
+@media (max-width: 600px) {
+  .app-header {
+    position: relative;
+    flex-wrap: wrap;
+    gap: 0;
+    padding-top: max(4px, env(safe-area-inset-top));
+    padding-bottom: 4px;
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
+
+  .app-title {
+    min-height: 36px;
+    padding-right: 96px;
+  }
+
+  .level-badge {
+    position: absolute;
+    top: calc(max(4px, env(safe-area-inset-top)) + 7px);
+    right: max(8px, env(safe-area-inset-right));
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .btn-icon {
+    font-size: 1.25rem;
+    padding: 0;
+  }
+
+  .exercise-container {
+    padding: 6px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  }
+
+  .exercise-topbar {
+    margin-bottom: 4px;
+  }
+
+  .exercise-heading-title {
+    font-size: 15px;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .exercise-score {
+    font-size: var(--font-size-md);
+  }
+
+  .exercise-progress {
+    margin-bottom: 8px;
+  }
+
+  .exercise-staff {
+    min-height: 110px;
+  }
+
+  .exercise-feedback {
+    min-height: 44px;
+    margin-bottom: 8px;
+  }
+
+  .exercise-answers {
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .note-btn {
+    min-height: 52px;
+    padding: 4px 2px;
+  }
+
+  .exercise-actions {
+    gap: 8px;
+  }
+
+  .exercise-action {
+    flex: 1;
+    padding: 8px 4px;
+    white-space: nowrap;
+  }
+
+  .results-screen {
+    padding-top: var(--space-md);
+  }
+
+  .results-medal {
+    font-size: 3rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .results-stats {
+    gap: var(--space-sm);
+    margin: var(--space-md) 0;
+  }
+
+  .results-stat {
+    padding: var(--space-sm) var(--space-xs);
+  }
+
+  .results-stat-value {
+    font-size: 1.5rem;
+  }
+
+  .results-stat-label {
+    font-size: var(--font-size-xs);
+  }
+
+  .results-actions {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .results-btn {
+    flex: 1;
+  }
+}
+
+/* Intervalles : 7 libellés longs, répartis sur 4 colonnes quand c'est étroit. */
+@media (max-width: 600px), (orientation: landscape) and (max-height: 500px) {
+  .exercise-answers:has(.note-btn-compact) {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .rhythm-tap-zone {
+    width: clamp(96px, 22dvh, 180px);
+    height: clamp(96px, 22dvh, 180px);
+  }
+
+  .rhythm-container {
+    gap: var(--space-sm);
+  }
+
+  .rhythm-track {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Paysage téléphone : portée à gauche, réponses et actions à droite. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .app-header {
+    flex-wrap: nowrap;
+    padding-top: max(2px, env(safe-area-inset-top));
+    padding-bottom: 2px;
+  }
+
+  .app-title {
+    font-size: var(--font-size-md);
+    white-space: nowrap;
+  }
+
+  .header-actions {
+    flex-wrap: nowrap;
+    gap: 2px;
+  }
+
+  .exercise-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(min(360px, 58%), 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    column-gap: var(--space-md);
+    padding: 4px max(12px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+
+  .exercise-topbar {
+    grid-column: 1 / -1;
+    margin-bottom: 2px;
+  }
+
+  .exercise-heading {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: var(--space-sm);
+  }
+
+  .exercise-heading-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .exercise-heading-count {
+    white-space: nowrap;
+  }
+
+  .exercise-progress {
+    grid-column: 1 / -1;
+    margin-bottom: 6px;
+  }
+
+  .exercise-staff {
+    grid-column: 1;
+    grid-row: 3 / 6;
+    min-height: 0;
+  }
+
+  .exercise-feedback {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end;
+    min-height: 40px;
+    margin-bottom: 6px;
+  }
+
+  .exercise-answers {
+    grid-column: 2;
+    grid-row: 4;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .note-btn {
+    min-height: 48px;
+    padding: 4px 2px;
+  }
+
+  .exercise-actions {
+    grid-column: 2;
+    grid-row: 5;
+    gap: 6px;
+  }
+
+  .exercise-action {
+    flex: 1;
+    padding: 6px 4px;
+    white-space: nowrap;
+  }
+
+  /* Mode rythme : pas de boutons de réponse, la piste prend toute la largeur. */
+  .exercise-container:has(.rhythm-container) .exercise-staff {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  .exercise-container:has(.rhythm-container) .exercise-feedback {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    align-self: center;
+    min-height: 32px;
+    margin-bottom: 0;
+  }
+
+  .exercise-container:has(.rhythm-container) .exercise-actions {
+    grid-column: 1 / -1;
+  }
+
+  .rhythm-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-sm) var(--space-md);
+  }
+
+  .rhythm-beat {
+    height: 64px;
+  }
+
+  .results-screen {
+    padding-top: var(--space-sm);
+    padding-bottom: var(--space-sm);
+  }
+
+  .results-medal {
+    font-size: 2.5rem;
+    margin-bottom: 0;
+  }
+
+  .results-stats {
+    margin: var(--space-sm) 0;
+    gap: var(--space-sm);
+  }
+
+  .results-stat {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .results-stat-value {
+    font-size: 1.5rem;
+  }
+
+  .memo-popup,
+  .synth-popup,
+  .tuner-popup,
+  .metronome-popup {
+    max-height: 94dvh;
+    overflow-y: auto;
+  }
+
+  .metronome-content,
+  .tuner-content {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .metronome-bpm-value {
+    font-size: 2.5rem;
+  }
+
+  .tuner-note {
+    font-size: 3rem;
+  }
+
+  .piano-overlay {
+    padding-bottom: 0;
+  }
+
+  .piano-popup {
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .piano-keyboard {
+    height: 120px;
+  }
+
+  .piano-key-white {
+    height: 108px;
+  }
+
+  .piano-key-black {
+    height: 68px;
+  }
+
+  .piano-note-display {
+    min-height: 0;
+    padding: 2px;
   }
 }

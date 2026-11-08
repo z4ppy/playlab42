@@ -53,6 +53,12 @@ describe('gabarits', () => {
     expect(new Set(medals.map((h) => h.match(/aria-hidden="true">\s*(\S+)/)[1])).size).toBeGreaterThan(1);
     expect(medals[0]).toContain('42');
   });
+  test('meilleure série : bestStreak du moteur, sinon maxStreak, sinon 0', () => {
+    const streakOf = (summary) => resultsHtml(summary, 100);
+    expect(streakOf({ totalScore: 1, bestStreak: 7, maxStreak: 2 })).toContain('7');
+    expect(streakOf({ totalScore: 1, maxStreak: 5 })).toContain('5');
+    expect(streakOf({ totalScore: 1 })).toMatch(/>\s*0\s*</);
+  });
   test('feedback et indice', () => {
     expect(hintHtml({ text: 'Indice X' })).toContain('Indice X');
     expect(incorrectFeedbackHtml({ french: 'Do' })).toContain('Do');

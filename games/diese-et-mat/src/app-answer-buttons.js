@@ -28,42 +28,15 @@ const CHORDS = [
 const NOTES = ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
 
 const intervalButtonsHtml = () => INTERVALS.map(int => `
-        <button class="note-btn" data-semitones="${int.value}" title="${int.name}" aria-label="${int.name}" style="
-          padding: var(--space-sm) var(--space-xs);
-          background: var(--color-bg-secondary);
-          border: 2px solid var(--color-border);
-          border-radius: var(--radius-md);
-          cursor: pointer;
-          font-size: var(--font-size-sm);
-          font-weight: bold;
-          transition: all 0.15s ease;
-        ">${int.label}</button>
+        <button class="note-btn note-btn-compact" data-semitones="${int.value}" title="${int.name}" aria-label="${int.name}">${int.label}</button>
       `).join('');
 
 const chordButtonsHtml = () => CHORDS.map(chord => `
-        <button class="note-btn" data-chord="${chord.value}" style="
-          padding: var(--space-md);
-          background: var(--color-bg-secondary);
-          border: 2px solid var(--color-border);
-          border-radius: var(--radius-md);
-          cursor: pointer;
-          font-size: var(--font-size-md);
-          font-weight: bold;
-          transition: all 0.15s ease;
-        ">${chord.label}</button>
+        <button class="note-btn" data-chord="${chord.value}">${chord.label}</button>
       `).join('');
 
 const noteButtonsHtml = () => NOTES.map((note, index) => `
-        <button class="note-btn" data-note="${index}" style="
-          padding: var(--space-md);
-          background: var(--color-bg-secondary);
-          border: 2px solid var(--color-border);
-          border-radius: var(--radius-md);
-          cursor: pointer;
-          font-size: var(--font-size-md);
-          font-weight: bold;
-          transition: all 0.15s ease;
-        ">${note}</button>
+        <button class="note-btn" data-note="${index}">${note}</button>
       `).join('');
 
 /** Description des boutons par mode ; les notes servent de mode par défaut. */

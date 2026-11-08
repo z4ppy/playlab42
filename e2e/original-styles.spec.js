@@ -3,12 +3,24 @@ import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { withOriginalStyles } from './original-styles.js';
 
-test('la référence CSS conserve les octets du main avant dédoublonnage', () => {
+test('la référence CSS conserve les octets du main avant dédoublonnage, amendés par la PR #181', () => {
   const bytes = readFileSync(new URL('./fixtures/styles-before-reduction.json', import.meta.url));
   expect(createHash('sha256').update(bytes).digest('hex'))
-    .toBe('92d4c91ac938c4663e14b088a9d828ce5f50fe40db623db4a66d44d468ac732d');
+    .toBe('699c851d430d3a02adced5537386448ed76a02558e5a9500f5a33b92a586e223');
   const reference = JSON.parse(bytes);
   expect(reference.baseSha).toBe('5956cd92f69c2a2d36c9f27fcc838dd6e4dd1290');
+  // Seules évolutions volontaires des valeurs : la jouabilité mobile de la PR #181.
+  expect(reference.amendments.map(({ pullRequest, base, paths }) => ({ pullRequest, base, paths }))).toEqual([{
+    pullRequest: 181,
+    base: '588cedd39992fea7272d6e4b545daed6cd46e66a',
+    paths: [
+      '/games/checkers/index.html',
+      '/games/tictactoe/index.html',
+      '/games/mastermind/index.html',
+      '/games/triomino/index.html',
+      '/games/diese-et-mat/style.css',
+    ],
+  }]);
   expect(Object.keys(reference.stylesheets)).toHaveLength(4);
   expect(Object.keys(reference.inline)).toHaveLength(6);
   expect(reference.added).toEqual(['/games/game-page.css']);

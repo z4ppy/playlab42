@@ -3,13 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Go 9x9 - Playlab42</title>
     <link rel="stylesheet" href="../../lib/theme.css">
     <link rel="stylesheet" href="../../lib/ui.css">
     <style>
         :root {
-            --board-size: min(80vmin, 720px);
+            /* 196px : titre + statut sur 2 lignes réservées + marges, pour que le plateau tienne à l'écran. */
+            --board-size: min(80vmin, 100dvh - 196px, 720px);
             --cell-size: calc(var(--board-size) / 9);
         }
 
@@ -59,6 +60,8 @@
             aspect-ratio: 1;
             box-sizing: border-box;
             background: #d2a15f;
+            /* Taper pose une pierre : pas de zoom double-tap ni de délai, défilement conservé. */
+            touch-action: manipulation;
             border: 6px solid #b58646;
             box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
         }
@@ -71,6 +74,7 @@
             cursor: pointer;
             padding: 0;
             border: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .cell::before {
@@ -123,8 +127,10 @@
             background-position: center;
         }
 
-        .cell:hover {
-            background-color: rgba(0, 0, 0, 0.06);
+        @media (hover: hover) {
+            .cell:hover {
+                background-color: rgba(0, 0, 0, 0.06);
+            }
         }
 
         .stone {
@@ -158,7 +164,7 @@
             display: grid;
             place-items: center;
             color: #182338;
-            font-size: calc(var(--cell-size) * 0.6);
+            font-size: calc(var(--board-size) / 15);
             font-weight: bold;
         }
 
@@ -197,6 +203,12 @@
             color: var(--color-text);
         }
 
+        select,
+        .controls button {
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+
         .btn-primary {
             background: var(--color-accent);
             color: var(--color-text-inverse);
@@ -210,6 +222,10 @@
 
         .status {
             font-size: var(--font-size-lg);
+            line-height: 1.4;
+            /* Les messages longs (placement interdit, comptage) tiennent sur
+               2 lignes : on les réserve pour que le plateau ne bouge pas. */
+            min-height: calc(2 * 1.4em);
             margin-bottom: var(--space-md);
         }
 
@@ -249,13 +265,198 @@
             z-index: 2;
         }
 
-        @media (max-width: 960px) {
-            .layout {
-                grid-template-columns: 1fr;
+        .legend {
+            margin-top: var(--space-md);
+        }
+
+        .meta {
+            margin-top: var(--space-lg);
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        /*
+         * Téléphone et tablette (portrait) ou téléphone en paysage :
+         * statut, plateau, actions de partie et scores tiennent ensemble à l'écran ;
+         * réglages et règles passent dessous.
+         */
+        @media (max-width: 960px), (orientation: landscape) and (max-height: 500px) {
+            :root {
+                --gutter-l: max(8px, env(safe-area-inset-left));
+                --gutter-r: max(8px, env(safe-area-inset-right));
+                --board-size: max(240px, min(100vw - var(--gutter-l) - var(--gutter-r), 100dvh - 250px, 720px));
             }
 
+            body {
+                min-height: 100dvh;
+                box-sizing: border-box;
+                padding: max(8px, env(safe-area-inset-top)) var(--gutter-r) max(12px, env(safe-area-inset-bottom)) var(--gutter-l);
+                gap: var(--space-sm);
+            }
+
+            h1 {
+                font-size: 1.15rem;
+            }
+
+            .layout {
+                display: flex;
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+
+            .panel {
+                display: contents;
+            }
+
+            .status {
+                order: 1;
+                /* 3 lignes réservées : les messages « Placement interdit… » et
+                   « Comptage… » tiennent sur 3 lignes à 360-390px ; sans cette
+                   réserve le plateau descend de ~20px et le doigt tombe sur la
+                   ligne du dessus au toucher suivant. */
+                min-height: calc(3 * 1.3em);
+                margin: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 1rem;
+                line-height: 1.3;
+            }
+
+            .board-wrapper { order: 2; }
+            .actions { order: 3; }
+            .meta { order: 4; }
+            .setup { order: 5; }
+            .legend { order: 6; }
+
+            .board {
+                border-width: 4px;
+            }
+
+            .actions,
+            .meta {
+                width: min(var(--board-size), 100%);
+                margin-inline: auto;
+            }
+
+            .actions {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: var(--space-sm);
+                margin-top: 0;
+            }
+
+            .actions button {
+                min-height: 48px;
+            }
+
+            /* Comptage : Passer/Résigner sont inactifs, on laisse la place à Confirmer/Reprendre. */
+            .actions:has(#btn-confirm-score:not([hidden])) :is(#btn-pass, #btn-resign) {
+                display: none;
+            }
+
+            .meta {
+                margin-top: 0;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 6px;
+            }
+
+            .card {
+                padding: 4px 6px;
+                font-size: 0.75rem;
+                line-height: 1.25;
+                text-align: center;
+            }
+
+            .card strong {
+                font-size: 1rem;
+            }
+
+            .setup,
+            .legend {
+                background: var(--color-bg-secondary);
+                border-radius: var(--radius-lg);
+                padding: var(--space-md);
+                margin-top: var(--space-sm);
+            }
+
+            .setup {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: var(--space-sm);
+            }
+
+            .setup label,
+            .setup select {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* Téléphone en paysage : plateau à gauche limité à la hauteur visible, infos à droite. */
+        @media (orientation: landscape) and (max-height: 500px) {
             :root {
-                --board-size: 92vw;
+                --board-size: max(200px, min(100dvh - max(8px, env(safe-area-inset-top)) - max(8px, env(safe-area-inset-bottom)), 58vw));
+            }
+
+            body {
+                padding-bottom: max(8px, env(safe-area-inset-bottom));
+            }
+
+            h1 {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0 0 0 0);
+                white-space: nowrap;
+            }
+
+            .layout {
+                display: grid;
+                grid-template-columns: auto minmax(0, 1fr);
+                grid-template-rows: repeat(5, auto) 1fr;
+                column-gap: var(--space-md);
+                row-gap: 6px;
+                align-items: start;
+            }
+
+            .board-wrapper {
+                width: var(--board-size);
+                grid-column: 1;
+                grid-row: 1 / -1;
+                position: sticky;
+                top: max(8px, env(safe-area-inset-top));
+            }
+
+            .status,
+            .actions,
+            .meta,
+            .setup,
+            .legend {
+                grid-column: 2;
+            }
+
+            .status {
+                justify-content: flex-start;
+                text-align: left;
+                min-height: calc(3 * 1.3em);
+            }
+
+            .actions,
+            .meta {
+                width: 100%;
+            }
+
+            .setup,
+            .legend {
+                margin-top: 0;
+                padding: var(--space-sm);
             }
         }
     </style>
@@ -273,13 +474,13 @@
             <div class="board-wrapper">
                 <div class="board" id="board" role="group" aria-label="Plateau de Go, neuf lignes et neuf colonnes"></div>
             </div>
-            <div class="legend" style="margin-top: var(--space-md);">
-                Règles : ko simple, suicide interdit, scoring chinois (komi 6.5). Flèches : parcourir le plateau ; Entrée ou Espace : placer une pierre. Après deux passes, activez les groupes morts, puis confirmez le score. Activez à nouveau un groupe pour le déclarer vivant, ou reprenez la partie en cas de désaccord.
+            <div class="legend">
+                Règles : ko simple, suicide interdit, scoring chinois (komi 6.5). Touchez ou cliquez une intersection pour poser une pierre ; au clavier, flèches pour parcourir le plateau, Entrée ou Espace pour placer. Après deux passes, touchez les groupes morts, puis confirmez le score. Touchez à nouveau un groupe pour le déclarer vivant, ou reprenez la partie en cas de désaccord.
             </div>
         </div>
 
         <div class="panel">
-            <div class="controls">
+            <div class="controls setup">
                 <label for="bot-select">Adversaire</label>
                 <select id="bot-select">
                     <option value="greedy">🤖 Tactique (défaut)</option>
@@ -287,14 +488,17 @@
                     <option value="human">👤 Hot-seat</option>
                 </select>
                 <button class="btn-primary" id="btn-start">Démarrer</button>
+                <button id="btn-reset">Reset</button>
+            </div>
+
+            <div class="controls actions" aria-label="Actions de la partie" role="group">
                 <button id="btn-pass">Passer</button>
                 <button id="btn-resign">Résigner</button>
                 <button class="btn-primary" id="btn-confirm-score" hidden>Confirmer le score</button>
                 <button id="btn-resume-play" hidden>Reprendre la partie</button>
-                <button id="btn-reset">Reset</button>
             </div>
 
-            <div class="meta" style="margin-top: var(--space-lg);">
+            <div class="meta">
                 <div class="card">
                     <div>Captures Noir</div>
                     <strong id="captures-black">0</strong>
@@ -457,7 +661,13 @@
             statusEl.textContent = statusText(state, { humanId, opponentId, bot, currentHuman });
         }
 
-        on(btnStart, 'click', startGame);
+        /** Sur téléphone, Démarrer/Reset sont sous le plateau : on y revient. */
+        function restartFromMenu() {
+            startGame();
+            statusEl.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        on(btnStart, 'click', restartFromMenu);
         on(btnPass, 'click', pass);
         on(btnResign, 'click', resign);
         on(btnConfirmScore, 'click', () => {
@@ -469,7 +679,7 @@
             render();
             maybeBotTurn();
         });
-        on(btnReset, 'click', startGame);
+        on(btnReset, 'click', restartFromMenu);
 
         buildBoard();
         startGame();

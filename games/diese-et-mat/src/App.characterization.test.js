@@ -721,18 +721,41 @@ describe('App - caractérisation', () => {
       expect(document.querySelector('.notation-btn.active').dataset.notation).toBe('english');
     });
 
-    test('réinitialiser demande confirmation', () => {
+    test('réinitialiser demande une confirmation en deux appuis, sans confirm() natif', () => {
       app.dataManager.progress.xp = 50;
       app.renderSettings();
-      const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
-      click(document.getElementById('btn-reset-progress'));
-      expect(confirmSpy).toHaveBeenCalled();
+      const confirmSpy = jest.spyOn(window, 'confirm');
+      const button = document.getElementById('btn-reset-progress');
+      click(button);
+      expect(confirmSpy).not.toHaveBeenCalled();
       expect(app.dataManager.xp).toBe(50);
-      confirmSpy.mockReturnValue(true);
-      click(document.getElementById('btn-reset-progress'));
+      expect(button.textContent).toContain('Appuyer encore');
+      click(button);
       expect(app.dataManager.xp).toBe(0);
       expect(app.currentView).toBe('menu');
       expect(document.getElementById('level-badge').textContent).toBe('Niveau 1');
+    });
+
+    test('la confirmation de réinitialisation expire après 5 secondes', () => {
+      jest.useFakeTimers();
+      app.dataManager.progress.xp = 50;
+      app.renderSettings();
+      const button = document.getElementById('btn-reset-progress');
+      const label = button.textContent.trim();
+      click(button);
+      jest.advanceTimersByTime(5000);
+      expect(button.dataset.confirming).toBe('false');
+      expect(button.textContent).toBe(label);
+      click(button);
+      expect(app.dataManager.xp).toBe(50);
+      jest.useRealTimers();
+    });
+
+    test('réinitialiser est sans effet sans bouton', () => {
+      app.dataManager.progress.xp = 50;
+      document.getElementById('btn-reset-progress')?.remove();
+      app.resetProgress();
+      expect(app.dataManager.xp).toBe(50);
     });
 
     test('updateLevelBadge est sans effet sans badge', () => {

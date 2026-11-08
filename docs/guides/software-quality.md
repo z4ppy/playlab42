@@ -1246,6 +1246,32 @@ est revérifiée ; ses identifiants et artefacts sont référencés dans la PR s
 boucle de commits de provenance. Fusion, publication et archivage restent
 distincts : la fusion externe de #153 est constatée, sans archivage automatique.
 
+### Évolution volontaire : jouabilité mobile (PR #181)
+
+La [PR #181](https://github.com/z4ppy/playlab42/pull/181) change
+**volontairement** le CSS et le balisage des Dames, de Dièse & Mat, du Mastermind,
+du Morpion et du Triomino pour les rendre jouables sur téléphone. Les contrats
+de dédoublonnage comparaient ces pages au CSS d'avant refactoring : toute
+évolution voulue les faisait échouer. Le corpus n'est pas régénéré depuis le
+code courant, ce qui rendrait la comparaison tautologique.
+
+Les différences CSS `origin/main` **588cedd** → PR #181 de ces cinq sources sont
+rejouées par fusion à trois voies (`git merge-file`) sur les octets d'origine
+de **5956cd9**. Les conflits ne portent que sur les règles déjà déplacées dans
+`games/game-page.css` (`*`, `body`, `h1`, `.btn`, `.btn:hover`, `.btn-secondary`) :
+la référence garde leurs déclarations d'origine et reçoit les ajouts de la PR.
+Le champ `amendments` du corpus trace la PR, la base et les chemins amendés ;
+`e2e/original-styles.spec.js` verrouille ce champ et le nouveau hash. Le socle
+partagé reste ainsi comparé au CSS dupliqué d'origine, sans tolérance.
+
+Les golden de forme sont recapturés là où le balisage change : scénarios
+Dames, Mastermind et Triomino, et les huit scénarios Dièse & Mat (nouvelles
+classes de la vue d'exercice). Propriétés et états restent identiques ; les
+valeurs stockées, non comparées, viennent du Chromium local. Le Morpion
+ne charge plus de `mobile.css` séparé : ses règles mobiles terminent le `<style>`
+de la page, même position dans la cascade, pour respecter l'ordre de feuilles
+`theme.css`, `ui.css`, `game-page.css`, style de la page.
+
 ## Maintenance des références et exceptions
 
 Les workflows utilisent des SHAs complets avec commentaire de version ; les
