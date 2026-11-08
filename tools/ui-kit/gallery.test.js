@@ -12,6 +12,9 @@ jest.unstable_mockModule('../../lib/theme.js', () => ({
   setTheme,
 }));
 
+// Module de la galerie importé à neuf avant chaque test, pour ses helpers exportés.
+let gallery;
+
 beforeEach(async () => {
   jest.resetModules();
   setTheme.mockClear();
@@ -20,7 +23,7 @@ beforeEach(async () => {
   document.body.innerHTML = html.match(/<body\b[^>]*>([\s\S]*)<\/body>/)[1];
   document.documentElement.style.setProperty('--space-md', '1rem');
   document.documentElement.style.setProperty('--color-bg', '#101827');
-  await import('./gallery.js');
+  gallery = await import('./gallery.js');
 });
 
 describe('Galerie UI interactive', () => {
@@ -120,6 +123,21 @@ describe('Galerie UI interactive', () => {
     spacing.dispatchEvent(new Event('input'));
     expect(spacing.getAttribute('aria-valuetext')).toBe('28 px');
     expect(document.getElementById('spacing-value').value).toBe('28');
+  });
+
+  test('le code inspecté est désindenté depuis la colonne zéro', () => {
+    document.getElementById('inspector').showModal = jest.fn();
+    document.getElementById('open-dialog').click();
+    const lines = document.getElementById('card-code').textContent.split('\n');
+    expect(lines[0]).toMatch(/^<article /);
+    expect(lines.at(-1)).toBe('</article>');
+    expect(lines.slice(1, -1).every(line => /^ {2}</.test(line))).toBe(true);
+  });
+
+  test('dedent conserve le relief et tolère un fragment sur une ligne', () => {
+    expect(gallery.dedent('<a>\n      <b>\n        <c>\n      </b>\n    </a>')).toBe('<a>\n  <b>\n    <c>\n  </b>\n</a>');
+    expect(gallery.dedent('<a></a>')).toBe('<a></a>');
+    expect(gallery.dedent('<a>\n\n    </a>')).toBe('<a>\n\n</a>');
   });
 
   test('emploie les composants partagés pour tous les boutons et champs', () => {

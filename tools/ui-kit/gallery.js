@@ -32,6 +32,20 @@ export function announce(element, message, tone = 'info') {
   element.textContent = message;
 }
 
+/**
+ * Retire l'indentation commune d'un fragment HTML sérialisé.
+ * `outerHTML` conserve l'indentation du fichier source : sans ce nettoyage, les
+ * enfants apparaissent décalés de dix espaces et la balise fermante de huit.
+ * @param {string} html - Code dont seule la première ligne est déjà à gauche.
+ * @returns {string} Code ré-indenté à partir de la colonne zéro.
+ */
+export function dedent(html) {
+  const [first, ...rest] = html.split('\n');
+  const indents = rest.filter(line => line.trim()).map(line => line.match(/^ */)[0].length);
+  const common = indents.length ? Math.min(...indents) : 0;
+  return [first, ...rest.map(line => line.slice(common))].join('\n');
+}
+
 /** Affiche la valeur réelle du token pour le thème courant, sans la recopier. */
 function inspectToken() {
   const value = getComputedStyle(document.documentElement).getPropertyValue(token.value).trim();
@@ -101,7 +115,7 @@ form.addEventListener('submit', event => {
 const dialog = document.getElementById('inspector');
 const opener = document.getElementById('open-dialog');
 opener.addEventListener('click', () => {
-  document.getElementById('card-code').textContent = document.getElementById('preview').outerHTML;
+  document.getElementById('card-code').textContent = dedent(document.getElementById('preview').outerHTML);
   dialog.showModal();
 });
 

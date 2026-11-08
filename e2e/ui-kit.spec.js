@@ -141,3 +141,22 @@ test('Galerie UI: statuts types, erreur annoncee et curseur avec unite', async (
   await expect(page.locator('#form-status')).toHaveClass(/ui-status-success/);
   await expect(page.getByRole('slider', { name: /Espacement/ })).toHaveAttribute('aria-valuetext', '16 px');
 });
+
+test('Galerie UI mobile: dialogue dans la fenetre, code desindente et defilant au clavier', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.goto('/tools/ui-kit/index.html');
+  await activate(page.locator('#open-dialog'));
+  const dialog = page.getByRole('dialog', { name: 'Inspecter la carte' });
+  // Avant correction, l'autofocus faisait défiler le dialogue et masquait son titre.
+  await expect(dialog.getByRole('heading', { name: 'Inspecter la carte' })).toBeInViewport({ ratio: 1 });
+  await expect(dialog.getByRole('button', { name: 'Fermer le dialogue' })).toBeInViewport({ ratio: 1 });
+  const code = dialog.getByRole('region', { name: 'Code HTML de la carte' });
+  // toContainText normalise les espaces : lire le texte brut pour vérifier l'indentation.
+  const lines = (await code.textContent()).split('\n');
+  expect(lines.at(-1)).toBe('</article>');
+  expect(lines.slice(1, -1).every(line => /^ {2}<\w/.test(line))).toBe(true);
+  await page.keyboard.press('Shift+Tab');
+  await expect(code).toBeFocused();
+  await page.keyboard.press('PageDown');
+  await expect.poll(() => code.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+});
