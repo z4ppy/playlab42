@@ -60,6 +60,9 @@ beforeEach(() => {
     cpSync(fileURLToPath(new URL(source, import.meta.url)), join(root, 'scripts', source));
   }
   cpSync(fileURLToPath(new URL('lib', import.meta.url)), join(root, 'scripts', 'lib'), { recursive: true });
+  // Les scripts de build importent les chemins de vignettes partagés avec le portail
+  mkdirSync(join(root, 'lib'));
+  cpSync(fileURLToPath(new URL('../lib/catalogue-ui.js', import.meta.url)), join(root, 'lib', 'catalogue-ui.js'));
   symlinkSync(join(getRootDir(import.meta.url), 'node_modules'), join(root, 'node_modules'));
   write('package.json', { type: 'module' });
   write('data/catalogue.json', previousCatalogue);
