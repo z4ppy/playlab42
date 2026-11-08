@@ -79,15 +79,11 @@
       white-space: nowrap;
     }
 
+    /* Hauteur, police et bordure partagées avec les champs (règle groupée plus bas). */
     .preset-select {
       flex: 1 1 auto;
       min-width: 0;
-      min-height: 44px;
-      padding: 0 10px;
-      font-size: 16px; /* ≥ 16px : pas de zoom automatique sur iOS */
-      border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
-      background: var(--color-bg);
     }
 
     .icon-btn {
@@ -305,14 +301,17 @@
 
     .hint { font-size: 13px; color: var(--color-text-muted); line-height: 1.4; }
 
-    input[type="text"], input[type="number"], select.input {
-      width: 100%;
+    .preset-select, input[type="text"], input[type="number"], select.input {
       min-height: 44px;
       padding: 0 10px;
       font-size: 16px; /* ≥ 16px : pas de zoom automatique sur iOS */
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
       background: var(--color-bg);
+    }
+
+    input[type="text"], input[type="number"], select.input {
+      width: 100%;
+      border-radius: var(--radius-sm);
     }
 
     .mono { font-family: var(--font-mono); }
