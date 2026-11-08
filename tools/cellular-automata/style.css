@@ -1,0 +1,735 @@
+/*
+ * Automate cellulaire - mise en page mobile d'abord.
+ *
+ * Trois dispositions :
+ * - portrait (défaut) : en-tête, grille, réglages repliables, commandes en bas ;
+ * - paysage de téléphone : grille à gauche, colonne de commandes à droite ;
+ * - grand écran : grille et barre latérale de réglages toujours visible.
+ * La grille et les commandes de lecture restent visibles ensemble, sans défilement.
+ */
+
+/* === Couleurs des cellules (lues par le rendu canvas) === */
+:root {
+  --ca-bg: #0a0f1c;
+  --ca-young: #fff2b3;
+  --ca-mid: #ff7a93;
+  --ca-old: #7b6cff;
+  --ca-trail: #2f7dd6;
+  --ca-grid: rgba(255, 255, 255, 0.09);
+  --ca-ghost: rgba(255, 242, 179, 0.55);
+  --ca-cursor: #ff8fa3;
+  --hud-bg: rgba(16, 24, 39, 0.78);
+  /* #ef4444 n'atteint que 3,8:1 sur le fond des boutons sombres. */
+  --ca-danger: #fca5a5;
+}
+
+[data-theme="light"] {
+  --ca-bg: #ffffff;
+  --ca-young: #e0193f;
+  --ca-mid: #8b2fd6;
+  --ca-old: #0b6f80;
+  --ca-trail: #f58fb0;
+  --ca-grid: rgba(24, 35, 56, 0.1);
+  --ca-ghost: rgba(180, 35, 73, 0.45);
+  --ca-cursor: #b42349;
+  --hud-bg: rgba(255, 255, 255, 0.86);
+  --ca-danger: var(--color-error);
+}
+
+/* Duplication voulue, comme lib/theme.css : préférence système sans data-theme. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --ca-bg: #ffffff;
+    --ca-young: #e0193f;
+    --ca-mid: #8b2fd6;
+    --ca-old: #0b6f80;
+    --ca-trail: #f58fb0;
+    --ca-grid: rgba(24, 35, 56, 0.1);
+    --ca-ghost: rgba(180, 35, 73, 0.45);
+    --ca-cursor: #b42349;
+    --hud-bg: rgba(255, 255, 255, 0.86);
+    --ca-danger: var(--color-error);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  /* Pas de rebond ni de « tirer pour rafraîchir » pendant qu'on dessine. */
+  overscroll-behavior: none;
+}
+
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* === Ossature === */
+.app {
+  height: 100vh;
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    "top"
+    "stage"
+    "sheet"
+    "controls";
+  padding:
+    env(safe-area-inset-top, 0)
+    env(safe-area-inset-right, 0)
+    env(safe-area-inset-bottom, 0)
+    env(safe-area-inset-left, 0);
+}
+
+.app[data-mode="1d"] [data-only="2d"],
+.app[data-mode="2d"] [data-only="1d"] {
+  display: none !important;
+}
+
+/* === En-tête === */
+.topbar {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 4px 12px;
+  min-height: 52px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title-icon {
+  color: var(--color-accent);
+}
+
+.segmented {
+  display: flex;
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+}
+
+.segmented-btn {
+  min-width: 48px;
+  min-height: 44px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.segmented-btn[aria-pressed="true"] {
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-btn--small {
+  width: 44px;
+  height: 36px;
+}
+
+@media (hover: hover) {
+  .icon-btn:hover,
+  .ctrl-btn:hover,
+  .btn:hover,
+  .chip:hover,
+  .pattern-btn:hover {
+    border-color: var(--color-accent);
+  }
+}
+
+/* === Zone de jeu === */
+.stage {
+  grid-area: stage;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.board {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Seule la surface de jeu capte tous les gestes (dessin, pincement). */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: crosshair;
+}
+
+/* Focus clavier de la grille : contour intérieur, sans décaler la mise en page. */
+.board:focus {
+  outline: none;
+}
+
+.board:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: -3px;
+}
+
+.app[data-tool="pan"] .board {
+  cursor: grab;
+}
+
+.hud {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  max-width: calc(100% - 16px);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  background: var(--hud-bg);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.hud-rule {
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+}
+
+.pattern-chip {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 10px;
+  border-radius: var(--radius-md);
+  background: var(--hud-bg);
+  font-size: 0.8125rem;
+}
+
+.app:not([data-tool="pattern"]) .pattern-chip {
+  display: none;
+}
+
+/* Le HUD passe sous la puce de motif sur les écrans étroits. */
+.app[data-tool="pattern"] .hud {
+  top: 56px;
+}
+
+@media (min-width: 560px) {
+  .app[data-tool="pattern"] .hud {
+    top: 8px;
+    max-width: calc(100% - 240px);
+  }
+}
+
+.zoom-controls {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zoom-controls .icon-btn {
+  background: var(--hud-bg);
+}
+
+.toast {
+  position: absolute;
+  /* Centré sans left: 50% (qui limiterait la largeur à la moitié de la zone) ;
+     64 px à droite laissent la colonne de zoom libre. */
+  left: 8px;
+  right: 64px;
+  bottom: 12px;
+  width: max-content;
+  max-width: calc(100% - 72px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-card);
+  box-shadow: 0 4px 16px var(--color-shadow);
+  font-size: 0.875rem;
+}
+
+.toast[hidden] {
+  display: none;
+}
+
+.toast:not(:has(.toast-action:not([hidden]))) {
+  padding: 10px 14px;
+}
+
+.toast-action {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* === Réglages === */
+.sheet {
+  grid-area: sheet;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  align-content: start;
+  gap: 4px 20px;
+  max-height: 42dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 16px 12px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.app[data-sheet="closed"] .sheet {
+  display: none;
+}
+
+.sheet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sheet-title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.hint--error {
+  color: var(--color-error);
+}
+
+@media (hover: none) {
+  .hint--desktop {
+    display: none;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field--grow {
+  flex: 1;
+}
+
+.field[hidden] {
+  display: none;
+}
+
+.field-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* 16 px minimum : iOS ne zoome pas au focus d'un champ. */
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.input--mono {
+  font-family: var(--font-mono);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.range {
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.rule-number {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.btn--danger {
+  color: var(--ca-danger);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  min-width: 52px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.chip[aria-pressed="true"],
+.pattern-btn[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.switch input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-accent);
+}
+
+/* Table des 8 motifs : 111 à gauche, 000 à droite (lecture binaire). */
+.rule-table {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.rule-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 6px 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.rule-cell-row {
+  display: flex;
+  gap: 2px;
+}
+
+.rule-dot {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  background: var(--ca-bg);
+}
+
+.rule-dot--on {
+  border-color: transparent;
+  background: var(--ca-young);
+}
+
+.rule-dot--out {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.pattern-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px;
+}
+
+.pattern-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 6px 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.pattern-thumb {
+  width: 72px;
+  height: 40px;
+  border-radius: 4px;
+  background: var(--ca-bg);
+}
+
+/* === Commandes === */
+.controls {
+  grid-area: controls;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tools {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.ctrl-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 2px 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.ctrl-icon {
+  font-size: 1.125rem;
+  line-height: 1.1;
+}
+
+.ctrl-label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ctrl-btn--primary {
+  min-width: 72px;
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+.ctrl-btn[aria-pressed="true"]:not(.ctrl-btn--primary),
+.ctrl-btn[aria-expanded="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  box-shadow: inset 0 -3px 0 var(--color-accent);
+}
+
+.speed {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-left: 4px;
+}
+
+.speed-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-label {
+  line-height: 1;
+}
+
+.speed .range {
+  height: 44px;
+  margin-top: -6px;
+}
+
+/* === Téléphone en paysage : grille à gauche, colonne de commandes === */
+@media (orientation: landscape) and (max-height: 560px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr) min(300px, 46vw);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "stage top"
+      "stage sheet"
+      "stage controls";
+  }
+
+  .topbar {
+    min-height: 48px;
+    padding: 2px 8px;
+    border-left: 1px solid var(--color-border);
+  }
+
+  .title {
+    font-size: 0.875rem;
+  }
+
+  .title-icon {
+    display: none;
+  }
+
+  /* La colonne a la place de garder les réglages ouverts. */
+  .app[data-sheet] .sheet {
+    display: grid;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0 10px 8px;
+    border-left: 1px solid var(--color-border);
+  }
+
+  #sheet-toggle {
+    display: none;
+  }
+
+  .controls {
+    padding: 6px 8px;
+    border-left: 1px solid var(--color-border);
+  }
+
+  .ctrl-btn {
+    min-height: 44px;
+  }
+
+  .ctrl-btn--primary {
+    min-width: 60px;
+  }
+}
+
+/* === Grand écran : barre latérale permanente === */
+@media (min-width: 900px) and (min-height: 561px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "top top"
+      "stage sheet"
+      "stage controls";
+  }
+
+  .app[data-sheet] .sheet {
+    display: grid;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    border-left: 1px solid var(--color-border);
+  }
+
+  #sheet-toggle {
+    display: none;
+  }
+
+  .controls {
+    border-left: 1px solid var(--color-border);
+  }
+}
