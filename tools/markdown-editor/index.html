@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>Éditeur Markdown - Playlab42</title>
+  <meta name="description" content="Éditeur Markdown local avec aperçu en direct, coloration du code, table des matières et export HTML.">
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./src/ui/main.js"></script>
+</head>
+<body>
+  <div class="mde" id="app" data-view="editor">
+    <header class="mde-top">
+      <h1 class="mde-title"><span class="mde-logo" aria-hidden="true">M↓</span><span class="mde-title-text">Éditeur Markdown</span></h1>
+      <div class="mde-views" role="group" aria-label="Affichage">
+        <button type="button" class="mde-view" data-set-view="editor" aria-pressed="true">Écrire</button>
+        <button type="button" class="mde-view" data-set-view="preview" aria-pressed="false">Aperçu</button>
+        <button type="button" class="mde-view mde-view--wide" data-set-view="split" aria-pressed="false">Côte à côte</button>
+      </div>
+      <button type="button" class="mde-icon" id="toc-toggle" aria-expanded="false" aria-controls="toc-panel" aria-label="Table des matières" title="Table des matières"><span aria-hidden="true">☰</span></button>
+      <button type="button" class="mde-icon" id="menu-toggle" aria-expanded="false" aria-controls="file-menu" aria-label="Fichier : ouvrir, exporter, imprimer" title="Fichier"><span aria-hidden="true">⋮</span></button>
+      <button type="button" class="mde-icon" id="theme-toggle" aria-label="Basculer entre thème clair et sombre" title="Thème clair / sombre"><span aria-hidden="true">◐</span></button>
+    </header>
+
+    <div class="mde-toolbar" id="toolbar" role="toolbar" aria-label="Mise en forme" aria-controls="source"></div>
+
+    <main class="mde-work">
+      <section class="mde-pane mde-pane--editor" aria-label="Source Markdown">
+        <label class="sr-only" for="source">Texte Markdown</label>
+        <textarea id="source" class="mde-source" placeholder="Écrivez en Markdown… # Titre, **gras**, - liste" spellcheck="true" autocapitalize="sentences" autocomplete="off" aria-describedby="editor-help"></textarea>
+        <p class="sr-only" id="editor-help">Ctrl+B gras, Ctrl+I italique, Ctrl+K lien, Ctrl+E code. Dans une liste, Tab et Maj+Tab (ou les boutons de retrait) changent le niveau ; Échap puis Tab quitte la zone. Entrée continue la liste.</p>
+      </section>
+      <section class="mde-pane mde-pane--preview" id="preview-pane" aria-label="Aperçu du document" tabindex="0">
+        <article class="md-doc" id="preview"></article>
+      </section>
+      <nav class="mde-toc" id="toc-panel" aria-labelledby="toc-title" hidden>
+        <div class="mde-toc-head">
+          <h2 class="mde-toc-title" id="toc-title">Sommaire</h2>
+          <button type="button" class="mde-icon" data-action="close-toc" aria-label="Fermer le sommaire"><span aria-hidden="true">✕</span></button>
+        </div>
+        <ol class="mde-toc-list" id="toc-list"></ol>
+      </nav>
+    </main>
+
+    <footer class="mde-status">
+      <span id="stats"></span>
+      <span class="mde-save" id="save-state" aria-live="off"></span>
+    </footer>
+
+    <div class="mde-menu" id="file-menu" role="group" aria-label="Fichier" hidden>
+      <button type="button" class="mde-menu-item" data-action="open"><span aria-hidden="true">📂</span> Ouvrir un fichier .md…</button>
+      <button type="button" class="mde-menu-item" data-action="save-md"><span aria-hidden="true">⬇</span> Télécharger le .md</button>
+      <button type="button" class="mde-menu-item" data-action="export-html"><span aria-hidden="true">🌐</span> Exporter en HTML autonome</button>
+      <button type="button" class="mde-menu-item" data-action="copy-html"><span aria-hidden="true">📋</span> Copier le HTML</button>
+      <button type="button" class="mde-menu-item" data-action="print"><span aria-hidden="true">🖨️</span> Imprimer / PDF</button>
+      <button type="button" class="mde-menu-item mde-menu-item--danger" data-action="new"><span aria-hidden="true">✚</span> Nouveau document</button>
+      <p class="mde-menu-note">Glissez-déposez aussi un fichier .md sur l'éditeur.</p>
+    </div>
+
+    <input type="file" id="file-input" class="sr-only" accept=".md,.markdown,.mdown,.txt,text/markdown,text/plain" tabindex="-1" aria-hidden="true">
+    <div class="mde-drop" id="drop-overlay" hidden><p>Déposez le fichier Markdown ici</p></div>
+    <p class="mde-toast" id="toast" role="status" hidden>
+      <span id="toast-text"></span>
+      <button type="button" class="mde-toast-action" id="toast-action" hidden></button>
+    </p>
+    <p class="sr-only" id="announcer" aria-live="polite"></p>
+  </div>
+</body>
+</html>
