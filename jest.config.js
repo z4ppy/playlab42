@@ -90,6 +90,7 @@ export default {
     'games/go-9x9/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
+    'games/sudoku/bots/**/*.js',
     'games/dialog-accessibility.js',
     'tools/**/src/**/*.{js,ts}',
     'tools/relativity-lab/ui/**/*.js',
@@ -177,6 +178,11 @@ export default {
     './games/orbital-golf/engine/*.js': { statements: 98, branches: 98, functions: 100, lines: 98 },
     './games/orbital-golf/{renderer,renderer-effects,records,input,audio}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/orbital-golf/controller.js': { statements: 98, branches: 95, functions: 98, lines: 100 },
+    // Sudoku : moteur, solveurs, générateur et bots entièrement couverts.
+    './games/sudoku/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/sudoku/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/sudoku/engine/techniques/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/sudoku/bots/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
