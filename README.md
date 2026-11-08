@@ -59,7 +59,7 @@ Le code fait lui aussi partie du cours. Moteurs de jeux déterministes, tests au
 
 | Univers | Ce qu’on y trouve | Quelques portes d’entrée |
 |---------|-------------------|--------------------------|
-| **Parcours** | Des contenus structurés en slides pour apprendre à son rythme. | [Agents de code](parcours/epics/coding-agents-2025/), [Deep learning](parcours/epics/deep-learning-intro/), [OpenSpec](parcours/epics/openspec-usage-guide/) |
+| **Parcours** | Des contenus structurés en slides pour apprendre à son rythme. | [Agents de code](parcours/epics/coding-agents-2026/), [Deep learning](parcours/epics/deep-learning-intro/), [OpenSpec](parcours/epics/openspec-usage-guide/) |
 | **Outils & simulations** | Des utilitaires et des expériences interactives pour manipuler les concepts. | [JSON Formatter](https://z4ppy.github.io/playlab42/tools/json-formatter.html), [Particle Life](https://z4ppy.github.io/playlab42/tools/particle-life/), [Relativity Lab 3D](https://z4ppy.github.io/playlab42/tools/relativity-lab/) |
 | **Jeux** | Des jeux autonomes, avec des moteurs de règles et des bots pour expérimenter la logique et la stratégie. | [Morpion](https://z4ppy.github.io/playlab42/games/tictactoe/), [Mastermind](https://z4ppy.github.io/playlab42/games/mastermind/), [Go 9×9](https://z4ppy.github.io/playlab42/games/go-9x9/) |
 | **Bookmarks** | Une sélection de ressources externes sur l’écosystème IA et le développement. | [Modèles & API](bookmarks/models-apis.json), [MCP](bookmarks/mcp-protocols.json), [Prompt engineering](bookmarks/prompt-engineering.json) |

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perspectives - Coding Agents en 2026</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <article class="slide">
+    <h1>🔮 Perspectives : les questions à suivre</h1>
+
+    <p>
+      Plutôt que des prédictions chiffrées, qui ont mal vieilli l'an dernier, voici les questions ouvertes
+      et les indicateurs qui permettront d'y répondre.
+    </p>
+
+    <h2>1. Jusqu'où ira l'autonomie ?</h2>
+    <p>
+      L'horizon de temps mesuré par METR double tous les quelques mois, et les agents cloud continuent déjà de travailler pendant que leur utilisateur est absent.
+      Mais METR prévient que ses mesures les plus longues ne sont pas fiables, et ses études de productivité restent peu concluantes.
+      <strong>À suivre :</strong> les mesures d'horizon de temps, les nouvelles versions de SWE-bench Pro et Terminal-Bench, et surtout vos propres métriques.
+    </p>
+
+    <h2>2. Les standards tiendront-ils leurs promesses ?</h2>
+    <p>
+      MCP (devenu sans état en 2026), AGENTS.md et Agent Skills sont désormais gérés par une fondation neutre. Ils rendent les intégrations
+      et les savoir-faire portables d'un outil à l'autre. <strong>À suivre :</strong> leur adoption réelle, et la stabilité de la spécification MCP,
+      qui s'engage désormais à au moins douze mois de préavis avant de retirer une fonction.
+    </p>
+
+    <h2>3. Quel modèle économique ?</h2>
+    <p>
+      En un an, presque tous les éditeurs sont passés à des crédits ou à une facturation à l'usage, et le marché s'est fortement consolidé.
+      <strong>À suivre :</strong> le coût réel d'une tâche, les clauses sur les données, et la capacité à changer d'outil sans tout reconstruire.
+    </p>
+
+    <h2>4. Saura-t-on sécuriser des agents qui lisent Internet ?</h2>
+    <p>
+      L'injection de prompt n'a pas de solution générale : les défenses reposent sur les permissions, l'isolation et la relecture.
+      <strong>À suivre :</strong> l'OWASP Top 10 des applications agentiques, les avis de sécurité des éditeurs, et les recommandations de l'ANSSI.
+    </p>
+
+    <h2>5. Que devient le métier de développeur ?</h2>
+    <p>
+      DORA décrit l'IA comme un amplificateur : elle renforce les équipes déjà solides et aggrave les dysfonctionnements des autres.
+      L'ANSSI et le BSI demandent de renforcer l'assurance qualité à mesure que la production augmente. Les compétences qui comptent
+      se déplacent vers :
+    </p>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Compétences clés">
+      <table>
+        <thead><tr><th>Compétence</th><th>Pourquoi</th></tr></thead>
+        <tbody>
+          <tr><td>Spécifier</td><td>Un agent exécute ce qu'on lui décrit : objectif, périmètre, critères de réussite</td></tr>
+          <tr><td>Relire et tester</td><td>La relecture devient le goulot d'étranglement et la principale garantie de qualité</td></tr>
+          <tr><td>Concevoir</td><td>Découper, définir les contrats, choisir l'architecture</td></tr>
+          <tr><td>Sécuriser</td><td>Permissions, secrets, dépendances, contenu non fiable</td></tr>
+          <tr><td>Mesurer</td><td>Savoir si l'outil aide vraiment l'équipe, plutôt que de s'en remettre au ressenti</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>6. Et la régulation ?</h2>
+    <p>
+      En Europe, l'obligation de maîtrise de l'IA s'applique déjà, et les règles sur les systèmes à haut risque arriveront en décembre 2027 et en août 2028.
+      <strong>À suivre :</strong> les lignes directrices de la Commission, et la classification des logiciels que vous produisez avec ces agents.
+    </p>
+
+    <div class="callout callout-success">
+      <p>
+        <strong>En résumé :</strong> en 2026, le coding agent est devenu un outil quotidien pour la majorité des développeurs.
+        Ce qui fait la différence n'est plus l'accès à l'outil, mais la façon de l'encadrer : des specs claires, des standards
+        ouverts, une isolation adaptée, une relecture rigoureuse et des mesures honnêtes.
+      </p>
+    </div>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://metr.org/time-horizons/" target="_blank" rel="noopener noreferrer">METR</a>,
+      <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog" target="_blank" rel="noopener noreferrer">changelog MCP 2026-07-28</a>,
+      <a href="https://dora.dev/research/2025/dora-report/" target="_blank" rel="noopener noreferrer">DORA 2025</a>,
+      <a href="https://cyber.gouv.fr/nous-connaitre/publications/publications-internationales/ai-coding-assistants/" target="_blank" rel="noopener noreferrer">ANSSI/BSI</a>,
+      <a href="https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/" target="_blank" rel="noopener noreferrer">OWASP</a>,
+      <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener noreferrer">AI Act</a>.
+    </p>
+  </article>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panorama - Coding Agents en 2026</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <article class="slide">
+    <h1>🗺️ Panorama au 8 novembre 2026</h1>
+
+    <p>
+      En 2025, on classait les outils par forme : IDE, extension, CLI. En 2026, cette grille ne tient plus :
+      les principaux éditeurs proposent le <strong>même agent sur plusieurs surfaces</strong> (terminal, éditeur,
+      application de bureau, web) et presque tous peuvent le faire tourner <strong>dans le cloud</strong>.
+      La vraie question devient : quel agent, avec quels modèles, à quel coût, et où s'exécute-t-il ?
+    </p>
+
+    <h2>Les offres des grands éditeurs</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Offres des grands éditeurs">
+      <table>
+        <thead><tr><th>Agent</th><th>Éditeur</th><th>Surfaces</th><th>Modèle de prix</th></tr></thead>
+        <tbody>
+          <tr><td>Claude Code</td><td>Anthropic</td><td>Terminal, IDE, bureau, web, mobile</td><td>Inclus dans les abonnements, avec limites par 5 h et par semaine ; ou clé API</td></tr>
+          <tr><td>Codex</td><td>OpenAI</td><td>CLI (open source), IDE, application, cloud</td><td>Inclus dans les plans ChatGPT, crédits au-delà ; ou clé API</td></tr>
+          <tr><td>GitHub Copilot</td><td>GitHub (Microsoft)</td><td>IDE (mode agent), CLI, cloud agent sur github.com</td><td>Abonnement avec <em>GitHub AI Credits</em> consommés au token depuis le 1<sup>er</sup> juin 2026</td></tr>
+          <tr><td>Cursor</td><td>Anysphere, filiale de SpaceX depuis août 2026</td><td>Application de bureau, CLI, Cloud Agents, web</td><td>Forfaits avec enveloppe d'usage ; modèles tiers au prix API</td></tr>
+          <tr><td>Devin (dont Devin Desktop, ex-Windsurf)</td><td>Cognition</td><td>IDE de bureau, cloud, CLI, revue</td><td>Forfaits, usage supplémentaire au prix API</td></tr>
+          <tr><td>Antigravity (et Jules)</td><td>Google</td><td>Application, CLI <code>agy</code>, IDE ; Jules dans le cloud</td><td>Selon l'offre Google ; quotas par plan</td></tr>
+          <tr><td>Kiro</td><td>AWS</td><td>IDE, CLI, web</td><td>Crédits mensuels selon le forfait</td></tr>
+          <tr><td>Junie</td><td>JetBrains</td><td>Terminal, IDE JetBrains, CI</td><td>Crédits IA ou clé API personnelle</td></tr>
+          <tr><td>Mistral Vibe</td><td>Mistral AI</td><td>CLI, IDE (via ACP), agents distants</td><td>Forfaits ou API</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Les agents open source</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Agents open source">
+      <table>
+        <thead><tr><th>Projet</th><th>Licence</th><th>Particularité</th></tr></thead>
+        <tbody>
+          <tr><td>Aider</td><td>Apache-2.0</td><td>Pair programming dans le terminal, intégration Git, n'importe quel modèle</td></tr>
+          <tr><td>Cline</td><td>Apache-2.0</td><td>Extensions VS Code et JetBrains, CLI, SDK</td></tr>
+          <tr><td>OpenCode</td><td>MIT</td><td>Agent en terminal (TUI), pour n'importe quel modèle</td></tr>
+          <tr><td>Kilo Code</td><td>MIT</td><td>IDE, CLI et cloud ; modèles facturés à prix coûtant ou clé personnelle</td></tr>
+          <tr><td>OpenHands</td><td>MIT</td><td>Plateforme d'agents : interface, CLI, SDK, cloud</td></tr>
+          <tr><td>Codex CLI</td><td>Apache-2.0</td><td>La partie terminal de Codex est open source</td></tr>
+          <tr><td>Gemini CLI</td><td>Apache-2.0</td><td>Code toujours ouvert, mais l'accès grand public est passé à Antigravity CLI le 18 juin 2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      L'éditeur Zed (licence GPL-3.0) illustre une autre tendance : il accueille des agents externes grâce à
+      l'<em>Agent Client Protocol</em> (ACP), comme un éditeur accueille un serveur de langage.
+    </p>
+
+    <h2>Une année de consolidation</h2>
+    <ul>
+      <li><strong>14 juillet 2025</strong> : Cognition (Devin) rachète Windsurf, renommé <strong>Devin Desktop</strong> le 2 juin 2026.</li>
+      <li><strong>2 décembre 2025</strong> : Amp quitte Sourcegraph et devient une société indépendante.</li>
+      <li><strong>3 décembre 2025</strong> : Anthropic rachète le runtime JavaScript Bun « pour accélérer Claude Code », qui atteint alors un milliard de dollars de revenu annualisé six mois après sa disponibilité générale.</li>
+      <li><strong>30 avril 2026</strong> : AWS annonce la fin de support d'Amazon Q Developer dans les IDE et oriente vers Kiro.</li>
+      <li><strong>15 mai 2026</strong> : l'extension Roo Code est arrêtée et son dépôt archivé.</li>
+      <li><strong>Mai-juin 2026</strong> : Google fait passer les utilisateurs de Gemini CLI vers Antigravity CLI.</li>
+      <li><strong>Juin 2026</strong> : Cursor rachète Continue, qui cesse son activité.</li>
+      <li><strong>30 juillet 2026</strong> : Tricentis rachète Tabnine.</li>
+      <li><strong>14 août 2026</strong> : Cursor rejoint SpaceX.</li>
+    </ul>
+    <div class="callout callout-warning">
+      <p>
+        <strong>Conséquence pour une équipe :</strong> un outil peut changer de nom, de propriétaire ou de modèle économique
+        en quelques mois. Gardez ce qui est portable : des conventions dans <code>AGENTS.md</code>, des specs versionnées,
+        des intégrations via des standards ouverts (MCP, Agent Skills) plutôt que via des fonctions propres à un outil.
+      </p>
+    </div>
+
+    <h2>Du forfait à l'usage</h2>
+    <p>
+      Les agents consomment beaucoup plus de tokens qu'une autocomplétion. Les éditeurs ont donc remplacé les
+      requêtes « illimitées » par des enveloppes mesurées : Cursor a basculé vers une enveloppe d'usage en juin 2025,
+      GitHub Copilot facture en <em>AI Credits</em> au token depuis le 1<sup>er</sup> juin 2026, Claude Code applique des limites
+      par fenêtre de 5 heures et par semaine, Kiro et Junie comptent en crédits.
+    </p>
+    <p>Pour une équipe, le budget se raisonne désormais <strong>par tâche</strong>, pas seulement par licence.</p>
+
+    <h2>Comment choisir ?</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Critères de choix">
+      <table>
+        <thead><tr><th>Critère</th><th>Question à poser</th></tr></thead>
+        <tbody>
+          <tr><td>Données</td><td>Où part le code ? Quelles garanties de non-rétention et de localisation ?</td></tr>
+          <tr><td>Modèles</td><td>Un seul fournisseur, ou le choix du modèle par tâche ?</td></tr>
+          <tr><td>Exécution</td><td>En local, en bac à sable, dans le cloud de l'éditeur ou sur votre infrastructure ?</td></tr>
+          <tr><td>Coût</td><td>Abonnement, crédits ou API : combien coûte une tâche typique de votre équipe ?</td></tr>
+          <tr><td>Portabilité</td><td>Lit-il <code>AGENTS.md</code>, les Agent Skills et MCP ? Peut-on en changer sans tout réécrire ?</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://code.claude.com/docs/en/overview" target="_blank" rel="noopener noreferrer">Claude Code</a>,
+      <a href="https://claude.com/pricing" target="_blank" rel="noopener noreferrer">tarifs Claude</a>,
+      <a href="https://github.com/openai/codex" target="_blank" rel="noopener noreferrer">Codex</a>,
+      <a href="https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/" target="_blank" rel="noopener noreferrer">Copilot et facturation à l'usage</a>,
+      <a href="https://cursor.com/blog/joining-spacex" target="_blank" rel="noopener noreferrer">Cursor rejoint SpaceX</a>,
+      <a href="https://cursor.com/blog/june-2025-pricing" target="_blank" rel="noopener noreferrer">tarifs Cursor de juin 2025</a>,
+      <a href="https://devin.ai/blog/windsurf-is-now-devin-desktop" target="_blank" rel="noopener noreferrer">Windsurf devient Devin Desktop</a>,
+      <a href="https://devin.ai/blog/windsurfs-next-chapter" target="_blank" rel="noopener noreferrer">rachat de Windsurf</a>,
+      <a href="https://developers.googleblog.com/en/an-important-update-transitioning-gemini-cli-to-antigravity-cli/" target="_blank" rel="noopener noreferrer">Gemini CLI vers Antigravity CLI</a>,
+      <a href="https://antigravity.google/" target="_blank" rel="noopener noreferrer">Antigravity</a>,
+      <a href="https://aws.amazon.com/blogs/devops/amazon-q-developer-end-of-support-announcement/" target="_blank" rel="noopener noreferrer">fin de support d'Amazon Q Developer</a>,
+      <a href="https://kiro.dev/pricing/" target="_blank" rel="noopener noreferrer">Kiro</a>,
+      <a href="https://junie.jetbrains.com/" target="_blank" rel="noopener noreferrer">Junie</a>,
+      <a href="https://mistral.ai/products/vibe" target="_blank" rel="noopener noreferrer">Mistral Vibe</a>,
+      <a href="https://github.com/RooCodeInc/Roo-Code" target="_blank" rel="noopener noreferrer">Roo Code</a>,
+      <a href="https://www.continue.dev/" target="_blank" rel="noopener noreferrer">Continue</a>,
+      <a href="https://www.tricentis.com/news/tricentis-acquires-tabnine" target="_blank" rel="noopener noreferrer">Tricentis et Tabnine</a>,
+      <a href="https://ampcode.com/news/amp-inc" target="_blank" rel="noopener noreferrer">Amp</a>,
+      <a href="https://www.anthropic.com/news/anthropic-acquires-bun-as-claude-code-reaches-usd1b-milestone" target="_blank" rel="noopener noreferrer">Anthropic et Bun</a>,
+      sites officiels d'Aider, Cline, OpenCode, Kilo Code, OpenHands et Zed.
+    </p>
+  </article>
+</body>
+</html>
