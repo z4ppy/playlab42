@@ -10,13 +10,14 @@
   z-index: var(--z-modal, 1000);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  grid-template-columns: 1fr;
+  /* minmax(0, …) : un fil d'Ariane long ne doit pas élargir la colonne au-delà de l'écran. */
+  grid-template-columns: minmax(0, 1fr);
   background: var(--color-bg);
   color: var(--color-text);
 }
 
 .parcours-viewer.menu-open {
-  grid-template-columns: var(--pv-sidebar-width, 300px) 1fr;
+  grid-template-columns: var(--pv-sidebar-width, 300px) minmax(0, 1fr);
 }
 
 /* === Header === */
@@ -489,7 +490,7 @@
 /* Mobile - menu en overlay */
 @media (max-width: 768px) {
   .parcours-viewer.menu-open {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .pv-sidebar {
@@ -545,7 +546,7 @@
 /* Desktop large - menu ouvert par défaut, toujours contrôlable au clavier */
 @media (min-width: 1200px) {
   .parcours-viewer.menu-open {
-    grid-template-columns: var(--pv-sidebar-width, 280px) 1fr;
+    grid-template-columns: var(--pv-sidebar-width, 280px) minmax(0, 1fr);
   }
 
   .parcours-viewer.menu-open .pv-footer {
