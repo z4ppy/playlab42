@@ -105,6 +105,19 @@ test('TicTacToe: deux joueurs au clavier produisent une vraie victoire', async (
   await expect(page.locator('.cell[data-index="6"]')).toHaveAttribute('aria-label', /ligne gagnante/);
 });
 
+test('Golf orbital: visee clavier et tir resolu par le vrai moteur', async ({ page }) => {
+  await page.goto('/games/orbital-golf/index.html');
+  await activate(page.locator('#btn-start'));
+  await expect(page.locator('#field')).toBeFocused();
+  await page.keyboard.press('Shift+ArrowUp');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('#readout')).toHaveText('Angle 1,0° · 50 %');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#hud-strokes')).toHaveText('Coups 1');
+  await expect(page.locator('#app')).not.toHaveAttribute('data-phase', 'flying', { timeout: 20_000 });
+  await expect(page.locator('#field')).toHaveAttribute('aria-label', /Premier putt : balle dans le vide, trou à \d+ unités/);
+});
+
 test('Diese: filtre natif et note maintenue dans un dialogue clavier', async ({ page }) => {
   await page.goto('/games/diese-et-mat/index.html');
   const filter = page.locator('.filter-btn[data-value="notes"]');

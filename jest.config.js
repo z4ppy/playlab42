@@ -86,6 +86,7 @@ export default {
     'games/**/ui/**/*.{js,ts}',
     'games/diese-et-mat/src/**/*.js',
     'games/tetris/**/*.js',
+    'games/orbital-golf/**/*.js',
     'games/go-9x9/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
@@ -172,6 +173,10 @@ export default {
     './games/diese-et-mat/src/core/init-once.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/tictactoe/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/tictactoe/bots/blocker.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/orbital-golf/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/orbital-golf/engine/*.js': { statements: 98, branches: 98, functions: 100, lines: 98 },
+    './games/orbital-golf/{renderer,renderer-effects,records,input,audio}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/orbital-golf/controller.js': { statements: 98, branches: 95, functions: 98, lines: 100 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
