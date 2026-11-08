@@ -736,6 +736,28 @@ describe('App - caractérisation', () => {
       expect(document.getElementById('level-badge').textContent).toBe('Niveau 1');
     });
 
+    test('la confirmation de réinitialisation expire après 5 secondes', () => {
+      jest.useFakeTimers();
+      app.dataManager.progress.xp = 50;
+      app.renderSettings();
+      const button = document.getElementById('btn-reset-progress');
+      const label = button.textContent.trim();
+      click(button);
+      jest.advanceTimersByTime(5000);
+      expect(button.dataset.confirming).toBe('false');
+      expect(button.textContent).toBe(label);
+      click(button);
+      expect(app.dataManager.xp).toBe(50);
+      jest.useRealTimers();
+    });
+
+    test('réinitialiser est sans effet sans bouton', () => {
+      app.dataManager.progress.xp = 50;
+      document.getElementById('btn-reset-progress')?.remove();
+      app.resetProgress();
+      expect(app.dataManager.xp).toBe(50);
+    });
+
     test('updateLevelBadge est sans effet sans badge', () => {
       app.elements.levelBadge = null;
       expect(() => app.updateLevelBadge()).not.toThrow();
