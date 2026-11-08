@@ -1,9 +1,9 @@
 {
   "id": "coding-agents-2025",
   "title": "Coding Agents en 2025",
-  "description": "Guide technique complet sur les coding agents : écosystème, architecture, capacités et perspectives.",
+  "description": "Archive (décembre 2025) du guide sur les coding agents : écosystème, architecture, capacités et perspectives. Voir « Coding Agents en 2026 » pour la version actualisée.",
   "hierarchy": ["agentique"],
-  "tags": ["ia", "dev", "avance", "agent"],
+  "tags": ["ia", "dev", "avance", "agent", "archive"],
   "metadata": {
     "author": "Cyrille",
     "created": "2025-12-13",

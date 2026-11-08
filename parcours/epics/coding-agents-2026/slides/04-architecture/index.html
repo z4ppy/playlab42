@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture - Coding Agents en 2026</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+  <link rel="stylesheet" href="../../assets/diagrams.css">
+</head>
+<body>
+  <article class="slide">
+    <h1>🏗️ Comment fonctionne un coding agent</h1>
+
+    <p>
+      Sous les interfaces très différentes, tous les coding agents reposent sur la même mécanique :
+      un modèle de langage placé dans une <strong>boucle</strong>, avec des <strong>outils</strong> pour agir
+      et un <strong>contexte</strong> soigneusement construit. Comprendre cette mécanique aide à rédiger de meilleures
+      demandes et à diagnostiquer les échecs.
+    </p>
+
+    <h2>La boucle d'agent</h2>
+    <figure class="diagram" tabindex="0">
+      <svg viewBox="0 0 720 300" role="img" aria-labelledby="boucle-titre boucle-desc">
+        <title id="boucle-titre">La boucle d'un coding agent</title>
+        <desc id="boucle-desc">Le contexte (demande, instructions, fichiers, résultats précédents) est envoyé au modèle. Le modèle répond soit par un appel d'outil, soit par une réponse finale. Un appel d'outil passe par un contrôle de permissions, s'exécute (fichiers, terminal, recherche, MCP), et son résultat revient dans le contexte. La boucle recommence jusqu'à la réponse finale, qui part en relecture humaine.</desc>
+        <defs>
+          <marker id="boucle-fleche" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="d-fleche"/>
+          </marker>
+        </defs>
+        <rect x="10" y="20" width="200" height="110" rx="12" class="d-boite"/>
+        <text x="110" y="50" class="d-titre" text-anchor="middle">Contexte</text>
+        <text x="110" y="76" class="d-texte" text-anchor="middle">demande, AGENTS.md,</text>
+        <text x="110" y="96" class="d-texte" text-anchor="middle">fichiers lus,</text>
+        <text x="110" y="116" class="d-texte" text-anchor="middle">résultats d'outils</text>
+
+        <path d="M210,75 L288,75" class="d-lien" marker-end="url(#boucle-fleche)"/>
+        <rect x="290" y="20" width="160" height="110" rx="12" class="d-boite d-accent"/>
+        <text x="370" y="62" class="d-titre" text-anchor="middle">Modèle</text>
+        <text x="370" y="88" class="d-texte" text-anchor="middle">raisonne, puis</text>
+        <text x="370" y="108" class="d-texte" text-anchor="middle">choisit une action</text>
+
+        <path d="M450,55 L558,55" class="d-lien" marker-end="url(#boucle-fleche)"/>
+        <text x="505" y="45" class="d-texte" text-anchor="middle">terminé</text>
+        <rect x="560" y="20" width="150" height="70" rx="12" class="d-boite d-alerte"/>
+        <text x="635" y="50" class="d-titre" text-anchor="middle">Réponse</text>
+        <text x="635" y="72" class="d-texte" text-anchor="middle">→ relecture humaine</text>
+
+        <path d="M370,130 L370,178" class="d-lien" marker-end="url(#boucle-fleche)"/>
+        <text x="380" y="160" class="d-texte">appel d'outil</text>
+        <rect x="275" y="180" width="190" height="60" rx="12" class="d-boite"/>
+        <text x="370" y="208" class="d-titre" text-anchor="middle">Permissions</text>
+        <text x="370" y="228" class="d-texte" text-anchor="middle">autoriser ? demander ?</text>
+
+        <path d="M275,210 L212,210" class="d-lien" marker-end="url(#boucle-fleche)"/>
+        <rect x="10" y="175" width="200" height="110" rx="12" class="d-boite"/>
+        <text x="110" y="205" class="d-titre" text-anchor="middle">Outils</text>
+        <text x="110" y="231" class="d-texte" text-anchor="middle">fichiers, terminal,</text>
+        <text x="110" y="251" class="d-texte" text-anchor="middle">recherche, Git,</text>
+        <text x="110" y="271" class="d-texte" text-anchor="middle">serveurs MCP</text>
+
+        <path d="M110,175 L110,132" class="d-lien" marker-end="url(#boucle-fleche)"/>
+        <text x="120" y="160" class="d-texte">résultat</text>
+      </svg>
+      <figcaption>Le modèle ne « fait » rien lui-même : il demande des actions, et le programme autour de lui décide de les exécuter.</figcaption>
+    </figure>
+    <p>
+      Ce schéma descend du pattern <strong>ReAct</strong> (Yao et al., 2022), qui entrelace raisonnement et actions.
+      Le programme qui entoure le modèle (le <em>harness</em>) fait une grande partie de la qualité de l'agent :
+      outils proposés, gestion du contexte, permissions, vérifications.
+    </p>
+
+    <h2>Gérer le contexte : le vrai savoir-faire</h2>
+    <p>
+      Une fenêtre de contexte, même très grande, reste limitée et coûteuse. Et un modèle exploite moins bien une information
+      placée au milieu d'un long contexte (effet <em>lost in the middle</em>, Liu et al., 2023). Les agents de 2026 combinent donc plusieurs mécanismes :
+    </p>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Mécanismes de gestion du contexte">
+      <table>
+        <thead><tr><th>Mécanisme</th><th>Rôle</th></tr></thead>
+        <tbody>
+          <tr><td>Fichiers d'instructions (<code>AGENTS.md</code>, <code>CLAUDE.md</code>…)</td><td>Conventions et commandes du projet, chargées à chaque session</td></tr>
+          <tr><td>Recherche dans le code</td><td>Lire seulement les fichiers utiles plutôt que tout le dépôt</td></tr>
+          <tr><td><strong>Agent Skills</strong></td><td>Dossiers avec un <code>SKILL.md</code> : seuls le nom et la description sont chargés au départ, le reste à la demande (<em>progressive disclosure</em>)</td></tr>
+          <tr><td>Sous-agents</td><td>Une sous-tâche dans un contexte séparé, qui ne renvoie que son résultat</td></tr>
+          <tr><td>Compaction</td><td>Résumer l'historique quand la conversation devient trop longue</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Les standards qui relient les outils</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Standards de l'écosystème">
+      <table>
+        <thead><tr><th>Standard</th><th>Ce qu'il relie</th><th>État au 8 novembre 2026</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>MCP (Model Context Protocol)</td>
+            <td>Agent ↔ outils et données externes (tickets, bases, navigateurs…)</td>
+            <td>Version courante 2026-07-28, devenue <em>sans état</em> ; projet de l'Agentic AI Foundation depuis décembre 2025</td>
+          </tr>
+          <tr>
+            <td>AGENTS.md</td>
+            <td>Projet ↔ agent : les conventions</td>
+            <td>Format ouvert, projet fondateur de l'Agentic AI Foundation</td>
+          </tr>
+          <tr>
+            <td>Agent Skills</td>
+            <td>Savoir-faire réutilisable ↔ agent</td>
+            <td>Format ouvert né chez Anthropic (octobre 2025), confié à l'Agentic AI Foundation en octobre 2026 ; plus de 70 plateformes l'ont intégré selon Anthropic</td>
+          </tr>
+          <tr>
+            <td>ACP (Agent Client Protocol)</td>
+            <td>Éditeur ↔ agent</td>
+            <td>Standardise la communication entre éditeurs de code et agents (par exemple Zed ou Mistral Vibe)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Garder la main : permissions, hooks et bacs à sable</h2>
+    <ul>
+      <li><strong>Permissions</strong> : chaque outil peut être autorisé, interdit ou soumis à confirmation. C'est la première ligne de défense.</li>
+      <li><strong>Hooks</strong> : des scripts déclenchés à des moments précis de la boucle (par exemple avant ou après un appel d'outil dans Claude Code) pour bloquer une commande, lancer un formateur ou journaliser.</li>
+      <li><strong>Isolation</strong> : worktree, conteneur, bac à sable du système (Codex sous Windows) ou machine virtuelle dans le cloud. Plus l'agent est autonome, plus l'isolation doit être forte.</li>
+    </ul>
+
+    <h2>Plusieurs agents</h2>
+    <p>
+      Les orchestrations multi-agents décrites en 2025 sont devenues des fonctions intégrées : sous-agents parallèles,
+      agents en arrière-plan, équipes d'agents expérimentales. Le parcours
+      <a href="../../../../../index.html#/parcours/dev-parallele-agents-ia" target="_top">Développement parallèle avec agents IA</a> détaille comment les utiliser sans conflits.
+    </p>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">Yao et al., ReAct (2022)</a>,
+      <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener noreferrer">Liu et al., Lost in the Middle (2023)</a>,
+      <a href="https://modelcontextprotocol.io/specification/versioning" target="_blank" rel="noopener noreferrer">versions de MCP</a>,
+      <a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog" target="_blank" rel="noopener noreferrer">changelog MCP 2026-07-28</a>,
+      <a href="https://blog.modelcontextprotocol.io/posts/2025-12-09-mcp-joins-agentic-ai-foundation/" target="_blank" rel="noopener noreferrer">MCP rejoint l'AAIF</a>,
+      <a href="https://agents.md" target="_blank" rel="noopener noreferrer">AGENTS.md</a>,
+      <a href="https://agentskills.io" target="_blank" rel="noopener noreferrer">Agent Skills</a>,
+      <a href="https://www.anthropic.com/news/donating-agent-skills-to-the-agentic-ai-foundation" target="_blank" rel="noopener noreferrer">don d'Agent Skills à l'AAIF</a>,
+      <a href="https://agentclientprotocol.com/" target="_blank" rel="noopener noreferrer">Agent Client Protocol</a>,
+      <a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener noreferrer">hooks de Claude Code</a>,
+      <a href="https://learn.chatgpt.com/docs/windows/windows-sandbox" target="_blank" rel="noopener noreferrer">bac à sable Windows de Codex</a>.
+    </p>
+  </article>
+</body>
+</html>

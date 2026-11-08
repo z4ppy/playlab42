@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilan des prévisions - Coding Agents en 2026</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <article class="slide">
+    <h1>🔍 Ce qu'on prévoyait pour 2026… et ce qui s'est passé</h1>
+
+    <p>
+      Le parcours <a href="../../../../../index.html#/parcours/coding-agents-2025/06-perspectives-2026" target="_top">Coding Agents en 2025</a> se terminait sur des perspectives pour 2026. Un an plus tard,
+      confrontons-les aux faits. C'est aussi un exercice utile : apprendre à relire une prévision.
+    </p>
+
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Prévisions 2025 et constats 2026">
+      <table>
+        <thead><tr><th>Prévu fin 2025</th><th>Constaté fin 2026</th><th>Bilan</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>MCP devient le standard universel, sous gouvernance ouverte</td>
+            <td>MCP a rejoint l'Agentic AI Foundation (Linux Foundation) en décembre 2025, avec AGENTS.md et goose. La spécification a évolué jusqu'à la version 2026-07-28. Agent Skills a rejoint la fondation en octobre 2026.</td>
+            <td>✅ Confirmé, et élargi à d'autres standards</td>
+          </tr>
+          <tr>
+            <td>Autonomie croissante, agents en parallèle</td>
+            <td>Agents cloud chez tous les grands éditeurs, sous-agents et tâches en arrière-plan intégrés aux outils. L'horizon de temps mesuré par METR a continué de croître.</td>
+            <td>✅ Confirmé</td>
+          </tr>
+          <tr>
+            <td>Le développement piloté par les specs (<em>spec-driven</em>) émerge</td>
+            <td>AWS lance Kiro, présenté comme conçu pour le spec-driven development ; Spec Kit et OpenSpec continuent d'évoluer.</td>
+            <td>✅ Confirmé</td>
+          </tr>
+          <tr>
+            <td>Course aux fenêtres de contexte géantes</td>
+            <td>L'effort s'est surtout porté sur la <em>gestion</em> du contexte : skills chargées à la demande, sous-agents, compaction.</td>
+            <td>⚠️ Déplacé : moins de taille, plus de méthode</td>
+          </tr>
+          <tr>
+            <td>AI Act « effectif en 2026 », avec supervision humaine obligatoire</td>
+            <td>Application générale depuis le 2 août 2026, mais les obligations « haut risque » sont reportées à décembre 2027 et août 2028 par l'AI Omnibus. Les coding agents ne figurent pas dans les domaines à haut risque.</td>
+            <td>⚠️ Plus nuancé que prévu</td>
+          </tr>
+          <tr>
+            <td>« Gartner prévoit que 82 % des organisations intégreront des agents d'ici 2026 »</td>
+            <td>Le chiffre venait en réalité d'une étude Capgemini de 2024 (82 % des grandes entreprises <em>prévoyaient</em> d'intégrer des agents sous un à trois ans). Côté développeurs, JetBrains mesure 90 % d'usage hebdomadaire d'agents de code en 2026.</td>
+            <td>❌ Source mal attribuée ; tendance réelle forte</td>
+          </tr>
+          <tr>
+            <td>Marché de 61 milliards de dollars en 2029</td>
+            <td>Aucune source primaire retrouvée pour ce chiffre.</td>
+            <td>❌ Retiré</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Les chiffres de 2025 à corriger</h2>
+    <ul>
+      <li><strong>« 41 % du code généré par IA en 2024 »</strong> : aucune source primaire retrouvée.</li>
+      <li><strong>« 40 % du code Microsoft via Copilot »</strong> : non confirmé par une source primaire ; à ne pas citer.</li>
+      <li><strong>« 20 % de 756 000 échantillons recommandent des paquets inexistants »</strong> : l'étude porte sur 576 000 échantillons, et les 19,7 % concernent les paquets suggérés, pas les échantillons (voir le chapitre sécurité).</li>
+      <li><strong>« 77,2 % sur SWE-bench Verified »</strong> : un score annoncé par l'éditeur, sur un benchmark aujourd'hui délaissé pour cause de contamination (voir le chapitre mesures).</li>
+    </ul>
+
+    <div class="callout callout-info">
+      <p>
+        <strong>Leçon de méthode :</strong> les tendances de fond (standards ouverts, autonomie, specs) se sont confirmées ;
+        les chiffres précis, souvent repris de seconde main, étaient fragiles. Pour un support de cours, une statistique
+        sans source primaire n'a pas sa place.
+      </p>
+    </div>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation" target="_blank" rel="noopener noreferrer">création de l'Agentic AI Foundation</a>,
+      <a href="https://www.linuxfoundation.org/press/agentic-ai-foundation-announces-four-new-projects-agent-skills-open-responses-openenv-and-opensandbox" target="_blank" rel="noopener noreferrer">nouveaux projets de l'AAIF (octobre 2026)</a>,
+      <a href="https://modelcontextprotocol.io/specification/versioning" target="_blank" rel="noopener noreferrer">versions de MCP</a>,
+      <a href="https://metr.org/time-horizons/" target="_blank" rel="noopener noreferrer">METR</a>,
+      <a href="https://aws.amazon.com/blogs/devops/amazon-q-developer-end-of-support-announcement/" target="_blank" rel="noopener noreferrer">AWS, présentation de Kiro</a>,
+      <a href="https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" target="_blank" rel="noopener noreferrer">AI Act</a>,
+      <a href="https://www.capgemini.com/insights/research-library/generative-ai-in-organizations-2024/" target="_blank" rel="noopener noreferrer">Capgemini, Generative AI in organizations 2024</a>,
+      <a href="https://blog.jetbrains.com/research/2026/08/ai-coding-agent-adoption-2026/" target="_blank" rel="noopener noreferrer">JetBrains 2026</a>,
+      <a href="https://www.usenix.org/conference/usenixsecurity25/presentation/spracklen" target="_blank" rel="noopener noreferrer">Spracklen et al.</a>.
+    </p>
+  </article>
+</body>
+</html>

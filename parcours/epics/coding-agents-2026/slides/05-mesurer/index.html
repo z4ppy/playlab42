@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesurer les agents - Coding Agents en 2026</title>
+  <link rel="stylesheet" href="../../../../../lib/theme.css">
+  <link rel="stylesheet" href="../../../../_shared/slide-base.css">
+  <script type="module">
+    import { initTheme } from '../../../../../lib/theme.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <article class="slide">
+    <h1>📏 Mesurer les agents : benchmarks et terrain</h1>
+
+    <p>
+      Les scores progressent si vite que les benchmarks s'usent en un ou deux ans. Pour lire un chiffre,
+      il faut savoir <strong>quel test</strong>, <strong>quel harness</strong> (le programme autour du modèle)
+      et <strong>quels réglages</strong>.
+    </p>
+
+    <h2>SWE-bench : l'histoire d'un benchmark saturé</h2>
+    <p>SWE-bench demande de corriger de vraies issues GitHub ; un patch est réussi si les tests du projet passent.</p>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Jalons de SWE-bench">
+      <table>
+        <thead><tr><th>Date</th><th>Jalon</th></tr></thead>
+        <tbody>
+          <tr><td>Octobre 2023</td><td>Article SWE-bench : le meilleur modèle (Claude 2, avec recherche) résout <strong>1,96 %</strong> des issues</td></tr>
+          <tr><td>Avril 2024</td><td>SWE-agent + GPT-4 : <strong>12,47 %</strong> sur le jeu complet</td></tr>
+          <tr><td>Août 2024</td><td>Création de <strong>SWE-bench Verified</strong>, 500 tâches validées par des humains</td></tr>
+          <tr><td>Octobre 2024</td><td>Premier score au-dessus de 50 % sur Verified : OpenHands + Claude 3.5 Sonnet, 53,0 %</td></tr>
+          <tr><td>Mai 2025</td><td>Premier score au-dessus de 70 % (Refact.ai Agent, 70,4 %, non vérifié par l'équipe SWE-bench)</td></tr>
+          <tr><td>Décembre 2025</td><td>Meilleurs scores du classement autour de <strong>79 %</strong> (avec Claude Opus 4.5)</td></tr>
+          <tr><td>Février 2026</td><td>OpenAI cesse d'évaluer ses modèles sur Verified : « increasingly contaminated », tests défaillants, fuite dans les données d'entraînement. Le classement ne bouge plus depuis.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Les benchmarks de 2026</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Benchmarks de 2026">
+      <table>
+        <thead><tr><th>Benchmark</th><th>Ce qu'il mesure</th><th>Meilleur score public au 8 novembre 2026</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>SWE-bench Pro (Scale AI)</td>
+            <td>1 865 tâches sur 41 dépôts professionnels ; dépôts sous licence copyleft ou privés, pour limiter la contamination</td>
+            <td>61,5 % ± 3,1 (Muse Spark 1.1, Meta) sur le sous-ensemble public</td>
+          </tr>
+          <tr>
+            <td>Terminal-Bench 4.0</td>
+            <td>Tâches réalistes en terminal (compiler, configurer, déboguer…), avec ressources calibrées et tâches saturées retirées</td>
+            <td>64,8 % ± 3,1 (Claude Code + Claude Opus 5.5) ; Codex + GPT-6 Astra à 58,2 %</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Terminal-Bench est passé de la version 2.0 (novembre 2025) à 2.1 (mai 2026) puis 4.0 (août 2026) : chaque version corrige ou durcit les tâches, et les scores ne se comparent pas d'une version à l'autre.</p>
+
+    <h2>Pourquoi deux scores ne se comparent pas</h2>
+    <ul>
+      <li><strong>Le harness compte</strong> : sur Terminal-Bench 2.0, le même GPT-5.4 obtient 76,0 % avec Codex CLI et 55,1 % avec le harness Terminus 2.</li>
+      <li><strong>L'infrastructure compte</strong> : Anthropic a mesuré jusqu'à <strong>6 points d'écart</strong> sur Terminal-Bench 2.0 selon les ressources allouées à l'environnement, sans changer de modèle.</li>
+      <li><strong>Les réglages comptent</strong> : Anthropic annonce 66,4 % pour Claude Opus 5.5 sur Terminal-Bench 4.0 (effort « xhigh ») ; le classement officiel affiche 64,8 % pour la même paire.</li>
+    </ul>
+    <div class="callout callout-info">
+      <p>Anthropic le résume ainsi sur la page de son propre modèle : « benchmark margins have become a less reliable guide to real-world differences ». Un écart de quelques points ne dit presque rien de votre usage.</p>
+    </div>
+
+    <h2>L'horizon de temps (METR)</h2>
+    <p>
+      METR mesure la durée des tâches, exprimée en temps qu'il faut à un humain, qu'un modèle réussit une fois sur deux :
+      l'<dfn>horizon de temps à 50 %</dfn>. En mars 2025, cet horizon doublait environ <strong>tous les 7 mois</strong> depuis 2019 ;
+      les données de 2026 indiquent un doublement plus rapide depuis 2023, autour de <strong>4 mois</strong>.
+    </p>
+    <p>
+      La dernière mesure publiée (mai 2026, Claude Mythos Preview) dépasse 17 heures, avec un intervalle de confiance de 8 à 55 heures.
+      METR prévient que les mesures au-delà de 16 heures ne sont pas fiables avec ses tâches actuelles, et sa page n'est plus mise à jour
+      depuis septembre 2026. La tendance est claire ; les chiffres les plus récents sont fragiles.
+    </p>
+
+    <h2>Sur le terrain</h2>
+    <div class="slide-table-scroll" tabindex="0" role="region" aria-label="Enquêtes et études de terrain">
+      <table>
+        <thead><tr><th>Source</th><th>Résultat</th></tr></thead>
+        <tbody>
+          <tr><td>JetBrains, enquête mai-juillet 2026 (plus de 15 000 développeurs professionnels)</td><td><strong>90 %</strong> utilisent des agents de code au travail au moins chaque semaine, <strong>68 %</strong> chaque jour</td></tr>
+          <tr><td>Stack Overflow, enquête 2026 (plus de 30 000 répondants)</td><td>73 % des utilisateurs d'assistants ou d'agents de code s'en servent chaque jour</td></tr>
+          <tr><td>Stack Overflow, enquête 2025 (plus de 49 000 répondants)</td><td>84 % utilisent ou prévoient d'utiliser l'IA, mais <strong>46 % se méfient</strong> de son exactitude contre 33 % qui lui font confiance</td></tr>
+          <tr><td>DORA 2025 (près de 5 000 professionnels)</td><td>90 % utilisent l'IA au travail ; 30 % lui font peu ou pas confiance. L'IA agit comme un <strong>amplificateur</strong> : meilleur débit de livraison, mais toujours plus d'instabilité</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Et la productivité ?</h2>
+    <ul>
+      <li><strong>METR, juillet 2025</strong> : 16 développeurs open source expérimentés mettent 19 % de temps en plus avec les outils de début 2025, tout en se croyant accélérés de 20 %.</li>
+      <li><strong>METR, février 2026</strong> : la nouvelle étude suggère plutôt un gain, mais METR la juge elle-même très peu concluante (biais de sélection : beaucoup de participants refusent désormais de travailler sans IA).</li>
+      <li><strong>Cui et al.</strong> (trois essais randomisés, 4 867 développeurs, publiés dans <em>Management Science</em>) : +26 % de tâches terminées avec un assistant d'autocomplétion, davantage chez les moins expérimentés. Ce n'étaient pas des agents.</li>
+    </ul>
+    <p><strong>À retenir :</strong> l'usage est massif, la confiance reste prudente, et les gains réels dépendent du contexte. Mesurez sur vos propres projets plutôt que de transposer un chiffre.</p>
+
+    <p>
+      <strong>Sources</strong> (consultées le 8 novembre 2026) :
+      <a href="https://arxiv.org/abs/2310.06770" target="_blank" rel="noopener noreferrer">article SWE-bench</a>,
+      <a href="https://arxiv.org/abs/2405.15793" target="_blank" rel="noopener noreferrer">SWE-agent</a>,
+      <a href="https://www.swebench.com/" target="_blank" rel="noopener noreferrer">classement SWE-bench</a>,
+      <a href="https://www.swebench.com/verified.html" target="_blank" rel="noopener noreferrer">SWE-bench Verified</a>,
+      <a href="https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified" target="_blank" rel="noopener noreferrer">OpenAI, Why we no longer evaluate SWE-bench Verified</a>,
+      <a href="https://labs.scale.com/leaderboard/swe_bench_pro" target="_blank" rel="noopener noreferrer">SWE-bench Pro</a>,
+      <a href="https://www.tbench.ai/" target="_blank" rel="noopener noreferrer">Terminal-Bench</a>,
+      <a href="https://www.tbench.ai/news/terminal-bench-2-1" target="_blank" rel="noopener noreferrer">Terminal-Bench 2.1</a>,
+      <a href="https://www.tbench.ai/news/terminal-bench-4-0" target="_blank" rel="noopener noreferrer">Terminal-Bench 4.0</a>,
+      <a href="https://www.anthropic.com/engineering/infrastructure-noise" target="_blank" rel="noopener noreferrer">Anthropic, infrastructure noise</a>,
+      <a href="https://www.anthropic.com/claude-opus-5-5" target="_blank" rel="noopener noreferrer">Claude Opus 5.5</a>,
+      <a href="https://arxiv.org/abs/2503.14499" target="_blank" rel="noopener noreferrer">METR, horizon de temps (2025)</a>,
+      <a href="https://metr.org/time-horizons/" target="_blank" rel="noopener noreferrer">METR, mesures</a>,
+      <a href="https://blog.jetbrains.com/research/2026/08/ai-coding-agent-adoption-2026/" target="_blank" rel="noopener noreferrer">JetBrains 2026</a>,
+      <a href="https://stackoverflow.blog/2026/10/06/the-results-of-the-2026-developer-survey-are-here/" target="_blank" rel="noopener noreferrer">Stack Overflow 2026</a>,
+      <a href="https://survey.stackoverflow.co/2025/ai" target="_blank" rel="noopener noreferrer">Stack Overflow 2025</a>,
+      <a href="https://dora.dev/research/2025/dora-report/" target="_blank" rel="noopener noreferrer">DORA 2025</a>,
+      <a href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/" target="_blank" rel="noopener noreferrer">METR 2025</a>,
+      <a href="https://metr.org/blog/2026-02-24-uplift-update/" target="_blank" rel="noopener noreferrer">METR 2026</a>,
+      <a href="https://doi.org/10.1287/mnsc.2025.00535" target="_blank" rel="noopener noreferrer">Cui et al.</a>.
+    </p>
+  </article>
+</body>
+</html>
