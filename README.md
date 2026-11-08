@@ -2,7 +2,10 @@
 
 <sub>Français · [🇬🇧 English](README.en.md)</sub>
 
-![Playlab42 — le laboratoire du développement assisté par IA](assets/banner.png)
+<picture>
+  <source media="(prefers-reduced-motion: reduce)" srcset="assets/banner.png">
+  <img src="assets/banner-animated.webp" alt="Playlab42 — le laboratoire du développement assisté par IA" width="1280">
+</picture>
 
 # Playlab42
 
