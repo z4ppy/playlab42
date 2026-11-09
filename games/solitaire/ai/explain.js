@@ -72,11 +72,17 @@ function emptiedColumn(before, after) {
   });
 }
 
+/** Première colonne vide qui a reçu une carte (forcément un roi, selon les règles). */
+function filledColumn(before, after) {
+  return before.tableau.findIndex((column, index) => !column.up.length && !column.down.length
+    && after.tableau[index].up.length > 0);
+}
+
 /**
  * Classe l'effet d'un plan, du plus parlant au plus général.
  * @param {import('../engine/rules.js').Board} before
  * @param {import('../engine/rules.js').Board} after
- * @returns {{goal: 'reveal'|'foundation'|'empty'|'waste'|'improve', column?: number}}
+ * @returns {{goal: 'reveal'|'foundation'|'empty'|'king'|'waste'|'improve', column?: number}}
  */
 export function planGoal(before, after) {
   const revealed = revealedColumn(before, after);
@@ -89,6 +95,10 @@ export function planGoal(before, after) {
   const emptied = emptiedColumn(before, after);
   if (emptied >= 0) {
     return { goal: 'empty', column: emptied };
+  }
+  const filled = filledColumn(before, after);
+  if (filled >= 0) {
+    return { goal: 'king', column: filled };
   }
   return { goal: before.waste.length > after.waste.length ? 'waste' : 'improve' };
 }
@@ -105,6 +115,8 @@ function planReason({ goal, column }, length) {
       return `cela prépare une montée sur les fondations${steps}`;
     case 'empty':
       return `la ${columnLabel(column)} se vide et pourra accueillir un roi${steps}`;
+    case 'king':
+      return `un roi commence une nouvelle suite en ${columnLabel(column)}${steps}`;
     case 'waste':
       return 'une carte de la défausse entre en jeu';
     default:

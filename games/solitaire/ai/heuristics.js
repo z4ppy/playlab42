@@ -15,11 +15,16 @@
 import { KING, SUITS, cardInfo } from '../engine/cards.js';
 import { foundationCount, hiddenCount, listMoves, parsePile } from '../engine/rules.js';
 
-/** Poids de l'évaluation : découvrir une carte cachée prime sur le reste. */
+/**
+ * Poids de l'évaluation : découvrir une carte cachée prime sur le reste.
+ * `freeColumn` vaut pour une colonne vide **ou** fondée sur un roi sans carte
+ * cachée dessous : une colonne vide ne sert qu'à recevoir un roi, l'y poser
+ * réalise ce potentiel au lieu de le perdre (voir `isFreeColumn`).
+ */
 export const WEIGHTS = Object.freeze({
   hidden: -50,
   foundation: 20,
-  emptyColumn: 15,
+  freeColumn: 15,
   reserve: -2,
 });
 
@@ -164,15 +169,37 @@ export function orderMoves(board, moves) {
 }
 
 /**
- * Valeur d'une position, sans lire l'identité des cartes : elle reste donc
- * calculable quand une carte vient d'être retournée sans être connue.
+ * Colonne « libre » : vide, ou commencée par un roi sans carte cachée dessous.
+ *
+ * Compter seulement les colonnes vides pénaliserait le roi qui en occupe une
+ * (−15 pour la colonne, +2 pour la réserve) : l'IA préférait alors piocher
+ * plutôt que de poser un roi de la défausse dans une colonne vide, même avec
+ * plusieurs colonnes vides. Un roi au fond d'une colonne ne bloque rien, la
+ * colonne garde donc sa valeur ; déplacer ce roi vers une autre colonne vide ne
+ * change rien et reste écarté (coût du coup, historique, `pointlessKing`).
+ * Une carte tout juste retournée (`null`, inconnue) ne compte pas pour un roi.
+ * @param {import('../engine/rules.js').Column} column
+ * @returns {boolean}
+ */
+export function isFreeColumn(column) {
+  if (column.down.length) {
+    return false;
+  }
+  const base = column.up[0];
+  return base === undefined || (base !== null && cardInfo(base).rank === KING);
+}
+
+/**
+ * Valeur d'une position. Seul le rang de la carte au fond d'une colonne sans
+ * carte cachée est lu (`isFreeColumn`) : la valeur reste calculable quand une
+ * carte vient d'être retournée sans être connue.
  * @param {import('../engine/rules.js').Board} board
  * @returns {number}
  */
 export function evaluate(board) {
-  const emptyColumns = board.tableau.filter(column => !column.down.length && !column.up.length).length;
+  const freeColumns = board.tableau.filter(isFreeColumn).length;
   return WEIGHTS.hidden * hiddenCount(board)
     + WEIGHTS.foundation * foundationCount(board)
-    + WEIGHTS.emptyColumn * emptyColumns
+    + WEIGHTS.freeColumn * freeColumns
     + WEIGHTS.reserve * (board.stock.length + board.waste.length);
 }

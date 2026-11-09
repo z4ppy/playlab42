@@ -61,6 +61,53 @@ describe('Indice : choix du coup', () => {
   });
 });
 
+describe('Indice : rois de la défausse et colonnes vides', () => {
+  // Colonnes occupées sans coup utile entre elles ; les autres restent vides.
+  const busy = [column(['5H'], ['XX', 'XX']), column(['9C'], ['XX', 'XX', 'XX']), column(['3S'], ['XX']), column(['JD'], ['XX', 'XX']),
+    column(['7S'], ['XX']), column(['QD'], ['XX', 'XX'])];
+  const withEmpty = empties => [...busy.slice(0, 7 - empties), ...Array.from({ length: empties }, () => column([]))];
+
+  it.each([1, 2, 3])('pose le roi de la défausse dans une colonne vide (%i colonne(s) vide(s))', empties => {
+    const hint = findHint(viewOf(board({ tableau: withEmpty(empties), waste: ['2C', 'KH'], stock: ['4C', '6C'] })));
+    const target = 7 - empties;
+    expect(hint).toMatchObject({ kind: 'move', action: move('waste', `tableau-${target}`), goal: 'king' });
+    expect(hint.explanation).toBe(`Pose le roi de cœur de la défausse dans la colonne ${target + 1}, vide : `
+      + `un roi commence une nouvelle suite en colonne ${target + 1}.`);
+  });
+
+  it('enchaîne roi puis dame noire en attente qui libère une carte cachée', () => {
+    const tableau = [column(['QS'], ['XX', 'XX']), ...busy.slice(1, 4), column([]), column([])];
+    const hint = findHint(viewOf(board({ tableau, waste: ['KH'], stock: ['4C'] })));
+    expect(hint.plan.slice(0, 2)).toEqual([move('waste', 'tableau-4'), move('tableau-0', 'tableau-4')]);
+    expect(hint.goal).toBe('reveal');
+  });
+
+  it('ne fait pas boucler un roi déjà au fond de sa colonne', () => {
+    const tableau = [column(['KS', 'QH']), ...busy.slice(1, 4), column([]), column([])];
+    const hint = findHint(viewOf(board({ tableau, waste: ['2C'], stock: ['4C'] })));
+    expect(hint).toMatchObject({ kind: 'draw', action: { type: 'draw' } });
+  });
+
+  it('ne pose qu\'un roi dans une colonne vide', () => {
+    const hint = findHint(viewOf(board({ tableau: withEmpty(3), waste: ['QH'], stock: ['4C'] })));
+    expect(hint.kind).toBe('draw');
+  });
+
+  it('préfère une montée sur la fondation, puis le roi', () => {
+    const tableau = [column(['AD']), ...busy.slice(1, 4), column([]), column([])];
+    const hint = findHint(viewOf(board({ tableau, waste: ['KH'], stock: ['4C'] })));
+    expect(hint.action).toEqual(move('tableau-0', 'foundation-3'));
+    expect(hint.plan[1]).toMatchObject({ from: 'waste', to: expect.stringMatching(/^tableau-/) });
+  });
+
+  it('préfère le roi qui libère une carte cachée quand une seule colonne est vide', () => {
+    const tableau = [column(['KS'], ['XX', 'XX']), ...busy.slice(1, 5), busy[0], column([])];
+    const hint = findHint(viewOf(board({ tableau, waste: ['KH'], stock: ['4C'] })));
+    expect(hint.action).toEqual(move('tableau-0', 'tableau-6'));
+    expect(hint.goal).toBe('reveal');
+  });
+});
+
 describe('Indice : information et historique', () => {
   it('donne le même conseil quelles que soient les cartes cachées', () => {
     const engineState = engine.init({ seed: 9 });
@@ -114,6 +161,7 @@ describe('Explications', () => {
     const emptied = board({ tableau: [column(['TS', '9H'])] });
     expect(planGoal(board({ tableau: [column(['TS']), column(['9H'])] }), emptied)).toEqual({ goal: 'empty', column: 1 });
     expect(planGoal(board({ waste: ['9H'], tableau: [column(['TS'])] }), board({ tableau: [column(['TS', '9H'])] })).goal).toBe('waste');
+    expect(planGoal(board({ waste: ['KH'] }), board({ tableau: [column([]), column(['KH'])] }))).toEqual({ goal: 'king', column: 1 });
     expect(planGoal(board({ tableau: [column(['TS', '9H']), column(['9D'])] }), board({ tableau: [column(['TS']), column(['9D'])] })).goal).toBe('improve');
   });
 
