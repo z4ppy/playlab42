@@ -1,8 +1,3 @@
-# Spec Delta: Triomino Game Rules
-
-**Change ID**: `add-triomino-game`
-**Capability**: `game-engine`
-
 ## ADDED Requirements
 
 ### Requirement: Triomino Tile Uniqueness

@@ -374,3 +374,180 @@ interface MastermindState {
 - Playlab42 conventions: `openspec/project.md`
 - Game Engine spec: `openspec/specs/game-engine/spec.md`
 - Bot spec: `openspec/specs/bot/spec.md`
+
+
+## Contexte déplacé depuis le delta `specs/mastermind/spec.md`
+
+Ce contexte figurait dans le delta de spec ; OpenSpec 1.16 refuse en validation stricte le texte qu'un archivage ne reporterait pas dans la spec principale. Il est conservé ici sans modification.
+
+## Mastermind Game Specification
+
+### Purpose
+
+This specification defines the rules, state, and behavior of the Mastermind game implementation in Playlab42. Mastermind is a code-breaking game where a player (decoder) attempts to guess a secret color combination within a limited number of attempts, receiving feedback after each guess.
+
+### Overview
+
+Mastermind is a single-player deduction game against the computer:
+- **Coder** (computer): Generates a secret 4-color code
+- **Decoder** (human player): Attempts to guess the code in ≤10 tries
+- **Feedback**: After each guess, the decoder receives hints (black/white pegs)
+
+The game exemplifies:
+- **Algorithmic thinking**: Systematic elimination of possibilities
+- **Determinism**: Seeded random generation for replay
+- **Bot strategies**: From random guessing to intelligent elimination
+
+**Related specs**: [Game Engine](../game-engine/spec.md), [Bot](../bot/spec.md), [Seeded Random](../seeded-random/spec.md)
+
+### Game Constants
+
+```typescript
+const COLORS = ['R', 'B', 'G', 'Y', 'O', 'V'] as const;
+const CODE_LENGTH = 4;
+const MAX_ATTEMPTS = 10;
+```
+
+### State Definition
+
+```typescript
+interface MastermindState {
+  secretCode: Color[];           // [4] - Hidden during gameplay
+  attempts: Attempt[];           // [0-10] - History of guesses
+  gameOver: boolean;             // Game ended?
+  winner: string | null;         // playerId if won, null if lost
+  maxAttempts: number;           // Always 10
+  rngState: number;              // For deterministic replay
+  playerId: string;              // Single player ID
+}
+
+interface Attempt {
+  code: Color[];                 // [4] - The guess
+  feedback: Feedback;            // Result
+}
+
+interface Feedback {
+  black: number;                 // 0-4: Correct position + color
+  white: number;                 // 0-4: Correct color, wrong position
+}
+
+type Color = 'R' | 'B' | 'G' | 'Y' | 'O' | 'V';
+```
+
+### Action Definition
+
+```typescript
+type MastermindAction = 
+  | { type: 'submit'; code: Color[] }  // Submit a 4-color guess
+  | { type: 'reset' };                 // Start new game
+```
+
+### Feedback Algorithm
+
+The feedback calculation follows this algorithm:
+
+1. **Black pegs**: Count exact matches (same color, same position)
+2. **Color matches**: For each color, count `min(occurrences_in_secret, occurrences_in_guess)`
+3. **White pegs**: Total color matches minus black pegs
+
+Example implementation:
+```typescript
+function calculateFeedback(secret: Color[], guess: Color[]): Feedback {
+  // Count exact matches
+  let black = 0;
+  for (let i = 0; i < CODE_LENGTH; i++) {
+    if (secret[i] === guess[i]) black++;
+  }
+  
+  // Count color matches
+  const secretCounts = countColors(secret);
+  const guessCounts = countColors(guess);
+  let totalMatches = 0;
+  
+  for (const color of COLORS) {
+    totalMatches += Math.min(
+      secretCounts[color] || 0,
+      guessCounts[color] || 0
+    );
+  }
+  
+  // White pegs = color matches minus exact matches
+  const white = totalMatches - black;
+  
+  return { black, white };
+}
+```
+
+### Integration with Game Engine
+
+Mastermind implements the GameEngine interface:
+
+```typescript
+class MastermindEngine implements GameEngine<
+  MastermindState,
+  MastermindAction,
+  MastermindState,  // PlayerView same as State (except secretCode hidden)
+  MastermindConfig
+> {
+  init(config: MastermindConfig): MastermindState;
+  applyAction(state: MastermindState, action: MastermindAction, playerId: string): MastermindState;
+  isValidAction(state: MastermindState, action: MastermindAction, playerId: string): boolean;
+  getValidActions(state: MastermindState, playerId: string): MastermindAction[];
+  getPlayerView(state: MastermindState, playerId: string): MastermindState;
+}
+```
+
+### Bot Interface
+
+Mastermind bots implement the Bot interface:
+
+```typescript
+interface MastermindBot implements Bot<MastermindState, MastermindAction> {
+  readonly name: string;
+  readonly description: string;
+  readonly difficulty: 'easy' | 'medium' | 'hard' | 'expert';
+  
+  chooseAction(
+    view: MastermindState,
+    validActions: MastermindAction[],
+    rng: SeededRandom
+  ): MastermindAction;
+}
+```
+
+### Non-Functional Requirements
+
+#### Performance
+- Feedback calculation: O(1) (code length is constant: 4)
+- Smart bot elimination: O(n) where n ≤ 1296 (all possible codes)
+- UI rendering: < 16ms per frame (smooth animations)
+
+#### Usability
+- Color-blind friendly palette (distinct hues and labels)
+- Touch-friendly controls (minimum 44×44px tap targets)
+- Clear visual feedback for current state
+- Intuitive color selection mechanism
+
+#### Accessibility
+- Keyboard navigation support
+- Screen reader compatible (ARIA labels)
+- High contrast mode support
+- Color names visible (not just colors)
+
+### Future Extensions
+
+The following are out of scope for the initial implementation but may be added later:
+
+- **SuperMastermind**: 5 pegs, 8 colors
+- **Expert Bot**: Knuth's minimax algorithm
+- **Tutorial Mode**: Show remaining possible codes
+- **Statistics**: Track win rate, average attempts
+- **Multiplayer**: Human vs human (role reversal)
+- **Timed Mode**: Penalty for slow guesses
+
+### References
+
+- [Mastermind (Wikipedia)](https://en.wikipedia.org/wiki/Mastermind_(board_game))
+- Knuth, D. E. (1977). "The Computer as Master Mind". *Journal of Recreational Mathematics*, 9(1), 1-6. (For future bot implementations)
+- [Game Engine Specification](../game-engine/spec.md)
+- [Seeded Random Specification](../seeded-random/spec.md)
