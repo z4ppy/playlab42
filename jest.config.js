@@ -88,6 +88,7 @@ export default {
     'games/tetris/**/*.js',
     'games/orbital-golf/**/*.js',
     'games/go-9x9/**/*.js',
+    'games/puissance-4/**/*.js',
     'games/demineur/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
@@ -188,6 +189,12 @@ export default {
       { statements: 100, branches: 100, functions: 100, lines: 100 },
     // Contrôleur DOM : Worker, reprise au chargement et erreurs de génération restent hors jsdom (e2e).
     './games/sudoku/ui/app.js': { statements: 95, branches: 84, functions: 93, lines: 96 },
+    // Puissance 4 : moteur, IA (bitboards, recherche, protocole du worker), bots et vues testables.
+    './games/puissance-4/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/ai/{bitboard,search,transposition-table,advisor,protocol,client}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/bots/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/ui/{session,text,board-view,panels}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/demineur/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/demineur/{engine,bots}/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/demineur/solver/*.js': { statements: 100, branches: 94, functions: 100, lines: 100 },

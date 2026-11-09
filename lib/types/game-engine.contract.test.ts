@@ -5,6 +5,7 @@ import { MastermindEngine } from '../../games/mastermind/engine.js';
 import { TetrisEngine } from '../../games/tetris/engine.js';
 import { TriominoEngine } from '../../games/triomino/engine';
 import { OrbitalGolfEngine } from '../../games/orbital-golf/engine.js';
+import { Puissance4Engine } from '../../games/puissance-4/engine.js';
 import type { GameEngine } from './game-engine';
 
 // Vérifié par tsc avec allowJs : les signatures viennent des moteurs réels,
@@ -37,10 +38,14 @@ const orbitalGolf: GameEngine<
   ReturnType<OrbitalGolfEngine['init']>, Parameters<OrbitalGolfEngine['applyAction']>[1],
   ReturnType<OrbitalGolfEngine['getPlayerView']>, Parameters<OrbitalGolfEngine['init']>[0]
 > = new OrbitalGolfEngine();
+const puissance4: GameEngine<
+  ReturnType<Puissance4Engine['init']>, Parameters<Puissance4Engine['applyAction']>[1],
+  ReturnType<Puissance4Engine['getPlayerView']>, Parameters<Puissance4Engine['init']>[0]
+> = new Puissance4Engine();
 
 describe('Types du contrat moteur', () => {
-  it('accepte les sept signatures réelles sans migration des états', () => {
-    for (const engine of [tictactoe, checkers, go, mastermind, tetris, triomino, orbitalGolf]) {
+  it('accepte les huit signatures réelles sans migration des états', () => {
+    for (const engine of [tictactoe, checkers, go, mastermind, tetris, triomino, orbitalGolf, puissance4]) {
       expect(typeof engine.init).toBe('function');
     }
   });
