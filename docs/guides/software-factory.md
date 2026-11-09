@@ -102,7 +102,7 @@ ayant un contrat réellement commun, après caractérisation ; elle n'est pas li
 
 ## OpenSpec et agents : les bonnes frontières
 
-OpenSpec 1.14.0 est un CLI local épinglé, exécuté dans Docker. Le schéma
+OpenSpec 1.16.0 est un CLI local épinglé, exécuté dans Docker. Le schéma
 `spec-driven` organise quatre artefacts ; les tâches dépendent des specs et du
 design, mais les travaux indépendants peuvent avancer en parallèle.
 

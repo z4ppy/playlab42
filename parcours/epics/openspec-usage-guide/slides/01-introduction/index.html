@@ -71,17 +71,24 @@
     <section aria-labelledby="titre-install">
       <h2 id="titre-install">Installer et initialiser (projet générique)</h2>
       <p>
-        OpenSpec exige <strong>Node.js 20.19.0 ou plus</strong>. Les commandes ci-dessous valent pour un
-        <em>autre</em> projet : <strong>ne les exécutez pas dans Playlab42</strong> (voir plus bas).
+        Depuis la 1.15, l'installation recommandée est un <strong>binaire autonome</strong>, sans Node.js.
+        Le paquet npm reste disponible, mais exige <strong>Node.js 22.12.0 ou plus</strong> depuis la 1.16.
+        Les commandes ci-dessous valent pour un <em>autre</em> projet :
+        <strong>ne les exécutez pas dans Playlab42</strong> (voir plus bas).
       </p>
       <p class="guide-muted">Dans Playlab42, Node.js, npm et OpenSpec s'exécutent uniquement dans Docker
         (<code>make</code>), jamais sur l'hôte.</p>
       <div class="guide-terminal">
-<pre><code>node --version                              # &gt;= 20.19.0
-npm install -g @fission-ai/openspec@latest
+<pre><code>curl -fsSL https://openspec.dev/cli/install.sh | sh   # macOS, Linux
+# Windows (PowerShell) : irm https://openspec.dev/cli/install.ps1 | iex
+# ou, avec Node.js &gt;= 22.12.0 : npm install -g @fission-ai/openspec@latest
 cd mon-projet
 openspec init</code></pre>
       </div>
+      <p class="guide-muted">
+        Comme pour tout script téléchargé, lisez-le avant de le passer à <code>sh</code>. L'installeur
+        vérifie l'empreinte du binaire avec le fichier <code>SHA256SUMS</code> de la release.
+      </p>
       <p>
         <code>openspec init</code> crée <code>openspec/</code> et génère, pour les outils choisis, les
         <em>skills</em> et/ou <em>commandes</em> lus par l'assistant. Par défaut : profil <code>core</code>, livraison <code>both</code>.
@@ -90,6 +97,7 @@ openspec init</code></pre>
       </p>
       <div class="guide-terminal">
 <pre><code>openspec init --tools claude,cursor   # non interactif
+openspec update --dry-run             # prévisualiser, sans rien écrire
 openspec update                       # après mise à jour du CLI
 openspec config profile               # choisir les workflows</code></pre>
       </div>
@@ -160,7 +168,7 @@ make npm CMD="exec -- openspec list --specs"</code></pre>
         <h3>Dans Playlab42 : déjà en place</h3>
         <p>
           Le dépôt est sur le workflow actuel : schéma <code>spec-driven</code> dans
-          <code>openspec/config.yaml</code>, CLI <code>@fission-ai/openspec</code> <code>1.14.0</code> en
+          <code>openspec/config.yaml</code>, CLI <code>@fission-ai/openspec</code> <code>1.16.0</code> en
           <strong>devDependency locale épinglée</strong> (Node 26 dans Docker) et skills du profil
           <code>core</code> déjà générés dans <code>.github/skills/openspec-*</code>
           (<code>.claude/skills</code> est un lien vers ce dossier). Pas d'installation globale à faire.
@@ -191,10 +199,11 @@ make npm CMD="exec -- openspec list --specs"</code></pre>
 
     <p class="guide-source">
       Sources :
-      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/how-commands-work.md" target="_blank" rel="noopener noreferrer">How Commands Work</a>,
-      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md" target="_blank" rel="noopener noreferrer">CLI</a>,
-      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/supported-tools.md" target="_blank" rel="noopener noreferrer">Supported Tools</a>,
-      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/migration-guide.md" target="_blank" rel="noopener noreferrer">Migration Guide</a>.
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/installation.md" target="_blank" rel="noopener noreferrer">Installation</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/how-commands-work.md" target="_blank" rel="noopener noreferrer">How Commands Work</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/cli.md" target="_blank" rel="noopener noreferrer">CLI</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/supported-tools.md" target="_blank" rel="noopener noreferrer">Supported Tools</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/migration-guide.md" target="_blank" rel="noopener noreferrer">Migration Guide</a>.
     </p>
     <footer class="guide-footer">
       <p class="guide-muted" data-slide-footer></p>

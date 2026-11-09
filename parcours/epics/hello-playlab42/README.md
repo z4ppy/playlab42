@@ -21,10 +21,10 @@ Les sept identifiants historiques sont conservés. Les nouvelles étapes se plac
 ## Sources et limites
 
 - [Conventions du dépôt](../../../AGENTS.md), source commune des agents et skills.
-- [Workflow OpenSpec](../../../docs/guides/openspec-workflow.md), version locale épinglée **1.14.0**, profil `core` en skills seuls.
+- [Workflow OpenSpec](../../../docs/guides/openspec-workflow.md), version locale épinglée **1.16.0**, profil `core` en skills seuls.
 - [Skills de projet](../../../docs/guides/project-skills.md) et [kit de contribution](../../../docs/guides/contribution-kit.md).
 - [CI](../../../.github/workflows/ci.yml), [tests navigateur](../../../.github/workflows/ui-e2e.yml), [audit](../../../.github/workflows/security-audit.yml) et [publication](../../../.github/workflows/deploy.yml).
-- [Documentation officielle OpenSpec 1.14.0](https://github.com/Fission-AI/OpenSpec/tree/v1.14.0/docs).
+- [Documentation officielle OpenSpec 1.16.0](https://github.com/Fission-AI/OpenSpec/tree/v1.16.0/docs).
 - [Guide de l'usine logicielle](../../../docs/guides/software-factory.md), sources DORA, CNCF, SLSA et GitHub.
 - [Qualité logicielle](../../../docs/guides/software-quality.md), contrôles bloquants et procédure de revue.
 

@@ -29,7 +29,7 @@ describe('Parcours OpenSpec / OPSX', () => {
   it('référence la documentation de la version publiée', () => {
     const sources = epic.bookmarks.filter(({ url }) => url.includes('Fission-AI/OpenSpec'));
     expect(sources.length).toBeGreaterThanOrEqual(3);
-    expect(sources.every(({ url }) => url.includes('/v1.14.0/'))).toBe(true);
+    expect(sources.every(({ url }) => url.includes('/v1.16.0/'))).toBe(true);
   });
 
   it('annonce une durée cohérente avec les sept étapes', () => {

@@ -1,14 +1,14 @@
 {
   "id": "openspec-usage-guide",
   "title": "OpenSpec — Des idées aux specs avec OPSX",
-  "description": "Découvrez OpenSpec 1.14 et le workflow OPSX : explorer, proposer, réviser, implémenter et archiver. Des bases au premier changement Playlab42, avec exemples, commandes copiables et exercices.",
+  "description": "Découvrez OpenSpec 1.16 et le workflow OPSX : explorer, proposer, réviser, implémenter et archiver. Des bases au premier changement Playlab42, avec exemples, commandes copiables et exercices.",
   "hierarchy": ["playlab42"],
   "order": 3,
   "tags": ["openspec", "opsx", "workflow", "dev", "guide", "contribution", "specs"],
   "metadata": {
     "author": "Cyrille",
     "created": "2025-12-15",
-    "updated": "2026-10-03",
+    "updated": "2026-11-09",
     "duration": "75 min",
     "difficulty": "beginner",
     "language": "fr"
@@ -26,21 +26,21 @@
   ],
   "bookmarks": [
     {
-      "url": "https://github.com/Fission-AI/OpenSpec/tree/v1.14.0/docs",
-      "title": "Documentation officielle OpenSpec 1.14",
+      "url": "https://github.com/Fission-AI/OpenSpec/tree/v1.16.0/docs",
+      "title": "Documentation officielle OpenSpec 1.16",
       "description": "Documentation de la version publiée utilisée dans ce parcours",
       "icon": "📖",
       "tags": ["openspec", "documentation", "opsx"]
     },
     {
-      "url": "https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md",
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/commands.md",
       "title": "Commandes OPSX et profils",
       "description": "Commandes de l'assistant, profil core et workflows supplémentaires",
       "icon": "⌨️",
       "tags": ["openspec", "opsx", "workflow"]
     },
     {
-      "url": "https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md",
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/cli.md",
       "title": "Référence CLI OpenSpec",
       "description": "Installation, intégrations, validation et gestion des changements dans le terminal",
       "icon": "🛠️",

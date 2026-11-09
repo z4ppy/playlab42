@@ -110,6 +110,14 @@ L'application MUST permettre de choisir entre un thème clair et un thème sombr
         <code>Scenario:</code> et le mot normatif <code>MUST</code> ou <code>SHALL</code> en anglais,
         même quand le reste du texte est en français : le validateur les reconnaît.
       </p>
+      <p>
+        Depuis la 1.16, chaque scénario doit aussi contenir une étape <code>GIVEN</code> ou <code>WHEN</code>
+        (le déclencheur) et une étape <code>THEN</code> (le résultat), elles aussi en anglais :
+        <code>QUAND</code> / <code>ALORS</code> ne sont pas reconnus. Évitez enfin le texte placé hors des
+        exigences du delta (introduction, section libre comme <code>## Overview</code>) : l'archivage ne le
+        reporte pas dans la spec principale. Dans les deux cas, <code>validate</code> avertit et
+        <code>--strict</code> échoue.
+      </p>
 
       <h3>3. <code>design.md</code> et <code>tasks.md</code></h3>
 <pre><code># Tasks
@@ -162,9 +170,9 @@ make openspec-validate</code></pre>
 
     <p class="guide-source">
       Sources :
-      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/getting-started.md" target="_blank" rel="noopener noreferrer">Getting Started</a>,
-      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/concepts.md" target="_blank" rel="noopener noreferrer">Concepts</a>,
-      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener noreferrer">Commands</a>.
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/getting-started.md" target="_blank" rel="noopener noreferrer">Getting Started</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/concepts.md" target="_blank" rel="noopener noreferrer">Concepts</a>,
+      <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/commands.md" target="_blank" rel="noopener noreferrer">Commands</a>.
     </p>
     <footer class="guide-footer">
       <p class="guide-muted" data-slide-footer></p>
