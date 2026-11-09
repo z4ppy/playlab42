@@ -1,11 +1,4 @@
-body {
-  margin: 0;
-  padding: var(--space-md);
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-family);
-  line-height: 1.6;
-}
+/* Fond, couleurs et police de la page : primitive .ui-page de lib/components.css. */
 
 main {
   max-width: 48rem;

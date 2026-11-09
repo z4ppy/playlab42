@@ -92,6 +92,7 @@ export default {
     'games/demineur/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
+    'games/solitaire/{ai,bots}/**/*.js',
     'games/sudoku/bots/**/*.js',
     'games/dialog-accessibility.js',
     'tools/**/src/**/*.{js,ts}',
@@ -180,6 +181,12 @@ export default {
     './games/orbital-golf/engine/*.js': { statements: 98, branches: 98, functions: 100, lines: 98 },
     './games/orbital-golf/{renderer,renderer-effects,records,input,audio}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/orbital-golf/controller.js': { statements: 98, branches: 95, functions: 98, lines: 100 },
+    // Moteur, règles et IA du Solitaire : contrats purs, entièrement testés.
+    './games/solitaire/engine.js': { statements: 100, branches: 95, functions: 100, lines: 100 },
+    './games/solitaire/{engine,ai,bots}/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    // Client sans DOM du Solitaire ; contrôleur, gestes et animations sont couverts par e2e/solitaire.spec.js.
+    './games/solitaire/ui/{announce,board-view,card-view,destinations,session,shortcuts,timers}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/solitaire/ui/{keyboard,progress}.js': { statements: 100, branches: 85, functions: 100, lines: 100 },
     // Sudoku : moteur, solveurs, générateur et bots entièrement couverts.
     './games/sudoku/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/sudoku/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
