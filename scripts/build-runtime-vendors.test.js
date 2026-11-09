@@ -14,7 +14,7 @@ describe('Contrat des distributions runtime', () => {
       'vexflow@5.0.0',
       'mathjax@4.1.3',
       '@mathjax/mathjax-newcm-font@4.1.3',
-      'three@0.186.1',
+      'three@0.187.0',
       'lil-gui@0.21.0',
     ]);
   });
