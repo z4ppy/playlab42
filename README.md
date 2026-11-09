@@ -39,6 +39,21 @@ Un laboratoire pédagogique ouvert, en français, qui tourne dans le navigateur 
 
 **Première visite ?** Ouvrez [la démo](https://z4ppy.github.io/playlab42/) et commencez par le parcours [« PlayLab42 — Guide et usine logicielle »](https://z4ppy.github.io/playlab42/#/parcours/hello-playlab42).
 
+## Jeux et IA
+
+Chaque jeu sépare un **moteur de règles pur** (déterministe, testé, sans DOM), la **vue du joueur** (qui ne laisse fuir aucune information cachée) et des **bots** qui ne voient que cette vue. L'IA ne se contente pas de jouer : elle **explique ses coups**.
+
+<p align="center"><a href="https://z4ppy.github.io/playlab42/games/demineur/"><img src="docs/assets/readme/demineur-ia.webp" width="640" alt="Démineur : l'IA joue seule une grille intermédiaire, ouvre les cases sûres une à une et affiche à chaque coup son raisonnement, par exemple « Le 1 en (10, 3) touche déjà 1 mine certaine : ses autres voisines sont sûres »."></a></p>
+
+| Jeu | Ce que fait l'IA | Comment |
+|---|---|---|
+| [Démineur](games/demineur/README.md) | Grilles « sans hasard », indice expliqué, carte des probabilités | Déductions locales et par paires de contraintes, puis probabilités exactes par énumération de la frontière |
+| [Puissance 4](games/puissance-4/README.md) | Adversaire fort, barre d'évaluation, « gagne en N coups » | Négamax alpha-bêta sur bitboards, approfondissement itératif, table de transposition, dans un Web Worker |
+| [Sudoku](games/sudoku/README.md) | Difficulté réelle, indice pédagogique en deux temps | Solveur « humain » (singletons, intersections, sous-ensembles, X-Wing, XY-Wing, Swordfish) et solveur exact à masques de bits |
+| [Solitaire](games/solitaire/README.md) | Donnes prouvées gagnables, indice expliqué | Recherche en profondeur avec états déjà vus et budget borné ; indices raisonnés sur les seules cartes visibles |
+
+Les README de chaque jeu détaillent les algorithmes, leurs mesures et leurs limites.
+
 ## Pourquoi Playlab42
 
 - **Zéro friction.** Un site statique : rien à installer, et vos préférences, scores et progression restent dans votre navigateur. Thèmes clair et sombre, navigation au clavier.
