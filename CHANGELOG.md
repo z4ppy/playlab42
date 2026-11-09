@@ -7,7 +7,30 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-09
+
+Quatre nouveaux jeux à IA explicative, de nouveaux outils et parcours, un
+portail à l'identité animée et des thèmes qui suivent enfin le système partout.
+
 ### Added
+- Jeu « Démineur » (`games/demineur/`) : premier clic sûr, grilles « sans
+  hasard » garanties par un solveur, indice expliqué, carte des probabilités
+  exactes et IA qui joue en expliquant chaque coup.
+- Jeu « Sudoku » (`games/sudoku/`) : grilles à solution unique classées par la
+  technique humaine la plus avancée requise, indice pédagogique en deux temps,
+  notes automatiques et IA qui résout en nommant chaque technique.
+- Jeu « Tetris — Neon Stack » (`games/tetris/`) et ses trois modes de jeu.
+- Outils : explorateur de L-systèmes, automate cellulaire (Wolfram 1D et Life
+  2D), reconnaissance de chiffres manuscrits en local, éditeur Markdown et
+  Paint Studio.
+- Parcours « Anatomie d'un LLM » et son laboratoire GPT-2 local, « Histoire des
+  LLM : de Shannon aux agents » et « Coding Agents en 2026 ».
+- Portail : auteurs affichés sur les cartes, identité animée (titre décodé,
+  fiole), vignettes animées au survol ou au centre de l'écran sur mobile,
+  balises d'aperçu de partage et cartes de partage générées pour chaque jeu et
+  outil.
+- README refondu avec bannière animée et section « Jeux et IA », fichiers
+  communautaires et licence Apache 2.0.
 - Jeu « Solitaire » (`games/solitaire/`) : Klondike pioche 1 ou 3, donnes
   numérotées et partageables, option « donnes gagnables » prouvée par un
   solveur, glisser-déposer souris/tactile, clavier complet, annuler illimité,
@@ -32,6 +55,16 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   fixtures des vrais CLI et politique sans attributs événementiels.
 - `package.json` : champ `engines` fixant Node >= 24, pour qu'un runtime trop
   ancien produise un avertissement npm au lieu d'échouer plus loin
+
+### Fixed
+- Thème automatique : titre, fiole, lecteur de parcours, coloration du code et
+  guide OpenSpec suivent désormais la préférence du système, et plus seulement
+  le thème choisi à la main.
+- Galerie UI et composants partagés : contours de champs au contraste WCAG,
+  statuts typés, sélecteur de thème resynchronisé, dialogue lisible à 320 px.
+- Jouabilité mobile des jeux existants, lignes du morpion et comptage des
+  groupes au Go ; CVE corrigées dans les dépendances et le Transformer Explainer
+  embarqué.
 
 ### Removed
 - Sept images OG orphelines de `data/bookmarks-images/` (228 Ko -> 76 Ko) :
