@@ -89,6 +89,7 @@ export default {
     'games/orbital-golf/**/*.js',
     'games/go-9x9/**/*.js',
     'games/puissance-4/**/*.js',
+    'games/demineur/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
     'games/dialog-accessibility.js',
@@ -184,6 +185,11 @@ export default {
     './games/puissance-4/ai/{bitboard,search,transposition-table,advisor,protocol,client}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/puissance-4/bots/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/puissance-4/ui/{session,text,board-view,panels}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/demineur/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/demineur/{engine,bots}/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/demineur/solver/*.js': { statements: 100, branches: 94, functions: 100, lines: 100 },
+    './games/demineur/ui/*.js': { statements: 100, branches: 95, functions: 100, lines: 100 },
+    './games/demineur/controller.js': { statements: 96, branches: 92, functions: 95, lines: 98 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)

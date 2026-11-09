@@ -6,3 +6,6 @@ h2 { margin-top: 0; }
 a { color: var(--color-accent); }
 .preview-card { background: var(--color-bg-secondary); }
 .preview-card.compact { max-width: 22rem; }
+/* Sur petit écran, le code défile dans son propre bloc (focusable au clavier) :
+ * le dialogue tient dans la fenêtre, titre et bouton de fermeture restent visibles. */
+.dialog-code { max-height: min(40vh, 20rem); overflow: auto; }
