@@ -166,6 +166,35 @@
       margin-top: 1rem;
     }
 
+    .settings {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .setting label {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: var(--font-size-sm);
+    }
+
+    .setting output {
+      color: var(--color-text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .setting input[type="range"] {
+      width: 100%;
+      accent-color: var(--color-accent);
+    }
+
+    .settings-hint {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
     button {
       background: var(--color-accent);
       color: var(--color-text-inverse);
@@ -295,6 +324,8 @@
     }
 
     .style-card {
+      display: flex;
+      flex-direction: column;
       background: var(--color-bg-card);
       padding: 0;
       text-align: left;
@@ -324,23 +355,24 @@
       display: block;
     }
 
+    /* Légende sous l'image (et non superposée) pour laisser voir toute la vignette */
     .style-card .style-info {
-      padding: 0.6rem 0.8rem;
+      display: block;
+      flex: 1;
+      padding: 0.5rem 0.75rem;
       background: var(--color-bg-secondary);
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      line-height: 1.3;
     }
 
     .style-card .style-name {
+      display: block;
       font-size: 0.85rem;
       font-weight: 600;
       color: var(--color-text);
-      margin-bottom: 0.1rem;
     }
 
     .style-card .style-artist {
+      display: block;
       font-size: 0.75rem;
       color: var(--color-text-muted);
     }
@@ -434,7 +466,7 @@
   <div class="container">
     <header>
       <h1><span>🎨</span> Neural Style Transfer</h1>
-      <p class="subtitle">Appliquez le style artistique d'une image sur une autre grâce au deep learning<br><small>Images automatiquement redimensionnées à 512px max pour la compatibilité GPU</small></p>
+      <p class="subtitle">Appliquez le style artistique d'une image sur une autre grâce au deep learning</p>
     </header>
 
     <div class="main-grid">
@@ -474,11 +506,33 @@
             <div>Le résultat apparaîtra ici</div>
           </div>
         </div>
+        <div class="settings">
+          <div class="setting">
+            <label for="contentSize">Taille du contenu <output id="contentSizeValue" for="contentSize">256 px</output></label>
+            <input type="range" id="contentSize" min="256" max="768" step="32" value="256" aria-describedby="settingsHint">
+          </div>
+          <div class="setting">
+            <label for="styleSize">Taille du style <output id="styleSizeValue" for="styleSize">256 px</output></label>
+            <input type="range" id="styleSize" min="100" max="400" step="4" value="256" aria-describedby="settingsHint">
+          </div>
+          <div class="setting">
+            <label for="strength">Intensité du style <output id="strengthValue" for="strength">100 %</output></label>
+            <input type="range" id="strength" min="0" max="100" step="5" value="100">
+          </div>
+          <p class="settings-hint" id="settingsHint">Hauteurs vues par le réseau. Un contenu plus grand donne des motifs plus fins (et un calcul plus long) ; un style plus petit donne des motifs plus gros.</p>
+        </div>
         <div class="controls">
           <button id="stylizeBtn" disabled>Styliser</button>
           <button id="downloadBtn" class="secondary" disabled>Télécharger</button>
         </div>
       </div>
+    </div>
+
+    <div class="status" id="status" role="status" aria-live="polite" aria-atomic="true">
+      Chargement du modèle IA (~17 Mo)...
+    </div>
+    <div class="progress-bar active" id="progressBar" aria-hidden="true">
+      <div class="fill" id="progressFill"></div>
     </div>
 
     <!-- Galerie de styles -->
@@ -487,13 +541,6 @@
       <div class="sample-styles" id="sampleStyles">
         <!-- Les styles d'exemple seront ajoutés ici -->
       </div>
-    </div>
-
-    <div class="status" id="status" role="status" aria-live="polite" aria-atomic="true">
-      Chargement du modèle IA (~12 Mo)...
-    </div>
-    <div class="progress-bar active" id="progressBar" aria-hidden="true">
-      <div class="fill" id="progressFill"></div>
     </div>
 
     <div class="credits">
@@ -535,16 +582,22 @@
     const lightboxImage = document.getElementById('lightboxImage');
     const lightboxClose = document.getElementById('lightboxClose');
     const lightboxDownload = document.getElementById('lightboxDownload');
+    const contentSizeInput = document.getElementById('contentSize');
+    const styleSizeInput = document.getElementById('styleSize');
+    const strengthInput = document.getElementById('strength');
 
-    // État
+    // État : on garde les images d'origine pour pouvoir les redimensionner
+    // à chaque stylisation selon les réglages courants.
     let contentImg = null;
     let styleImg = null;
     let model = null;
     let isProcessing = false;
     let lightboxTrigger = null;
+    // Numéro de la dernière demande de style : une réponse plus ancienne est ignorée
+    let styleRequestId = 0;
 
-    // Taille maximale des images (pour éviter les problèmes de mémoire GPU)
-    const MAX_IMAGE_SIZE = 512;
+    // Garde-fou GPU : aucun côté ne dépasse cette taille, quelle que soit la hauteur demandée
+    const MAX_SIDE = 1024;
 
     // Wikimedia refuse les tailles non standard : https://www.mediawiki.org/wiki/Common_thumbnail_sizes
     const sampleStyles = [
@@ -638,39 +691,51 @@
     }
 
     /**
-     * Redimensionne une image si elle dépasse la taille maximale
-     * Retourne un canvas avec l'image redimensionnée convertie en élément image
-     * @param {HTMLImageElement} img - Image source
-     * @param {number} maxSize - Taille maximale (largeur ou hauteur)
-     * @returns {Promise<HTMLImageElement>} - Image redimensionnée
+     * Calcule les dimensions pour une hauteur cible en gardant le ratio.
+     * Comme la démo d'origine, la hauteur pilote l'échelle : le réseau de style
+     * voit des motifs d'autant plus gros que l'image est petite. L'image peut
+     * être agrandie ; seul le plus grand côté est plafonné à maxSide.
+     * @param {number} width - Largeur source (> 0)
+     * @param {number} height - Hauteur source (> 0)
+     * @param {number} targetHeight - Hauteur souhaitée
+     * @param {number} maxSide - Plus grand côté autorisé
+     * @returns {{width: number, height: number}} Dimensions entières, au moins 1 px
      */
-    function resizeImage(img, maxSize = MAX_IMAGE_SIZE) {
-      return new Promise((resolve) => {
-        const { width, height } = img;
+    function scaledSize(width, height, targetHeight, maxSide = MAX_SIDE) {
+      const ratio = Math.min(targetHeight / height, maxSide / Math.max(width, height));
+      return {
+        width: Math.max(1, Math.round(width * ratio)),
+        height: Math.max(1, Math.round(height * ratio)),
+      };
+    }
 
-        // Si l'image est déjà assez petite, la retourner telle quelle
-        if (width <= maxSize && height <= maxSize) {
-          resolve(img);
-          return;
-        }
+    /**
+     * Redimensionne une image à la hauteur demandée dans un canvas.
+     * Le canvas est passé tel quel au modèle : pas de ré-encodage JPEG qui
+     * ajouterait des artefacts de compression avant la stylisation.
+     * @param {HTMLImageElement} img - Image source
+     * @param {number} targetHeight - Hauteur souhaitée
+     * @returns {HTMLCanvasElement} Image redimensionnée
+     */
+    function resizeImage(img, targetHeight) {
+      const { width, height } = scaledSize(img.naturalWidth || img.width, img.naturalHeight || img.height, targetHeight);
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, width, height);
+      return canvas;
+    }
 
-        // Calculer les nouvelles dimensions en conservant le ratio
-        const ratio = Math.min(maxSize / width, maxSize / height);
-        const newWidth = Math.round(width * ratio);
-        const newHeight = Math.round(height * ratio);
-
-        // Créer un canvas pour redimensionner
-        const canvas = document.createElement('canvas');
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-        // Convertir le canvas en image
-        const resizedImg = new Image();
-        resizedImg.onload = () => resolve(resizedImg);
-        resizedImg.src = canvas.toDataURL('image/jpeg', 0.9);
+    /**
+     * Laisse le navigateur peindre le statut avant un calcul GPU bloquant.
+     * @returns {Promise<void>}
+     */
+    function nextPaint() {
+      return new Promise(resolve => {
+        const schedule = window.requestAnimationFrame ?? (callback => setTimeout(callback, 16));
+        schedule(() => setTimeout(resolve, 0));
       });
     }
 
@@ -720,43 +785,50 @@
         // Info overlay
         const info = document.createElement('span');
         info.className = 'style-info';
-        info.innerHTML = `
-          <span class="style-name">${style.name}</span><br>
-          <span class="style-artist">${style.artist}</span>
-        `;
+        const name = document.createElement('span');
+        name.className = 'style-name';
+        name.textContent = style.name;
+        const artist = document.createElement('span');
+        artist.className = 'style-artist';
+        artist.textContent = style.artist;
+        info.append(name, artist);
 
         card.appendChild(img);
         card.appendChild(info);
 
         // Gestion du clic
-        card.onclick = async () => {
+        card.addEventListener('click', async () => {
           if (card.classList.contains('loading')) {return;}
 
           // Marquer comme loading
           card.setAttribute('aria-busy', 'true');
           card.classList.add('loading');
+          const requestId = ++styleRequestId;
 
           try {
             setStatus(`Chargement de "${style.name}"...`, 'loading');
-            const originalImg = await loadImageFromUrl(style.url);
-            styleImg = await resizeImage(originalImg);
+            const loadedImg = await loadImageFromUrl(style.url);
+            // Un autre style a été demandé entre-temps : il garde la main
+            if (requestId !== styleRequestId) {return;}
+            styleImg = loadedImg;
             displayImage(styleZone, styleImg);
             document.getElementById('styleFilename').textContent = `${style.name} — ${style.artist}`;
 
-            card.classList.remove('loading');
             clearSelectedStyles();
             card.classList.add('selected');
             card.setAttribute('aria-pressed', 'true');
             setStatus(`Style "${style.name}" sélectionné`, 'success');
             updateStylizeButton();
           } catch (err) {
-            card.classList.remove('loading');
-            setStatus(`Erreur: impossible de charger "${style.name}"`, 'error');
+            if (requestId === styleRequestId) {
+              setStatus(`Erreur: impossible de charger "${style.name}"`, 'error');
+            }
             console.error(err);
           } finally {
+            card.classList.remove('loading');
             card.removeAttribute('aria-busy');
           }
-        };
+        });
 
         container.appendChild(card);
       });
@@ -778,9 +850,15 @@
       try {
         setStatus('Stylisation en cours...', 'loading');
         progressFill.style.width = '60%';
+        await nextPaint();
 
-        // Effectuer le transfert de style
-        const result = await model.stylize(contentImg, styleImg);
+        // Les tailles pilotent l'échelle des motifs (cf. scaledSize)
+        const content = resizeImage(contentImg, Number(contentSizeInput.value));
+        const style = resizeImage(styleImg, Number(styleSizeInput.value));
+        // Intensité < 1 : mélange la représentation du style avec celle du contenu.
+        // À 100 %, on évite ce second passage dans le réseau de style.
+        const strength = Number(strengthInput.value) / 100;
+        const result = await model.stylize(content, style, strength < 1 ? strength : undefined);
 
         progressFill.style.width = '90%';
 
@@ -796,13 +874,12 @@
         setStatus('Stylisation terminée !', 'success');
       } catch (err) {
         // Message d'erreur plus explicite pour les problèmes WebGL
-        const isWebGLError = err.message.includes('shader') ||
-                            err.message.includes('WebGL') ||
-                            err.message.includes('texture');
+        const message = String(err?.message ?? err);
+        const isWebGLError = /shader|WebGL|texture/i.test(message);
         if (isWebGLError) {
-          setStatus('Erreur GPU : essayez de recharger la page ou réduire la taille des images', 'error');
+          setStatus('Erreur GPU : rechargez la page ou réduisez la taille du contenu', 'error');
         } else {
-          setStatus(`Erreur: ${err.message}`, 'error');
+          setStatus(`Erreur: ${message}`, 'error');
         }
         console.error(err);
       } finally {
@@ -909,19 +986,21 @@
           return;
         }
         zone.setAttribute('aria-busy', 'true');
+        // Un fichier de style remplace aussi un style de galerie encore en chargement
+        const requestId = kind === 'style' ? ++styleRequestId : 0;
         try {
-          setStatus('Chargement et redimensionnement...', 'loading');
-          const originalImg = await loadImageFromFile(file);
-          const image = await resizeImage(originalImg);
+          setStatus('Chargement...', 'loading');
+          const image = await loadImageFromFile(file);
           if (kind === 'content') {
             contentImg = image;
           } else {
+            if (requestId !== styleRequestId) {return;}
             styleImg = image;
             clearSelectedStyles();
           }
           displayImage(zone, image);
           document.getElementById(`${kind}Filename`).textContent = file.name;
-          setStatus(`${file.name} chargé${originalImg.width !== image.width ? ` — ${image.width}×${image.height}px` : ''}`, 'success');
+          setStatus(`${file.name} chargé`, 'success');
           updateStylizeButton();
         } catch (err) {
           setStatus(`Impossible de charger ${file.name} : ${err.message || 'image illisible'}`, 'error');
@@ -951,6 +1030,18 @@
       setupImageImport(styleZone, styleInput, 'style');
 
       stylizeBtn.addEventListener('click', stylize);
+
+      // Affiche la valeur courante de chaque réglage
+      const settings = [
+        [contentSizeInput, 'contentSizeValue', ' px'],
+        [styleSizeInput, 'styleSizeValue', ' px'],
+        [strengthInput, 'strengthValue', ' %'],
+      ];
+      for (const [input, outputId, unit] of settings) {
+        input.addEventListener('input', () => {
+          document.getElementById(outputId).textContent = `${input.value}${unit}`;
+        });
+      }
       downloadBtn.addEventListener('click', download);
 
       // Lightbox : clic sur le canvas pour agrandir
