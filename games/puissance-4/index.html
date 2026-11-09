@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Puissance 4 - Playlab42</title>
+  <link rel="stylesheet" href="../../lib/theme.css">
+  <link rel="stylesheet" href="../../lib/ui.css">
+  <link rel="stylesheet" href="../../lib/components.css">
+  <link rel="stylesheet" href="../game-page.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="p4-app">
+    <header class="p4-header">
+      <h1>Puissance 4</h1>
+      <label class="p4-theme">
+        <span>Thème</span>
+        <select class="ui-field" id="theme-select">
+          <option value="system">Automatique</option>
+          <option value="light">Clair</option>
+          <option value="dark">Sombre</option>
+        </select>
+      </label>
+    </header>
+
+    <div class="p4-layout">
+      <section class="p4-play" aria-labelledby="status">
+        <p class="p4-status" id="status" role="status" aria-live="polite" aria-atomic="true">Chargement…</p>
+
+        <div class="p4-eval" id="eval-panel">
+          <div class="p4-eval-meter" id="eval-meter" role="meter" aria-label="Évaluation de l’IA : part de Rouge"
+            aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+            <span class="p4-eval-red" aria-hidden="true"></span>
+          </div>
+          <p class="p4-eval-label" id="eval-label">Position équilibrée.</p>
+        </div>
+
+        <div class="p4-board-frame">
+          <div class="p4-board" id="board" role="group" aria-label="Grille de Puissance 4, 7 colonnes" aria-describedby="board-help"></div>
+          <ol class="p4-column-numbers" aria-hidden="true">
+            <li>1</li><li>2</li><li>3</li><li>4</li><li>5</li><li>6</li><li>7</li>
+          </ol>
+        </div>
+
+        <div class="p4-actions" role="group" aria-label="Actions de la partie">
+          <button class="ui-button" type="button" id="btn-undo">Annuler</button>
+          <button class="ui-button" type="button" id="btn-hint">Indice</button>
+          <button class="ui-button ui-button-primary" type="button" id="btn-new">Nouvelle partie</button>
+        </div>
+        <p class="p4-hint" id="hint" role="status" aria-live="polite"></p>
+      </section>
+
+      <aside class="p4-side">
+        <form class="ui-card p4-settings" id="settings" aria-labelledby="settings-title">
+          <h2 id="settings-title">Réglages</h2>
+          <fieldset class="p4-fieldset">
+            <legend>Adversaire</legend>
+            <label class="ui-choice"><input type="radio" name="mode" value="ai" checked> Contre l’IA</label>
+            <label class="ui-choice"><input type="radio" name="mode" value="duo"> À deux sur cet appareil</label>
+          </fieldset>
+          <div class="p4-ai-settings" id="ai-settings">
+            <label class="ui-label" for="level">Niveau de l’IA</label>
+            <select class="ui-field" id="level" name="level">
+              <option value="facile">Facile (au hasard)</option>
+              <option value="moyen">Moyen (gagne ou bloque)</option>
+              <option value="difficile">Difficile (4 coups d’avance)</option>
+              <option value="expert" selected>Expert (recherche profonde)</option>
+            </select>
+            <label class="ui-label" for="human-color">Votre couleur</label>
+            <select class="ui-field" id="human-color" name="humanColor">
+              <option value="red" selected>Rouge</option>
+              <option value="yellow">Jaune</option>
+            </select>
+          </div>
+          <label class="ui-label" for="first-color">Qui commence ?</label>
+          <select class="ui-field" id="first-color" name="firstColor">
+            <option value="red" selected>Rouge</option>
+            <option value="yellow">Jaune</option>
+          </select>
+          <label class="ui-choice"><input type="checkbox" id="show-eval" name="showEval" checked> Afficher l’évaluation de l’IA</label>
+          <p class="ui-help">Adversaire, niveau et couleurs s’appliquent à la prochaine partie.</p>
+          <button class="ui-button ui-button-primary" type="submit">Lancer la partie</button>
+        </form>
+
+        <section class="ui-card p4-history" aria-labelledby="history-title">
+          <h2 id="history-title">Historique</h2>
+          <ol class="p4-history-list" id="history" tabindex="0" aria-label="Coups joués"></ol>
+          <p class="ui-help p4-history-empty">Aucun coup pour l’instant.</p>
+        </section>
+
+        <p class="ui-help" id="board-help">
+          Clavier : flèches gauche et droite pour choisir la colonne, Entrée ou Espace pour jouer,
+          ou touches 1 à 7. Au doigt ou à la souris : touchez une colonne.
+        </p>
+      </aside>
+    </div>
+  </main>
+  <script type="module" src="ui/main.js"></script>
+</body>
+</html>

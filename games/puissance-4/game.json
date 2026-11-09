@@ -1,0 +1,26 @@
+{
+  "id": "puissance-4",
+  "name": "Puissance 4",
+  "description": "Alignez quatre jetons avant l'adversaire, contre une IA négamax qui explique ses indices",
+  "players": {
+    "min": 2,
+    "max": 2
+  },
+  "type": "turn-based",
+  "tags": ["strategy", "classic", "2-players", "board-game", "ai"],
+  "author": "Cyrille",
+  "icon": "🔴",
+  "version": "1.0.0",
+  "controls": "touch",
+  "orientation": "any",
+  "minWidth": 320,
+  "minHeight": 480,
+  "bots": {
+    "default": "Minimax",
+    "available": [
+      { "name": "Random", "file": "bots/random.js", "difficulty": "easy" },
+      { "name": "Greedy", "file": "bots/greedy.js", "difficulty": "medium" },
+      { "name": "Minimax", "file": "bots/minimax.js", "difficulty": "expert" }
+    ]
+  }
+}

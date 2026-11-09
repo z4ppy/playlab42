@@ -8,6 +8,10 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 ## [Unreleased]
 
 ### Added
+- Jeu « Puissance 4 » (`games/puissance-4/`) : moteur pur au contrat du lab,
+  IA négamax alpha-bêta sur bitboards (approfondissement itératif, table de
+  transposition, budget en positions reproductible) calculée dans un Web Worker,
+  barre d'évaluation, indice expliqué, annulation, mode à deux, clavier complet.
 - Jeu « Golf orbital » (`games/orbital-golf/`) : moteur physique pur à pas fixe,
   9 trous d'initiation, trou du jour et parcours libre générés puis prouvés
   jouables par un solveur, visée au doigt (lance-pierre) ou au clavier.
