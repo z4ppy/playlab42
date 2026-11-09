@@ -106,7 +106,7 @@ operations:
     <div class="guide-table-wrapper" tabindex="0">
       <table>
         <thead>
-          <tr><th>Profil</th><th>Commandes d'assistant (docs v1.14.0)</th></tr>
+          <tr><th>Profil</th><th>Commandes d'assistant (docs v1.16.0)</th></tr>
         </thead>
         <tbody>
           <tr><td><code>core</code> (défaut)</td><td><code>explore</code>, <code>propose</code>, <code>apply</code>, <code>update</code>, <code>sync</code>, <code>archive</code></td></tr>
@@ -115,12 +115,12 @@ operations:
       </table>
     </div>
 
-    <p class="guide-muted">Le profil core compte six commandes dans la doc v1.14.0 (le README de la branche main peut en annoncer moins). <code>/opsx:update</code> (chat, révise le plan, jamais le code) est distinct de <code>openspec update</code> (terminal, régénère les intégrations).</p>
+    <p class="guide-muted">Le profil core compte six commandes dans la doc v1.16.0 (des résumés plus anciens en annoncent quatre). <code>/opsx:update</code> (chat, révise le plan, jamais le code) est distinct de <code>openspec update</code> (terminal, régénère les intégrations).</p>
 
     <p><code>/opsx:propose</code> est le nom canonique. Cursor et GitHub Copilot (IDE) enregistrent <code>/opsx-propose</code> ; Codex <code>$openspec-propose</code>. Selon la documentation OpenSpec, Copilot CLI ne charge pas directement les prompts <code>.github/prompts/*.prompt.md</code> générés pour les extensions IDE. Vérifiez toujours quelles intégrations <em>votre</em> outil prend en charge.</p>
 
     <div class="guide-callout">
-      <p><strong>Dans Playlab42 (politique du projet) :</strong> profil <code>core</code> en livraison skills seuls. Demandez le skill par son nom canonique : <code>openspec-explore</code>, <code>openspec-propose</code>, <code>openspec-apply-change</code>, <code>openspec-update-change</code>, <code>openspec-sync-specs</code>, <code>openspec-archive-change</code>. Les sources vivent dans <code>.github/skills/</code> ; <code>.claude/skills</code> n'en est qu'un lien. Le CLI 1.14.0 est épinglé et s'exécute dans Docker :</p>
+      <p><strong>Dans Playlab42 (politique du projet) :</strong> profil <code>core</code> en livraison skills seuls. Demandez le skill par son nom canonique : <code>openspec-explore</code>, <code>openspec-propose</code>, <code>openspec-apply-change</code>, <code>openspec-update-change</code>, <code>openspec-sync-specs</code>, <code>openspec-archive-change</code>. Les sources vivent dans <code>.github/skills/</code> ; <code>.claude/skills</code> n'en est qu'un lien. Le CLI 1.16.0 est épinglé et s'exécute dans Docker :</p>
 <pre><code>make openspec-list
 make openspec-validate
 make npm CMD="exec -- openspec status --change add-dark-mode --json"</code></pre>
@@ -130,7 +130,7 @@ make npm CMD="exec -- openspec status --change add-dark-mode --json"</code></pre
       <summary>Approfondir : instructions legacy (/openspec:*) et migration</summary>
       <p>Les commandes <code>/openspec:proposal</code>, <code>/openspec:apply</code> et <code>/openspec:archive</code> sont l'ancien workflow ; elles fonctionnent encore mais OPSX est recommandé. Procédure officielle générale de migration d'un projet qui les utilise :</p>
       <ol>
-        <li>Mettre à jour la CLI, puis lancer <code>openspec init</code> ou <code>openspec update</code> : les fichiers legacy sont détectés et un nettoyage est proposé.</li>
+        <li>Mettre à jour la CLI, puis lancer <code>openspec init</code> ou <code>openspec update</code> : les fichiers legacy sont détectés et un nettoyage est proposé. Depuis la 1.15, <code>openspec update --dry-run --force</code> liste d'abord ce que ce nettoyage supprimerait, sans rien écrire.</li>
         <li>Les anciens fichiers de commandes, <code>openspec/AGENTS.md</code> et les blocs de marqueurs OpenSpec dans <code>CLAUDE.md</code>/<code>AGENTS.md</code> sont retirés ; votre contenu reste.</li>
         <li>Déplacer le contexte utile de <code>openspec/project.md</code> vers le champ <code>context</code> de <code>openspec/config.yaml</code>, puis supprimer <code>project.md</code> vous-même.</li>
         <li>Changes actifs, archives et specs principales sont conservés.</li>
@@ -160,7 +160,7 @@ make npm CMD="exec -- openspec status --change add-dark-mode --json"</code></pre
       </div>
     </div>
 
-    <p class="guide-source">Sources : OpenSpec v1.14.0 (<a href="https://github.com/Fission-AI/OpenSpec/tree/v1.14.0" target="_blank" rel="noopener">tag</a>) — <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/customization.md" target="_blank" rel="noopener">customization</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/concepts.md" target="_blank" rel="noopener">concepts</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/existing-projects.md" target="_blank" rel="noopener">existing-projects</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/migration-guide.md" target="_blank" rel="noopener">migration-guide</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener">commands</a>. Politique locale : <code>AGENTS.md</code> et <code>docs/guides/openspec-workflow.md</code>.</p>
+    <p class="guide-source">Sources : OpenSpec v1.16.0 (<a href="https://github.com/Fission-AI/OpenSpec/tree/v1.16.0" target="_blank" rel="noopener">tag</a>) — <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/customization.md" target="_blank" rel="noopener">customization</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/concepts.md" target="_blank" rel="noopener">concepts</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/existing-projects.md" target="_blank" rel="noopener">existing-projects</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/migration-guide.md" target="_blank" rel="noopener">migration-guide</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/commands.md" target="_blank" rel="noopener">commands</a>. Politique locale : <code>AGENTS.md</code> et <code>docs/guides/openspec-workflow.md</code>.</p>
 
     <p><strong>Vous avez fait le tour : à vous de jouer avec un vrai change ! 🎉</strong></p>
     <footer class="guide-footer">

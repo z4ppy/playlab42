@@ -129,3 +129,13 @@ La logique de score est centralisée dans `calculateScore(config, event)` pour f
 **Décision** : Les tuiles des autres joueurs sur leur réglette sont **cachées** dans la vue de chaque joueur (implémentation `getPlayerView`).
 
 Seuls le nombre de tuiles restantes des adversaires est visible, pas leurs valeurs.
+
+
+## Contexte déplacé depuis le delta `specs/triomino-rules/spec.md`
+
+Ce contexte figurait dans le delta de spec ; OpenSpec 1.16 refuse en validation stricte le texte qu'un archivage ne reporterait pas dans la spec principale. Il est conservé ici sans modification.
+
+## Spec Delta: Triomino Game Rules
+
+**Change ID**: `add-triomino-game`
+**Capability**: `game-engine`

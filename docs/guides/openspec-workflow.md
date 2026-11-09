@@ -8,16 +8,24 @@ Ce fichier explique le workflow ; les
 
 ## Version et installation reproductible
 
-La version officielle consultee le **2 octobre 2026** est
-**`@fission-ai/openspec@1.14.0`**. Le paquet exige Node `>=20.19.0`, compatible
-avec Node 26 dans le conteneur du projet. Le CLI est une **devDependency locale
-epinglee**, pas un outil global suppose deja installe.
+La version officielle retenue, verifiee le **9 novembre 2026**, est
+**`@fission-ai/openspec@1.16.0`** (publiee sur npm le 30 octobre 2026). Depuis
+1.16.0, le paquet npm exige Node `>=22.12.0` (rupture annoncee dans le
+CHANGELOG : Node 20 n'est plus supporte), compatible avec Node 26 dans le
+conteneur du projet. Le CLI est une **devDependency locale epinglee**, pas un
+outil global suppose deja installe.
+
+Depuis 1.15.0, OpenSpec publie aussi un binaire autonome sans Node.js
+(installeur `curl ... | sh`, commande `openspec install`) et en fait
+l'installation par defaut de sa documentation. Playlab42 ne l'utilise pas :
+la version exacte est figee dans `package-lock.json` et executee dans Docker,
+comme les autres outils du depot.
 
 L'installation et le lockfile relevent du mainteneur des dependances. Pour
 ajouter ou mettre a jour cette version, executer **dans le conteneur** :
 
 ```bash
-npm install --save-dev --save-exact @fission-ai/openspec@1.14.0
+npm install --save-dev --save-exact @fission-ai/openspec@1.16.0
 ```
 
 Ensuite, depuis le worktree avec le service Docker de developpement initialise :
@@ -32,6 +40,22 @@ make npm CMD="exec -- openspec --version"
 `openspec validate --all --strict --no-interactive` via le script npm local.
 Ne pas lancer npm, node ou le CLI sur le host, ni utiliser un `npx` non epingle
 qui telechargerait une version differente.
+
+La validation stricte s'est durcie entre 1.14.0 et 1.16.0 ; ces avertissements
+font echouer `--strict`, donc `make openspec-validate` et la CI :
+
+- une exigence de plus de 500 caracteres (1.14.1) ;
+- dans un delta, un texte qu'archive ne reporte pas dans la spec principale :
+  section `## ` autre que `Purpose` et les sections de delta, texte avant le
+  premier `## `, prose avant la premiere exigence d'un bloc `ADDED` ou
+  `MODIFIED` (1.14.2) ;
+- un `#### Scenario:` sans etape `WHEN`/`GIVEN` ou sans etape `THEN` (1.16.0).
+  Les mots-cles sont reconnus en anglais : `QUAND`/`ALORS` ne comptent pas.
+
+`validate` echoue aussi (code 1) si `openspec/config.yaml` est illisible ou
+n'est pas du YAML valide. Dans `.openspec.yaml`, les clefs de premier niveau
+prefixees par `x-` en minuscules sont reservees aux metadonnees de l'equipe et
+ne sont plus signalees.
 
 ## Workflow recommande : OPSX
 
@@ -62,14 +86,17 @@ Le profil officiel **core** contient `propose`, `explore`, `apply`, `update`,
 | Synchroniser les specs | `/opsx:sync` | `openspec-sync-specs` |
 | Archiver | `/opsx:archive` | `openspec-archive-change` |
 
-Ces six skills ont ete generes avec le CLI officiel 1.14.0, profil core et
-livraison skills-only. Leur metadata `generatedBy: "1.14.0"` identifie la
+Ces six skills ont ete generes avec le CLI officiel 1.16.0, profil core et
+livraison skills-only. Leur metadata `generatedBy: "1.16.0"` identifie la
 version du generateur. Les noms effectivement generes correspondent au
 tableau ; aucun corps local de remplacement n'est ajoute.
 Le skill officiel `openspec-propose` s'arrete aux artefacts de planification,
 meme si la demande initiale parle d'implementation. Apres presentation des
 artefacts, il attend une nouvelle demande utilisateur pour passer au workflow
 apply ; une generation de proposal ne vaut pas approbation de livraison.
+Quand toutes les taches suivies sont cochees, `openspec-apply-change` annonce
+qu'elles sont terminees et propose une revue ou une verification avant
+l'archivage ; il ne declare plus le change pret a archiver.
 
 Les corps des skills vivent uniquement dans `.github/skills/`. Le lien
 `.claude/skills -> ../.github/skills` expose la meme source a Claude ; il
@@ -124,7 +151,14 @@ que le guide, mais ne sont pas les commandes recommandees par OpenSpec 1.x.
 
 **Ne pas executer `openspec init --force` ni `openspec update` directement
 dans ce depot** : la migration officielle peut supprimer les anciennes
-commandes, `openspec/AGENTS.md` et les marqueurs historiques. Conserver aussi
+commandes, `openspec/AGENTS.md` et les marqueurs historiques.
+Depuis 1.15.0, `openspec update --dry-run --json` liste les fichiers qu'une
+mise a jour ajouterait, modifierait ou supprimerait, sans rien ecrire. Essaye
+le 9 novembre 2026 sur une copie jetable du depot avec le HOME isole decrit
+ci-dessous, il ne prevoyait aucun changement ; avec `--force`, il listait la
+suppression des trois `.github/prompts/openspec-*.prompt.md` et de
+`openspec/AGENTS.md`. C'est un apercu utile, pas une autorisation : la
+procedure ci-dessous reste la seule maniere de regenerer les skills. Conserver aussi
 les changes actifs et les archives. Le seul ancien wrapper invalide
 `changes/_archives/parcours-post-mvp/` est conserve sans modification de
 contenu dans [les brouillons historiques](../../openspec/legacy/README.md) :
@@ -213,9 +247,12 @@ substitut a des deltas lorsqu'un comportement de la plateforme change.
 
 References figees sur la version retenue, et non sur une branche mouvante :
 
-- [Metadata npm](https://registry.npmjs.org/@fission-ai%2fopenspec/1.14.0)
-- [README 1.14.0](https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/README.md)
-- [CLI et options](https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md)
-- [Integrations et chemins](https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/supported-tools.md)
-- [Configuration](https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/customization.md)
-- [Migration legacy vers OPSX](https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/migration-guide.md)
+- [Metadata npm](https://registry.npmjs.org/@fission-ai%2fopenspec/1.16.0)
+- [CHANGELOG 1.16.0](https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/CHANGELOG.md)
+  (entrees 1.14.1 a 1.16.0)
+- [README 1.16.0](https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/README.md)
+- [Installation](https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/installation.md)
+- [CLI et options](https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/cli.md)
+- [Integrations et chemins](https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/supported-tools.md)
+- [Configuration](https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/customization.md)
+- [Migration legacy vers OPSX](https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/migration-guide.md)

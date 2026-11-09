@@ -8,8 +8,9 @@ The original MIT license is preserved in `LICENSE`. The local version
 `3.0.4-playlab42.1` identifies this patched code and is not a published upstream
 version. The package retains its `braces` name so npm installs the same module
 for direct and transitive consumers. The root npm override
-replaces `braces` for every consumer, including OpenSpec 1.14.0's
-`fast-glob -> micromatch` chain. This is a patched fork, not an upstream
+replaces `braces` for every consumer, including the
+`fast-glob -> micromatch` chain. OpenSpec no longer depends on `braces`
+since 1.14.3. This is a patched fork, not an upstream
 release or an advisory exemption.
 
 ## GHSA-vfj7-8cjw-p6xm

@@ -7,6 +7,14 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Changed
+- CLI OpenSpec épinglé passé de 1.14.0 à 1.16.0 (Node `>=22.12.0` pour le
+  paquet npm) ; les six skills `openspec-*` sont régénérés selon la procédure
+  du guide (profil core, skills seuls). Guide OpenSpec, parcours « OpenSpec »
+  et « Hello Playlab42 » mis à jour : binaire autonome, `update --dry-run`,
+  validation stricte durcie (scénarios WHEN/THEN, texte de delta non archivé)
+  et liens figés sur le tag `v1.16.0`.
+
 ## [0.3.0] - 2026-11-09
 
 Quatre nouveaux jeux à IA explicative, de nouveaux outils et parcours, un

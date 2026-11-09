@@ -42,7 +42,7 @@
     </div>
 
     <div class="guide-callout">
-      <p><strong>Ce que fait apply :</strong> il lit <code>tasks.md</code>, repère les tâches non cochées, les traite une par une (code, fichiers, tests), puis coche <code>[x]</code>. Il peut reprendre là où il s'était arrêté : l'avancement est dans les cases à cocher.</p>
+      <p><strong>Ce que fait apply :</strong> il lit <code>tasks.md</code>, repère les tâches non cochées, les traite une par une (code, fichiers, tests), puis coche <code>[x]</code>. Il peut reprendre là où il s'était arrêté : l'avancement est dans les cases à cocher. Quand tout est coché, il annonce que les tâches suivies sont terminées et invite à relire ou vérifier le change avant d'archiver : des cases cochées ne prouvent pas que le change est prêt.</p>
     </div>
 
     <h2>Une tâche, une boucle avec revue humaine</h2>
@@ -99,7 +99,7 @@
       <section class="guide-card">
         <h3><code>openspec validate --strict</code></h3>
         <p>Commande CLI qui contrôle la <strong>structure</strong> du change et des specs (format des deltas, cohérence des MODIFIED avec les specs principales). Elle ne lit pas votre code.</p>
-        <p>Dans Playlab42, le CLI est épinglé en 1.14.0 et s'exécute dans Docker, jamais sur l'hôte :</p>
+        <p>Dans Playlab42, le CLI est épinglé en 1.16.0 et s'exécute dans Docker, jamais sur l'hôte :</p>
 <pre><code>make npm CMD="exec -- openspec validate add-dark-mode --strict --no-interactive"
 make openspec-validate   # tous les changes et specs</code></pre>
         <p class="guide-muted">Hors Playlab42 : <code>openspec validate add-dark-mode --strict</code>.</p>
@@ -146,7 +146,7 @@ openspec update           # régénérer les fichiers de l'assistant dans le pro
       </div>
     </div>
 
-    <p class="guide-source">Sources : OpenSpec v1.14.0 — <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/commands.md" target="_blank" rel="noopener">docs/commands.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/editing-changes.md" target="_blank" rel="noopener">docs/editing-changes.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/cli.md" target="_blank" rel="noopener">docs/cli.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.14.0/docs/workflows.md" target="_blank" rel="noopener">docs/workflows.md</a>.</p>
+    <p class="guide-source">Sources : OpenSpec v1.16.0 — <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/commands.md" target="_blank" rel="noopener">docs/commands.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/editing-changes.md" target="_blank" rel="noopener">docs/editing-changes.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/cli.md" target="_blank" rel="noopener">docs/cli.md</a>, <a href="https://github.com/Fission-AI/OpenSpec/blob/v1.16.0/docs/workflows.md" target="_blank" rel="noopener">docs/workflows.md</a>.</p>
 
     <p><strong>Code terminé et relu ? Passons à l'archivage 👉</strong></p>
     <footer class="guide-footer">
