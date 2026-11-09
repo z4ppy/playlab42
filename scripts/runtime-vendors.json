@@ -33,7 +33,7 @@
     },
     {
       "package": "three",
-      "version": "0.186.1",
+      "version": "0.187.0",
       "copy": ["build/three.module.js", "build/three.core.js", "examples/jsm/controls/OrbitControls.js"],
       "destination": "three"
     },

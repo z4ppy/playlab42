@@ -597,7 +597,7 @@ orchestration du portail et du lecteur, persistance/validation JSON,
 collections de progression indépendantes et reset réellement vierge.
 Le RNG Triomino utilise le module partagé sans modifier les séquences.
 Les imports émis résolvent les modules imbriqués depuis `dist`.
-Three 0.186.1 et lil-gui 0.21.0 sont distribués localement et exercés avec
+Three 0.187.0 et lil-gui 0.21.0 sont distribués localement et exercés avec
 WebGL2 réel ; les cinq mises à jour conservent le lockfile.
 
 | Surface | Maximum cyclomatique avant → après |

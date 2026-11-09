@@ -116,7 +116,7 @@ describe('Contrat des workflows de livraison', () => {
     expect(scripts['lint:ts']).toBe('biome lint --error-on-warnings .');
     expect(scripts['lint:security']).toContain(' . --max-warnings=0');
     expect(devDependencies['eslint-plugin-html']).toBe('8.2.1');
-    expect(devDependencies['@biomejs/biome']).toBe('2.6.2');
+    expect(devDependencies['@biomejs/biome']).toBe('2.6.5');
     expect(ci.jobs.lint.steps.some(step => step.run === 'npm run lint')).toBe(true);
   });
 });

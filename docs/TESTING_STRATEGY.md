@@ -132,7 +132,7 @@ locales nécessaires font échouer le test.
 Le test `window.blur` envoie cet événement au vrai handler après une pression clavier ;
 il ne prétend pas tester le gestionnaire de fenêtres de l'OS headless.
 
-**Réseau et dépendances réelles** : Three **0.186.1** et lil-gui **0.21.0**
+**Réseau et dépendances réelles** : Three **0.187.0** et lil-gui **0.21.0**
 sont construits dans `assets/vendor/` par `build:runtime`, avec le core,
 les addons et dépendances internes utilisés par Relativity. Son rendu réel
 exige WebGL2 ; Particle Life conserve son Canvas2D. `e2e/three-runtime.spec.js`

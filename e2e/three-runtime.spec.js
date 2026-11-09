@@ -27,16 +27,16 @@ test('Relativity : versions verrouillées et imports transitifs locaux sans CDN'
         .map(({ package: name, version, license }) => ({ name, version, license })),
     };
   });
-  expect(versions.revision).toBe('186');
+  expect(versions.revision).toBe('187');
   expect(versions.gui).toBe(true);
   expect(versions.webgl2).toBe(true);
   expect(versions.libraries).toEqual([
-    { package: 'three', version: '0.186.1', destination: 'three' },
+    { package: 'three', version: '0.187.0', destination: 'three' },
     { package: 'lil-gui', version: '0.21.0', destination: 'lil-gui' },
   ]);
   expect(versions.licenses).toEqual([
     { name: 'lil-gui', version: '0.21.0', license: 'MIT' },
-    { name: 'three', version: '0.186.1', license: 'MIT' },
+    { name: 'three', version: '0.187.0', license: 'MIT' },
   ]);
   expect(external).toEqual([]);
   expect([...paths]).toEqual(expect.arrayContaining([
