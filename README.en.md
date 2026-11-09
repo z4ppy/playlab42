@@ -41,6 +41,21 @@ An open, browser-based learning lab: interactive courses, tools, games and resou
 
 **First visit?** Open [the demo](https://z4ppy.github.io/playlab42/) and start with the [“PlayLab42 — Guide et usine logicielle”](https://z4ppy.github.io/playlab42/#/parcours/hello-playlab42) course (a tour of the platform and its software factory).
 
+## Games and AI
+
+Every game splits a **pure rules engine** (deterministic, tested, DOM-free), the **player view** (which never leaks hidden information) and **bots** that only see that view. The AI does more than play: it **explains its moves** (in French, like the rest of the interface).
+
+<p align="center"><a href="https://z4ppy.github.io/playlab42/games/demineur/"><img src="docs/assets/readme/demineur-ia.webp" width="640" alt="Minesweeper (Démineur): the AI plays an intermediate board on its own, opening safe cells one by one and showing its reasoning for every move."></a></p>
+
+| Game | What the AI does | How |
+|---|---|---|
+| [Minesweeper (Démineur)](games/demineur/README.md) | No-guess boards, explained hints, probability map | Local and pairwise constraint deductions, then exact probabilities by enumerating the frontier |
+| [Connect Four (Puissance 4)](games/puissance-4/README.md) | Strong opponent, evaluation bar, “wins in N moves” | Alpha-beta negamax on bitboards, iterative deepening, transposition table, in a Web Worker |
+| [Sudoku](games/sudoku/README.md) | Real difficulty grading, two-step teaching hints | “Human” solver (singles, intersections, subsets, X-Wing, XY-Wing, Swordfish) and an exact bitmask solver |
+| [Solitaire (Klondike)](games/solitaire/README.md) | Provably winnable deals, explained hints | Depth-first search with seen-state hashing and a bounded budget; hints reason on visible cards only |
+
+Each game's README (in French) covers the algorithms, their measurements and their limits.
+
 ## Why Playlab42
 
 - **Nothing to set up.** It’s a static site: your preferences, scores and progress stay in your browser. Light and dark themes, keyboard navigation.
