@@ -448,7 +448,11 @@ test('la vue 3D change les axes et l’orientation sans changer la similarité',
 
 test('les repères et nouvelles étapes expliquent les termes avant leur utilisation', async ({ page }) => {
   await page.goto(slide('05-transformer'));
-  await page.locator('.vocabulary-hints [data-term="tête"]').focus();
+  const headTerm = page.locator('.vocabulary-hints [data-term="tête"]');
+  // Le glossaire se charge après la slide : focaliser avant que ses écouteurs soient posés
+  // ne déclencherait aucune infobulle. La classe glossary-term signale qu'ils le sont.
+  await expect(headTerm).toHaveClass(/glossary-term/);
+  await headTerm.focus();
   await expect(page.locator('#glossary-tooltip')).toHaveCSS('opacity', '1');
   await expect(page.locator('#glossary-tooltip')).toContainText('en parallèle');
   await page.getByRole('button', { name: '03 · Attention' }).click();
