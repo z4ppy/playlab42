@@ -88,6 +88,7 @@ export default {
     'games/tetris/**/*.js',
     'games/orbital-golf/**/*.js',
     'games/go-9x9/**/*.js',
+    'games/puissance-4/**/*.js',
     'games/demineur/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
@@ -185,6 +186,12 @@ export default {
     // Client sans DOM du Solitaire ; contrôleur, gestes et animations sont couverts par e2e/solitaire.spec.js.
     './games/solitaire/ui/{announce,board-view,card-view,destinations,session,shortcuts,timers}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/solitaire/ui/{keyboard,progress}.js': { statements: 100, branches: 85, functions: 100, lines: 100 },
+    // Puissance 4 : moteur, IA (bitboards, recherche, protocole du worker), bots et vues testables.
+    './games/puissance-4/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/engine/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/ai/{bitboard,search,transposition-table,advisor,protocol,client}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/bots/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/puissance-4/ui/{session,text,board-view,panels}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/demineur/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/demineur/{engine,bots}/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/demineur/solver/*.js': { statements: 100, branches: 94, functions: 100, lines: 100 },
