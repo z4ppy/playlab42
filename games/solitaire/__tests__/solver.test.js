@@ -9,7 +9,7 @@ import { applyMove, isWon } from '../engine/rules.js';
 import { findWinnableDeal } from '../engine/winnable.js';
 import { candidateMoves, solve } from '../ai/solver.js';
 import { talonSequences } from '../ai/talon.js';
-import { evaluate, findSafeMove, isSafeToFound, orderMoves, rankMove, MOVE_PRIORITY } from '../ai/heuristics.js';
+import { evaluate, findSafeMove, isFreeColumn, isSafeToFound, orderMoves, rankMove, MOVE_PRIORITY } from '../ai/heuristics.js';
 import { boardFromView, hashBoard, isFullyKnown } from '../ai/position.js';
 import { board, column, foundation, move } from './positions.js';
 
@@ -167,6 +167,31 @@ describe('Heuristiques', () => {
     const unknown = board({ tableau: [column([null], [null])], stock: [null] });
     expect(evaluate(unknown)).toBe(evaluate(plain));
     expect(evaluate(board({ heights: [1, 0, 0, 0] }))).toBeGreaterThan(evaluate(board()));
+  });
+
+  it('compte comme libre une colonne vide ou fondée sur un roi sans carte cachée', () => {
+    expect(isFreeColumn(column([]))).toBe(true);
+    expect(isFreeColumn(column(['KH', 'QS']))).toBe(true);
+    expect(isFreeColumn(column(['KH'], ['2C']))).toBe(false);
+    expect(isFreeColumn(column(['QH']))).toBe(false);
+    // Carte tout juste retournée, inconnue : on ne suppose pas un roi.
+    expect(isFreeColumn(column([null]))).toBe(false);
+  });
+
+  it('ne pénalise plus le roi de la défausse posé dans une colonne vide', () => {
+    const waiting = board({ tableau: [column(['5H'], ['2C'])], waste: ['KH'] });
+    const placed = applyMove(waiting, move('waste', 'tableau-1')).board;
+    // Une carte de moins en réserve, autant de colonnes libres : la position s'améliore.
+    expect(evaluate(placed) - evaluate(waiting)).toBe(2);
+    // Un roi déjà au fond d'une colonne qui déménage ne gagne rien.
+    const settled = board({ tableau: [column(['KH'])] });
+    expect(evaluate(applyMove(settled, move('tableau-0', 'tableau-1')).board)).toBe(evaluate(settled));
+  });
+
+  it('propose au solveur le roi de la défausse vers une colonne vide', () => {
+    const position = board({ tableau: [column(['5H'], ['2C']), column(['9C'], ['3D'])], waste: ['KH'], stock: ['4S'] });
+    expect(candidateMoves(position)).toContainEqual([move('waste', 'tableau-2')]);
+    expect(rankMove(position, move('waste', 'tableau-2'))).toBe(MOVE_PRIORITY.wasteToTableau);
   });
 });
 

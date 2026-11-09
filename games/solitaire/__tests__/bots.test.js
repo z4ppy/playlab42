@@ -39,6 +39,14 @@ describe('Bot heuristique', () => {
     expect(bot.lastHint.explanation).toMatch(/^Monte l’as de cœur/);
   });
 
+  it('descend le roi de la défausse dans une colonne vide au lieu de piocher', () => {
+    const tableau = [column(['5H'], ['2C', '3C']), column(['9C'], ['4D']), column([]), column([]), column([])];
+    const state = stateWith(board({ tableau, waste: ['6S', 'KD'], stock: ['7S', '8S'] }));
+    const bot = new HeuristicBot();
+    expect(decide(bot, state)).toEqual({ type: 'move', from: 'waste', to: 'tableau-2', count: 1 });
+    expect(bot.lastHint.goal).toBe('king');
+  });
+
   it('ignore les cartes cachées : deux états à la même vue donnent le même choix', () => {
     const state = engine.init({ seed: 12 });
     const twin = structuredClone(state);

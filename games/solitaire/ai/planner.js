@@ -8,7 +8,7 @@
  * - un coup qui retourne une carte cachée termine un plan : la suite dépend
  *   d'une carte que personne ne connaît encore ;
  * - chaque position est évaluée par `evaluate` (cartes cachées, fondations,
- *   colonnes vides, réserve), diminuée d'un petit coût par coup ;
+ *   colonnes libres, réserve), diminuée d'un petit coût par coup ;
  * - les positions déjà vues dans la recherche, ou déjà jouées dans la partie
  *   (`history`), sont écartées : pas de va-et-vient.
  *
@@ -36,7 +36,7 @@ const STEP_COST = 1;
  * @property {import('../engine/rules.js').SolitaireAction|null} action - Coup conseillé
  * @property {import('../engine/rules.js').SolitaireAction[]} plan - Plan complet (premier coup = `action`)
  * @property {string} explanation - Phrase française pour le joueur
- * @property {string} [goal] - Effet du plan (`reveal`, `foundation`, `empty`, `waste`, `improve`)
+ * @property {string} [goal] - Effet du plan (`reveal`, `foundation`, `empty`, `king`, `waste`, `improve`)
  * @property {number} nodes - Positions examinées
  *
  * @typedef {Object} HintOptions

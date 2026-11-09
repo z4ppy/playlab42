@@ -15,6 +15,13 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   validation stricte durcie (scénarios WHEN/THEN, texte de delta non archivé)
   et liens figés sur le tag `v1.16.0`.
 
+### Fixed
+- Solitaire : l'IA (indice, « Regarder l'IA », fin automatique) pose enfin un
+  roi de la défausse dans une colonne vide au lieu de piocher ; une colonne
+  commencée par un roi compte désormais comme libre dans l'évaluation. Taux de
+  victoire du bot sur les donnes 1 à 1 000 : 44,0 % → 50,4 % en pioche 1,
+  13,9 % → 16,2 % en pioche 3.
+
 ## [0.3.0] - 2026-11-09
 
 Quatre nouveaux jeux à IA explicative, de nouveaux outils et parcours, un

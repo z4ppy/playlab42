@@ -185,9 +185,16 @@ profondeur limitée (6 coups, 3 000 à 4 000 nœuds) la meilleure suite de coups
 - un coup qui retourne une carte cachée **termine** le plan : la suite dépend
   d'une carte que personne ne connaît ;
 - chaque position est évaluée (−50 par carte cachée, +20 par carte montée,
-  +15 par colonne vide, −2 par carte de talon et de défausse), moins 1 par
+  +15 par colonne libre, −2 par carte de talon et de défausse), moins 1 par
   coup ; les positions déjà vues dans la recherche **ou déjà jouées dans la
   partie** sont écartées.
+- une colonne **libre** est vide, ou commencée par un roi sans carte cachée
+  dessous : poser un roi de la défausse dans une colonne vide garde cette
+  valeur et sort une carte de la réserve, l'IA le joue donc au lieu de
+  piocher (« Pose le roi de cœur de la défausse dans la colonne 5, vide : un
+  roi commence une nouvelle suite en colonne 5. »). Déplacer un roi déjà au
+  fond d'une colonne vers une autre colonne vide ne rapporte rien et n'est
+  jamais conseillé.
 
 Si un plan améliore la position, l'indice conseille son premier coup et
 explique son but : « Déplace le 7 de carreau (colonne 5) sur le 8 de pique
@@ -214,8 +221,14 @@ information cachée :
 
 | Mode | Victoires | Taux |
 |---|---|---|
-| Pioche 1 | 440 / 1 000 | **44,0 %** |
-| Pioche 3 | 139 / 1 000 | **13,9 %** |
+| Pioche 1 | 504 / 1 000 | **50,4 %** |
+| Pioche 3 | 162 / 1 000 | **16,2 %** |
+
+Avant que la colonne commencée par un roi compte comme libre, le bot
+gagnait 440 et 139 de ces donnes : il préférait piocher plutôt que de poser
+un roi de la défausse dans une colonne vide. Il examine en contrepartie
+environ 15 % de positions de plus par partie (chaque indice reste borné par
+son budget de nœuds).
 
 Pour comparaison, le bot Aléatoire ne gagne aucune des donnes de référence.
 La CI rejoue les donnes 1 à 6 en pioche 1 (gagnées : 1, 3 et 4) ; la mesure
