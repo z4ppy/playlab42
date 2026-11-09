@@ -9,22 +9,12 @@
   --guide-border: var(--color-border);
   --guide-focus: var(--color-info);
   --guide-code: var(--color-accent);
-  --guide-link: var(--color-info);
-  --guide-success: var(--color-success);
+  /* Teintes plus profondes en clair pour le contraste AA ; light-dark() suit le
+     color-scheme de lib/theme.css, y compris en mode automatique. */
+  --guide-link: light-dark(#075d8b, var(--color-info));
+  --guide-success: light-dark(#146c35, var(--color-success));
   --guide-muted: var(--color-text-muted);
   overflow-wrap: anywhere;
-}
-
-[data-theme="light"] .openspec-guide {
-  --guide-link: #075d8b;
-  --guide-success: #146c35;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme]) .openspec-guide {
-    --guide-link: #075d8b;
-    --guide-success: #146c35;
-  }
 }
 
 .openspec-guide .slide :not(pre) > code {
@@ -48,12 +38,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--guide-code);
-}
-
-[data-theme="light"].openspec-guide .guide-kicker,
-[data-theme="light"] .openspec-guide .guide-kicker {
-  color: #b3203a; /* contraste AA sur fond clair */
+  color: light-dark(#b3203a, var(--guide-code)); /* contraste AA sur fond clair */
 }
 
 .openspec-guide .guide-lead {
@@ -158,10 +143,6 @@
   color: #fff;
   font-weight: 700;
   font-size: var(--font-size-sm);
-}
-
-[data-theme="light"] .openspec-guide .guide-steps > li::before {
-  background: #b3203a;
 }
 
 /* Liste de vérification */
