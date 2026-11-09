@@ -88,6 +88,7 @@ export default {
     'games/tetris/**/*.js',
     'games/orbital-golf/**/*.js',
     'games/go-9x9/**/*.js',
+    'games/demineur/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
     'games/solitaire/{ai,bots}/**/*.js',
@@ -184,6 +185,11 @@ export default {
     // Client sans DOM du Solitaire ; contrôleur, gestes et animations sont couverts par e2e/solitaire.spec.js.
     './games/solitaire/ui/{announce,board-view,card-view,destinations,session,shortcuts,timers}.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
     './games/solitaire/ui/{keyboard,progress}.js': { statements: 100, branches: 85, functions: 100, lines: 100 },
+    './games/demineur/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/demineur/{engine,bots}/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/demineur/solver/*.js': { statements: 100, branches: 94, functions: 100, lines: 100 },
+    './games/demineur/ui/*.js': { statements: 100, branches: 95, functions: 100, lines: 100 },
+    './games/demineur/controller.js': { statements: 96, branches: 92, functions: 95, lines: 98 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
