@@ -27,7 +27,7 @@ test('Relativity : versions verrouillées et imports transitifs locaux sans CDN'
         .map(({ package: name, version, license }) => ({ name, version, license })),
     };
   });
-  expect(versions.revision).toBe('186');
+  expect(versions.revision).toBe('187');
   expect(versions.gui).toBe(true);
   expect(versions.webgl2).toBe(true);
   expect(versions.libraries).toEqual([
