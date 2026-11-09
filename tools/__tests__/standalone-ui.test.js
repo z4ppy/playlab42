@@ -183,9 +183,10 @@ describe('Neural Style : import et résultat au clavier', () => {
     expect($('#contentFilename').textContent).toBe('Aucun fichier sélectionné');
   });
 
-  test('active la stylisation après deux imports puis affiche le résultat téléchargeable', async () => {
-    const putImageData = jest.fn();
-    jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ putImageData });
+  /**
+   * Importe une image de contenu et une image de style factices.
+   */
+  async function importBothImages() {
     for (const kind of ['content', 'style']) {
       const input = $(`#${kind}Input`);
       Object.defineProperty(input, 'files', {
@@ -194,15 +195,63 @@ describe('Neural Style : import et résultat au clavier', () => {
       input.dispatchEvent(new Event('change'));
       await flushPromises();
     }
-    expect($('#stylizeBtn').disabled).toBe(false);
+  }
+
+  /**
+   * Clique sur Styliser puis attend la pause de rendu et l'inférence simulée.
+   */
+  async function runStylize() {
     $('#stylizeBtn').click();
+    await new Promise(resolve => setTimeout(resolve, 40));
     await flushPromises();
+  }
+
+  test('active la stylisation après deux imports puis affiche le résultat téléchargeable', async () => {
+    const putImageData = jest.fn();
+    jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ putImageData, drawImage: jest.fn() });
+    await importBothImages();
+    expect($('#stylizeBtn').disabled).toBe(false);
+    await runStylize();
     expect(putImageData).toHaveBeenCalledTimes(1);
     expect($('#resultCanvas').style.display).toBe('block');
     expect($('#resultCanvas').width).toBe(64);
     expect($('#downloadBtn').disabled).toBe(false);
     expect($('#status').textContent).toBe('Stylisation terminée !');
     expect($('#resultZone').hasAttribute('aria-busy')).toBe(false);
+  });
+
+  test('transmet au modèle les tailles (hauteur) et l’intensité choisies', async () => {
+    jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ putImageData: jest.fn(), drawImage: jest.fn() });
+    const stylize = jest.spyOn(window.mi.ArbitraryStyleTransferNetwork.prototype, 'stylize');
+    await importBothImages();
+    for (const [id, value] of [['contentSize', '384'], ['styleSize', '128'], ['strength', '60']]) {
+      $(`#${id}`).value = value;
+      $(`#${id}`).dispatchEvent(new Event('input'));
+    }
+    expect($('#contentSizeValue').textContent).toBe('384 px');
+    expect($('#strengthValue').textContent).toBe('60 %');
+    await runStylize();
+    const [content, style, strength] = stylize.mock.calls[0];
+    // Images sources 64×64 : agrandies à la hauteur demandée, ratio conservé
+    expect([content.width, content.height]).toEqual([384, 384]);
+    expect([style.width, style.height]).toEqual([128, 128]);
+    expect(strength).toBeCloseTo(0.6);
+
+    $('#strength').value = '100';
+    await runStylize();
+    // À 100 %, le modèle n'a pas à calculer le mélange avec le contenu
+    expect(stylize.mock.calls[1][2]).toBeUndefined();
+  });
+
+  test('garde le style demandé en dernier quand deux vignettes se chargent en parallèle', async () => {
+    const [first, second] = $('#sampleStyles').querySelectorAll('button');
+    first.click();
+    second.click();
+    await flushPromises();
+    expect(second.getAttribute('aria-pressed')).toBe('true');
+    expect(first.getAttribute('aria-pressed')).toBe('false');
+    expect(first.classList.contains('loading')).toBe(false);
+    expect($('#styleFilename').textContent).toContain(second.querySelector('.style-name').textContent);
   });
 
   test('ouvre le résultat au clavier, contient le focus puis le restitue à la fermeture', () => {

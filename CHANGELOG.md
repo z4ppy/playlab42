@@ -38,6 +38,11 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
   elles ne correspondaient plus à aucune URL du catalogue
 
 ### Changed
+- Neural Style : légende de la galerie sous la vignette au lieu de la masquer ;
+  réglages de taille du contenu, taille du style et intensité alignés sur la
+  démo d'origine (256 px par défaut au lieu de 512 px, qui affaiblissait le
+  rendu), images passées au modèle sans ré-encodage JPEG, statut près du
+  bouton et dernier style demandé prioritaire en cas de clics rapides.
 - Images OG : un téléchargement ignoré par Git n'est plus référencé comme image
   locale persistante ; URL distante d'origine utilisée, entités HTML décodées,
   images éditoriales locales conservées et vérifiées. Cache non référencé exclu
