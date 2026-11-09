@@ -88,6 +88,7 @@ export default {
     'games/tetris/**/*.js',
     'games/orbital-golf/**/*.js',
     'games/go-9x9/**/*.js',
+    'games/demineur/**/*.js',
     'games/checkers/bots/**/*.js',
     'games/tictactoe/bots/blocker.js',
     'games/sudoku/bots/**/*.js',
@@ -187,6 +188,11 @@ export default {
       { statements: 100, branches: 100, functions: 100, lines: 100 },
     // Contrôleur DOM : Worker, reprise au chargement et erreurs de génération restent hors jsdom (e2e).
     './games/sudoku/ui/app.js': { statements: 95, branches: 84, functions: 93, lines: 96 },
+    './games/demineur/engine.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/demineur/{engine,bots}/*.js': { statements: 100, branches: 100, functions: 100, lines: 100 },
+    './games/demineur/solver/*.js': { statements: 100, branches: 94, functions: 100, lines: 100 },
+    './games/demineur/ui/*.js': { statements: 100, branches: 95, functions: 100, lines: 100 },
+    './games/demineur/controller.js': { statements: 96, branches: 92, functions: 95, lines: 98 },
   },
 
   // Mapping de modules pour les imports spéciaux (ex: CDN -> mock)
